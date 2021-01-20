@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "Logs/LoggingChannel.h"
 #include "Logs/LoggingChannelFactory.h"
 #include "LetsGoGameModeBase.generated.h"
 
@@ -17,9 +18,11 @@ public:
 	ALetsGoGameModeBase();
 	
 	~ALetsGoGameModeBase();
-	
-	LoggingChannelFactory* GetLoggingChannelFactory();
+
+	LoggingChannel* GetLoggingChannel() const;
 
 private:
-	LoggingChannelFactory* _debugLoggingChannelFactory;
+	LoggingChannelFactory* _loggingChannelFactory;
+
+	LoggingChannel* _loggingChannel;
 };

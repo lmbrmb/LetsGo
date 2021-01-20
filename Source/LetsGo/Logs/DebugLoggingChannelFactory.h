@@ -13,7 +13,7 @@ public:
 	
 	virtual ~DebugLoggingChannelFactory();
 
-	virtual LoggingChannel* GetOrCreateLoggingChannel() override;
+	virtual LoggingChannel* CreateLoggingChannel() override;
 
 private:
 	DebugLoggingChannel* _debugLoggingChannel = nullptr;

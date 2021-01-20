@@ -9,5 +9,5 @@ public:
 
 	virtual ~LoggingChannelFactory();
 
-	virtual LoggingChannel* GetOrCreateLoggingChannel() = 0;
+	virtual LoggingChannel* CreateLoggingChannel() = 0;
 };

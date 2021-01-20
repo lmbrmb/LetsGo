@@ -19,7 +19,7 @@ LoggingChannel* AProtagonistPlayerController::GetLoggingChannel() const
 	const auto gameMode = GetWorld()->GetAuthGameMode();
 	const auto gameModeBase = static_cast<ALetsGoGameModeBase*>(gameMode);
 	return gameModeBase
-		? gameModeBase->GetLoggingChannelFactory()->GetOrCreateLoggingChannel()
+		? gameModeBase->GetLoggingChannel()
 		: nullptr;
 }
 
@@ -31,8 +31,5 @@ void AProtagonistPlayerController::DebugDisplayPawnInfo() const
 	const auto pawnAssignedMsg = "Pawn is assigned: " + UKismetStringLibrary::Conv_BoolToString(isPawnAssigned);
 	const auto protagonistPawnAssignedMsg = "Protagonist pawn is assigned: " + UKismetStringLibrary::Conv_BoolToString(isProtagonistPawnAssigned);
 	
-	const auto timeSeconds = GetWorld()->GetTimeSeconds();
-	const auto timeMsg = UKismetStringLibrary::Conv_FloatToString(timeSeconds);
-	
-	GetLoggingChannel()->Log(timeMsg + ": " + pawnAssignedMsg + " / " + protagonistPawnAssignedMsg);
+	GetLoggingChannel()->Log(pawnAssignedMsg + " / " + protagonistPawnAssignedMsg);
 }

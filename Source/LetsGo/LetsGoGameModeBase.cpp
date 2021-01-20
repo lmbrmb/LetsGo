@@ -3,21 +3,17 @@
 
 ALetsGoGameModeBase::ALetsGoGameModeBase()
 {
+	_loggingChannelFactory = new DebugLoggingChannelFactory();
+	_loggingChannel = _loggingChannelFactory->CreateLoggingChannel();
 }
 
 ALetsGoGameModeBase::~ALetsGoGameModeBase()
 {
-	if(_debugLoggingChannelFactory != nullptr)
-	{
-		delete _debugLoggingChannelFactory;
-	}
+	delete _loggingChannelFactory;
+	delete _loggingChannel;
 }
 
-LoggingChannelFactory* ALetsGoGameModeBase::GetLoggingChannelFactory()
+LoggingChannel* ALetsGoGameModeBase::GetLoggingChannel() const
 {
-	if(_debugLoggingChannelFactory == nullptr)
-	{
-		_debugLoggingChannelFactory = new DebugLoggingChannelFactory();
-	}
-	return _debugLoggingChannelFactory;
+	return _loggingChannel;
 }

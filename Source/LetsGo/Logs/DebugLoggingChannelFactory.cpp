@@ -10,7 +10,7 @@ DebugLoggingChannelFactory::~DebugLoggingChannelFactory()
 {
 }
 
-LoggingChannel* DebugLoggingChannelFactory::GetOrCreateLoggingChannel()
+LoggingChannel* DebugLoggingChannelFactory::CreateLoggingChannel()
 {
 	if(_debugLoggingChannel == nullptr)
 	{

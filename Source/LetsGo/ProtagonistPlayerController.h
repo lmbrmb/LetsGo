@@ -9,7 +9,7 @@
 /// Main character player controller
 ///</summary>
 UCLASS()
-class LETSGO_API AProtagonistPlayerController : public APlayerController
+class LETSGO_API AProtagonistPlayerController final : public APlayerController
 {
 	GENERATED_BODY()
 
@@ -18,11 +18,11 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
-
-	LoggingChannel* GetLoggingChannel() const;
 	
 private:
 	AProtagonistPawn* _protagonistPawn = nullptr;
 
 	void DebugDisplayPawnInfo() const;
+
+	LoggingChannel* GetLoggingChannel() const;
 };
