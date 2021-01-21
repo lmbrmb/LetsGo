@@ -2,8 +2,18 @@
 #include "InputConstant.h"
 #include "Kismet/KismetStringLibrary.h"
 #include "LetsGoGameModeBase.h"
+#include "Logs/DevLogger.h"
+#include "PawnControls/PawnControllerManagerFactory.h"
 
-const float MIN_AXIS_INPUT = 0.1f;
+const float MIN_INPUT_AMOUNT = 0.1f;
+
+const float MOVEMENT_SPEED_CM_PER_SECOND = 750.0f;
+
+const float ROTATION_SPEED_DEGREES_PER_SECOND = 180.0f;
+
+#define RETURN_IF_MIN_INPUT(x) \
+	if(FMath::Abs(x) < MIN_INPUT_AMOUNT) \
+	{return;}
 
 AProtagonistPawn::AProtagonistPawn()
 {
@@ -12,62 +22,76 @@ AProtagonistPawn::AProtagonistPawn()
 	TheRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("TheRootComponent"));
 	SetRootComponent(TheRootComponent);
 
-	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
-
-	auto meshShapeId = TEXT("StaticEVisualLoggerShapeElement::Mesh'/Engine/BasicShapes/Sphere.Sphere'");
-	auto meshAsset = ConstructorHelpers::FObjectFinder<UStaticMesh>(meshShapeId);
-	if (meshAsset.Object != nullptr)
-	{
-		StaticMeshComponent->SetStaticMesh(meshAsset.Object);
-	}
-	StaticMeshComponent->SetupAttachment(TheRootComponent);
+	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
+	SkeletalMeshComponent->SetupAttachment(TheRootComponent);
 }
 
-void AProtagonistPawn::BeginPlay()
+AProtagonistPawn::~AProtagonistPawn()
 {
-	Super::BeginPlay();
-	GetLoggingChannel()->Log(RootComponent->GetName());
+	if(_pawnControllerManager)
+	{
+		delete _pawnControllerManager;
+	}
 }
 
 void AProtagonistPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	PlayerInputComponent->BindAxis(InputConstant::AxisMoveForward, this, &AProtagonistPawn::OnAxisMoveForward);
-	PlayerInputComponent->BindAxis(InputConstant::AxisMoveRight, this, &AProtagonistPawn::OnAxisMoveRight);
-	PlayerInputComponent->BindAction(InputConstant::ActionJump, EInputEvent::IE_Pressed, this, &AProtagonistPawn::OnActionJump);
-}
-
-LoggingChannel* AProtagonistPawn::GetLoggingChannel() const
-{
-	const auto gameMode = GetWorld()->GetAuthGameMode();
-	const auto gameModeBase = static_cast<ALetsGoGameModeBase*>(gameMode);
-	return gameModeBase
-		? gameModeBase->GetLoggingChannel()
-		: nullptr;
-}
-
-// ReSharper disable once CppMemberFunctionMayBeConst
-void AProtagonistPawn::OnAxisMoveForward(float amount)
-{
-	if(FMath::Abs(amount) < MIN_AXIS_INPUT)
+	if (!_pawnControllerManager)
 	{
+		const PawnControllerManagerFactory pawnControllerManagerFactory;
+		_pawnControllerManager = pawnControllerManagerFactory.CreatePawnControllerManager(this);
+	}
+
+	if(!PlayerInputComponent)
+	{
+		DevLogger::GetLoggingChannel()->Log("No player input component", LogSeverity::Error);
 		return;
 	}
 	
-	GetLoggingChannel()->Log("OnMoveForward " + UKismetStringLibrary::Conv_FloatToString(amount));
+	PlayerInputComponent->RemoveActionBinding(InputConstant::ActionSwitchView, EInputEvent::IE_Pressed);
+	check(_pawnControllerManager);
+	_pawnControllerManager->SetInputComponent(PlayerInputComponent);
+	_pawnControllerManager->CycleController();
+	InputComponent->BindAction(InputConstant::ActionSwitchView, EInputEvent::IE_Pressed, this, &AProtagonistPawn::OnActionSwitchView);
 }
 
-// ReSharper disable once CppMemberFunctionMayBeConst
-void AProtagonistPawn::OnAxisMoveRight(float amount)
+void AProtagonistPawn::MoveForward(float amount)
 {
-	if (FMath::Abs(amount) < MIN_AXIS_INPUT)
-	{
-		return;
-	}
-	GetLoggingChannel()->Log("OnMoveRight " + UKismetStringLibrary::Conv_FloatToString(amount));
+	RETURN_IF_MIN_INPUT(amount);
+	const auto forwardVector = GetRootComponent()->GetForwardVector();
+	Move(forwardVector, amount);
 }
 
-void AProtagonistPawn::OnActionJump()
+void AProtagonistPawn::MoveRight(float amount)
 {
-	GetLoggingChannel()->Log("OnActionJump");
+	RETURN_IF_MIN_INPUT(amount);
+	const auto rightVector = GetRootComponent()->GetRightVector();
+	Move(rightVector, amount);
+}
+
+void AProtagonistPawn::Move(FVector direction, float amount)
+{
+	RETURN_IF_MIN_INPUT(amount);
+	const auto deltaTime = GetWorld()->GetDeltaSeconds();
+	auto const translationDelta = direction * MOVEMENT_SPEED_CM_PER_SECOND * amount * deltaTime;
+	GetRootComponent()->MoveComponent(translationDelta, RootComponent->GetComponentQuat(), false, nullptr, MOVECOMP_NoFlags, ETeleportType::None);
+}
+
+void AProtagonistPawn::RotateRight(float amount)
+{
+	RETURN_IF_MIN_INPUT(amount);
+	const auto deltaTime = GetWorld()->GetDeltaSeconds();
+	auto const rotationDelta = ROTATION_SPEED_DEGREES_PER_SECOND * amount * deltaTime;
+	const FRotator rotator(0, rotationDelta, 0);
+	GetRootComponent()->AddLocalRotation(rotator);
+}
+
+void AProtagonistPawn::Jump()
+{
+	DevLogger::GetLoggingChannel()->Log("Jump");
+}
+
+void AProtagonistPawn::OnActionSwitchView()
+{
+	_pawnControllerManager->CycleController();
 }

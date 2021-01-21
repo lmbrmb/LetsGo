@@ -8,14 +8,20 @@
 class LETSGO_API DebugLoggingChannel final : public LoggingChannel
 {
 public:
-	explicit DebugLoggingChannel(int maxMessageCount);
+	explicit DebugLoggingChannel(int maxMessageCount, float timeToDisplay);
 
-	virtual void Log(FString str) override;
+	virtual void Log(const FString str, LogSeverity::LogSeverity severity = LogSeverity::Debug) override;
 
 private:
-	int _lineIndex = 0;
+	int _maxMessageCount;
 
-	int _maxMessageCount = 0;
+	float _timeToDisplay;
+	
+	int _lineIndex;
 
+	bool _isMessageCountLimited;
+	
 	int _messageNumber = 0;
+
+	static FColor GetSeverityColor(const LogSeverity::LogSeverity severity);
 };

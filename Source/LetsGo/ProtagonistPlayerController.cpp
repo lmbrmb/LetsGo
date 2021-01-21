@@ -1,6 +1,6 @@
 #include "ProtagonistPlayerController.h"
-#include "LetsGoGameModeBase.h"
 #include "Kismet/KismetStringLibrary.h"
+#include "Logs/DevLogger.h"
 
 void AProtagonistPlayerController::SetPawn(APawn* InPawn)
 {
@@ -14,15 +14,6 @@ void AProtagonistPlayerController::BeginPlay()
 	Super::BeginPlay();
 }
 
-LoggingChannel* AProtagonistPlayerController::GetLoggingChannel() const
-{
-	const auto gameMode = GetWorld()->GetAuthGameMode();
-	const auto gameModeBase = static_cast<ALetsGoGameModeBase*>(gameMode);
-	return gameModeBase
-		? gameModeBase->GetLoggingChannel()
-		: nullptr;
-}
-
 void AProtagonistPlayerController::DebugDisplayPawnInfo() const
 {
 	const auto isPawnAssigned = GetPawn() != nullptr;
@@ -30,6 +21,6 @@ void AProtagonistPlayerController::DebugDisplayPawnInfo() const
 	
 	const auto pawnAssignedMsg = "Pawn is assigned: " + UKismetStringLibrary::Conv_BoolToString(isPawnAssigned);
 	const auto protagonistPawnAssignedMsg = "Protagonist pawn is assigned: " + UKismetStringLibrary::Conv_BoolToString(isProtagonistPawnAssigned);
-	
-	GetLoggingChannel()->Log(pawnAssignedMsg + " / " + protagonistPawnAssignedMsg);
+
+	DevLogger::GetLoggingChannel()->Log(pawnAssignedMsg + " / " + protagonistPawnAssignedMsg);
 }

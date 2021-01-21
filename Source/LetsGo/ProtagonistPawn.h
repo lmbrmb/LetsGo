@@ -1,34 +1,40 @@
 #pragma once
 
 #include "GameFramework/Pawn.h"
-#include "Logs/LoggingChannel.h"
+#include "PawnControls/PawnControllerManager.h"
 #include "ProtagonistPawn.generated.h"
 
 UCLASS()
-class LETSGO_API AProtagonistPawn : public APawn
+class LETSGO_API AProtagonistPawn final : public APawn
 {
 	GENERATED_BODY()
 	
 public:
 	AProtagonistPawn();
 
+	~AProtagonistPawn();
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Transform)
 	USceneComponent* TheRootComponent;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Visuals)
-	UStaticMeshComponent* StaticMeshComponent;
+	USkeletalMeshComponent* SkeletalMeshComponent;
+
+	void MoveForward(float amount);
+	
+	void MoveRight(float amount);
+
+	void Move(FVector direction, float amount);
+	
+	void RotateRight(float amount);
+	
+	void Jump();
 	
 protected:
-	virtual void BeginPlay() override;
-
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	
 private:
-	LoggingChannel* GetLoggingChannel() const;
+	void OnActionSwitchView();
 
-	void OnAxisMoveForward(float amount);
-
-	void OnAxisMoveRight(float amount);
-	
-	void OnActionJump();
+	PawnControllerManager* _pawnControllerManager;
 };

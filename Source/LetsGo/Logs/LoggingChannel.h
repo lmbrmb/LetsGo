@@ -1,5 +1,7 @@
 #pragma once
 
+#include "LogSeverity.h"
+
 /// <summary>
 /// Logging channel base class
 /// </summary>
@@ -10,5 +12,5 @@ public:
 
 	virtual ~LoggingChannel();
 
-	virtual void Log(FString str) = 0;
+	virtual void Log(const FString str, LogSeverity::LogSeverity severity = LogSeverity::Debug) = 0;
 };

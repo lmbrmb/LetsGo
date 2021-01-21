@@ -2,8 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "Logs/LoggingChannel.h"
-#include "Logs/LoggingChannelFactory.h"
 #include "LetsGoGameModeBase.generated.h"
 
 ///<summary>
@@ -19,10 +17,5 @@ public:
 	
 	~ALetsGoGameModeBase();
 
-	LoggingChannel* GetLoggingChannel() const;
-
-private:
-	LoggingChannelFactory* _loggingChannelFactory;
-
-	LoggingChannel* _loggingChannel;
+	//TODO: Dependency Injection container
 };

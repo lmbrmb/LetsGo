@@ -14,7 +14,4 @@ public:
 	virtual ~DebugLoggingChannelFactory();
 
 	virtual LoggingChannel* CreateLoggingChannel() override;
-
-private:
-	DebugLoggingChannel* _debugLoggingChannel = nullptr;
 };

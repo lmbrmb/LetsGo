@@ -2,7 +2,6 @@
 
 #include "GameFramework/PlayerController.h"
 #include "ProtagonistPawn.h"
-#include "Logs/LoggingChannel.h"
 #include "ProtagonistPlayerController.generated.h"
 
 ///<summary>
@@ -23,6 +22,4 @@ private:
 	AProtagonistPawn* _protagonistPawn = nullptr;
 
 	void DebugDisplayPawnInfo() const;
-
-	LoggingChannel* GetLoggingChannel() const;
 };
