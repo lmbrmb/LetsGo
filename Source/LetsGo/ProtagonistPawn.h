@@ -1,7 +1,9 @@
 #pragma once
 
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/Pawn.h"
-#include "PawnControls/PawnControllerManager.h"
+#include "PawnControls/PawnControllerMapping.h"
+#include "PawnControls/PawnControlScheme.h"
 #include "ProtagonistPawn.generated.h"
 
 UCLASS()
@@ -14,27 +16,21 @@ public:
 
 	~AProtagonistPawn();
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Transform)
-	USceneComponent* TheRootComponent;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Visuals)
-	USkeletalMeshComponent* SkeletalMeshComponent;
-
-	void MoveForward(float amount);
-	
-	void MoveRight(float amount);
-
-	void Move(FVector direction, float amount);
-	
-	void RotateRight(float amount);
-	
-	void Jump();
+	// TODO: health component
 	
 protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-	
-private:
-	void OnActionSwitchView();
 
-	PawnControllerManager* _pawnControllerManager;
+private:
+	/// <summary>
+	/// 1. Root transform (position, rotation)
+	/// 2. Pawn's ground collider. Physics handling (gravity, collisions)
+	/// </summary>
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Root, meta = (AllowPrivateAccess = "true"))
+		UCapsuleComponent* RootCapsuleComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Control, meta = (AllowPrivateAccess = "true"))
+		TEnumAsByte<PawnControlScheme> ControlScheme;
+	
+	PawnControllerMapping* _pawnControllerMapping;
 };

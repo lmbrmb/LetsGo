@@ -1,7 +1,6 @@
 #pragma once
 
 #include "PawnControllerMapping.h"
-#include "LetsGo/ProtagonistPawn.h"
 
 /// <summary>
 /// Implements first person controller strategy
@@ -17,10 +16,8 @@ public:
 	
 	virtual void Unmap() override;
 
-	virtual FString GetName() override;
+	virtual PawnControlScheme GetControlScheme() override;
 
 private:
-	AProtagonistPawn* _protagonistPawn = nullptr;
-
 	UInputComponent* _playerInputComponent = nullptr;
 };

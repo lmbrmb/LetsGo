@@ -1,8 +1,7 @@
 #include "FirstPersonPawnControllerMapping.h"
+#include "LetsGo/GenericMovementComponent.h"
 #include "LetsGo/InputConstant.h"
 #include "LetsGo/ProtagonistPawn.h"
-
-const float MIN_AXIS_INPUT_ABS = 0.1f;
 
 FirstPersonPawnControllerMapping::FirstPersonPawnControllerMapping()
 {
@@ -14,25 +13,31 @@ FirstPersonPawnControllerMapping::~FirstPersonPawnControllerMapping()
 
 void FirstPersonPawnControllerMapping::Map(UInputComponent* playerInputComponent, APawn* pawn)
 {
-	_protagonistPawn = Cast<AProtagonistPawn>(pawn);
-	check(_protagonistPawn != nullptr);
 	_playerInputComponent = playerInputComponent;
 	check(_playerInputComponent != nullptr);
-	
-	_playerInputComponent->BindAxis(InputConstant::AxisHorizontal, _protagonistPawn, &AProtagonistPawn::MoveRight);
-	_playerInputComponent->BindAxis(InputConstant::AxisVertical, _protagonistPawn, &AProtagonistPawn::MoveForward);
-	_playerInputComponent->BindAction(InputConstant::ActionJump, EInputEvent::IE_Pressed, _protagonistPawn, &AProtagonistPawn::Jump);
+	auto const genericMovementComponent = pawn->FindComponentByClass<UGenericMovementComponent>();
+	check(genericMovementComponent);
+	_playerInputComponent->BindAxis(InputConstant::AxisMoveHorizontal, genericMovementComponent, &UGenericMovementComponent::MoveInActorDirectionRight);
+	_playerInputComponent->BindAxis(InputConstant::AxisMoveVertical, genericMovementComponent, &UGenericMovementComponent::MoveInActorDirectionUp);
+	_playerInputComponent->BindAxis(InputConstant::AxisLookHorizontal, genericMovementComponent, &UGenericMovementComponent::RotateYaw);
+	_playerInputComponent->BindAxis(InputConstant::AxisLookVertical, genericMovementComponent, &UGenericMovementComponent::RotatePitch);
+	_playerInputComponent->BindAction(InputConstant::ActionJump, EInputEvent::IE_Pressed, genericMovementComponent, &UGenericMovementComponent::Jump);
 }
 
 void FirstPersonPawnControllerMapping::Unmap()
 {
-	TArray<FName> axisNames = { InputConstant::AxisHorizontal, InputConstant::AxisVertical };
+	TArray<FName> axisNames = {
+		InputConstant::AxisMoveHorizontal,
+		InputConstant::AxisMoveVertical,
+		InputConstant::AxisLookHorizontal,
+		InputConstant::AxisLookVertical
+	};
 	auto removePredicate = [axisNames](FInputAxisBinding binding) { return axisNames.Contains(binding.AxisName); };
 	_playerInputComponent->AxisBindings.RemoveAll(removePredicate);
 	_playerInputComponent->RemoveActionBinding(InputConstant::ActionJump, EInputEvent::IE_Pressed);
 }
 
-FString FirstPersonPawnControllerMapping::GetName()
+PawnControlScheme FirstPersonPawnControllerMapping::GetControlScheme()
 {
-	return "FPS";
+	return Fps;
 }

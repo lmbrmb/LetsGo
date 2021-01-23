@@ -1,11 +1,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PawnControlScheme.h"
 
 /// <summary>
-/// [abstract] Pawn controller mapping
-/// Derived class should implement strategy for Map / Unmap to define player view and how player input controls pawn actions
-/// Example: First person controller / Third person controller
+/// [abstract] [strategy] Pawn controller mapping
+/// Derived class should implement Map / Unmap to define how player input controls pawn
 /// </summary>
 class LETSGO_API PawnControllerMapping
 {
@@ -14,7 +14,7 @@ public:
 	
 	virtual ~PawnControllerMapping();
 
-	virtual FString GetName() = 0;
+	virtual PawnControlScheme GetControlScheme() = 0;
 	
 	/// <summary>
 	/// Maps player input to pawn actions

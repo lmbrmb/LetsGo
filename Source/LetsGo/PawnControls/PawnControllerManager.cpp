@@ -2,7 +2,6 @@
 #include "FirstPersonPawnControllerMapping.h"
 #include "ThirdPersonTankPawnControllerMapping.h"
 #include "LetsGo/Logs/DevLogger.h"
-#include "Kismet/KismetStringLibrary.h"
 
 PawnControllerManager::PawnControllerManager(APawn* pawn)
 {
@@ -44,7 +43,7 @@ void PawnControllerManager::CycleController()
 
 	auto pawnControllerMapping = _pawnControllerMappings[_mappingIndex];
 
-	DevLogger::GetLoggingChannel()->Log("PawnControllerMapping: " + pawnControllerMapping->GetName());
+	DevLogger::GetLoggingChannel()->Log("PawnControllerMapping: " + pawnControllerMapping->GetControlScheme());
 	pawnControllerMapping->Map(_inputComponent, _pawn);
 }
 
