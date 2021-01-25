@@ -1,7 +1,6 @@
 #pragma once
 
 #include "LoggingChannelFactory.h"
-#include "DebugLoggingChannel.h"
 
 /// <summary>
 /// Debug logging channel factory implementation

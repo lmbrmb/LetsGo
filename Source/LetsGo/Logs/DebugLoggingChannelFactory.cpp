@@ -1,8 +1,10 @@
 #include "DebugLoggingChannelFactory.h"
 
+#include "DebugLoggingChannel.h"
+
 const int MAX_MESSAGE_COUNT = -1;
 
-const float TIME_TO_DISPLAY = 10.0f;
+const float TIME_TO_DISPLAY = 60.0f;
 
 DebugLoggingChannelFactory::DebugLoggingChannelFactory()
 {
