@@ -4,7 +4,6 @@
 #include "MovementComponentBase.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-
 #include "ThirdPersonMovementComponent.generated.h"
 
 UCLASS(EditInlineNew, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -40,6 +39,12 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
 	float _springArmPitchMax = 50.0f;
 	
+	/// <summary>
+	/// Rotation speed in degrees per second
+	/// </summary>
+	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
+	float _rotationSpeedDegrees = 540.0f;
+	
 	USceneComponent* _root = nullptr;
 
 	USpringArmComponent* _springArmComponent = nullptr;
@@ -48,23 +53,25 @@ private:
 	
 	UInputComponent* _playerInputComponent = nullptr;
 
-	void AddActorForwardMovementInput(float amount);
+	void AddActorForwardMovementInput(const float amount);
 
-	void AddActorRightMovementInput(float amount);
+	void AddActorRightMovementInput(const float amount);
 
-	void AddSpringArmYawInput(float amount);
+	void AddSpringArmYawInput(const float amount);
 
-	void AddSpringArmPitchInput(float amount);
+	void AddSpringArmPitchInput(const float amount);
 
-	void ProcessSpringArmRotationTick(float deltaTime);
+	void ProcessSpringArmRotationTick(const float deltaTime) const;
 	
-	void ProcessActorLocationAndRotationTick(float deltaTime);
+	void ProcessActorLocationAndRotationTick(const float deltaTime) const;
 	
 	void Jump();
 
 	void ResetInput();
 
 	float ClampSpringArmPitch(float pitch) const;
+	
+	void UpdateCache();
 	
 	float _actorForwardMovementInputAmount = 0;
 	
@@ -73,4 +80,10 @@ private:
 	float _springArmYawInput = 0;
 
 	float _springArmPitchInput = 0;
+	
+	FVector _currentActorLocationCached;
+	
+	FVector _previousActorLocationCached;
+
+	FVector _actorTranslationVelocityCached;
 };

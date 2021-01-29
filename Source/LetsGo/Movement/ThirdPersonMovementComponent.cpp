@@ -1,10 +1,12 @@
 #include "ThirdPersonMovementComponent.h"
 #include "DrawDebugHelpers.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "LetsGo/InputConstant.h"
 #include "LetsGo/Logs/DevLogger.h"
 
 const float MIN_MOVEMENT_INPUT_AMOUNT = 0.1f;
 const float MIN_ROTATION_INPUT_AMOUNT = 0.05f;
+const float SKIP_ROTATION_ANGLE_RADIANS = FMath::DegreesToRadians(1.0f);
 
 UThirdPersonMovementComponent::UThirdPersonMovementComponent()
 {
@@ -21,7 +23,7 @@ void UThirdPersonMovementComponent::TickComponent(
 )
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	UpdateCache();
 	ProcessSpringArmRotationTick(DeltaTime);
 	ProcessActorLocationAndRotationTick(DeltaTime);
 	ResetInput();
@@ -32,6 +34,9 @@ void UThirdPersonMovementComponent::Init(AActor* actor)
 	_root = actor->GetRootComponent();
 	_cameraComponent = actor->FindComponentByClass<UCameraComponent>();
 	_springArmComponent = actor->FindComponentByClass<USpringArmComponent>();
+	_currentActorLocationCached = _root->GetComponentLocation();
+	_previousActorLocationCached = _currentActorLocationCached;
+	_actorTranslationVelocityCached = FVector::ZeroVector;
 }
 
 void UThirdPersonMovementComponent::MapPlayerInput(UInputComponent* playerInputComponent)
@@ -44,27 +49,27 @@ void UThirdPersonMovementComponent::MapPlayerInput(UInputComponent* playerInputC
 	_playerInputComponent->BindAction(InputConstant::ActionJump, EInputEvent::IE_Pressed, this, &UThirdPersonMovementComponent::Jump);
 }
 
-void UThirdPersonMovementComponent::AddActorRightMovementInput(float amount)
+void UThirdPersonMovementComponent::AddActorRightMovementInput(const float amount)
 {
 	_actorRightMovementInputAmount = amount;
 }
 
-void UThirdPersonMovementComponent::AddActorForwardMovementInput(float amount)
+void UThirdPersonMovementComponent::AddActorForwardMovementInput(const float amount)
 {
 	_actorForwardMovementInputAmount = amount;
 }
 
-void UThirdPersonMovementComponent::AddSpringArmYawInput(float amount)
+void UThirdPersonMovementComponent::AddSpringArmYawInput(const float amount)
 {
 	_springArmYawInput = amount;
 }
 
-void UThirdPersonMovementComponent::AddSpringArmPitchInput(float amount)
+void UThirdPersonMovementComponent::AddSpringArmPitchInput(const float amount)
 {
 	_springArmPitchInput = amount;
 }
 
-void UThirdPersonMovementComponent::ProcessSpringArmRotationTick(float deltaTime)
+void UThirdPersonMovementComponent::ProcessSpringArmRotationTick(const float deltaTime) const
 {
 	auto const hasYawInput = FMath::Abs(_springArmYawInput) > MIN_ROTATION_INPUT_AMOUNT;
 	auto const hasPitchInput = FMath::Abs(_springArmPitchInput) > MIN_ROTATION_INPUT_AMOUNT;
@@ -89,7 +94,7 @@ void UThirdPersonMovementComponent::ProcessSpringArmRotationTick(float deltaTime
 	_springArmComponent->SetRelativeRotation(rotation);
 }
 
-void UThirdPersonMovementComponent::ProcessActorLocationAndRotationTick(float deltaTime)
+void UThirdPersonMovementComponent::ProcessActorLocationAndRotationTick(const float deltaTime) const
 {
 	auto const hasForwardInput = FMath::Abs(_actorForwardMovementInputAmount) > MIN_MOVEMENT_INPUT_AMOUNT;
 	auto const hasRightInput = FMath::Abs(_actorRightMovementInputAmount) > MIN_MOVEMENT_INPUT_AMOUNT;
@@ -99,57 +104,51 @@ void UThirdPersonMovementComponent::ProcessActorLocationAndRotationTick(float de
 		return;
 	}
 
-	FVector cameraForwardDirection;
+	FVector targetMovementDirection;
 	if(hasForwardInput)
 	{
-		cameraForwardDirection += _cameraComponent->GetForwardVector() * _actorForwardMovementInputAmount;
+		targetMovementDirection += _cameraComponent->GetForwardVector() * _actorForwardMovementInputAmount;
 	}
 
 	if (hasRightInput)
 	{
-		cameraForwardDirection += _cameraComponent->GetRightVector() * _actorRightMovementInputAmount;
+		targetMovementDirection += _cameraComponent->GetRightVector() * _actorRightMovementInputAmount;
 	}
 
-	auto const actorLocation = _root->GetComponentLocation();
-	cameraForwardDirection = FVector::VectorPlaneProject(cameraForwardDirection, FVector::UpVector);
-	cameraForwardDirection.Normalize();
-	auto const actorMovementDelta = cameraForwardDirection * _movementSpeed * deltaTime;
+	targetMovementDirection = FVector::VectorPlaneProject(targetMovementDirection, FVector::UpVector);
+	targetMovementDirection.Normalize();
 	
-	auto const cameraRotation = _cameraComponent->GetComponentRotation();
-	auto targetActorYaw = cameraRotation.Yaw;
+	DrawDebugLine(GetWorld(), _currentActorLocationCached, _currentActorLocationCached + targetMovementDirection * 100, FColor::Blue);
+	
+	auto actorForwardDirection = _root->GetForwardVector();
+	actorForwardDirection = FVector::VectorPlaneProject(actorForwardDirection, FVector::UpVector);
+	const auto targetDirectionDot = FVector::DotProduct(actorForwardDirection, targetMovementDirection);
+	
+	auto const targetAngleRadians = FMath::Acos(targetDirectionDot);
 
-	DrawDebugLine(GetWorld(), actorLocation, actorLocation + cameraForwardDirection * 100, FColor::Blue);
-	
-	if(hasForwardInput)
+	if (targetAngleRadians > SKIP_ROTATION_ANGLE_RADIANS)
 	{
-		if(_actorForwardMovementInputAmount <0)
+		auto const targetAngleDegrees = FMath::RadiansToDegrees(targetAngleRadians);
+		const auto targetDirectionCross = FVector::CrossProduct(actorForwardDirection, targetMovementDirection);
+		auto const targetAngleSign = FMath::Sign(FVector::DotProduct(FVector::UpVector, targetDirectionCross));
+		auto rotationDeltaDegrees = deltaTime * _rotationSpeedDegrees;
+		
+		if (rotationDeltaDegrees > targetAngleDegrees)
 		{
-			targetActorYaw += _actorForwardMovementInputAmount * 180;
-			if(hasRightInput)
-			{
-				targetActorYaw -= _actorRightMovementInputAmount * 45;
-			}
+			rotationDeltaDegrees = targetAngleDegrees;
 		}
-		else
-		{
-			if (hasRightInput)
-			{
-				targetActorYaw += _actorRightMovementInputAmount * 45;
-			}
-		}
-	}
-	else
-	{
-		if (hasRightInput)
-		{
-			targetActorYaw += _actorRightMovementInputAmount * 90;
-		}
+
+		auto const rotationSignedAngleDegrees = targetAngleSign * rotationDeltaDegrees;
+		auto const rotationVector = actorForwardDirection.RotateAngleAxis(rotationSignedAngleDegrees, FVector::UpVector);
+		auto const actorRotation = UKismetMathLibrary::MakeRotFromX(rotationVector);
+		_root->SetWorldRotation(actorRotation);
 	}
 
-	auto actorRotation = _root->GetComponentRotation();
-	actorRotation.Yaw = targetActorYaw;
-	
-	_root->SetWorldLocationAndRotation(actorLocation + actorMovementDelta, actorRotation);
+	if(targetDirectionDot > 0)
+	{
+		auto const actorMovementDelta = targetMovementDirection * targetDirectionDot * _movementSpeed * deltaTime;
+		_root->AddWorldOffset(actorMovementDelta);
+	}
 }
 
 float UThirdPersonMovementComponent::ClampSpringArmPitch(float pitch) const
@@ -169,6 +168,13 @@ float UThirdPersonMovementComponent::ClampSpringArmPitch(float pitch) const
 		}
 	}
 	return pitch;
+}
+
+void UThirdPersonMovementComponent::UpdateCache()
+{
+	_currentActorLocationCached = _root->GetComponentLocation();
+	_actorTranslationVelocityCached = _currentActorLocationCached - _previousActorLocationCached;
+	_previousActorLocationCached = _currentActorLocationCached;
 }
 
 void UThirdPersonMovementComponent::Jump()

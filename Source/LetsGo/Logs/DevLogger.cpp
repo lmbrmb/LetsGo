@@ -13,12 +13,8 @@ LoggingChannel* DevLogger::_loggingChannel = nullptr;
 
 LoggingChannel* DevLogger::GetLoggingChannel()
 {
-	if (_loggingChannel == nullptr)
+	if (!_loggingChannel)
 	{
-		/*auto factory = new DebugLoggingChannelFactory();
-		_loggingChannel = factory->CreateLoggingChannel();
-		delete factory;*/
-
 		DebugLoggingChannelFactory factory;
 		_loggingChannel = factory.CreateLoggingChannel();
 	}
