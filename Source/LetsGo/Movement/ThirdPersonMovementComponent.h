@@ -17,7 +17,10 @@ public:
 	virtual ~UThirdPersonMovementComponent();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
+
+	UFUNCTION(BlueprintCallable)
+	float GetMovementAmount();
+
 protected:
 	virtual void Init(AActor* actor) override;
 	
@@ -63,15 +66,15 @@ private:
 
 	void ProcessSpringArmRotationTick(const float deltaTime) const;
 	
-	void ProcessActorLocationAndRotationTick(const float deltaTime) const;
+	void ProcessActorLocationAndRotationTick(const float deltaTime);
 	
 	void Jump();
 
 	void ResetInput();
 
 	float ClampSpringArmPitch(float pitch) const;
-	
-	void UpdateCache();
+
+	float _movementAmount = 0;
 	
 	float _actorForwardMovementInputAmount = 0;
 	
@@ -80,10 +83,8 @@ private:
 	float _springArmYawInput = 0;
 
 	float _springArmPitchInput = 0;
-	
-	FVector _currentActorLocationCached;
-	
-	FVector _previousActorLocationCached;
 
-	FVector _actorTranslationVelocityCached;
+	float _maxSquaredMovementSpeed = 0;
+	
+	float _normalizedMovementSpeed = 0;
 };

@@ -11,20 +11,13 @@ UMovementComponentBase::~UMovementComponentBase()
 
 void UMovementComponentBase::BeginPlay()
 {
-	auto const actor = GetAttachmentRootActor();
+	Super::BeginPlay();
+	auto const actor = GetOwner();
 	Init(actor);
-	
+
 	auto const inputComponent = actor->InputComponent;
 	if (inputComponent)
 	{
 		MapPlayerInput(inputComponent);
 	}
-}
-
-void UMovementComponentBase::Init(AActor* actor)
-{
-}
-
-void UMovementComponentBase::MapPlayerInput(UInputComponent* playerInputComponent)
-{
 }

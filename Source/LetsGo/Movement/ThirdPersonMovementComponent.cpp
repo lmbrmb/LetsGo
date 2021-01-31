@@ -1,12 +1,15 @@
 #include "ThirdPersonMovementComponent.h"
-#include "DrawDebugHelpers.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "LetsGo/InputConstant.h"
 #include "LetsGo/Logs/DevLogger.h"
 
-const float MIN_MOVEMENT_INPUT_AMOUNT = 0.1f;
+//#include "DrawDebugHelpers.h"
+//#include "Kismet/KismetStringLibrary.h"
+
+const float MIN_MOVEMENT_INPUT_AMOUNT = 0.15f;
 const float MIN_ROTATION_INPUT_AMOUNT = 0.05f;
-const float SKIP_ROTATION_ANGLE_RADIANS = FMath::DegreesToRadians(1.0f);
+const float MIN_MOVEMENT_DOT = 0.25f;
+const float SKIP_ROTATION_DOT = 0.99f;
 
 UThirdPersonMovementComponent::UThirdPersonMovementComponent()
 {
@@ -23,10 +26,14 @@ void UThirdPersonMovementComponent::TickComponent(
 )
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	UpdateCache();
 	ProcessSpringArmRotationTick(DeltaTime);
 	ProcessActorLocationAndRotationTick(DeltaTime);
 	ResetInput();
+}
+
+float UThirdPersonMovementComponent::GetMovementAmount()
+{
+	return _movementAmount;
 }
 
 void UThirdPersonMovementComponent::Init(AActor* actor)
@@ -34,9 +41,6 @@ void UThirdPersonMovementComponent::Init(AActor* actor)
 	_root = actor->GetRootComponent();
 	_cameraComponent = actor->FindComponentByClass<UCameraComponent>();
 	_springArmComponent = actor->FindComponentByClass<USpringArmComponent>();
-	_currentActorLocationCached = _root->GetComponentLocation();
-	_previousActorLocationCached = _currentActorLocationCached;
-	_actorTranslationVelocityCached = FVector::ZeroVector;
 }
 
 void UThirdPersonMovementComponent::MapPlayerInput(UInputComponent* playerInputComponent)
@@ -94,13 +98,14 @@ void UThirdPersonMovementComponent::ProcessSpringArmRotationTick(const float del
 	_springArmComponent->SetRelativeRotation(rotation);
 }
 
-void UThirdPersonMovementComponent::ProcessActorLocationAndRotationTick(const float deltaTime) const
+void UThirdPersonMovementComponent::ProcessActorLocationAndRotationTick(const float deltaTime)
 {
 	auto const hasForwardInput = FMath::Abs(_actorForwardMovementInputAmount) > MIN_MOVEMENT_INPUT_AMOUNT;
 	auto const hasRightInput = FMath::Abs(_actorRightMovementInputAmount) > MIN_MOVEMENT_INPUT_AMOUNT;
 
 	if(!hasForwardInput && !hasRightInput)
 	{
+		_movementAmount = 0;
 		return;
 	}
 
@@ -114,25 +119,36 @@ void UThirdPersonMovementComponent::ProcessActorLocationAndRotationTick(const fl
 	{
 		targetMovementDirection += _cameraComponent->GetRightVector() * _actorRightMovementInputAmount;
 	}
-
+	
 	targetMovementDirection = FVector::VectorPlaneProject(targetMovementDirection, FVector::UpVector);
 	targetMovementDirection.Normalize();
-	
-	DrawDebugLine(GetWorld(), _currentActorLocationCached, _currentActorLocationCached + targetMovementDirection * 100, FColor::Blue);
-	
-	auto actorForwardDirection = _root->GetForwardVector();
-	actorForwardDirection = FVector::VectorPlaneProject(actorForwardDirection, FVector::UpVector);
-	const auto targetDirectionDot = FVector::DotProduct(actorForwardDirection, targetMovementDirection);
-	
-	auto const targetAngleRadians = FMath::Acos(targetDirectionDot);
 
-	if (targetAngleRadians > SKIP_ROTATION_ANGLE_RADIANS)
+	//auto const actorLocation = _root->GetComponentLocation();
+	//DrawDebugLine(GetWorld(), actorLocation, actorLocation + targetMovementDirection * 100, FColor::Blue);
+
+	const auto actorForwardDirection = _root->GetForwardVector();
+	const auto targetDirectionDot = FVector::DotProduct(actorForwardDirection, targetMovementDirection);
+
+	if (targetDirectionDot > MIN_MOVEMENT_DOT)
 	{
+		auto absoluteInputAmount = FMath::Abs(_actorForwardMovementInputAmount) + FMath::Abs(_actorRightMovementInputAmount);
+		if(absoluteInputAmount > 1)
+		{
+			absoluteInputAmount = 1;
+		}
+		_movementAmount = targetDirectionDot * absoluteInputAmount;
+		auto const actorMovementDelta = targetMovementDirection * _movementAmount * _movementSpeed * deltaTime;
+		_root->AddWorldOffset(actorMovementDelta);
+	}
+
+	if(targetDirectionDot < SKIP_ROTATION_DOT)
+	{
+		auto const targetAngleRadians = FMath::Acos(targetDirectionDot);
 		auto const targetAngleDegrees = FMath::RadiansToDegrees(targetAngleRadians);
 		const auto targetDirectionCross = FVector::CrossProduct(actorForwardDirection, targetMovementDirection);
 		auto const targetAngleSign = FMath::Sign(FVector::DotProduct(FVector::UpVector, targetDirectionCross));
 		auto rotationDeltaDegrees = deltaTime * _rotationSpeedDegrees;
-		
+
 		if (rotationDeltaDegrees > targetAngleDegrees)
 		{
 			rotationDeltaDegrees = targetAngleDegrees;
@@ -142,12 +158,6 @@ void UThirdPersonMovementComponent::ProcessActorLocationAndRotationTick(const fl
 		auto const rotationVector = actorForwardDirection.RotateAngleAxis(rotationSignedAngleDegrees, FVector::UpVector);
 		auto const actorRotation = UKismetMathLibrary::MakeRotFromX(rotationVector);
 		_root->SetWorldRotation(actorRotation);
-	}
-
-	if(targetDirectionDot > 0)
-	{
-		auto const actorMovementDelta = targetMovementDirection * targetDirectionDot * _movementSpeed * deltaTime;
-		_root->AddWorldOffset(actorMovementDelta);
 	}
 }
 
@@ -168,13 +178,6 @@ float UThirdPersonMovementComponent::ClampSpringArmPitch(float pitch) const
 		}
 	}
 	return pitch;
-}
-
-void UThirdPersonMovementComponent::UpdateCache()
-{
-	_currentActorLocationCached = _root->GetComponentLocation();
-	_actorTranslationVelocityCached = _currentActorLocationCached - _previousActorLocationCached;
-	_previousActorLocationCached = _currentActorLocationCached;
 }
 
 void UThirdPersonMovementComponent::Jump()

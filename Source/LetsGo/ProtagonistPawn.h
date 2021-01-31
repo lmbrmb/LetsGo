@@ -1,7 +1,6 @@
 #pragma once
 
 #include "GameFramework/Pawn.h"
-
 #include "ProtagonistPawn.generated.h"
 
 UCLASS()
@@ -14,5 +13,11 @@ public:
 
 	~AProtagonistPawn();
 
+	/// <summary>
+	/// Known components: "Movement"
+	/// </summary>
+	UFUNCTION(BlueprintCallable)
+	UActorComponent* GetComponent(FName componentName) const;
+	
 	// TODO: health component
 };

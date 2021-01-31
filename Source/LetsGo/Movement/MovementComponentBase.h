@@ -1,13 +1,12 @@
 #pragma once
 
-#include "Components/SceneComponent.h"
 #include "MovementComponentBase.generated.h"
 
 ///<summary>
 /// [Abstract] Movement component
 ///</summary>
 UCLASS( Abstract, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class LETSGO_API UMovementComponentBase : public USceneComponent
+class LETSGO_API UMovementComponentBase : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -17,8 +16,8 @@ protected:
 	virtual ~UMovementComponentBase();
 
 	virtual void BeginPlay() override final;
-
-	virtual void Init(AActor* actor);
 	
-	virtual void MapPlayerInput(UInputComponent* playerInputComponent);
+	virtual void Init(AActor* actor) {};
+	
+	virtual void MapPlayerInput(UInputComponent* playerInputComponent) {};
 };
