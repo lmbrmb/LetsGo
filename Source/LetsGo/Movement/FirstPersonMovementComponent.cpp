@@ -1,4 +1,5 @@
 #include "FirstPersonMovementComponent.h"
+#include "DrawDebugHelpers.h"
 #include "LetsGo/InputConstant.h"
 #include "LetsGo/Logs/DevLogger.h"
 
@@ -8,6 +9,7 @@ const float MIN_DOT_FORWARD = -0.01f;
 
 UFirstPersonMovementComponent::UFirstPersonMovementComponent()
 {
+	PrimaryComponentTick.bCanEverTick = true;
 }
 
 UFirstPersonMovementComponent::~UFirstPersonMovementComponent()
@@ -23,38 +25,19 @@ void UFirstPersonMovementComponent::TickComponent(
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	ProcessCameraPitchTick(DeltaTime);
-	
-	FVector movementDelta;
-	bool isMoved;
-	ProcessActorMovementTick(DeltaTime, movementDelta, isMoved);
-	
-	float yawDelta;
-	bool isRotated;
-	ProcessActorYawTick(DeltaTime, yawDelta, isRotated);
-	
-	if(isMoved || isRotated)
-	{
-		auto const rotation = _root->GetComponentRotation();
-		auto const newRotation = rotation + FRotator(0, yawDelta, 0);
-		_root->MoveComponent(movementDelta, newRotation, true, nullptr, MOVECOMP_NoFlags, ETeleportType::None);
-	}
-
+	ProcessActorYawTick(DeltaTime);
+	ProcessActorMovementTick(DeltaTime);
 	ResetInput();
 }
 
-void UFirstPersonMovementComponent::ProcessActorMovementTick(
-	float deltaTime,
-	OUT FVector& movementDelta,
-	OUT bool& isMoved
-) const
+void UFirstPersonMovementComponent::ProcessActorMovementTick(float deltaTime)
 {
 	auto const hasForwardMovementInput = FMath::Abs(_actorForwardMovementInputAmount) > MIN_MOVEMENT_INPUT_AMOUNT;
 	auto const hasRightMovementInput = FMath::Abs(_actorRightMovementInputAmount) > MIN_MOVEMENT_INPUT_AMOUNT;
 
 	if (!hasForwardMovementInput && !hasRightMovementInput)
 	{
-		movementDelta = FVector::ZeroVector;
-		isMoved = false;
+		_movementAmount = 0;
 		return;
 	}
 
@@ -72,32 +55,36 @@ void UFirstPersonMovementComponent::ProcessActorMovementTick(
 		direction += _root->GetRightVector() * _actorRightMovementInputAmount;
 	}
 
+	auto absoluteMovementAmount = FMath::Abs(_actorForwardMovementInputAmount) + FMath::Abs(_actorRightMovementInputAmount);
+	if(absoluteMovementAmount > 1)
+	{
+		absoluteMovementAmount = 1;
+	}
+	_movementAmount = absoluteMovementAmount;
+	
 	direction = FVector::VectorPlaneProject(direction, FVector::UpVector);
 	direction.Normalize();
+
+	auto const actorLocation = _root->GetComponentLocation();
+	DrawDebugLine(GetWorld(), actorLocation, actorLocation + direction * 150, FColor::Blue);
 	
 	auto const dotForward = FVector::DotProduct(direction, forwardVector);
 	auto const speed = dotForward >= MIN_DOT_FORWARD ? _actorMoveForwardSpeed : _actorMoveBackwardSpeed;
-	movementDelta = direction * speed * deltaTime;
-	isMoved = true;
+	auto const movementDelta = direction * speed * absoluteMovementAmount * deltaTime;
+	_root->AddRelativeLocation(movementDelta);
 }
 
-void UFirstPersonMovementComponent::ProcessActorYawTick(
-	float deltaTime,
-	float& yawDelta,
-	bool& isRotated
-) const
+void UFirstPersonMovementComponent::ProcessActorYawTick(float deltaTime)
 {
 	auto const hasYawInput = FMath::Abs(_actorYawInputAmount) > MIN_ROTATION_INPUT_AMOUNT;
 
 	if (!hasYawInput)
 	{
-		yawDelta = 0;
-		isRotated = false;
 		return;
 	}
 	
-	yawDelta = _actorYawInputAmount * _actorYawSpeed * deltaTime;
-	isRotated = true;
+	auto const yawDelta = _actorYawInputAmount * _actorYawSpeed * deltaTime;
+	_root->AddRelativeRotation(FRotator(0, yawDelta, 0));
 }
 
 void UFirstPersonMovementComponent::ProcessCameraPitchTick(float deltaTime) const
@@ -149,24 +136,26 @@ void UFirstPersonMovementComponent::MapPlayerInput(UInputComponent* playerInputC
 	_playerInputComponent->BindAction(InputConstant::ActionJump, EInputEvent::IE_Pressed, this, &UFirstPersonMovementComponent::Jump);
 }
 
-void UFirstPersonMovementComponent::AddActorForwardMovementInput(float amount)
+float UFirstPersonMovementComponent::GetMovementAmount()
+{
+	return _movementAmount;
+}
+
+void UFirstPersonMovementComponent::AddActorForwardMovementInput(const float amount)
 {
 	_actorForwardMovementInputAmount = amount;
 }
 
-// ReSharper disable once CppMemberFunctionMayBeConst
-void UFirstPersonMovementComponent::AddActorRightMovementInput(float amount)
+void UFirstPersonMovementComponent::AddActorRightMovementInput(const float amount)
 {
 	_actorRightMovementInputAmount = amount;
 }
 
-// ReSharper disable once CppMemberFunctionMayBeConst
-void UFirstPersonMovementComponent::AddActorYawInput(float amount)
+void UFirstPersonMovementComponent::AddActorYawInput(const float amount)
 {
 	_actorYawInputAmount = amount;
 }
 
-// ReSharper disable once CppMemberFunctionMayBeConst
 void UFirstPersonMovementComponent::AddCameraPitchInput(float amount)
 {
 	_cameraPitchInputAmount = amount;

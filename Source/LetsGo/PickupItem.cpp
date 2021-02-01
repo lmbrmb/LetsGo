@@ -1,6 +1,6 @@
 #include "PickupItem.h"
 
-FString APickupItem::GetId()
+FName APickupItem::GetId()
 {
 	return _id;
 }

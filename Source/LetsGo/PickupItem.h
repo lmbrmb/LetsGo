@@ -13,12 +13,12 @@ public:
 	APickupItem();
 
 	UFUNCTION(BlueprintCallable, Category = Custom)
-	FString GetId();
+	FName GetId();
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, Meta = (AllowPrivateAccess = "true"))
 	USceneComponent* _root;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, Meta = (AllowPrivateAccess = "true"))
-	FString _id;
+	FName _id;
 };

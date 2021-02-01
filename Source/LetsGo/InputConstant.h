@@ -13,4 +13,6 @@ public:
 	static const FName AxisLookVertical;
 	
 	static const FName ActionJump;
+
+	static const FName ActionPrimaryFire;
 };

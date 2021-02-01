@@ -13,6 +13,7 @@ const float SKIP_ROTATION_DOT = 0.99f;
 
 UThirdPersonMovementComponent::UThirdPersonMovementComponent()
 {
+	PrimaryComponentTick.bCanEverTick = true;
 }
 
 UThirdPersonMovementComponent::~UThirdPersonMovementComponent()

@@ -12,12 +12,4 @@ public:
 	AProtagonistPawn();
 
 	~AProtagonistPawn();
-
-	/// <summary>
-	/// Known components: "Movement"
-	/// </summary>
-	UFUNCTION(BlueprintCallable)
-	UActorComponent* GetComponent(FName componentName) const;
-	
-	// TODO: health component
 };

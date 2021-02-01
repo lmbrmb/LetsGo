@@ -36,11 +36,14 @@ private:
 	float _cameraPitchSpeed = 180.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
-	float _cameraPitchMin = -50.0f;
+	float _cameraPitchMin = -70.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
-	float _cameraPitchMax = 50.0f;
+	float _cameraPitchMax = 70.0f;
 
+	UFUNCTION(BlueprintCallable)
+	float GetMovementAmount();
+	
 	float _actorForwardMovementInputAmount = 0;
 
 	float _actorRightMovementInputAmount = 0;
@@ -48,6 +51,8 @@ private:
 	float _actorYawInputAmount = 0;
 
 	float _cameraPitchInputAmount = 0;
+
+	float _movementAmount;
 	
 	USceneComponent* _root = nullptr;
 
@@ -59,9 +64,9 @@ private:
 
 	void AddActorRightMovementInput(float amount);
 
-	void ProcessActorMovementTick(float deltaTime, OUT FVector& movementDelta, OUT bool& isMoved ) const;
+	void ProcessActorMovementTick(float deltaTime);
 	
-	void ProcessActorYawTick(float deltaTime, OUT float& yawDelta, OUT bool& isRotated) const;
+	void ProcessActorYawTick(float deltaTime);
 
 	void ProcessCameraPitchTick(float deltaTime) const;
 	
