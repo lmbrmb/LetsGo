@@ -9,11 +9,6 @@ void AProtagonistPlayerController::SetPawn(APawn* InPawn)
 	DebugDisplayPawnInfo();
 }
 
-void AProtagonistPlayerController::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
 void AProtagonistPlayerController::DebugDisplayPawnInfo() const
 {
 	const auto isPawnAssigned = GetPawn() != nullptr;

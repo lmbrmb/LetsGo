@@ -15,4 +15,6 @@ public:
 	static const FName ActionJump;
 
 	static const FName ActionPrimaryFire;
+
+	static const FName ActionAnyKey;
 };

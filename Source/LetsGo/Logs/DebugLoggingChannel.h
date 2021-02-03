@@ -10,9 +10,12 @@ class LETSGO_API DebugLoggingChannel final : public LoggingChannel
 public:
 	explicit DebugLoggingChannel(int maxMessageCount, float timeToDisplay);
 
-	virtual void Log(const FString str, LogSeverity::LogSeverity severity = LogSeverity::Debug) override;
+	virtual void Log(const FString message, LogSeverity::LogSeverity severity = LogSeverity::Debug) override;
 
 private:
+	template<class T>
+	FString ValueToString(T value);
+	
 	int _maxMessageCount;
 
 	float _timeToDisplay;

@@ -9,16 +9,16 @@ DebugLoggingChannel::DebugLoggingChannel(int maxMessageCount, float timeToDispla
 	_lineIndex = _isMessageCountLimited ? 0 : -1;
 }
 
-void DebugLoggingChannel::Log(const FString str, LogSeverity::LogSeverity severity)
+void DebugLoggingChannel::Log(const FString message, LogSeverity::LogSeverity severity)
 {
 	_messageNumber++;
 	
 	if (!GEngine)
 		return;
 
-	auto const message = "[" + UKismetStringLibrary::Conv_IntToString(_messageNumber) + "] " + str;
+	auto const finalMessage = "[" + UKismetStringLibrary::Conv_IntToString(_messageNumber) + "] " + message;
 	auto const color = GetSeverityColor(severity);
-	GEngine->AddOnScreenDebugMessage(_lineIndex, _timeToDisplay, color, message);
+	GEngine->AddOnScreenDebugMessage(_lineIndex, _timeToDisplay, color, finalMessage);
 
 	if(_isMessageCountLimited)
 	{

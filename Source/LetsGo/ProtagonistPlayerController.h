@@ -15,9 +15,6 @@ class LETSGO_API AProtagonistPlayerController final : public APlayerController
 public:
 	virtual void SetPawn(APawn* InPawn) override;
 	
-protected:
-	virtual void BeginPlay() override;
-	
 private:
 	AProtagonistPawn* _protagonistPawn = nullptr;
 

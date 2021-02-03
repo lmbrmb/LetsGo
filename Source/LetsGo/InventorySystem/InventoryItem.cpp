@@ -1,6 +1,6 @@
 #include "InventoryItem.h"
 
-InventoryItem::InventoryItem(FString* id)
+InventoryItem::InventoryItem(FName id)
 {
 	_id = id;
 }

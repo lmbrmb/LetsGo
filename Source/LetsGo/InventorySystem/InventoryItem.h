@@ -1,14 +1,20 @@
 #pragma once
 
 ////<summary>
-///Inventory item
+/// [Abstract] Inventory item
 ///</summary>
 class LETSGO_API InventoryItem
 {
 public:
-	explicit InventoryItem(FString* id);
+	explicit InventoryItem(FName id);
+	
 	~InventoryItem();
 
+	FName GetId() const
+	{
+		return _id;
+	}
+	
 private:
-	FString* _id;
+	FName _id;
 };

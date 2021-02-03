@@ -31,10 +31,10 @@ void UWeaponManagerComponent::PrimaryFire()
 
 void UWeaponManagerComponent::OnInventoryItemAdded(FName itemId)
 {
-	DevLogger::GetLoggingChannel()->Log("WeaponManager. OnInventoryItemAdded", LogSeverity::Warning);
+	DevLogger::GetLoggingChannel()->Log("WeaponManager. OnInventoryItemAdded");
 }
 
 void UWeaponManagerComponent::OnInventoryItemRemoved(FName itemId)
 {
-	DevLogger::GetLoggingChannel()->Log("WeaponManager. OnInventoryItemRemoved", LogSeverity::Warning);
+	DevLogger::GetLoggingChannel()->Log("WeaponManager. OnInventoryItemRemoved");
 }

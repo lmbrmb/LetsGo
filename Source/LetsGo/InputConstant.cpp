@@ -11,3 +11,5 @@ const FName InputConstant::AxisLookVertical = FName("LookVertical");
 const FName InputConstant::ActionJump = FName("Jump");
 
 const FName InputConstant::ActionPrimaryFire = FName("PrimaryFire");
+
+const FName InputConstant::ActionAnyKey = FName("AnyKey");
