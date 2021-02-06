@@ -9,7 +9,7 @@ DebugLoggingChannel::DebugLoggingChannel(int maxMessageCount, float timeToDispla
 	_lineIndex = _isMessageCountLimited ? 0 : -1;
 }
 
-void DebugLoggingChannel::Log(const FString message, LogSeverity::LogSeverity severity)
+void DebugLoggingChannel::Log(const FString message, LogSeverity severity)
 {
 	_messageNumber++;
 	
@@ -31,7 +31,7 @@ void DebugLoggingChannel::Log(const FString message, LogSeverity::LogSeverity se
 	}
 }
 
-FColor DebugLoggingChannel::GetSeverityColor(const LogSeverity::LogSeverity severity)
+FColor DebugLoggingChannel::GetSeverityColor(const LogSeverity severity)
 {
 	switch (severity)
 	{

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "CoreMinimal.h"
 #include "LogSeverity.h"
 #include "LetsGo/Utils/FStringUtils.h"
 
@@ -14,10 +13,10 @@ public:
 
 	virtual ~LoggingChannel();
 
-	virtual void Log(const FString message, LogSeverity::LogSeverity severity = LogSeverity::Debug) = 0;
+	virtual void Log(const FString message, LogSeverity severity = LogSeverity::Debug) = 0;
 
 	template<class T>
-	void LogValue(const FString message, T value, LogSeverity::LogSeverity severity = LogSeverity::Debug)
+	void LogValue(const FString message, T value, LogSeverity severity = LogSeverity::Debug)
 	{
 		Log(message + FStringUtils::ToString(value), severity);
 	}

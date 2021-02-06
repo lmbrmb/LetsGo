@@ -5,7 +5,7 @@
 /// <summary>
 /// Debug logging channel factory implementation
 /// </summary>
-class DebugLoggingChannelFactory : public LoggingChannelFactory
+class DebugLoggingChannelFactory final : public LoggingChannelFactory
 {
 public:
 	DebugLoggingChannelFactory();

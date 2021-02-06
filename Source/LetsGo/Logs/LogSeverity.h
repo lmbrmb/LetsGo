@@ -1,11 +1,8 @@
 #pragma once
 
-namespace LogSeverity
+enum class LogSeverity
 {
-	enum LogSeverity
-	{
-		Debug = 0,
-		Warning = 1,
-		Error = 2
-	};
-}
+	Debug = 0,
+	Warning = 1,
+	Error = 2
+};

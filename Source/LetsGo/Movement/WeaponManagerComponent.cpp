@@ -1,6 +1,7 @@
 #include "WeaponManagerComponent.h"
 #include "LetsGo/InputConstant.h"
 #include "LetsGo/Logs/DevLogger.h"
+#include "LetsGo/WeaponSystem/WeaponFactory.h"
 
 UWeaponManagerComponent::UWeaponManagerComponent()
 {
@@ -32,6 +33,8 @@ void UWeaponManagerComponent::PrimaryFire()
 void UWeaponManagerComponent::OnInventoryItemAdded(FName itemId)
 {
 	DevLogger::GetLoggingChannel()->Log("WeaponManager. OnInventoryItemAdded");
+	auto const weapon = _weaponFactory.Create(GetOwner(), itemId);
+	_weapons.Add(weapon);
 }
 
 void UWeaponManagerComponent::OnInventoryItemRemoved(FName itemId)

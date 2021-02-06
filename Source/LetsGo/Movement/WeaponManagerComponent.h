@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "LetsGo/WeaponSystem/WeaponFactory.h"
 #include "WeaponManagerComponent.generated.h"
 
 UCLASS( ClassGroup=(_Custom), meta=(BlueprintSpawnableComponent) )
@@ -11,7 +12,7 @@ class LETSGO_API UWeaponManagerComponent final : public UActorComponent
 
 public:	
 	UWeaponManagerComponent();
-
+	
 protected:
 	virtual void BeginPlay() override;
 
@@ -25,4 +26,8 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	void OnInventoryItemRemoved(FName itemId);
+
+	WeaponFactory _weaponFactory;
+
+	TArray<AWeaponBase*> _weapons;
 };

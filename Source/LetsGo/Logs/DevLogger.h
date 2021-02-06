@@ -2,15 +2,16 @@
 
 #include "LoggingChannel.h"
 
-static class DevLogger
+/// <summary>
+/// Development logger
+/// </summary>
+class DevLogger
 {
 public:
 	static LoggingChannel* GetLoggingChannel();
 	
 private:
-	DevLogger();
-
-	~DevLogger();
+	DevLogger() = delete;
 	
 	static LoggingChannel* _loggingChannel;
 };
