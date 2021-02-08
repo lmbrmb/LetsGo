@@ -1,7 +1,9 @@
 #include "WeaponManagerComponent.h"
 #include "LetsGo/InputConstant.h"
+#include "LetsGo/InventorySystem/InventoryItem.h"
 #include "LetsGo/Logs/DevLogger.h"
 #include "LetsGo/WeaponSystem/WeaponFactory.h"
+#include <LetsGo/Utils/AssetUtils.h>
 
 UWeaponManagerComponent::UWeaponManagerComponent()
 {
@@ -27,17 +29,33 @@ void UWeaponManagerComponent::MapPlayerInput(UInputComponent* playerInputCompone
 
 void UWeaponManagerComponent::PrimaryFire()
 {
-	DevLogger::GetLoggingChannel()->Log("PrimaryFire");
+	if(!_currentWeapon)
+	{
+		return;
+	}
+
+	_currentWeapon->Fire();
 }
 
-void UWeaponManagerComponent::OnInventoryItemAdded(FName itemId)
+void UWeaponManagerComponent::EquipWeapon(AWeaponBase* weapon)
 {
-	DevLogger::GetLoggingChannel()->Log("WeaponManager. OnInventoryItemAdded");
-	auto const weapon = _weaponFactory.Create(GetOwner(), itemId);
-	_weapons.Add(weapon);
+	_currentWeapon = weapon;
 }
 
-void UWeaponManagerComponent::OnInventoryItemRemoved(FName itemId)
+void UWeaponManagerComponent::OnInventoryItemAdded(InventoryItem* item)
+{
+	auto const weaponBlueprint = _weaponFactory.GetBlueprint(item->GetId());
+	auto const weapon = AssetUtils::SpawnBlueprint<AWeaponBase>(GetOwner(), weaponBlueprint);
+	weapon->AttachToComponent(_weaponPivot, FAttachmentTransformRules::KeepRelativeTransform);
+	_weapons.Add(weapon);
+	
+	if (_equipWeaponOnPickup)
+	{
+		EquipWeapon(weapon);
+	}
+}
+
+void UWeaponManagerComponent::OnInventoryItemRemoved(InventoryItem* item)
 {
 	DevLogger::GetLoggingChannel()->Log("WeaponManager. OnInventoryItemRemoved");
 }

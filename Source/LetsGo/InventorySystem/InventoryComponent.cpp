@@ -41,9 +41,8 @@ bool UInventoryComponent::TryAddItem(FName itemId)
 	//TODO: check item existance, max item count, conversion
 
 	_inventoryItems.Add(inventoryItem);
-	
 	ItemAdded.Broadcast(inventoryItem);
-	ItemAddedD.Broadcast(itemId);
+	
 	return true;
 }
 
@@ -58,8 +57,6 @@ bool UInventoryComponent::TryRemoveItem(FName itemId)
 	}
 	
 	ItemRemoved.Broadcast(inventoryItem);
-	ItemRemovedD.Broadcast(itemId);
-	
 	_inventoryItems.Remove(inventoryItem);
 
 	return true;

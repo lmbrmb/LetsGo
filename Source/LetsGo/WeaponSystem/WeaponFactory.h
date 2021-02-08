@@ -1,7 +1,5 @@
 #pragma once
 
-#include "WeaponBase.h"
-
 class LETSGO_API WeaponFactory final
 {
 public:	
@@ -9,8 +7,12 @@ public:
 
 	~WeaponFactory();
 	
-	AWeaponBase* Create(AActor* owner, FName id);
+	UBlueprint* GetBlueprint(FName id);
 	
 private:
 	TMap<const FName, const FString> _weaponAssetDictionary;
+
+	TMap<const FName, UBlueprint*> _weaponBlueprintsDictionary;
+	
+	bool _isInitialized = false;
 };

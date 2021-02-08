@@ -10,11 +10,15 @@ WeaponFactory::~WeaponFactory()
 {
 }
 
-AWeaponBase* WeaponFactory::Create(AActor* owner, FName id)
+UBlueprint* WeaponFactory::GetBlueprint(FName id)
 {
+	if(_weaponBlueprintsDictionary.Contains(id))
+	{
+		return _weaponBlueprintsDictionary[id];
+	}
+
 	auto const assetPath = _weaponAssetDictionary[id];
 	auto const blueprint = AssetUtils::LoadBlueprint(assetPath);
-	// TODO: blueprint is loaded but not unloaded. Potential memory leak?
-	auto weapon = AssetUtils::Spawn<AWeaponBase>(owner, blueprint, owner->GetActorLocation(), owner->GetActorRotation());
-	return weapon;
+	_weaponBlueprintsDictionary.Add(id, blueprint);
+	return blueprint;
 }

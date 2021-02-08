@@ -14,10 +14,6 @@ class LETSGO_API UInventoryComponent final : public UActorComponent
 	GENERATED_BODY()
 	
 public:
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemAddedSignature, FName, itemId);
-
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemRemovedSignature, FName, itemId);
-
 	DECLARE_EVENT_OneParam(UInventoryComponent, EItemAdded, InventoryItem* item);
 	
 	DECLARE_EVENT_OneParam(UInventoryComponent, EItemRemoved, InventoryItem* item);
@@ -33,18 +29,6 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	bool TryRemoveItem(FName itemId);
-
-	/// <summary>
-	/// [BP] Item added delegate
-	/// </summary>
-	UPROPERTY(BlueprintAssignable)
-	FItemAddedSignature ItemAddedD;
-
-	/// <summary>
-	/// [BP] Item removed delegate
-	/// </summary>
-	UPROPERTY(BlueprintAssignable)
-	FItemRemovedSignature ItemRemovedD;
 
 	/// <summary>
 	/// [Code] Item added event
