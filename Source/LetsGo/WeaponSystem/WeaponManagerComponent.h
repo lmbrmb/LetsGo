@@ -2,8 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "LetsGo/WeaponSystem/WeaponBase.h"
-#include "LetsGo/WeaponSystem/WeaponFactory.h"
+#include "WeaponBase.h"
+#include "WeaponFactory.h"
 #include "WeaponManagerComponent.generated.h"
 
 class InventoryItem;
@@ -24,9 +24,19 @@ protected:
 
 private:
 	void MapPlayerInput(UInputComponent* playerInputComponent);
+	
+	void StartFire();
 
-	void PrimaryFire();
+	void StopFire();
+	
+	void Reload();
 
+	void NextWeapon();
+
+	void PreviousWeapon();
+
+	void ChangeWeapon(float value);
+	
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = Custom)
 		bool _equipWeaponOnPickup = true;
 	

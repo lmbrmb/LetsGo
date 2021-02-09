@@ -6,7 +6,6 @@ void AProtagonistPlayerController::SetPawn(APawn* InPawn)
 {
 	Super::SetPawn(InPawn);
 	_protagonistPawn = static_cast<AProtagonistPawn*>(InPawn);
-	DebugDisplayPawnInfo();
 }
 
 void AProtagonistPlayerController::DebugDisplayPawnInfo() const

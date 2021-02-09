@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "LetsGo/InventorySystem/InventoryComponent.h"
-#include "LetsGo/Movement/WeaponManagerComponent.h"
+#include "LetsGo/WeaponSystem/WeaponManagerComponent.h"
 #include "InventoryToWeaponManagerMapping.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )

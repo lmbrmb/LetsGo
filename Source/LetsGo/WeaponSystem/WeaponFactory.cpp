@@ -4,6 +4,7 @@
 WeaponFactory::WeaponFactory()
 {
 	_weaponAssetDictionary.Add("SawedOffShotgun", "/Game/Assets/Blueprints/Weapons/SawedOffShotgun");
+	_weaponAssetDictionary.Add("Minigun", "/Game/Assets/Blueprints/Weapons/Minigun");
 }
 
 WeaponFactory::~WeaponFactory()

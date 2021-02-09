@@ -4,6 +4,8 @@
 
 WeaponInventoryItemFactory::WeaponInventoryItemFactory()
 {
+	_knownWeaponItems.Add("SawedOffShotgun");
+	_knownWeaponItems.Add("Minigun");
 }
 
 WeaponInventoryItemFactory::~WeaponInventoryItemFactory()
@@ -12,7 +14,7 @@ WeaponInventoryItemFactory::~WeaponInventoryItemFactory()
 
 InventoryItem* WeaponInventoryItemFactory::Create(FName itemId)
 {
-	if(itemId == "SawedOffShotgun")
+	if(_knownWeaponItems.Contains(itemId))
 	{
 		return new WeaponInventoryItem(itemId);
 	}

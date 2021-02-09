@@ -12,7 +12,9 @@ class LETSGO_API AWeaponBase : public AActor
 public:	
 	AWeaponBase();
 
-	virtual void Fire() {};
+	virtual void StartFire() {};
 
+	virtual void StopFire() {};
+	
 	virtual void Reload() {};
 };

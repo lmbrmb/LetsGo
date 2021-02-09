@@ -4,8 +4,8 @@
 #include "FirePivotMode.h"
 #include "Gun.generated.h"
 
-const int UNDEFINED_RELOADING_TIME = -1;
-const int INITIAL_FIRE_PIVOT_INDEX = -1;
+const int UNDEFINED_TIME = -1.0f;
+const int INITIAL_FIRE_PIVOT_INDEX = -1.0f;
 
 ///<summary>
 /// Generic gun implementation
@@ -18,8 +18,10 @@ class LETSGO_API AGun final : public AWeaponBase
 public:
 	AGun();
 	
-	virtual void Fire() override;
+	virtual void StartFire() override;
 
+	virtual void StopFire() override;
+	
 	virtual void Reload() override;
 
 	virtual void BeginPlay() override;
@@ -27,22 +29,42 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	
 	UFUNCTION(BlueprintImplementableEvent)
-	void OnFire(FTransform transform);
+	void OnFireStarted();
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void OnReloadingStart();
+	void OnShot(FTransform transform);
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnFireStopped();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnReloadStarted();
 	
 private:
+	// Fire
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float _fireDuration = 0.5f;
+
+	float _startFireTime = UNDEFINED_TIME;
+
+	bool _isFireTriggered = false;
+	
+	// Clip
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int _clipMax = 0;
 
 	int _clipCurrent = 0;
-
+	
+	// Ammo
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	int _initialAmmoCount = 0;
+	
 	int _ammoCount = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int _consumeAmmoPerShot = 1;
-	
+
+	// Fire pivots
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TArray<USceneComponent*> _firePivots;
 
@@ -53,25 +75,30 @@ private:
 
 	int _firePivotIndex = INITIAL_FIRE_PIVOT_INDEX;
 
+	// Reload
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	int _initialAmmoCount = 10;
+	float _reloadDuration = 0;
+
+	float _startReloadTime = UNDEFINED_TIME;
+
+	// Private methods
+	bool IsFiring() const;
 	
 	void ConsumeAmmo();
 
+	bool IsClipFull() const;
+	
 	bool IsEnoughAmmoForShot();
 	
-	bool CanReload() const;
+	bool HasAmmoToReload() const;
 	
-	void StartReloading();
+	void StartReload();
 
-	void FinishReloading();
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	float _reloadTime = 0;
-	
-	float _startReloadTime = UNDEFINED_RELOADING_TIME;
+	void FinishReload();
 	
 	bool IsReloading() const;
 
-	bool IsReloadingRequested() const;
+	bool IsReloadStarted() const;
+
+	void TriggerFire(bool isFireTriggered);
 };

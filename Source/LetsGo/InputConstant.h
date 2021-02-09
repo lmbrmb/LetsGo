@@ -3,6 +3,8 @@
 class LETSGO_API InputConstant final
 {
 public:
+	static const FName ActionAnyKey;
+	
 	static const FName AxisMoveHorizontal;
 
 	static const FName AxisMoveVertical;
@@ -13,7 +15,15 @@ public:
 
 	static const FName ActionJump;
 
+	static const FName ActionSprint;
+
 	static const FName ActionPrimaryFire;
 
-	static const FName ActionAnyKey;
+	static const FName ActionReload;
+
+	static const FName ActionNextWeapon;
+
+	static const FName ActionPreviousWeapon;
+
+	static const FName AxisChangeWeapon;
 };

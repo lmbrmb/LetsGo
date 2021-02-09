@@ -24,6 +24,9 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
+	float _sprintMultiplier = 1.5f;
+	
+	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
 	float _actorMoveForwardSpeed = 500.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
@@ -59,6 +62,8 @@ private:
 	UCameraComponent* _cameraComponent = nullptr;
 	
 	UInputComponent* _playerInputComponent = nullptr;
+
+	bool _isSprinting = false;
 	
 	void AddActorForwardMovementInput(float amount);
 
@@ -79,4 +84,8 @@ private:
 	void ResetInput();
 	
 	void Jump();
+
+	void StartSprint();
+	
+	void StopSprint();
 };

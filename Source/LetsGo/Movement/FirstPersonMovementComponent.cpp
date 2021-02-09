@@ -69,7 +69,10 @@ void UFirstPersonMovementComponent::ProcessActorMovementTick(float deltaTime)
 	DrawDebugLine(GetWorld(), actorLocation, actorLocation + direction * 150, FColor::Blue);
 	
 	auto const dotForward = FVector::DotProduct(direction, forwardVector);
-	auto const speed = dotForward >= MIN_DOT_FORWARD ? _actorMoveForwardSpeed : _actorMoveBackwardSpeed;
+	auto const isMovingForward = dotForward >= MIN_DOT_FORWARD;
+	auto const speed = isMovingForward
+		? _actorMoveForwardSpeed * (_isSprinting ? _sprintMultiplier : 1.0f)
+		: _actorMoveBackwardSpeed;
 	auto const movementDelta = direction * speed * absoluteMovementAmount * deltaTime;
 	_root->AddRelativeLocation(movementDelta);
 }
@@ -134,6 +137,8 @@ void UFirstPersonMovementComponent::MapPlayerInput(UInputComponent* playerInputC
 	_playerInputComponent->BindAxis(InputConstant::AxisLookHorizontal, this, &UFirstPersonMovementComponent::AddActorYawInput);
 	_playerInputComponent->BindAxis(InputConstant::AxisLookVertical, this, &UFirstPersonMovementComponent::AddCameraPitchInput);
 	_playerInputComponent->BindAction(InputConstant::ActionJump, EInputEvent::IE_Pressed, this, &UFirstPersonMovementComponent::Jump);
+	_playerInputComponent->BindAction(InputConstant::ActionSprint, EInputEvent::IE_Pressed, this, &UFirstPersonMovementComponent::StartSprint);
+	_playerInputComponent->BindAction(InputConstant::ActionSprint, EInputEvent::IE_Released, this, &UFirstPersonMovementComponent::StopSprint);
 }
 
 float UFirstPersonMovementComponent::GetMovementAmount()
@@ -171,5 +176,16 @@ inline void UFirstPersonMovementComponent::ResetInput()
 
 void UFirstPersonMovementComponent::Jump()
 {
+	// TODO: implement
 	DevLogger::GetLoggingChannel()->Log("Jump");
+}
+
+void UFirstPersonMovementComponent::StartSprint()
+{
+	_isSprinting = true;
+}
+
+void UFirstPersonMovementComponent::StopSprint()
+{
+	_isSprinting = false;
 }

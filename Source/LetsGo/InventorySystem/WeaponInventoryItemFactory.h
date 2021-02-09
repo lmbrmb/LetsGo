@@ -13,4 +13,7 @@ public:
 	~WeaponInventoryItemFactory();
 	
 	virtual InventoryItem* Create(FName itemId) override;
+
+private:
+	TArray<FName> _knownWeaponItems;
 };
