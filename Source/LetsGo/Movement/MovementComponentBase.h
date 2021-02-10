@@ -5,7 +5,7 @@
 ///<summary>
 /// [Abstract] Movement component
 ///</summary>
-UCLASS( Abstract, ClassGroup=(_Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS( Abstract, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class LETSGO_API UMovementComponentBase : public UActorComponent
 {
 	GENERATED_BODY()

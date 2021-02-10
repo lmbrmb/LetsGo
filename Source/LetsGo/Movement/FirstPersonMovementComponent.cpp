@@ -1,10 +1,12 @@
 #include "FirstPersonMovementComponent.h"
 #include "DrawDebugHelpers.h"
+#include "Components/CapsuleComponent.h"
 #include "LetsGo/Logs/DevLogger.h"
 
 const float MIN_MOVEMENT_INPUT_AMOUNT = 0.1f;
 const float MIN_ROTATION_INPUT_AMOUNT = 0.05f;
 const float MIN_DOT_FORWARD = -0.01f;
+const bool DETECT_COLLISION_ON_MOVEMENT = true;
 
 UFirstPersonMovementComponent::UFirstPersonMovementComponent()
 {
@@ -26,6 +28,7 @@ void UFirstPersonMovementComponent::TickComponent(
 	ProcessCameraPitchTick(DeltaTime);
 	ProcessActorYawTick(DeltaTime);
 	ProcessActorMovementTick(DeltaTime);
+	ProcessForcesTick(DeltaTime);
 	ResetInput();
 }
 
@@ -41,7 +44,6 @@ void UFirstPersonMovementComponent::ProcessActorMovementTick(float deltaTime)
 	}
 
 	FVector direction;
-
 	auto const forwardVector = _root->GetForwardVector();
 	
 	if (hasForwardMovementInput)
@@ -73,10 +75,38 @@ void UFirstPersonMovementComponent::ProcessActorMovementTick(float deltaTime)
 		? _actorMoveForwardSpeed * (_isSprinting ? _sprintMultiplier : 1.0f)
 		: _actorMoveBackwardSpeed;
 	auto const movementDelta = direction * speed * absoluteMovementAmount * deltaTime;
-	_root->AddRelativeLocation(movementDelta);
+	_root->AddRelativeLocation(movementDelta, DETECT_COLLISION_ON_MOVEMENT);
 }
 
-void UFirstPersonMovementComponent::ProcessActorYawTick(float deltaTime)
+void UFirstPersonMovementComponent::ProcessForcesTick(float deltaTime)
+{
+	auto const forcesCount = _forces.Num();
+
+	if(forcesCount <= 0)
+	{
+		return;
+	}
+	
+	auto forceSum = FVector::ZeroVector;
+
+	for (auto i = forcesCount - 1; i>=0 ; i--)
+	{
+		auto const force = _forces[i];
+		
+		if(force->IsActive())
+		{
+			const auto forceVector = force->Take(deltaTime);
+			forceSum += forceVector;
+		}
+		else
+		{
+			_forces.RemoveAt(i);
+		}
+	}
+	_root->AddRelativeLocation(forceSum, DETECT_COLLISION_ON_MOVEMENT);
+}
+
+void UFirstPersonMovementComponent::ProcessActorYawTick(float deltaTime) const
 {
 	auto const hasYawInput = FMath::Abs(_actorYawInputAmount) > MIN_ROTATION_INPUT_AMOUNT;
 
@@ -125,7 +155,14 @@ float UFirstPersonMovementComponent::ClampCameraPitch(float pitch) const
 void UFirstPersonMovementComponent::Init(AActor* actor)
 {
 	_root = actor->GetRootComponent();
+	_rootCollider = actor->FindComponentByClass<UShapeComponent>();
 	_cameraComponent = actor->FindComponentByClass<UCameraComponent>();
+
+	if(!FMath::IsNearlyZero(_gravityUnitsPerSecond) )
+	{
+		auto const gravityForce = Force::CreateInfiniteForce("Gravity", FVector::DownVector, _gravityUnitsPerSecond);
+		_forces.Add(gravityForce);
+	}
 }
 
 float UFirstPersonMovementComponent::GetMovementAmount()
@@ -163,8 +200,8 @@ inline void UFirstPersonMovementComponent::ResetInput()
 
 void UFirstPersonMovementComponent::Jump()
 {
-	// TODO: implement
-	DevLogger::GetLoggingChannel()->Log("Jump");
+	auto const jumpForce = Force::CreateFiniteForce("Jump", 0.35f, FVector::UpVector, _gravityUnitsPerSecond * 2.0f);
+	_forces.Add(jumpForce);
 }
 
 void UFirstPersonMovementComponent::StartSprint()

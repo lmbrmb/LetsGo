@@ -8,7 +8,7 @@
 ///<summary>
 /// Inventory component
 ///</summary>
-UCLASS( ClassGroup=(_Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class LETSGO_API UInventoryComponent final : public UActorComponent
 {
 	GENERATED_BODY()

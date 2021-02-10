@@ -1,7 +1,9 @@
+#pragma once
+
 UENUM()
 enum FirePivotMode
 {
-	AlwaysFirst UMETA(DisplayName = "AlwaysFirst"),
+	AlwaysFirst UMETA(DisplayName = "Always first"),
 	Cycle UMETA(DisplayName = "Cycle"),
-	AllSimultaneously UMETA(DisplayName = "All Simultaneously"),
+	AllSimultaneously UMETA(DisplayName = "All simultaneously"),
 };

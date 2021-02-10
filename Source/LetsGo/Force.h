@@ -1,0 +1,30 @@
+#pragma once
+
+class Force
+{
+public:
+	static Force* CreateInfiniteForce(FName id, FVector direction, float magnitude);
+
+	static Force* CreateFiniteForce(FName id, float duration, FVector direction, float magnitude);
+	
+	FName GetId() const;
+
+	bool IsActive() const;
+
+	bool IsInfinite() const;
+	
+	FVector Take(float timeAmount);
+
+private:
+	explicit Force(FName id, FVector direction, float magnitude);
+
+	explicit Force(FName id, float duration, FVector direction, float magnitude);
+	
+	FName _id;
+	
+	float _duration;
+
+	bool _isInfinite;
+	
+	FVector _vector;
+};

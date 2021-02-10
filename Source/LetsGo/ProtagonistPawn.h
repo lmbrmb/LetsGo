@@ -1,6 +1,8 @@
 #pragma once
 
 #include "GameFramework/Pawn.h"
+#include "HealthSystem/HealthComponent.h"
+
 #include "ProtagonistPawn.generated.h"
 
 UCLASS()
@@ -12,4 +14,8 @@ public:
 	AProtagonistPawn();
 
 	~AProtagonistPawn();
+
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UHealthComponent* _healthComponent;
 };

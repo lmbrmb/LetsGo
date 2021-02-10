@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "MovementComponentBase.h"
 #include "Camera/CameraComponent.h"
+#include "LetsGo/Force.h"
 #include "FirstPersonMovementComponent.generated.h"
 
 UCLASS(EditInlineNew, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -16,14 +17,16 @@ public:
 	~UFirstPersonMovementComponent();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+	
 	void AddActorForwardMovementInput(float amount);
 
 	void AddActorRightMovementInput(float amount);
 
 	void ProcessActorMovementTick(float deltaTime);
 
-	void ProcessActorYawTick(float deltaTime);
+	void ProcessForcesTick(float deltaTime);
+	
+	void ProcessActorYawTick(float deltaTime) const;
 
 	void ProcessCameraPitchTick(float deltaTime) const;
 
@@ -44,6 +47,9 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
+	float _gravityUnitsPerSecond = 981.0f;
+	
+	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
 	float _sprintMultiplier = 1.5f;
 	
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
@@ -63,9 +69,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
 	float _cameraPitchMax = 70.0f;
-
-	UFUNCTION(BlueprintCallable)
-	float GetMovementAmount();
 	
 	float _actorForwardMovementInputAmount = 0;
 
@@ -76,14 +79,21 @@ private:
 	float _cameraPitchInputAmount = 0;
 
 	float _movementAmount;
+
+	bool _isSprinting = false;
 	
 	USceneComponent* _root = nullptr;
 
+	UShapeComponent* _rootCollider = nullptr;
+	
 	UCameraComponent* _cameraComponent = nullptr;
 	
 	UInputComponent* _playerInputComponent = nullptr;
 
-	bool _isSprinting = false;
+	TArray<Force*> _forces;
+	
+	UFUNCTION(BlueprintCallable)
+	float GetMovementAmount();
 
 	void ResetInput();
 };

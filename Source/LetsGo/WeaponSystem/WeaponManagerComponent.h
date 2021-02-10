@@ -7,7 +7,7 @@
 #include "WeaponManagerComponent.generated.h"
 
 class InventoryItem;
-UCLASS( ClassGroup=(_Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class LETSGO_API UWeaponManagerComponent final : public UActorComponent
 {
 	GENERATED_BODY()
