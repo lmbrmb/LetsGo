@@ -1,5 +1,4 @@
 #include "WeaponManagerComponent.h"
-#include "LetsGo/InputConstant.h"
 #include "LetsGo/InventorySystem/InventoryItem.h"
 #include "LetsGo/Logs/DevLogger.h"
 #include "LetsGo/WeaponSystem/WeaponFactory.h"
@@ -17,28 +16,6 @@ if (_currentWeapon == nullptr) \
 UWeaponManagerComponent::UWeaponManagerComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-}
-
-void UWeaponManagerComponent::BeginPlay()
-{
-	Super::BeginPlay();
-	auto const actor = GetOwner();
-	
-	auto const inputComponent = actor->InputComponent;
-	if(inputComponent)
-	{
-		MapPlayerInput(inputComponent);
-	}
-}
-
-void UWeaponManagerComponent::MapPlayerInput(UInputComponent* playerInputComponent)
-{
-	playerInputComponent->BindAction(InputConstant::ActionPrimaryFire, EInputEvent::IE_Pressed, this, &UWeaponManagerComponent::StartFire);
-	playerInputComponent->BindAction(InputConstant::ActionPrimaryFire, EInputEvent::IE_Released, this, &UWeaponManagerComponent::StopFire);
-	playerInputComponent->BindAction(InputConstant::ActionReload, EInputEvent::IE_Pressed, this, &UWeaponManagerComponent::Reload);
-	playerInputComponent->BindAction(InputConstant::ActionPreviousWeapon, EInputEvent::IE_Pressed, this, &UWeaponManagerComponent::PreviousWeapon);
-	playerInputComponent->BindAction(InputConstant::ActionNextWeapon, EInputEvent::IE_Pressed, this, &UWeaponManagerComponent::NextWeapon);
-	playerInputComponent->BindAxis(InputConstant::AxisChangeWeapon, this, &UWeaponManagerComponent::ChangeWeapon);
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst

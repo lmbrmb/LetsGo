@@ -18,13 +18,7 @@ public:
 	void OnInventoryItemAdded(InventoryItem* item);
 
 	void OnInventoryItemRemoved(InventoryItem* item);
-	
-protected:
-	virtual void BeginPlay() override;
 
-private:
-	void MapPlayerInput(UInputComponent* playerInputComponent);
-	
 	void StartFire();
 
 	void StopFire();
@@ -37,6 +31,7 @@ private:
 
 	void ChangeWeapon(float value);
 	
+private:
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = Custom)
 		bool _equipWeaponOnPickup = true;
 	

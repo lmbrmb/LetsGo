@@ -1,21 +1,32 @@
 #include "InventoryToWeaponManagerMapping.h"
+#include "LetsGo/InventorySystem/InventoryComponent.h"
+#include "LetsGo/WeaponSystem/WeaponManagerComponent.h"
+#include "LetsGo/Logs/DevLogger.h"
 
-UInventoryToWeaponManagerMapping::UInventoryToWeaponManagerMapping()
+void UInventoryToWeaponManagerMapping::Map()
 {
-	PrimaryComponentTick.bCanEverTick = false;
-}
-
-// Called when the game starts
-void UInventoryToWeaponManagerMapping::BeginPlay()
-{
-	Super::BeginPlay();
-	
 	auto const owner = GetOwner();
 	auto const inventoryComponent = owner->FindComponentByClass<UInventoryComponent>();
 	auto const weaponManagerComponent = owner->FindComponentByClass<UWeaponManagerComponent>();
+
+	if(!inventoryComponent)
+	{
+		DevLogger::GetLoggingChannel()->LogValue(
+			"Component is not found: ", UInventoryComponent::StaticClass()->GetName(),
+			LogSeverity::Error
+		);
+		return;
+	}
+
+	if (!weaponManagerComponent)
+	{
+		DevLogger::GetLoggingChannel()->LogValue(
+			"Component is not found: ", UWeaponManagerComponent::StaticClass()->GetName(),
+			LogSeverity::Error
+		);
+		return;
+	}
+	
 	inventoryComponent->ItemAdded.AddUObject(weaponManagerComponent, &UWeaponManagerComponent::OnInventoryItemAdded);
 	inventoryComponent->ItemRemoved.AddUObject(weaponManagerComponent, &UWeaponManagerComponent::OnInventoryItemAdded);
-
-	// Mapping is created, no need in this component anymore
-	DestroyComponent();
 }

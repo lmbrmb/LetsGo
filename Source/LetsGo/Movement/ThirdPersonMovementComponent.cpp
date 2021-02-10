@@ -44,16 +44,6 @@ void UThirdPersonMovementComponent::Init(AActor* actor)
 	_springArmComponent = actor->FindComponentByClass<USpringArmComponent>();
 }
 
-void UThirdPersonMovementComponent::MapPlayerInput(UInputComponent* playerInputComponent)
-{
-	_playerInputComponent = playerInputComponent;
-	_playerInputComponent->BindAxis(InputConstant::AxisMoveHorizontal, this, &UThirdPersonMovementComponent::AddActorRightMovementInput);
-	_playerInputComponent->BindAxis(InputConstant::AxisMoveVertical, this, &UThirdPersonMovementComponent::AddActorForwardMovementInput);
-	_playerInputComponent->BindAxis(InputConstant::AxisLookHorizontal, this, &UThirdPersonMovementComponent::AddSpringArmYawInput);
-	_playerInputComponent->BindAxis(InputConstant::AxisLookVertical, this, &UThirdPersonMovementComponent::AddSpringArmPitchInput);
-	_playerInputComponent->BindAction(InputConstant::ActionJump, EInputEvent::IE_Pressed, this, &UThirdPersonMovementComponent::Jump);
-}
-
 void UThirdPersonMovementComponent::AddActorRightMovementInput(const float amount)
 {
 	_actorRightMovementInputAmount = amount;

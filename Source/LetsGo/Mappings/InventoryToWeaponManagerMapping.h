@@ -1,24 +1,16 @@
 #pragma once
 
-#include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
-#include "LetsGo/InventorySystem/InventoryComponent.h"
-#include "LetsGo/WeaponSystem/WeaponManagerComponent.h"
+#include "MappingComponent.h"
 #include "InventoryToWeaponManagerMapping.generated.h"
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class LETSGO_API UInventoryToWeaponManagerMapping : public UActorComponent
+///<summary>
+///Maps UInventoryComponent and WeaponManagerComponent interaction (via event callbacks).
+///</summary>
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+class LETSGO_API UInventoryToWeaponManagerMapping final : public UMappingComponent
 {
 	GENERATED_BODY()
 
-public:	
-	UInventoryToWeaponManagerMapping();
-
 protected:
-	virtual void BeginPlay() override;
-
-private:
-	UInventoryComponent* _inventoryComponent;
-
-	UWeaponManagerComponent* _weaponManagerComponent;
+	virtual void Map() override;
 };

@@ -21,10 +21,22 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetMovementAmount();
 
+	void AddActorForwardMovementInput(const float amount);
+
+	void AddActorRightMovementInput(const float amount);
+
+	void AddSpringArmYawInput(const float amount);
+
+	void AddSpringArmPitchInput(const float amount);
+
+	void ProcessSpringArmRotationTick(const float deltaTime) const;
+
+	void ProcessActorLocationAndRotationTick(const float deltaTime);
+
+	void Jump();
+	
 protected:
 	virtual void Init(AActor* actor) override;
-	
-	virtual void MapPlayerInput(UInputComponent* playerInputComponent) override;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
@@ -53,22 +65,6 @@ private:
 	USpringArmComponent* _springArmComponent = nullptr;
 
 	UCameraComponent* _cameraComponent = nullptr;
-	
-	UInputComponent* _playerInputComponent = nullptr;
-
-	void AddActorForwardMovementInput(const float amount);
-
-	void AddActorRightMovementInput(const float amount);
-
-	void AddSpringArmYawInput(const float amount);
-
-	void AddSpringArmPitchInput(const float amount);
-
-	void ProcessSpringArmRotationTick(const float deltaTime) const;
-	
-	void ProcessActorLocationAndRotationTick(const float deltaTime);
-	
-	void Jump();
 
 	void ResetInput();
 

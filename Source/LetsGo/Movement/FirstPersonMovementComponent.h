@@ -16,11 +16,31 @@ public:
 	~UFirstPersonMovementComponent();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	void AddActorForwardMovementInput(float amount);
+
+	void AddActorRightMovementInput(float amount);
+
+	void ProcessActorMovementTick(float deltaTime);
+
+	void ProcessActorYawTick(float deltaTime);
+
+	void ProcessCameraPitchTick(float deltaTime) const;
+
+	float ClampCameraPitch(float pitch) const;
+
+	void AddActorYawInput(float amount);
+
+	void AddCameraPitchInput(float amount);
+
+	void Jump();
+
+	void StartSprint();
+
+	void StopSprint();
 	
 protected:
 	virtual void Init(AActor* actor) override;
-	
-	virtual void MapPlayerInput(UInputComponent* playerInputComponent) override;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
@@ -64,28 +84,6 @@ private:
 	UInputComponent* _playerInputComponent = nullptr;
 
 	bool _isSprinting = false;
-	
-	void AddActorForwardMovementInput(float amount);
-
-	void AddActorRightMovementInput(float amount);
-
-	void ProcessActorMovementTick(float deltaTime);
-	
-	void ProcessActorYawTick(float deltaTime);
-
-	void ProcessCameraPitchTick(float deltaTime) const;
-	
-	float ClampCameraPitch(float pitch) const;
-	
-	void AddActorYawInput(float amount);
-
-	void AddCameraPitchInput(float amount);
 
 	void ResetInput();
-	
-	void Jump();
-
-	void StartSprint();
-	
-	void StopSprint();
 };

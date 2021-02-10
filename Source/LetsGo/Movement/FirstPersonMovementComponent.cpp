@@ -1,6 +1,5 @@
 #include "FirstPersonMovementComponent.h"
 #include "DrawDebugHelpers.h"
-#include "LetsGo/InputConstant.h"
 #include "LetsGo/Logs/DevLogger.h"
 
 const float MIN_MOVEMENT_INPUT_AMOUNT = 0.1f;
@@ -127,18 +126,6 @@ void UFirstPersonMovementComponent::Init(AActor* actor)
 {
 	_root = actor->GetRootComponent();
 	_cameraComponent = actor->FindComponentByClass<UCameraComponent>();
-}
-
-void UFirstPersonMovementComponent::MapPlayerInput(UInputComponent* playerInputComponent)
-{
-	_playerInputComponent = playerInputComponent;
-	_playerInputComponent->BindAxis(InputConstant::AxisMoveHorizontal, this, &UFirstPersonMovementComponent::AddActorRightMovementInput);
-	_playerInputComponent->BindAxis(InputConstant::AxisMoveVertical, this, &UFirstPersonMovementComponent::AddActorForwardMovementInput);
-	_playerInputComponent->BindAxis(InputConstant::AxisLookHorizontal, this, &UFirstPersonMovementComponent::AddActorYawInput);
-	_playerInputComponent->BindAxis(InputConstant::AxisLookVertical, this, &UFirstPersonMovementComponent::AddCameraPitchInput);
-	_playerInputComponent->BindAction(InputConstant::ActionJump, EInputEvent::IE_Pressed, this, &UFirstPersonMovementComponent::Jump);
-	_playerInputComponent->BindAction(InputConstant::ActionSprint, EInputEvent::IE_Pressed, this, &UFirstPersonMovementComponent::StartSprint);
-	_playerInputComponent->BindAction(InputConstant::ActionSprint, EInputEvent::IE_Released, this, &UFirstPersonMovementComponent::StopSprint);
 }
 
 float UFirstPersonMovementComponent::GetMovementAmount()
