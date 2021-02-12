@@ -22,12 +22,16 @@ public:
 
 	void AddActorRightMovementInput(float amount);
 
-	void ProcessActorMovementTick(float deltaTime);
+	FVector GetInputMovementAmount(float deltaTime);
 
 	void ProcessForcesTick(float deltaTime);
 	
 	void ProcessActorYawTick(float deltaTime) const;
 
+	void CheckGround();
+
+	void AddMovement(FVector inputMovementAmount);
+	
 	void ProcessCameraPitchTick(float deltaTime) const;
 
 	float ClampCameraPitch(float pitch) const;
@@ -46,8 +50,19 @@ protected:
 	virtual void Init(AActor* actor) override;
 
 private:
+	UPROPERTY(EditAnywhere, Category = "Jump", meta = (AllowPrivateAccess = "true"))
+	float _jumpForceMagnitude = 1200.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Jump", meta = (AllowPrivateAccess = "true"))
+	float _jumpForceDuration = 0.5f;
+
+	UPROPERTY(EditAnywhere, Category = "Jump", meta = (AllowPrivateAccess = "true"))
+	int _jumpCount = 1;
+
+	int _jumpIndex = 0;
+	
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
-	float _gravityUnitsPerSecond = 981.0f;
+	float _gravityForceMagnitude = 981.0f;
 	
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
 	float _sprintMultiplier = 1.5f;
@@ -81,10 +96,18 @@ private:
 	float _movementAmount;
 
 	bool _isSprinting = false;
+
+	bool _isInAir = false;
+	
+	FCollisionQueryParams _collisionQueryParams;
+	
+	UWorld* _world = nullptr;
 	
 	USceneComponent* _root = nullptr;
 
 	UShapeComponent* _rootCollider = nullptr;
+
+	FCollisionShape _collisionShape;
 	
 	UCameraComponent* _cameraComponent = nullptr;
 	
@@ -96,4 +119,12 @@ private:
 	float GetMovementAmount();
 
 	void ResetInput();
+
+	FHitResult _floorHitResult;
+	
+	FHitResult _hitResult;
+
+	FVector _previousLocation = FVector::ZeroVector;
+
+	FVector _velocity = FVector::ZeroVector;
 };

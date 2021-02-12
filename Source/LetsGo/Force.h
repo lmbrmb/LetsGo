@@ -15,6 +15,10 @@ public:
 	
 	FVector Take(float timeAmount);
 
+	void Tick(float timeAmount);
+	
+	FVector GetVector() const;
+
 private:
 	explicit Force(FName id, FVector direction, float magnitude);
 

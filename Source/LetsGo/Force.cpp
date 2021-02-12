@@ -57,3 +57,13 @@ FVector Force::Take(float timeAmount)
 	
 	return _vector * durationDelta;
 }
+
+void Force::Tick(float timeAmount)
+{
+	_duration -= timeAmount;
+}
+
+FVector Force::GetVector() const
+{
+	return _vector;
+}
