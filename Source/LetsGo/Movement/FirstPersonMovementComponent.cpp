@@ -1,9 +1,8 @@
 #include "FirstPersonMovementComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Components/CapsuleComponent.h"
-#include "LetsGo/Logs/DevLogger.h"
 
-const float MIN_MOVEMENT_INPUT_AMOUNT = 0.1f;
+const float MIN_MOVEMENT_INPUT = 0.1f;
 const float MIN_ROTATION_INPUT_AMOUNT = 0.05f;
 const float MIN_DOT_FORWARD = -0.01f;
 const bool DETECT_COLLISION_ON_MOVEMENT = true;
@@ -42,8 +41,8 @@ void UFirstPersonMovementComponent::TickComponent(
 
 FVector UFirstPersonMovementComponent::GetInputMovementAmount(float deltaTime)
 {
-	auto const hasForwardMovementInput = FMath::Abs(_actorForwardMovementInputAmount) > MIN_MOVEMENT_INPUT_AMOUNT;
-	auto const hasRightMovementInput = FMath::Abs(_actorRightMovementInputAmount) > MIN_MOVEMENT_INPUT_AMOUNT;
+	auto const hasForwardMovementInput = FMath::Abs(_actorForwardMovementInputAmount) > MIN_MOVEMENT_INPUT;
+	auto const hasRightMovementInput = FMath::Abs(_actorRightMovementInputAmount) > MIN_MOVEMENT_INPUT;
 
 	if (!hasForwardMovementInput && !hasRightMovementInput)
 	{
