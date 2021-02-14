@@ -12,14 +12,7 @@ class LETSGO_API UThirdPersonMovementComponent final : public UMovementComponent
 	GENERATED_BODY()
 
 public:
-	UThirdPersonMovementComponent();
-
-	virtual ~UThirdPersonMovementComponent();
-
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	UFUNCTION(BlueprintCallable)
-	float GetMovementAmount();
+	virtual float GetAbsoluteMovementAmount() override;
 
 	void AddActorForwardMovementInput(const float amount);
 
@@ -29,15 +22,23 @@ public:
 
 	void AddSpringArmPitchInput(const float amount);
 
-	void ProcessSpringArmRotationTick(const float deltaTime) const;
+	void ProcessSpringArmRotation(const float deltaTime) const;
 
-	void ProcessActorLocationAndRotationTick(const float deltaTime);
-
-	void Jump();
+	void ProcessActorRotation(const float deltaTime);
 	
 protected:
 	virtual void Init(AActor* actor) override;
 
+	virtual void ProcessInput() override;
+	
+	virtual void ResetInput() override;
+
+	virtual FVector GetInputMovementDirection() override;
+
+	virtual float GetMovementSpeed() override;
+	
+	virtual void CustomTick(float deltaTime) override;
+	
 private:
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
 	float _movementSpeed = 500.0f;
@@ -60,17 +61,13 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
 	float _rotationSpeedDegrees = 540.0f;
 	
-	USceneComponent* _root = nullptr;
-
 	USpringArmComponent* _springArmComponent = nullptr;
 
 	UCameraComponent* _cameraComponent = nullptr;
 
-	void ResetInput();
-
 	float ClampSpringArmPitch(float pitch) const;
 
-	float _movementAmount = 0;
+	float _absoluteMovementAmount = 0;
 	
 	float _actorForwardMovementInputAmount = 0;
 	
@@ -83,4 +80,6 @@ private:
 	float _maxSquaredMovementSpeed = 0;
 	
 	float _normalizedMovementSpeed = 0;
+	
+	FVector* _inputMovementDirection = new FVector();
 };

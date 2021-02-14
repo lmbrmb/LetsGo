@@ -32,10 +32,10 @@ void UInputToFpMovementMapping::Map()
 		&UFirstPersonMovementComponent::AddActorYawInput);
 	inputComponent->BindAxis(InputConstant::AxisLookVertical, firstPersonMovementComponent,
 		&UFirstPersonMovementComponent::AddCameraPitchInput);
-	inputComponent->BindAction(InputConstant::ActionJump, EInputEvent::IE_Pressed, firstPersonMovementComponent,
-		&UFirstPersonMovementComponent::Jump);
-	inputComponent->BindAction(InputConstant::ActionSprint, EInputEvent::IE_Pressed, firstPersonMovementComponent,
-		&UFirstPersonMovementComponent::StartSprint);
-	inputComponent->BindAction(InputConstant::ActionSprint, EInputEvent::IE_Released, firstPersonMovementComponent,
-		&UFirstPersonMovementComponent::StopSprint);
+	inputComponent->BindAction(InputConstant::ActionJump, EInputEvent::IE_Pressed,
+		firstPersonMovementComponent, &UFirstPersonMovementComponent::Jump);
+	inputComponent->BindAction(InputConstant::ActionSprint, EInputEvent::IE_Pressed,
+		firstPersonMovementComponent, &UFirstPersonMovementComponent::StartSprint);
+	inputComponent->BindAction(InputConstant::ActionSprint, EInputEvent::IE_Released,
+		firstPersonMovementComponent, &UFirstPersonMovementComponent::StopSprint);
 }

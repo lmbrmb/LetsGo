@@ -25,10 +25,16 @@ void UInputToWeaponManagerMapping::Map()
 		return;
 	}
 
-	inputComponent->BindAction(InputConstant::ActionPrimaryFire, EInputEvent::IE_Pressed, weaponManagerComponent, &UWeaponManagerComponent::StartFire);
-	inputComponent->BindAction(InputConstant::ActionPrimaryFire, EInputEvent::IE_Released, weaponManagerComponent, &UWeaponManagerComponent::StopFire);
-	inputComponent->BindAction(InputConstant::ActionReload, EInputEvent::IE_Pressed, weaponManagerComponent, &UWeaponManagerComponent::Reload);
-	inputComponent->BindAction(InputConstant::ActionPreviousWeapon, EInputEvent::IE_Pressed, weaponManagerComponent, &UWeaponManagerComponent::PreviousWeapon);
-	inputComponent->BindAction(InputConstant::ActionNextWeapon, EInputEvent::IE_Pressed, weaponManagerComponent, &UWeaponManagerComponent::NextWeapon);
-	inputComponent->BindAxis(InputConstant::AxisChangeWeapon, weaponManagerComponent, &UWeaponManagerComponent::ChangeWeapon);
+	inputComponent->BindAction(InputConstant::ActionPrimaryFire, EInputEvent::IE_Pressed,
+		weaponManagerComponent, &UWeaponManagerComponent::StartFire);
+	inputComponent->BindAction(InputConstant::ActionPrimaryFire, EInputEvent::IE_Released,
+		weaponManagerComponent, &UWeaponManagerComponent::StopFire);
+	inputComponent->BindAction(InputConstant::ActionReload, EInputEvent::IE_Pressed,
+		weaponManagerComponent, &UWeaponManagerComponent::Reload);
+	inputComponent->BindAction(InputConstant::ActionPreviousWeapon, EInputEvent::IE_Pressed,
+		weaponManagerComponent, &UWeaponManagerComponent::PreviousWeapon);
+	inputComponent->BindAction(InputConstant::ActionNextWeapon, EInputEvent::IE_Pressed,
+		weaponManagerComponent, &UWeaponManagerComponent::NextWeapon);
+	inputComponent->BindAxis(InputConstant::AxisChangeWeapon,
+		weaponManagerComponent, &UWeaponManagerComponent::ChangeWeapon);
 }

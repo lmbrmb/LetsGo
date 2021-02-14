@@ -1,4 +1,5 @@
 #pragma once
+#include "UObject/NameTypes.h"
 
 class LETSGO_API InputConstant final
 {
