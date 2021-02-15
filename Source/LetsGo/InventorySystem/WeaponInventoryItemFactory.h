@@ -17,3 +17,5 @@ public:
 private:
 	TArray<FName> _knownWeaponItems;
 };
+
+Expose_TNameOf(WeaponInventoryItemFactory)

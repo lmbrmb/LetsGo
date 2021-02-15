@@ -1,7 +1,7 @@
 #pragma once
 
 UENUM()
-enum FirePivotMode
+enum class FirePivotMode
 {
 	AlwaysFirst UMETA(DisplayName = "Always first"),
 	Cycle UMETA(DisplayName = "Cycle"),

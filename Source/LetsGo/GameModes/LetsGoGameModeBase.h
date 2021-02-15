@@ -1,11 +1,11 @@
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "Misc/TypeContainer.h"
 #include "LetsGoGameModeBase.generated.h"
 
 ///<summary>
-///Game mode base
+///Game mode base. Has Dependency Injection container.
 ///</summary>
 UCLASS()
 class LETSGO_API ALetsGoGameModeBase : public AGameModeBase
@@ -15,7 +15,14 @@ class LETSGO_API ALetsGoGameModeBase : public AGameModeBase
 public:
 	ALetsGoGameModeBase();
 	
-	~ALetsGoGameModeBase();
+	virtual ~ALetsGoGameModeBase();
 
-	//TODO: Dependency Injection container
+	TTypeContainer<ESPMode::Fast>* GetDiContainer() const;
+
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+	
+private:
+	TTypeContainer<ESPMode::Fast>* _diContainer = nullptr;
+
+	void ComposeDiContainer() const;
 };

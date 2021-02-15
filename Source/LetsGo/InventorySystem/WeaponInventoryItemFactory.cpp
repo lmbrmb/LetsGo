@@ -10,6 +10,7 @@ WeaponInventoryItemFactory::WeaponInventoryItemFactory()
 
 WeaponInventoryItemFactory::~WeaponInventoryItemFactory()
 {
+	//Do nothing
 }
 
 InventoryItem* WeaponInventoryItemFactory::Create(FName itemId)

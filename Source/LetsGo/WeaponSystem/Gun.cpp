@@ -1,5 +1,4 @@
 #include "Gun.h"
-#include "LetsGo/Logs/DevLogger.h"
 
 AGun::AGun()
 {
@@ -102,7 +101,7 @@ bool AGun::IsClipFull() const
 	return _clipCurrent == _clipMax;
 }
 
-bool AGun::IsEnoughAmmoForShot()
+bool AGun::IsEnoughAmmoForShot() const
 {
 	auto const isEnoughAmmoForShot = _clipCurrent >= _consumeAmmoPerShot;
 	return isEnoughAmmoForShot;

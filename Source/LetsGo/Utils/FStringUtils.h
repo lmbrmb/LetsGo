@@ -18,19 +18,13 @@ private:
 template <class T>
 inline FString FStringUtils::ToString(const T value)
 {
-	return FString("Default implementation");
+	return value.ToString();
 };
 
 template <>
 inline FString FStringUtils::ToString<FString>(const FString value)
 {
 	return value;
-};
-
-template <>
-inline FString FStringUtils::ToString<FName>(const FName value)
-{
-	return value.ToString();
 };
 
 template <>
@@ -61,16 +55,4 @@ template <>
 inline FString FStringUtils::ToString<double>(const double value)
 {
 	return FString::Printf(TEXT("%f"), value);
-}
-
-template <>
-inline FString FStringUtils::ToString<FVector>(const FVector value)
-{
-	return value.ToString();
-}
-
-template <>
-inline FString FStringUtils::ToString<FRotator>(const FRotator value)
-{
-	return value.ToString();
 }

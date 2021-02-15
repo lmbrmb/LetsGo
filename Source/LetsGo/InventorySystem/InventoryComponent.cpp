@@ -1,6 +1,7 @@
 #include "InventoryComponent.h"
 #include "InventoryItem.h"
 #include "WeaponInventoryItemFactory.h"
+#include "LetsGo/GameModes/LetsGoGameModeBase.h"
 #include "LetsGo/Logs/DevLogger.h"
 #include "LetsGo/Utils/FactoryUtils.h"
 
@@ -8,8 +9,11 @@ void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	// TODO: inject factory
-	_inventoryItemFactories.Add(new WeaponInventoryItemFactory());
+	auto const authGameMode = GetWorld()->GetAuthGameMode();
+	auto const gameModeBase = dynamic_cast<ALetsGoGameModeBase*, AGameModeBase>(authGameMode);
+	auto const diContainer = gameModeBase->GetDiContainer();
+	auto const weaponInventoryItemFactory = diContainer->GetInstance<WeaponInventoryItemFactory>();
+	_inventoryItemFactories.Add(&weaponInventoryItemFactory.Get());
 }
 
 InventoryItem* UInventoryComponent::GetInventoryItem(FName itemId) const
@@ -27,9 +31,8 @@ UInventoryComponent::UInventoryComponent()
 
 bool UInventoryComponent::TryAddItem(FName itemId)
 {
-	auto const inventoryItem = FactoryUtils::CreateSingle<InventoryItemFactory*, InventoryItem*>(
-		_inventoryItemFactories,
-		[itemId](InventoryItemFactory* f) {return f->Create(itemId); }
+	auto const inventoryItem = FactoryUtils::CreateSingle<InventoryItem*, InventoryItemFactory*>(
+		_inventoryItemFactories, [itemId](auto* factory) {return factory->Create(itemId); }
 	);
 	
 	if(inventoryItem == nullptr)

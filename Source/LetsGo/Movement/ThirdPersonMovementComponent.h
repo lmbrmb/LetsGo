@@ -24,7 +24,7 @@ public:
 
 	void ProcessSpringArmRotation(const float deltaTime) const;
 
-	void ProcessActorRotation(const float deltaTime);
+	void ProcessActorRotation(const float deltaTime) const;
 	
 protected:
 	virtual void Init(AActor* actor) override;
@@ -81,5 +81,5 @@ private:
 	
 	float _normalizedMovementSpeed = 0;
 	
-	FVector* _inputMovementDirection = new FVector();
+	FVector _inputMovementDirection = FVector::ZeroVector;
 };

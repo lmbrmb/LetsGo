@@ -1,7 +1,8 @@
 #include "WeaponManagerComponent.h"
+#include "LetsGo/GameModes/LetsGoGameModeBase.h"
 #include "LetsGo/InventorySystem/InventoryItem.h"
 #include "LetsGo/Logs/DevLogger.h"
-#include "LetsGo/WeaponSystem/WeaponFactory.h"
+#include "LetsGo/PickupItems/PickupItemFactory.h"
 #include "LetsGo/Utils/AssetUtils.h"
 #include "LetsGo/Utils/ActorUtils.h"
 
@@ -16,6 +17,15 @@ if (_currentWeapon == nullptr) \
 UWeaponManagerComponent::UWeaponManagerComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+}
+
+void UWeaponManagerComponent::BeginPlay()
+{
+	auto const gameModeBase = dynamic_cast<ALetsGoGameModeBase*>(GetWorld()->GetAuthGameMode());
+	auto const diContainer = gameModeBase->GetDiContainer();
+	auto const weaponInventoryItemFactory = diContainer->GetInstance<WeaponFactory>();
+	auto const pickupItemFactory = diContainer->GetInstance<PickupItemFactory>();
+	_weaponFactory = &weaponInventoryItemFactory.Get();
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
@@ -51,7 +61,7 @@ void UWeaponManagerComponent::PreviousWeapon()
 	DevLogger::GetLoggingChannel()->Log("PreviousWeapon");
 }
 
-void UWeaponManagerComponent::ChangeWeapon(float value)
+void UWeaponManagerComponent::ChangeWeapon(const float value)
 {
 	if(FMath::Abs(value) < MIN_ABS_CHANGE_WEAPON)
 	{
@@ -73,7 +83,7 @@ void UWeaponManagerComponent::EquipWeapon(AWeaponBase* weapon)
 
 void UWeaponManagerComponent::OnInventoryItemAdded(InventoryItem* item)
 {
-	auto const weaponBlueprint = _weaponFactory.GetBlueprint(item->GetId());
+	auto const weaponBlueprint = _weaponFactory->GetBlueprint(item->GetId());
 	auto const weapon = AssetUtils::SpawnBlueprint<AWeaponBase>(GetOwner(), weaponBlueprint);
 	weapon->AttachToComponent(_weaponPivot, FAttachmentTransformRules::KeepRelativeTransform);
 	_weapons.Add(weapon);

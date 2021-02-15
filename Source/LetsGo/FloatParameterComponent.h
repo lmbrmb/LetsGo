@@ -15,7 +15,7 @@ public:
 	DECLARE_EVENT(UHealth, EChanged)
 	EChanged Changed;
 
-	void Init(float maxValue, float currentValue, float minValue = 0);
+	void Init();
 
 	void SetCurrentValue(float currentValue);
 	
@@ -39,6 +39,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float CurrentValue = 0;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float InitialValue = 0;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float MinValue = 0;
 	

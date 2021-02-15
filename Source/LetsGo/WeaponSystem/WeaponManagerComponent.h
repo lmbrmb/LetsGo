@@ -1,6 +1,5 @@
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "WeaponBase.h"
 #include "WeaponFactory.h"
@@ -15,6 +14,8 @@ class LETSGO_API UWeaponManagerComponent final : public UActorComponent
 public:	
 	UWeaponManagerComponent();
 
+	virtual void BeginPlay() override;
+	
 	void OnInventoryItemAdded(InventoryItem* item);
 
 	void OnInventoryItemRemoved(InventoryItem* item);
@@ -37,12 +38,12 @@ private:
 	
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = Custom)
 	USceneComponent* _weaponPivot = nullptr;
-	
-	WeaponFactory _weaponFactory;
+
+	WeaponFactory* _weaponFactory;
 	
 	TArray<AWeaponBase*> _weapons;
 
 	void EquipWeapon(AWeaponBase* weapon);
 
-	AWeaponBase* _currentWeapon;
+	AWeaponBase* _currentWeapon = nullptr;
 };

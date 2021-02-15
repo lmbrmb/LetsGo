@@ -26,9 +26,9 @@ private:
 	
 	FName _id;
 	
-	float _duration;
+	float _duration = 0;
 
-	bool _isInfinite;
+	bool _isInfinite = false;
 	
-	FVector _vector;
+	FVector _vector = FVector::ZeroVector;
 };

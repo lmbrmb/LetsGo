@@ -88,7 +88,7 @@ private:
 
 	bool IsClipFull() const;
 	
-	bool IsEnoughAmmoForShot();
+	bool IsEnoughAmmoForShot() const;
 	
 	bool HasAmmoToReload() const;
 	

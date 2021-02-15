@@ -11,3 +11,8 @@ APickupItem::APickupItem()
 	_root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(_root);
 }
+
+APickupItem::~APickupItem()
+{
+	//Do nothing
+}

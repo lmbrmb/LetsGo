@@ -3,23 +3,24 @@
 
 WeaponFactory::WeaponFactory()
 {
-	_weaponAssetDictionary.Add("SawedOffShotgun", "/Game/Assets/Blueprints/Weapons/SawedOffShotgun");
-	_weaponAssetDictionary.Add("Minigun", "/Game/Assets/Blueprints/Weapons/Minigun");
+	_weaponAssets.Add("SawedOffShotgun", "/Game/Assets/Blueprints/Weapons/BP_SawedOffShotgun");
+	_weaponAssets.Add("Minigun", "/Game/Assets/Blueprints/Weapons/BP_Minigun");
 }
 
 WeaponFactory::~WeaponFactory()
 {
+	//Do nothing
 }
 
 UBlueprint* WeaponFactory::GetBlueprint(FName id)
 {
-	if(_weaponBlueprintsDictionary.Contains(id))
+	if(_weaponBlueprints.Contains(id))
 	{
-		return _weaponBlueprintsDictionary[id];
+		return _weaponBlueprints[id];
 	}
 
-	auto const assetPath = _weaponAssetDictionary[id];
+	auto const assetPath = _weaponAssets[id];
 	auto const blueprint = AssetUtils::LoadBlueprint(assetPath);
-	_weaponBlueprintsDictionary.Add(id, blueprint);
+	_weaponBlueprints.Add(id, blueprint);
 	return blueprint;
 }

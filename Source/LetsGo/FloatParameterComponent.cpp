@@ -10,39 +10,36 @@ UFloatParameterComponent::UFloatParameterComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UFloatParameterComponent::Init(float maxValue, float currentValue, float minValue)
+void UFloatParameterComponent::Init()
 {
-	MinValue = minValue;
-	MaxValue = maxValue;
-
-	if(minValue > maxValue)
+	if(MinValue > MaxValue)
 	{
 		DevLogger::GetLoggingChannel()->Log(
-			"Min value " + UKismetStringLibrary::Conv_FloatToString(minValue)
-			+ " is more than max value " + UKismetStringLibrary::Conv_FloatToString(maxValue),
+			"Min value " + UKismetStringLibrary::Conv_FloatToString(MinValue)
+			+ " is more than max value " + UKismetStringLibrary::Conv_FloatToString(MaxValue),
 			LogSeverity::Error
 		);
 	}
 	
-	if(currentValue < minValue)
+	if(InitialValue < MinValue)
 	{
 		DevLogger::GetLoggingChannel()->Log(
-			"Current value " + UKismetStringLibrary::Conv_FloatToString(currentValue)
-			+ " is less than min value " + UKismetStringLibrary::Conv_FloatToString(minValue),
+			"Current value " + UKismetStringLibrary::Conv_FloatToString(InitialValue)
+			+ " is less than min value " + UKismetStringLibrary::Conv_FloatToString(MinValue),
 			LogSeverity::Warning
 		);
 	}
 
-	if (currentValue > maxValue)
+	if (InitialValue > MaxValue)
 	{
 		DevLogger::GetLoggingChannel()->Log(
-			"Current value " + UKismetStringLibrary::Conv_FloatToString(currentValue)
-			+ " is more than max value " + UKismetStringLibrary::Conv_FloatToString(maxValue),
+			"Current value " + UKismetStringLibrary::Conv_FloatToString(InitialValue)
+			+ " is more than max value " + UKismetStringLibrary::Conv_FloatToString(MaxValue),
 			LogSeverity::Warning
 		);
 	}
 	
-	SetCurrentValue(currentValue);
+	SetCurrentValue(InitialValue);
 }
 
 void UFloatParameterComponent::SetCurrentValue(float currentValue)

@@ -6,13 +6,13 @@ const float MIN_DOT_FORWARD = -0.01f;
 
 FVector UFirstPersonMovementComponent::GetInputMovementDirection()
 {
-	return *_inputMovementDirection;
+	return _inputMovementDirection;
 }
 
 float UFirstPersonMovementComponent::GetMovementSpeed()
 {
 	auto const forwardVector = Root->GetForwardVector();
-	auto const dotForward = FVector::DotProduct(forwardVector, *_inputMovementDirection);
+	auto const dotForward = FVector::DotProduct(forwardVector, _inputMovementDirection);
 	auto const isMovingForward = dotForward >= MIN_DOT_FORWARD;
 	auto const speed = isMovingForward
 		? _actorMoveForwardSpeed * (_isSprinting ? _sprintMultiplier : 1.0f)
@@ -67,8 +67,7 @@ void UFirstPersonMovementComponent::ProcessInput()
 
 	if (!hasForwardMovementInput && !hasRightMovementInput)
 	{
-		_inputMovementDirection->X = 0;
-		_inputMovementDirection->Y = 0;
+		_inputMovementDirection = FVector::ZeroVector;
 		_absoluteMovementAmount = 0;
 		return;
 	}
@@ -80,7 +79,7 @@ void UFirstPersonMovementComponent::ProcessInput()
 	}
 	_absoluteMovementAmount = absoluteMovementAmount;
 
-	FVector direction;
+	auto direction = FVector::ZeroVector;
 	auto const rootForward = Root->GetForwardVector();
 	auto const rootRight = Root->GetRightVector();
 	
@@ -96,8 +95,7 @@ void UFirstPersonMovementComponent::ProcessInput()
 
 	direction.Normalize();
 
-	_inputMovementDirection->X = direction.X;
-	_inputMovementDirection->Y = direction.Y;
+	_inputMovementDirection = direction;
 }
 
 void UFirstPersonMovementComponent::ResetInput()

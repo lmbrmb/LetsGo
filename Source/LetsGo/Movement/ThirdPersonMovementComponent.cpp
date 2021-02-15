@@ -13,7 +13,7 @@ float UThirdPersonMovementComponent::GetAbsoluteMovementAmount()
 
 FVector UThirdPersonMovementComponent::GetInputMovementDirection()
 {
-	return *_inputMovementDirection;
+	return _inputMovementDirection;
 }
 
 float UThirdPersonMovementComponent::GetMovementSpeed()
@@ -28,13 +28,12 @@ void UThirdPersonMovementComponent::ProcessInput()
 	
 	if (!hasForwardInput && !hasRightInput)
 	{
-		_inputMovementDirection->X = 0;
-		_inputMovementDirection->Y = 0;
+		_inputMovementDirection = FVector::ZeroVector;
 		_absoluteMovementAmount = 0;
 		return;
 	}
 
-	FVector direction;
+	FVector direction = FVector::ZeroVector;
 	if (hasForwardInput)
 	{
 		direction += _cameraComponent->GetForwardVector() * _actorForwardMovementInputAmount;
@@ -47,8 +46,7 @@ void UThirdPersonMovementComponent::ProcessInput()
 
 	direction = FVector::VectorPlaneProject(direction, FVector::UpVector);
 	direction.Normalize();
-	_inputMovementDirection->X = direction.X;
-	_inputMovementDirection->Y = direction.Y;
+	_inputMovementDirection = direction;
 
 	/*auto const actorLocation = Root->GetComponentLocation();
 	DrawDebugLine(GetWorld(), actorLocation, actorLocation + _inputMovementDirection * 100, FColor::Green);*/
@@ -111,10 +109,10 @@ void UThirdPersonMovementComponent::ProcessSpringArmRotation(const float deltaTi
 	_springArmComponent->SetRelativeRotation(rotation);
 }
 
-void UThirdPersonMovementComponent::ProcessActorRotation(const float deltaTime)
+void UThirdPersonMovementComponent::ProcessActorRotation(const float deltaTime) const
 {
 	const auto actorForwardDirection = Root->GetForwardVector();
-	const auto targetDirectionDot = FVector::DotProduct(actorForwardDirection, *_inputMovementDirection);
+	const auto targetDirectionDot = FVector::DotProduct(actorForwardDirection, _inputMovementDirection);
 	
 	if (targetDirectionDot >= SKIP_ROTATION_DOT)
 	{
@@ -122,7 +120,7 @@ void UThirdPersonMovementComponent::ProcessActorRotation(const float deltaTime)
 	}
 	auto const targetAngleRadians = FMath::Acos(targetDirectionDot);
 	auto const targetAngleDegrees = FMath::RadiansToDegrees(targetAngleRadians);
-	const auto targetDirectionCross = FVector::CrossProduct(actorForwardDirection, *_inputMovementDirection);
+	const auto targetDirectionCross = FVector::CrossProduct(actorForwardDirection, _inputMovementDirection);
 	auto const targetAngleSign = FMath::Sign(FVector::DotProduct(FVector::UpVector, targetDirectionCross));
 	auto rotationDeltaDegrees = deltaTime * _rotationSpeedDegrees;
 
@@ -134,8 +132,8 @@ void UThirdPersonMovementComponent::ProcessActorRotation(const float deltaTime)
 	auto const rotationSignedAngleDegrees = targetAngleSign * rotationDeltaDegrees;
 	auto const rotationVector = actorForwardDirection.RotateAngleAxis(rotationSignedAngleDegrees, FVector::UpVector);
 
-	/*auto const actorLocation = Root->GetComponentLocation();
-	DrawDebugLine(GetWorld(), actorLocation, actorLocation + rotationVector * 100, FColor::Yellow);*/
+	//auto const actorLocation = Root->GetComponentLocation();
+	//DrawDebugLine(GetWorld(), actorLocation, actorLocation + rotationVector * 100, FColor::Yellow);
 	
 	auto const actorRotation = UKismetMathLibrary::MakeRotFromX(rotationVector);
 	Root->SetWorldRotation(actorRotation);

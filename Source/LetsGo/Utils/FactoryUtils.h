@@ -1,20 +1,19 @@
 #pragma once
 
 #include "LetsGo/Logs/DevLogger.h"
-#include "LetsGo/Logs/LogSeverity.h"
 
 class FactoryUtils
 {
 public:
-	template <class TFactory, class TResult>
-	static TResult CreateSingle(TArray<TFactory> factories, TFunction<TResult(TFactory)> function);
+	template <class TResult, class TFactory, class TFactoryArray>
+	static TResult CreateSingle(TFactoryArray factories, TFunction<TResult(TFactory)> function);
 	
 private:
 	FactoryUtils() = delete;
 };
 
-template <class TFactory, class TResult>
-TResult FactoryUtils::CreateSingle(TArray<TFactory> factories, TFunction<TResult(TFactory)> function)
+template <class TResult, class TFactory, class TFactoryArray>
+TResult FactoryUtils::CreateSingle(TFactoryArray factories, TFunction<TResult(TFactory)> function)
 {
 	TArray<TResult> createdItems;
 	for (auto const factory : factories)
@@ -39,6 +38,6 @@ TResult FactoryUtils::CreateSingle(TArray<TFactory> factories, TFunction<TResult
 		createdItems.Empty();
 		return nullptr;
 	}
-
+	
 	return createdItems[0];
 }

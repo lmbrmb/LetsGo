@@ -14,3 +14,5 @@ public:
 	
 	virtual InventoryItem* Create(FName itemId) = 0;
 };
+
+Expose_TNameOf(InventoryItemFactory)

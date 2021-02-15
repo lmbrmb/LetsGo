@@ -77,9 +77,9 @@ private:
 
 	float _cameraPitchInputAmount = 0;
 
-	FVector* _inputMovementDirection = new FVector(0, 0, 0);
+	FVector _inputMovementDirection = FVector::ZeroVector;
 	
-	float _absoluteMovementAmount;
+	float _absoluteMovementAmount = 0;
 
 	bool _isSprinting = false;
 

@@ -2,7 +2,7 @@
 
 class LETSGO_API WeaponFactory final
 {
-public:	
+public:
 	WeaponFactory();
 
 	~WeaponFactory();
@@ -10,9 +10,9 @@ public:
 	UBlueprint* GetBlueprint(FName id);
 	
 private:
-	TMap<const FName, const FString> _weaponAssetDictionary;
+	TMap<const FName, const FString> _weaponAssets;
 
-	TMap<const FName, UBlueprint*> _weaponBlueprintsDictionary;
-	
-	bool _isInitialized = false;
+	TMap<const FName, UBlueprint*> _weaponBlueprints;
 };
+
+Expose_TNameOf(WeaponFactory)
