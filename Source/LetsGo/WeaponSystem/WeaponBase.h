@@ -1,9 +1,11 @@
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "WeaponBase.generated.h"
 
+///<summary>
+///[Abstract] Base weapon
+///</summary>
 UCLASS(Abstract)
 class LETSGO_API AWeaponBase : public AActor
 {

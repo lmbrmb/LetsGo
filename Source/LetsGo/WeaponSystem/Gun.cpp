@@ -49,8 +49,14 @@ void AGun::Tick(float DeltaSeconds)
 		_startFireTime = GetWorld()->TimeSeconds;
 
 		ConsumeAmmo();
-		auto const pivot = GetPivot();
-		OnShot(pivot->GetComponentTransform());
+		auto const firePivot = GetFirePivot();
+		auto const firePivotTransform = firePivot->GetComponentTransform();
+		BpShot(firePivotTransform);
+
+		auto const root = GetRootComponent();
+		//TODO: check direction
+		auto const shotDirection = root->GetForwardVector();
+		ShotPerformed.Broadcast(firePivotTransform, shotDirection);
 	}
 }
 
@@ -64,7 +70,7 @@ void AGun::StopFire()
 	TriggerFire(false);
 }
 
-USceneComponent* AGun::GetPivot()
+USceneComponent* AGun::GetFirePivot()
 {
 	int nextIndex = 0;
 	switch (_firePivotMode)
@@ -114,7 +120,7 @@ bool AGun::HasAmmoToReload() const
 
 void AGun::StartReload()
 {
-	OnReloadStarted();
+	BpReloadStarted();
 	_startReloadTime = GetWorld()->TimeSeconds;
 }
 
@@ -147,11 +153,11 @@ void AGun::TriggerFire(bool isFireTriggered)
 	{
 		if(_isFireTriggered)
 		{
-			OnFireStarted();
+			BpFireStarted();
 		}
 		else
 		{
-			OnFireStopped();
+			BpFireStopped();
 		}
 	}
 }

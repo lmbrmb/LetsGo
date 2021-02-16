@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CoreMinimal.h"
 #include "WeaponBase.h"
 #include "FirePivotMode.h"
 #include "Gun.generated.h"
@@ -17,6 +18,8 @@ class LETSGO_API AGun final : public AWeaponBase
 
 public:
 	AGun();
+
+	DECLARE_EVENT_TwoParams(UGun, EShotPerformed, FTransform, FVector);
 	
 	virtual void StartFire() override;
 
@@ -29,16 +32,18 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	
 	UFUNCTION(BlueprintImplementableEvent)
-	void OnFireStarted();
+	void BpFireStarted();
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void OnShot(FTransform transform);
+	void BpShot(FTransform transform);
+
+	EShotPerformed ShotPerformed;
 	
 	UFUNCTION(BlueprintImplementableEvent)
-	void OnFireStopped();
+	void BpFireStopped();
 	
 	UFUNCTION(BlueprintImplementableEvent)
-	void OnReloadStarted();
+	void BpReloadStarted();
 	
 private:
 	// Fire
@@ -71,7 +76,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TEnumAsByte<FirePivotMode> _firePivotMode;
 
-	USceneComponent* GetPivot();
+	USceneComponent* GetFirePivot();
 
 	int _firePivotIndex = INITIAL_FIRE_PIVOT_INDEX;
 

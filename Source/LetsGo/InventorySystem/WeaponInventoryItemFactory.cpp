@@ -6,6 +6,7 @@ WeaponInventoryItemFactory::WeaponInventoryItemFactory()
 {
 	_knownWeaponItems.Add("SawedOffShotgun");
 	_knownWeaponItems.Add("Minigun");
+	_knownWeaponItems.Add("Railgun");
 }
 
 WeaponInventoryItemFactory::~WeaponInventoryItemFactory()

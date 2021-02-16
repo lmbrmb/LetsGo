@@ -5,6 +5,7 @@ PickupItemFactory::PickupItemFactory()
 {
 	_pickupAssets.Add("SawedOffShotgun", "/Game/Assets/Blueprints/PickupItems/BP_SawedOffShotgunPickupItem");
 	_pickupAssets.Add("Minigun", "/Game/Assets/Blueprints/PickupItems/BP_MinigunPickupItem");
+	_pickupAssets.Add("Railgun", "/Game/Assets/Blueprints/PickupItems/BP_RailgunPickupItem");
 }
 
 PickupItemFactory::~PickupItemFactory()

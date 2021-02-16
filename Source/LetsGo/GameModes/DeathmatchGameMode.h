@@ -1,6 +1,5 @@
 #pragma once
 
-#include "CoreMinimal.h"
 #include "LetsGoGameModeBase.h"
 #include "DeathmatchGameMode.generated.h"
 
