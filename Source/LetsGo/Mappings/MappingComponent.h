@@ -15,4 +15,9 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void Map() {};
+
+	/// <summary>
+	/// [Template method]
+	/// </summary>
+	virtual bool ShouldDestroyAfterMapping() const;
 };

@@ -5,6 +5,8 @@
 #include "WeaponFactory.h"
 #include "WeaponManagerComponent.generated.h"
 
+const int UNDEFINED_WEAPON_INDEX = -1;
+
 class InventoryItem;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class LETSGO_API UWeaponManagerComponent final : public UActorComponent
@@ -30,11 +32,14 @@ public:
 
 	void PreviousWeapon();
 
-	void ChangeWeapon(float value);
+	void ChangeWeapon(int indexModifier);
 	
+	UFUNCTION(BlueprintCallable)
+	void SetWeaponPivot(USceneComponent* weaponPivot);
+
 private:
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = Custom)
-		bool _equipWeaponOnPickup = true;
+	bool _equipWeaponOnPickup = true;
 	
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = Custom)
 	USceneComponent* _weaponPivot = nullptr;
@@ -43,7 +48,9 @@ private:
 	
 	TArray<AWeaponBase*> _weapons;
 
-	void EquipWeapon(AWeaponBase* weapon);
-
+	void EquipWeapon(int weaponIndex);
+	
 	AWeaponBase* _currentWeapon = nullptr;
+
+	int _currentWeaponIndex = UNDEFINED_WEAPON_INDEX;
 };

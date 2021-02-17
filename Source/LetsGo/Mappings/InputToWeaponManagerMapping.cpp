@@ -1,7 +1,7 @@
 #include "InputToWeaponManagerMapping.h"
 #include "LetsGo/InputConstant.h"
 #include "LetsGo/Logs/DevLogger.h"
-#include "LetsGo/WeaponSystem/WeaponManagerComponent.h"
+#include "LetsGo/Utils/InputUtils.h"
 
 void UInputToWeaponManagerMapping::Map()
 {
@@ -25,6 +25,8 @@ void UInputToWeaponManagerMapping::Map()
 		return;
 	}
 
+	_weaponManagerComponent = weaponManagerComponent;
+	
 	inputComponent->BindAction(InputConstant::ActionPrimaryFire, EInputEvent::IE_Pressed,
 		weaponManagerComponent, &UWeaponManagerComponent::StartFire);
 	inputComponent->BindAction(InputConstant::ActionPrimaryFire, EInputEvent::IE_Released,
@@ -35,6 +37,25 @@ void UInputToWeaponManagerMapping::Map()
 		weaponManagerComponent, &UWeaponManagerComponent::PreviousWeapon);
 	inputComponent->BindAction(InputConstant::ActionNextWeapon, EInputEvent::IE_Pressed,
 		weaponManagerComponent, &UWeaponManagerComponent::NextWeapon);
-	inputComponent->BindAxis(InputConstant::AxisChangeWeapon,
-		weaponManagerComponent, &UWeaponManagerComponent::ChangeWeapon);
+	inputComponent->BindAxis(InputConstant::AxisChangeWeaponDpad,
+		this, &UInputToWeaponManagerMapping::ChangeWeaponDpad);
+}
+
+bool UInputToWeaponManagerMapping::ShouldDestroyAfterMapping() const
+{
+	return false;
+}
+
+void UInputToWeaponManagerMapping::ChangeWeaponDpad(float rawAxisValue)
+{
+	auto const axisValue = InputUtils::GetDpadHorizontalAxis(rawAxisValue);
+	if(_lastDpadHorizontalAxisValue != axisValue)
+	{
+		_lastDpadHorizontalAxisValue = axisValue;
+
+		if(axisValue != 0)
+		{
+			_weaponManagerComponent->ChangeWeapon(axisValue);
+		}
+	}
 }

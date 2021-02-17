@@ -26,5 +26,5 @@ public:
 
 	static const FName ActionPreviousWeapon;
 
-	static const FName AxisChangeWeapon;
+	static const FName AxisChangeWeaponDpad;
 };

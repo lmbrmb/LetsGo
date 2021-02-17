@@ -6,8 +6,6 @@
 #include "LetsGo/Utils/AssetUtils.h"
 #include "LetsGo/Utils/ActorUtils.h"
 
-const float MIN_ABS_CHANGE_WEAPON = 0.1f;
-
 #define RETURN_IF_NO_WEAPON \
 if (_currentWeapon == nullptr) \
 { \
@@ -53,44 +51,91 @@ void UWeaponManagerComponent::Reload()
 
 void UWeaponManagerComponent::NextWeapon()
 {
-	DevLogger::GetLoggingChannel()->Log("NextWeapon");
+	ChangeWeapon(1);
 }
 
 void UWeaponManagerComponent::PreviousWeapon()
 {
-	DevLogger::GetLoggingChannel()->Log("PreviousWeapon");
+	ChangeWeapon(-1);
 }
 
-void UWeaponManagerComponent::ChangeWeapon(const float value)
+void UWeaponManagerComponent::ChangeWeapon(int indexModifier)
 {
-	if(FMath::Abs(value) < MIN_ABS_CHANGE_WEAPON)
+	if (indexModifier == 0)
 	{
+		DevLogger::GetLoggingChannel()->Log("ChangeWeapon: index modifier is 0", LogSeverity::Warning);
 		return;
 	}
 	
-	DevLogger::GetLoggingChannel()->LogValue("ChangeWeapon: ", value);
+	auto const weaponsCount = _weapons.Num();
+
+	if (weaponsCount == 0)
+	{
+		return;
+	}
+
+	auto nextIndex = _currentWeaponIndex + indexModifier;
+
+	if (nextIndex >= weaponsCount)
+	{
+		nextIndex = 0;
+	}
+	else if (nextIndex < 0)
+	{
+		nextIndex = weaponsCount - 1;
+	}
+
+	EquipWeapon(nextIndex);
 }
 
-void UWeaponManagerComponent::EquipWeapon(AWeaponBase* weapon)
+void UWeaponManagerComponent::SetWeaponPivot(USceneComponent* weaponPivot)
+{
+	_weaponPivot = weaponPivot;
+	if(_currentWeapon)
+	{
+		for(auto weapon : _weapons)
+		{
+			weapon->AttachToComponent(_weaponPivot, FAttachmentTransformRules::KeepRelativeTransform);
+		}
+	}
+}
+
+void UWeaponManagerComponent::EquipWeapon(int weaponIndex)
 {
 	if (_currentWeapon)
 	{
 		ActorUtils::SetEnabled(_currentWeapon, false);
 	}
-	
-	_currentWeapon = weapon;
+
+	_currentWeaponIndex = weaponIndex;
+	_currentWeapon = _weapons[_currentWeaponIndex];
+
+	ActorUtils::SetEnabled(_currentWeapon, true);
 }
 
 void UWeaponManagerComponent::OnInventoryItemAdded(InventoryItem* item)
 {
 	auto const weaponBlueprint = _weaponFactory->GetBlueprint(item->GetId());
 	auto const weapon = AssetUtils::SpawnBlueprint<AWeaponBase>(GetOwner(), weaponBlueprint);
-	weapon->AttachToComponent(_weaponPivot, FAttachmentTransformRules::KeepRelativeTransform);
-	_weapons.Add(weapon);
+
+	if(_weaponPivot == nullptr)
+	{
+		DevLogger::GetLoggingChannel()->Log("Weapon pivot is null", LogSeverity::Warning);
+	}
+	else
+	{
+		weapon->AttachToComponent(_weaponPivot, FAttachmentTransformRules::KeepRelativeTransform);
+	}
+
+	auto const weaponIndex = _weapons.Add(weapon);
 	
 	if (_equipWeaponOnPickup)
 	{
-		EquipWeapon(weapon);
+		EquipWeapon(weaponIndex);
+	}
+	else
+	{
+		ActorUtils::SetEnabled(weapon, false);
 	}
 }
 

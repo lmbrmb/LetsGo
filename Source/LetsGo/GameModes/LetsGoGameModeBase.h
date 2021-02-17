@@ -23,6 +23,4 @@ public:
 	
 private:
 	TTypeContainer<ESPMode::Fast>* _diContainer = nullptr;
-
-	void ComposeDiContainer() const;
 };

@@ -9,5 +9,13 @@ void UMappingComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	Map();
-	DestroyComponent();
+	if(ShouldDestroyAfterMapping())
+	{
+		DestroyComponent();
+	}
+}
+
+bool UMappingComponent::ShouldDestroyAfterMapping() const
+{
+	return true;
 }
