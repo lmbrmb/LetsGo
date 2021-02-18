@@ -12,6 +12,9 @@ public class LetsGo : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
+		//Enable dynamic_cast
+		bUseRTTI = true;
+
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 		

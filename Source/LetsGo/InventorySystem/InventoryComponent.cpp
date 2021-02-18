@@ -1,6 +1,7 @@
 #include "InventoryComponent.h"
 #include "InventoryItem.h"
-#include "WeaponInventoryItemFactory.h"
+#include "HealthItemFactory.h"
+#include "WeaponItemFactory.h"
 #include "LetsGo/GameModes/LetsGoGameModeBase.h"
 #include "LetsGo/Logs/DevLogger.h"
 #include "LetsGo/Utils/FactoryUtils.h"
@@ -12,8 +13,12 @@ void UInventoryComponent::BeginPlay()
 	auto const authGameMode = GetWorld()->GetAuthGameMode();
 	auto const gameModeBase = dynamic_cast<ALetsGoGameModeBase*, AGameModeBase>(authGameMode);
 	auto const diContainer = gameModeBase->GetDiContainer();
-	auto const weaponInventoryItemFactory = diContainer->GetInstance<WeaponInventoryItemFactory>();
+	
+	auto const weaponInventoryItemFactory = diContainer->GetInstance<WeaponItemFactory>();
 	_inventoryItemFactories.Add(&weaponInventoryItemFactory.Get());
+
+	auto const powerUpInventoryItemFactory = diContainer->GetInstance<HealthItemFactory>();
+	_inventoryItemFactories.Add(&powerUpInventoryItemFactory.Get());
 }
 
 InventoryItem* UInventoryComponent::GetInventoryItem(FName itemId) const
@@ -43,8 +48,19 @@ bool UInventoryComponent::TryAddItem(FName itemId)
 
 	//TODO: check item existance, max item count, conversion
 
-	_inventoryItems.Add(inventoryItem);
+	auto const isConsumable = inventoryItem->IsConsumable();
+	
+	if(!isConsumable)
+	{
+		_inventoryItems.Add(inventoryItem);
+	}
+	
 	ItemAdded.Broadcast(inventoryItem);
+
+	if(isConsumable)
+	{
+		delete inventoryItem;
+	}
 	
 	return true;
 }

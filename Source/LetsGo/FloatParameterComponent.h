@@ -8,13 +8,13 @@ class LETSGO_API UFloatParameterComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
+	virtual void BeginPlay() override;
+	
 	UFloatParameterComponent();
 
 	DECLARE_EVENT(UHealth, EChanged)
 	EChanged Changed;
-
-	void Init();
 
 	void SetCurrentValue(float currentValue);
 	
@@ -47,5 +47,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float MaxValue = 0;
 
+	void Init();
+	
 	void ChangeValue(float amount);
 };

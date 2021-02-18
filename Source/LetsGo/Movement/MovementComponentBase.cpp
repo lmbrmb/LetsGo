@@ -117,7 +117,7 @@ void UMovementComponentBase::Jump()
 	for (auto i = _forces.Num() - 1; i >= 0; i--)
 	{
 		auto const force = _forces[i];
-		if (force->GetId() == JUMP_FORCE_NAME)
+		if (force->GetId() == JUMP_FORCE_ID)
 		{
 			_forces.RemoveAt(i);
 		}
@@ -130,7 +130,10 @@ void UMovementComponentBase::Jump()
 	auto const dotUp = FVector::DotProduct(jumpDirection, FVector::UpVector);
 	auto const multiplier = 2 - dotUp;
 	auto const magnitude = _jumpForceMagnitude * multiplier;
-	auto const jumpForce = Force::CreateFiniteForce(JUMP_FORCE_NAME, _jumpForceDuration, jumpDirection, magnitude);
+	auto const jumpForce = Force::CreateFiniteForce(JUMP_FORCE_ID, _jumpForceDuration, jumpDirection, magnitude);
+
+	// Replacing current jump force if exists
+	_forces.RemoveAll([](Force* f) {return f->GetId() == JUMP_FORCE_ID; });
 	_forces.Add(jumpForce);
 }
 

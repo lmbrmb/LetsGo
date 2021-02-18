@@ -1,6 +1,7 @@
 #include "WeaponManagerComponent.h"
 #include "LetsGo/GameModes/LetsGoGameModeBase.h"
 #include "LetsGo/InventorySystem/InventoryItem.h"
+#include "LetsGo/InventorySystem/WeaponItem.h"
 #include "LetsGo/Logs/DevLogger.h"
 #include "LetsGo/PickupItems/PickupItemFactory.h"
 #include "LetsGo/Utils/AssetUtils.h"
@@ -102,6 +103,11 @@ void UWeaponManagerComponent::SetWeaponPivot(USceneComponent* weaponPivot)
 
 void UWeaponManagerComponent::EquipWeapon(int weaponIndex)
 {
+	if(_currentWeaponIndex == weaponIndex)
+	{
+		return;
+	}
+	
 	if (_currentWeapon)
 	{
 		ActorUtils::SetEnabled(_currentWeapon, false);
@@ -115,6 +121,12 @@ void UWeaponManagerComponent::EquipWeapon(int weaponIndex)
 
 void UWeaponManagerComponent::OnInventoryItemAdded(InventoryItem* item)
 {
+	auto const weaponItem = dynamic_cast<WeaponItem*>(item);
+	if(weaponItem == nullptr)
+	{
+		return;
+	}
+	
 	auto const weaponBlueprint = _weaponFactory->GetBlueprint(item->GetId());
 	auto const weapon = AssetUtils::SpawnBlueprint<AWeaponBase>(GetOwner(), weaponBlueprint);
 
@@ -137,9 +149,4 @@ void UWeaponManagerComponent::OnInventoryItemAdded(InventoryItem* item)
 	{
 		ActorUtils::SetEnabled(weapon, false);
 	}
-}
-
-void UWeaponManagerComponent::OnInventoryItemRemoved(InventoryItem* item)
-{
-	DevLogger::GetLoggingChannel()->Log("WeaponManager. OnInventoryItemRemoved");
 }

@@ -74,7 +74,7 @@ private:
 	TArray<USceneComponent*> _firePivots;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TEnumAsByte<FirePivotMode> _firePivotMode;
+	FirePivotMode _firePivotMode;
 
 	USceneComponent* GetFirePivot();
 

@@ -1,6 +1,3 @@
-#ifdef DEBUG
-#endif
-
 #include "FloatParameterComponent.h"
 #include "Kismet/KismetStringLibrary.h"
 #include "Logs/DevLogger.h"
@@ -8,6 +5,12 @@
 UFloatParameterComponent::UFloatParameterComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+}
+
+
+void UFloatParameterComponent::BeginPlay()
+{
+	Init();
 }
 
 void UFloatParameterComponent::Init()

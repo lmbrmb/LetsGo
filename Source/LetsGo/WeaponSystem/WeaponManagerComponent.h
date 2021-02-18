@@ -3,11 +3,12 @@
 #include "Components/ActorComponent.h"
 #include "WeaponBase.h"
 #include "WeaponFactory.h"
+#include "LetsGo/InventorySystem/InventoryItem.h"
+
 #include "WeaponManagerComponent.generated.h"
 
 const int UNDEFINED_WEAPON_INDEX = -1;
 
-class InventoryItem;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class LETSGO_API UWeaponManagerComponent final : public UActorComponent
 {
@@ -19,8 +20,6 @@ public:
 	virtual void BeginPlay() override;
 	
 	void OnInventoryItemAdded(InventoryItem* item);
-
-	void OnInventoryItemRemoved(InventoryItem* item);
 
 	void StartFire();
 

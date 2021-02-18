@@ -1,20 +1,21 @@
 #pragma once
 
 ////<summary>
-/// [Abstract] Inventory item
+/// [Abstract] Inventory item contract
 ///</summary>
 class LETSGO_API InventoryItem
 {
 public:
-	explicit InventoryItem(FName id);
+	explicit InventoryItem(FName id, bool isConsumable);
 	
-	~InventoryItem();
+	virtual ~InventoryItem();
+	
+	FName GetId() const;
 
-	FName GetId() const
-	{
-		return _id;
-	}
+	bool IsConsumable() const;
 	
 private:
 	FName _id;
+
+	bool _isConsumable;
 };

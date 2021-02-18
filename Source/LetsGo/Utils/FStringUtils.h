@@ -22,6 +22,12 @@ inline FString FStringUtils::ToString(const T value)
 };
 
 template <>
+inline FString FStringUtils::ToString<const char*>(const char* value)
+{
+	return FString(value);
+};
+
+template <>
 inline FString FStringUtils::ToString<FString>(const FString value)
 {
 	return value;

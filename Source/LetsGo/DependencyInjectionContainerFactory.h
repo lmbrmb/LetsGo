@@ -1,6 +1,8 @@
 #pragma once
+
 #include "Misc/TypeContainer.h"
-#include "LetsGo/InventorySystem/WeaponInventoryItemFactory.h"
+#include "LetsGo/InventorySystem/HealthItemFactory.h"
+#include "LetsGo/InventorySystem/WeaponItemFactory.h"
 #include "LetsGo/PickupItems/PickupItemFactory.h"
 #include "LetsGo/WeaponSystem/WeaponFactory.h"
 
@@ -21,11 +23,13 @@ TTypeContainer<Mode>* DependencyInjectionContainerFactory::CreateContainer()
 	auto const container = new TTypeContainer<Mode>();
 
 	const TSharedRef<PickupItemFactory> pickupItemFactory = MakeShareable(new PickupItemFactory());
-	const TSharedRef<WeaponInventoryItemFactory> weaponInventoryItemFactory = MakeShareable(new WeaponInventoryItemFactory());
+	const TSharedRef<WeaponItemFactory> weaponItemFactory = MakeShareable(new WeaponItemFactory());
+	const TSharedRef<HealthItemFactory> healthItemFactory = MakeShareable(new HealthItemFactory());
 	const TSharedRef<WeaponFactory> weaponFactory = MakeShareable(new WeaponFactory());
 
 	container->template RegisterInstance<PickupItemFactory>(pickupItemFactory);
-	container->template RegisterInstance<WeaponInventoryItemFactory>(weaponInventoryItemFactory);
+	container->template RegisterInstance<WeaponItemFactory>(weaponItemFactory);
+	container->template RegisterInstance<HealthItemFactory>(healthItemFactory);
 	container->template RegisterInstance<WeaponFactory>(weaponFactory);
 	
 	return container;

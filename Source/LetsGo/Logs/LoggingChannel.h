@@ -13,11 +13,18 @@ public:
 
 	virtual ~LoggingChannel();
 
-	virtual void Log(const FString message, LogSeverity severity = LogSeverity::Debug) = 0;
-
+	template<class T>
+	void Log(T value, LogSeverity severity = LogSeverity::Debug)
+	{
+		LogImplementation(FStringUtils::ToString(value), severity);
+	}
+	
 	template<class T>
 	void LogValue(const FString message, T value, LogSeverity severity = LogSeverity::Debug)
 	{
 		Log(message + FStringUtils::ToString(value), severity);
 	}
+
+protected:
+	virtual void LogImplementation(const FString message, LogSeverity severity = LogSeverity::Debug) = 0;
 };

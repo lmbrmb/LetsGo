@@ -1,10 +1,36 @@
 #include "HealthComponent.h"
+#include "LetsGo/InventorySystem/HealthItem.h"
 
-void UHealthComponent::BeginPlay()
+void UHealthComponent::OnInventoryItemAdded(InventoryItem* item)
 {
-	Super::BeginPlay();
+	auto const healthItem = dynamic_cast<HealthItem*>(item);
+	if (healthItem == nullptr)
+	{
+		return;
+	}
 
-	MaximizeCurrentValue();
+	auto const healAmount = healthItem->GetHealAmount();
+	Heal(healAmount);
+}
+
+void UHealthComponent::Heal(float healAmount)
+{
+	if(IsDead())
+	{
+		return;
+	}
+
+	ChangeValue(healAmount);
+}
+
+void UHealthComponent::Injure(float damageAmount)
+{
+	if (IsDead())
+	{
+		return;
+	}
+	
+	ChangeValue(damageAmount);
 }
 
 void UHealthComponent::Kill()
@@ -14,5 +40,10 @@ void UHealthComponent::Kill()
 
 bool UHealthComponent::IsAlive() const
 {
-	return CurrentValue > MinValue;
+	return CurrentValue > 0;
+}
+
+bool UHealthComponent::IsDead() const
+{
+	return !IsAlive();
 }

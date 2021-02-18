@@ -7,7 +7,6 @@ void UInventoryToWeaponManagerMapping::Map()
 {
 	auto const owner = GetOwner();
 	auto const inventoryComponent = owner->FindComponentByClass<UInventoryComponent>();
-	auto const weaponManagerComponent = owner->FindComponentByClass<UWeaponManagerComponent>();
 
 	if(!inventoryComponent)
 	{
@@ -18,6 +17,8 @@ void UInventoryToWeaponManagerMapping::Map()
 		return;
 	}
 
+	auto const weaponManagerComponent = owner->FindComponentByClass<UWeaponManagerComponent>();
+	
 	if (!weaponManagerComponent)
 	{
 		DevLogger::GetLoggingChannel()->LogValue(
@@ -28,5 +29,4 @@ void UInventoryToWeaponManagerMapping::Map()
 	}
 	
 	inventoryComponent->ItemAdded.AddUObject(weaponManagerComponent, &UWeaponManagerComponent::OnInventoryItemAdded);
-	inventoryComponent->ItemRemoved.AddUObject(weaponManagerComponent, &UWeaponManagerComponent::OnInventoryItemAdded);
 }

@@ -20,6 +20,12 @@ UBlueprint* WeaponFactory::GetBlueprint(FName id)
 		return _weaponBlueprints[id];
 	}
 
+	if(!_weaponAssets.Contains(id))
+	{
+		DevLogger::GetLoggingChannel()->LogValue("WeaponFactory does not contain asset id:", id);
+		return nullptr;
+	}
+	
 	auto const assetPath = _weaponAssets[id];
 	auto const blueprint = AssetUtils::LoadBlueprint(assetPath);
 	_weaponBlueprints.Add(id, blueprint);

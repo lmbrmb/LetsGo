@@ -9,7 +9,7 @@ DebugLoggingChannel::DebugLoggingChannel(int maxMessageCount, float timeToDispla
 	_lineIndex = _isMessageCountLimited ? 0 : -1;
 }
 
-void DebugLoggingChannel::Log(const FString message, LogSeverity severity)
+void DebugLoggingChannel::LogImplementation(const FString message, LogSeverity severity)
 {
 	_messageNumber++;
 	

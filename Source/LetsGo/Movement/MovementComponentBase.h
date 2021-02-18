@@ -5,7 +5,7 @@
 
 const bool DETECT_COLLISION_ON_MOVEMENT = true;
 const FName GRAVITY_FORCE_NAME = FName("Gravity");
-const FName JUMP_FORCE_NAME = FName("Jump");
+const FName JUMP_FORCE_ID = FName("Jump");
 
 ///<summary>
 /// [Abstract] Movement component
