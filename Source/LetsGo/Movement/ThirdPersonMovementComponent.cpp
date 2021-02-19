@@ -1,5 +1,7 @@
 #include "ThirdPersonMovementComponent.h"
+#include "LetsGo/Utils/FVectorUtils.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "LetsGo/Logs/DevLogger.h"
 
 const float MIN_MOVEMENT_INPUT_AMOUNT = 0.15f;
 const float MIN_ROTATION_INPUT = 0.05f;
@@ -33,6 +35,13 @@ void UThirdPersonMovementComponent::ProcessInput()
 		return;
 	}
 
+	auto absoluteMovementAmount = FMath::Abs(_actorForwardMovementInputAmount) + FMath::Abs(_actorRightMovementInputAmount);
+	if (absoluteMovementAmount > 1)
+	{
+		absoluteMovementAmount = 1;
+	}
+	_absoluteMovementAmount = absoluteMovementAmount;
+	
 	FVector direction = FVector::ZeroVector;
 	if (hasForwardInput)
 	{
@@ -118,10 +127,9 @@ void UThirdPersonMovementComponent::ProcessActorRotation(const float deltaTime) 
 	{
 		return;
 	}
-	auto const targetAngleRadians = FMath::Acos(targetDirectionDot);
-	auto const targetAngleDegrees = FMath::RadiansToDegrees(targetAngleRadians);
-	const auto targetDirectionCross = FVector::CrossProduct(actorForwardDirection, _inputMovementDirection);
-	auto const targetAngleSign = FMath::Sign(FVector::DotProduct(FVector::UpVector, targetDirectionCross));
+
+	auto const targetAngleDegrees = FVectorUtils::GetUnsignedAngleDegrees(targetDirectionDot);
+	auto const targetAngleSign = FVectorUtils::GetSignOfAngle(actorForwardDirection, _inputMovementDirection);
 	auto rotationDeltaDegrees = deltaTime * _rotationSpeedDegrees;
 
 	if (rotationDeltaDegrees > targetAngleDegrees)

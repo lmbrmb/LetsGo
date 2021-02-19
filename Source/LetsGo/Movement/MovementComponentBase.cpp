@@ -1,4 +1,7 @@
 #include "MovementComponentBase.h"
+#include "DrawDebugHelpers.h"
+#include "LetsGo/Logs/DevLogger.h"
+#include "LetsGo/Utils/FVectorUtils.h"
 
 UMovementComponentBase::UMovementComponentBase()
 {
@@ -20,6 +23,7 @@ void UMovementComponentBase::BeginPlay()
 	RootCollider = actor->FindComponentByClass<UShapeComponent>();
 	CollisionShape = RootCollider->GetCollisionShape();
 	CollisionQueryParams.AddIgnoredActor(actor);
+	
 	if (!FMath::IsNearlyZero(_gravityForceMagnitude))
 	{
 		auto const gravityForce = Force::CreateInfiniteForce(GRAVITY_FORCE_NAME, FVector::DownVector, _gravityForceMagnitude);
@@ -40,15 +44,7 @@ void UMovementComponentBase::TickComponent(
 	CheckGround();
 	ProcessInput();
 	ProcessForces(DeltaTime);
-
-	auto const direction = GetInputMovementDirection();
-	if(direction != FVector::ZeroVector)
-	{
-		auto const speed = GetMovementSpeed();
-		auto const translation = direction * speed * DeltaTime;
-		Translate(translation);
-	}
-	
+	ProcessMovement(DeltaTime);
 	CustomTick(DeltaTime);
 	UpdateVelocity();
 	ResetInput();
@@ -58,9 +54,8 @@ void UMovementComponentBase::CheckGround()
 {
 	auto const location = Root->GetComponentLocation();
 	auto const targetLocation = location + FVector::DownVector * 10;
-
 	auto const isOnGround = World->SweepSingleByChannel(
-		_floorHitResult,
+		_groundHitResult,
 		location,
 		targetLocation,
 		Root->GetComponentQuat(),
@@ -72,7 +67,7 @@ void UMovementComponentBase::CheckGround()
 	IsInAir = !isOnGround;
 }
 
-void UMovementComponentBase::ProcessForces(float deltaTime)
+void UMovementComponentBase::ProcessForces(const float& deltaTime)
 {
 	auto const forcesCount = _forces.Num();
 
@@ -97,7 +92,35 @@ void UMovementComponentBase::ProcessForces(float deltaTime)
 			_forces.RemoveAt(i);
 		}
 	}
-	Root->AddRelativeLocation(forceSum, DETECT_COLLISION_ON_MOVEMENT);
+	Root->AddRelativeLocation(forceSum, true);
+}
+
+inline void UMovementComponentBase::ProcessMovement(const float& deltaTime)
+{
+	auto const direction = GetInputMovementDirection();
+	if (direction.IsNearlyZero())
+	{
+		return;
+	}
+	auto const speed = GetMovementSpeed();
+
+	if (FMath::IsNearlyZero(speed))
+	{
+		return;
+	}
+
+	auto const translationAmount = speed * deltaTime;
+	auto const currentLocation = Root->GetComponentLocation();
+	auto const currentRotation = Root->GetComponentQuat();
+	Move(
+		currentLocation,
+		currentRotation,
+		direction,
+		_groundHitResult,
+		translationAmount,
+		FIRST_MOVE_CALL_NUMBER
+	);
+	//TODO: slide down surface
 }
 
 void UMovementComponentBase::Jump()
@@ -137,9 +160,75 @@ void UMovementComponentBase::Jump()
 	_forces.Add(jumpForce);
 }
 
-void UMovementComponentBase::Translate(FVector translation)
+void UMovementComponentBase::Move(
+	const FVector& rootLocation,
+	const FQuat& rootRotation,
+	const FVector& direction,
+	const FHitResult& planeHitResult,
+	const float& translationAmount,
+	const int callNumber
+)
 {
-	Root->AddRelativeLocation(translation, DETECT_COLLISION_ON_MOVEMENT);
+	if (!planeHitResult.bBlockingHit)
+	{
+		// Not blocked
+		auto const translation = direction * translationAmount;
+		Root->AddWorldOffset(translation, true);
+		return;
+	}
+
+	auto const planeNormal = planeHitResult.Normal;
+	auto const angleDegrees = FVectorUtils::GetUnsignedAngleDegrees(direction, planeNormal);
+	
+	if (angleDegrees > _maxSlopeDegreesUp)
+	{
+		// Slope is too steep, potentially a wall - can't move
+		//TODO: move along wall
+		return;
+	}
+
+	if (angleDegrees < _maxSlopeDegreesDown)
+	{
+		// Slope break - no translation restriction
+		auto const translation = direction * translationAmount;
+		Root->AddWorldOffset(translation, true);
+		return;
+	}
+
+	auto const directionProjectedOnPlane = FVector::VectorPlaneProject(direction, planeNormal);
+	auto const translation = directionProjectedOnPlane * translationAmount;
+	auto const castLocation = rootLocation + translation;
+	
+	auto const isBlocked = World->SweepSingleByChannel(
+		_bufferHitResult,
+		rootLocation,
+		castLocation,
+		rootRotation,
+		ECC_WorldStatic,
+		CollisionShape,
+		CollisionQueryParams
+	);
+
+	if (!isBlocked)
+	{
+		Root->AddWorldOffset(translation, false);
+		return;
+	}
+	
+	if (callNumber >= MAX_MOVE_CALL_DEPTH)
+	{
+		DevLogger::GetLoggingChannel()->LogValue("Move() reached max call depth", MAX_MOVE_CALL_DEPTH, LogSeverity::Warning);
+		return;
+	}
+	
+	Move(
+		rootLocation,
+		rootRotation,
+		direction,
+		_bufferHitResult,
+		translationAmount,
+		callNumber + 1
+	);
 }
 
 void UMovementComponentBase::UpdateVelocity()
