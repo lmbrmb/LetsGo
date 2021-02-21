@@ -15,10 +15,10 @@ class LETSGO_API URailgunShotComponent final : public UGunShotComponent
 protected:
 	virtual void Init() override;
 	
-	virtual void OnShot(FTransform pivotTransform, FVector shotDirection) override;
+	virtual void OnShot(USceneComponent* firePivot, USceneComponent* aimProvider) override;
 private:
 	ULineBatchComponent* _lineBatcher;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	float _rayDistance = 100;
+	float _rayDistance = 500;
 };

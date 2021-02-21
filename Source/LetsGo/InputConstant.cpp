@@ -23,3 +23,5 @@ const FName InputConstant::ActionNextWeapon = FName("NextWeapon");
 const FName InputConstant::ActionPreviousWeapon = FName("PreviousWeapon");
 
 const FName InputConstant::AxisChangeWeaponDpad = FName("ChangeWeaponDpad");
+
+const FName InputConstant::ActionChangeWeaponPivot = FName("ChangeWeaponPivot");

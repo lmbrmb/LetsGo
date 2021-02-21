@@ -8,7 +8,7 @@
 #include "LetsGo/Utils/ActorUtils.h"
 
 #define RETURN_IF_NO_WEAPON \
-if (_currentWeapon == nullptr) \
+if (_weapon == nullptr) \
 { \
 	return; \
 } \
@@ -32,7 +32,7 @@ void UWeaponManagerComponent::StartFire()
 {
 	RETURN_IF_NO_WEAPON;
 
-	_currentWeapon->StartFire();
+	_weapon->StartFire();
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
@@ -40,14 +40,14 @@ void UWeaponManagerComponent::StopFire()
 {
 	RETURN_IF_NO_WEAPON;
 
-	_currentWeapon->StopFire();
+	_weapon->StopFire();
 }
 
 void UWeaponManagerComponent::Reload()
 {
 	RETURN_IF_NO_WEAPON;
 
-	_currentWeapon->Reload();
+	_weapon->Reload();
 }
 
 void UWeaponManagerComponent::NextWeapon()
@@ -75,7 +75,7 @@ void UWeaponManagerComponent::ChangeWeapon(int indexModifier)
 		return;
 	}
 
-	auto nextIndex = _currentWeaponIndex + indexModifier;
+	auto nextIndex = _weaponIndex + indexModifier;
 
 	if (nextIndex >= weaponsCount)
 	{
@@ -89,34 +89,73 @@ void UWeaponManagerComponent::ChangeWeapon(int indexModifier)
 	EquipWeapon(nextIndex);
 }
 
-void UWeaponManagerComponent::SetWeaponPivot(USceneComponent* weaponPivot)
+void UWeaponManagerComponent::AddWeaponPivot(USceneComponent* weaponPivot)
 {
-	_weaponPivot = weaponPivot;
-	if(_currentWeapon)
+	if(weaponPivot == nullptr)
 	{
-		for(auto weapon : _weapons)
-		{
-			weapon->AttachToComponent(_weaponPivot, FAttachmentTransformRules::KeepRelativeTransform);
-		}
+		return;
+	}
+	
+	_weaponPivots.Add(weaponPivot);
+
+	if (_weaponPivotIndex != UNDEFINED_INDEX)
+	{
+		return;
+	}
+
+	ChangeWeaponPivot();
+}
+
+void UWeaponManagerComponent::SetAimProvider(USceneComponent* aimProvider)
+{
+	_aimProvider = aimProvider;
+}
+
+void UWeaponManagerComponent::ChangeWeaponPivot()
+{
+	auto const weaponPivotsCount = _weaponPivots.Num();
+	if(weaponPivotsCount == 0)
+	{
+		return;
+	}
+	
+	auto nextIndex = _weaponPivotIndex + 1;
+	if (nextIndex >= weaponPivotsCount)
+	{
+		nextIndex = 0;
+	}
+
+	if(_weaponPivotIndex == nextIndex)
+	{
+		return;
+	}
+	
+	_weaponPivotIndex = nextIndex;
+	_weaponPivot = _weaponPivots[_weaponPivotIndex];
+	
+	for (auto weapon : _weapons)
+	{
+		weapon->AttachToComponent(_weaponPivot, FAttachmentTransformRules::KeepRelativeTransform);
 	}
 }
 
 void UWeaponManagerComponent::EquipWeapon(int weaponIndex)
 {
-	if(_currentWeaponIndex == weaponIndex)
+	if(_weaponIndex == weaponIndex)
 	{
 		return;
 	}
 	
-	if (_currentWeapon)
+	if (_weapon)
 	{
-		ActorUtils::SetEnabled(_currentWeapon, false);
+		_weapon->StopFire();
+		ActorUtils::SetEnabled(_weapon, false);
 	}
 
-	_currentWeaponIndex = weaponIndex;
-	_currentWeapon = _weapons[_currentWeaponIndex];
+	_weaponIndex = weaponIndex;
+	_weapon = _weapons[_weaponIndex];
 
-	ActorUtils::SetEnabled(_currentWeapon, true);
+	ActorUtils::SetEnabled(_weapon, true);
 }
 
 void UWeaponManagerComponent::OnInventoryItemAdded(InventoryItem* item)
@@ -129,7 +168,8 @@ void UWeaponManagerComponent::OnInventoryItemAdded(InventoryItem* item)
 	
 	auto const weaponBlueprint = _weaponFactory->GetBlueprint(item->GetId());
 	auto const weapon = AssetUtils::SpawnBlueprint<AWeaponBase>(GetOwner(), weaponBlueprint);
-
+	weapon->SetAimProvider(_aimProvider);
+	
 	if(_weaponPivot == nullptr)
 	{
 		DevLogger::GetLoggingChannel()->Log("Weapon pivot is null", LogSeverity::Warning);

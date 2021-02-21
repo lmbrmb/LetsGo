@@ -19,10 +19,10 @@ protected:
 	///<summary>
 	///[Template method]
 	///</summary>
-	virtual void Init();
+	virtual void Init() {};
 	
 	///<summary>
 	///[Template method]
 	///</summary>
-	virtual void OnShot(FTransform pivotTransform, FVector shotDirection);
+	virtual void OnShot(USceneComponent* firePivot, USceneComponent* aimProvider) {};
 };

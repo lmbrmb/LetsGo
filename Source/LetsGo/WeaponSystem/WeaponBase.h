@@ -14,9 +14,14 @@ class LETSGO_API AWeaponBase : public AActor
 public:	
 	AWeaponBase();
 
+	void SetAimProvider(USceneComponent* aimProvider );
+	
 	virtual void StartFire() {};
 
 	virtual void StopFire() {};
 	
 	virtual void Reload() {};
+	
+protected:
+	USceneComponent* AimProvider;
 };

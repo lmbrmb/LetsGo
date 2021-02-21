@@ -31,6 +31,16 @@ public:
 		return GetSignOfAngle(v1, v2, planeNormal) * GetUnsignedAngleDegrees(v1, v2);
 	}
 
+	/// <summary>
+	/// For testing other normalization functions.
+	/// Reminder: FVector::Normalize() can lead to weird results - use FVector::GetSafeNormal instead.
+	/// </summary>
+	static FVector NormalizeSlow(FVector v)
+	{
+		auto const size = v.Size();
+		return v / size;
+	}
+
 private:
 	FVectorUtils() = delete;
 };

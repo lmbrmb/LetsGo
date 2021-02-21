@@ -53,10 +53,7 @@ void AGun::Tick(float DeltaSeconds)
 		auto const firePivotTransform = firePivot->GetComponentTransform();
 		BpShot(firePivotTransform);
 
-		auto const root = GetRootComponent();
-		//TODO: check direction
-		auto const shotDirection = root->GetForwardVector();
-		ShotPerformed.Broadcast(firePivotTransform, shotDirection);
+		ShotPerformed.Broadcast(firePivot, AimProvider);
 	}
 }
 
@@ -93,7 +90,7 @@ USceneComponent* AGun::GetFirePivot()
 
 bool AGun::IsFiring() const
 {
-	auto const isFiring = _startFireTime > 0 && GetWorld()->TimeSeconds - _startFireTime < _fireDuration;
+	auto const isFiring = _startFireTime > 0 && GetWorld()->TimeSeconds - _startFireTime < _delayBetweenShots;
 	return isFiring;
 }
 

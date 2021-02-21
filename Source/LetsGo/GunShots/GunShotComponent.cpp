@@ -14,15 +14,3 @@ void UGunShotComponent::BeginPlay()
 	gun->ShotPerformed.AddUObject(this, &UGunShotComponent::OnShot);
 	Init();
 }
-
-// Template methods down below
-
-void UGunShotComponent::Init()
-{
-	//Do nothing
-}
-
-void UGunShotComponent::OnShot(FTransform pivotTransform, FVector shotDirection)
-{
-	//Do nothing
-}

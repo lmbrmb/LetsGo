@@ -39,6 +39,8 @@ void UInputToWeaponManagerMapping::Map()
 		weaponManagerComponent, &UWeaponManagerComponent::NextWeapon);
 	inputComponent->BindAxis(InputConstant::AxisChangeWeaponDpad,
 		this, &UInputToWeaponManagerMapping::ChangeWeaponDpad);
+	inputComponent->BindAction(InputConstant::ActionChangeWeaponPivot, EInputEvent::IE_Pressed,
+		weaponManagerComponent, &UWeaponManagerComponent::ChangeWeaponPivot);
 }
 
 bool UInputToWeaponManagerMapping::ShouldDestroyAfterMapping() const

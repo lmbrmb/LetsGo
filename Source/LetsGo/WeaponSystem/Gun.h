@@ -19,7 +19,7 @@ class LETSGO_API AGun final : public AWeaponBase
 public:
 	AGun();
 
-	DECLARE_EVENT_TwoParams(UGun, EShotPerformed, FTransform, FVector);
+	DECLARE_EVENT_TwoParams(UGun, EShotPerformed, USceneComponent*, USceneComponent*);
 	
 	virtual void StartFire() override;
 
@@ -48,8 +48,8 @@ public:
 private:
 	// Fire
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	float _fireDuration = 0.5f;
-
+	float _delayBetweenShots = 0.5f;
+	
 	float _startFireTime = UNDEFINED_TIME;
 
 	bool _isFireTriggered = false;
