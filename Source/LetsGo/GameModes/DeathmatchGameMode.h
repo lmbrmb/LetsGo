@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LetsGoGameModeBase.h"
+#include "MatchGameMode.h"
 #include "DeathmatchGameMode.generated.h"
 
 //<summary>
@@ -10,8 +10,7 @@
 //b. If time runs out of <time_limit>, player with most frags wins.
 //</summary>
 UCLASS()
-class LETSGO_API ADeathmatchGameMode : public ALetsGoGameModeBase
+class LETSGO_API ADeathmatchGameMode final : public AMatchGameMode
 {
 	GENERATED_BODY()
-	
 };

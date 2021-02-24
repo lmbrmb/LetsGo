@@ -1,13 +1,14 @@
 #pragma once
 
+#include "CoreMinimal.h"
 #include "GunShotComponent.h"
-#include "SawedOffShotgunShotComponent.generated.h"
+#include "ConeShotComponent.generated.h"
 
 ///<summary>
-///SawedOffShotgun shot component
+///Cone shot component. Cone dispersion. N bullets.
 ///</summary>
 UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent))
-class LETSGO_API USawedOffShotgunShotComponent : public UGunShotComponent
+class LETSGO_API UConeShotComponent : public UGunShotComponent
 {
 	GENERATED_BODY()
 

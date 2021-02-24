@@ -1,6 +1,6 @@
-#include "SawedOffShotgunShotComponent.h"
+#include "ConeShotComponent.h"
 
-void USawedOffShotgunShotComponent::OnShot(USceneComponent* firePivot, USceneComponent* aimProvider)
+void UConeShotComponent::OnShot(USceneComponent* firePivot, USceneComponent* aimProvider)
 {
 	auto const startLocation = firePivot->GetComponentLocation();
 	auto const rotation = firePivot->GetComponentRotation();

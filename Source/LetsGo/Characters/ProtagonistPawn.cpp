@@ -2,7 +2,7 @@
 
 AProtagonistPawn::AProtagonistPawn()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	_healthComponent = CreateDefaultSubobject<UHealthComponent>("Health");
 }
 

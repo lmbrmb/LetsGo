@@ -1,8 +1,7 @@
 #pragma once
 
 #include "GameFramework/Pawn.h"
-#include "HealthSystem/HealthComponent.h"
-
+#include "LetsGo/HealthSystem/HealthComponent.h"
 #include "ProtagonistPawn.generated.h"
 
 UCLASS()

@@ -9,8 +9,6 @@ class LETSGO_API UFloatParameterComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
-	virtual void BeginPlay() override;
-	
 	UFloatParameterComponent();
 
 	DECLARE_EVENT(UHealth, EChanged)
@@ -35,6 +33,8 @@ public:
 	float GetNormalizedValue() const;
 
 protected:
+	virtual void BeginPlay() override;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float CurrentValue = 0;
 

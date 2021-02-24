@@ -7,17 +7,13 @@
 
 #include "WeaponManagerComponent.generated.h"
 
-const int UNDEFINED_INDEX = -1;
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class LETSGO_API UWeaponManagerComponent final : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	UWeaponManagerComponent();
-
-	virtual void BeginPlay() override;
 	
 	void OnInventoryItemAdded(InventoryItem* item);
 
@@ -40,8 +36,13 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetAimProvider(USceneComponent* aimProvider);
+
+protected:
+	virtual void BeginPlay() override;
 	
 private:
+	const int UNDEFINED_INDEX = -1;
+	
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = Custom)
 	bool _equipWeaponOnPickup = true;
 

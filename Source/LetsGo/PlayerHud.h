@@ -10,7 +10,7 @@ class LETSGO_API APlayerHud : public AHUD
 {
 	GENERATED_BODY()
 
-public:
+protected:
 	virtual void BeginPlay() override;
 	
 private:

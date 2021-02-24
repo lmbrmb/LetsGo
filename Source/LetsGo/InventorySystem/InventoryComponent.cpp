@@ -2,7 +2,7 @@
 #include "InventoryItem.h"
 #include "HealthItemFactory.h"
 #include "WeaponItemFactory.h"
-#include "LetsGo/GameModes/LetsGoGameModeBase.h"
+#include "LetsGo/GameModes/MatchGameMode.h"
 #include "LetsGo/Logs/DevLogger.h"
 #include "LetsGo/Utils/FactoryUtils.h"
 
@@ -11,8 +11,8 @@ void UInventoryComponent::BeginPlay()
 	Super::BeginPlay();
 	
 	auto const authGameMode = GetWorld()->GetAuthGameMode();
-	auto const gameModeBase = dynamic_cast<ALetsGoGameModeBase*, AGameModeBase>(authGameMode);
-	auto const diContainer = gameModeBase->GetDiContainer();
+	auto const matchGameMode = dynamic_cast<AMatchGameMode*, AGameModeBase>(authGameMode);
+	auto const diContainer = matchGameMode->GetDiContainer();
 	
 	auto const weaponInventoryItemFactory = diContainer->GetInstance<WeaponItemFactory>();
 	_inventoryItemFactories.Add(&weaponInventoryItemFactory.Get());

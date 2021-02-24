@@ -1,21 +1,14 @@
 #pragma once
 
+#include "LetsGo/BlueprintFactory.h"
+
 ///<summary>
 ///Pickup item factory
 ///</summary>
-class LETSGO_API PickupItemFactory final
+class LETSGO_API PickupItemFactory : public BlueprintFactory
 {
 public:
 	PickupItemFactory();
-	
-	~PickupItemFactory();
-
-	UBlueprint* GetBlueprint(FName id);
-
-private:
-	TMap<const FName, const FString> _pickupAssets;
-
-	TMap<const FName, UBlueprint*> _pickupBlueprints;
 };
 
 Expose_TNameOf(PickupItemFactory)

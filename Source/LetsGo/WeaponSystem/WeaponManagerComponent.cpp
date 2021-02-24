@@ -1,5 +1,5 @@
 #include "WeaponManagerComponent.h"
-#include "LetsGo/GameModes/LetsGoGameModeBase.h"
+#include "LetsGo/GameModes/MatchGameMode.h"
 #include "LetsGo/InventorySystem/InventoryItem.h"
 #include "LetsGo/InventorySystem/WeaponItem.h"
 #include "LetsGo/Logs/DevLogger.h"
@@ -20,7 +20,7 @@ UWeaponManagerComponent::UWeaponManagerComponent()
 
 void UWeaponManagerComponent::BeginPlay()
 {
-	auto const gameModeBase = dynamic_cast<ALetsGoGameModeBase*>(GetWorld()->GetAuthGameMode());
+	auto const gameModeBase = dynamic_cast<AMatchGameMode*>(GetWorld()->GetAuthGameMode());
 	auto const diContainer = gameModeBase->GetDiContainer();
 	auto const weaponInventoryItemFactory = diContainer->GetInstance<WeaponFactory>();
 	auto const pickupItemFactory = diContainer->GetInstance<PickupItemFactory>();
@@ -167,7 +167,7 @@ void UWeaponManagerComponent::OnInventoryItemAdded(InventoryItem* item)
 	}
 	
 	auto const weaponBlueprint = _weaponFactory->GetBlueprint(item->GetId());
-	auto const weapon = AssetUtils::SpawnBlueprint<AWeaponBase>(GetOwner(), weaponBlueprint);
+	auto const weapon = AssetUtils::SpawnBlueprint<AWeaponBase>(GetWorld(), GetOwner(), weaponBlueprint);
 	weapon->SetAimProvider(_aimProvider);
 	
 	if(_weaponPivot == nullptr)

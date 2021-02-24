@@ -14,8 +14,9 @@ class LETSGO_API UGunShotComponent : public UActorComponent
 public:	
 	UGunShotComponent();
 
-	virtual void BeginPlay() override;
 protected:
+	virtual void BeginPlay() override;
+	
 	///<summary>
 	///[Template method]
 	///</summary>

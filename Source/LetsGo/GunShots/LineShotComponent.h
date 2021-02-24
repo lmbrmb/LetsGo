@@ -1,13 +1,13 @@
 #pragma once
 
 #include "GunShotComponent.h"
-#include "RailgunShotComponent.generated.h"
+#include "LineShotComponent.generated.h"
 
 ///<summary>
-///Railgun shot component
+///Line shot component. Single shot. Check from start to end.
 ///</summary>
 UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent) )
-class LETSGO_API URailgunShotComponent final : public UGunShotComponent
+class LETSGO_API ULineShotComponent final : public UGunShotComponent
 {
 	GENERATED_BODY()
 
@@ -16,8 +16,15 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnShot(FVector startPosition, FVector endPosition);
-
+	
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	float _rayDistance = 500;
+	float _distance = 500;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float _damage = 50;
+
+	FHitResult _hitResult;
+	
+	FCollisionQueryParams _collisionQueryParams;
 };

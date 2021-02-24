@@ -18,8 +18,6 @@ public:
 	DECLARE_EVENT_OneParam(UInventoryComponent, EItemRemoved, InventoryItem* item);
 	
 	UInventoryComponent();
-	
-	virtual void BeginPlay() override;
 
 	InventoryItem* GetInventoryItem(FName itemId) const;
 	
@@ -39,6 +37,9 @@ public:
 	/// </summary>
 	EItemRemoved ItemRemoved;
 
+protected:
+	virtual void BeginPlay() override;
+	
 private:
 	TArray<InventoryItem*> _inventoryItems;
 

@@ -1,6 +1,6 @@
 #include "ProtagonistPlayerController.h"
 #include "Kismet/KismetStringLibrary.h"
-#include "Logs/DevLogger.h"
+#include "LetsGo/Logs/DevLogger.h"
 
 void AProtagonistPlayerController::SetPawn(APawn* InPawn)
 {

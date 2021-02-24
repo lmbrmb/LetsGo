@@ -13,29 +13,31 @@ void UHealthComponent::OnInventoryItemAdded(InventoryItem* item)
 	Heal(healAmount);
 }
 
-void UHealthComponent::Heal(float healAmount)
+void UHealthComponent::Heal(const float healAmount)
 {
 	if(IsDead())
 	{
 		return;
 	}
 
-	ChangeValue(healAmount);
+	auto const healValue = FMath::Abs(healAmount);
+	ChangeValue(healValue);
 }
 
-void UHealthComponent::Injure(float damageAmount)
+void UHealthComponent::Injure(const float damageAmount)
 {
 	if (IsDead())
 	{
 		return;
 	}
-	
-	ChangeValue(damageAmount);
+
+	auto const damageValue = -1 * FMath::Abs(damageAmount);
+	ChangeValue(damageValue);
 }
 
 void UHealthComponent::Kill()
 {
-	MinimizeCurrentValue();
+	SetCurrentValue(0);
 }
 
 bool UHealthComponent::IsAlive() const

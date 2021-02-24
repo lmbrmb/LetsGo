@@ -16,20 +16,39 @@ public:
 
 		return Cast<UBlueprint>(assetObject);
 	}
+
+	template <class T>
+	static T* SpawnBlueprint(
+		UWorld* world,
+		AActor* owner,
+		UBlueprint* blueprint,
+		FTransform transform
+	)
+	{
+		FActorSpawnParameters spawnParams;
+		spawnParams.Owner = owner;
+		spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		return world->SpawnActor<T>(
+			blueprint->GeneratedClass,
+			transform,
+			spawnParams
+			);
+	}
 	
 	template <class T>
 	static T* SpawnBlueprint(
+		UWorld* world,
 		AActor* owner,
 		UBlueprint* blueprint,
 		FVector location = FVector::ZeroVector,
 		FRotator rotation = FRotator::ZeroRotator
 	)
 	{
-		auto const world = owner->GetWorld();
 		FActorSpawnParameters spawnParams;
 		spawnParams.Owner = owner;
 		spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
+		
 		return world->SpawnActor<T>(
 			blueprint->GeneratedClass,
 			location,

@@ -27,10 +27,6 @@ public:
 	virtual void StopFire() override;
 	
 	virtual void Reload() override;
-
-	virtual void BeginPlay() override;
-	
-	virtual void Tick(float DeltaSeconds) override;
 	
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpFireStarted();
@@ -48,6 +44,11 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpAmmoLoaded();
+
+protected:
+	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaSeconds) override;
 	
 private:
 	GunState _state = GunState::Idle;

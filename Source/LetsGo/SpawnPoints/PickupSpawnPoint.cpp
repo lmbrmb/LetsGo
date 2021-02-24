@@ -1,6 +1,6 @@
 #include "PickupSpawnPoint.h"
-#include "LetsGo/GameModes/LetsGoGameModeBase.h"
 #include "Kismet/KismetStringLibrary.h"
+#include "LetsGo/GameModes/MatchGameMode.h"
 #include "LetsGo/Logs/DevLogger.h"
 #include "LetsGo/PickupItems/PickupItem.h"
 #include "LetsGo/Utils/AssetUtils.h"
@@ -20,7 +20,7 @@ void APickupSpawnPoint::BeginPlay()
 {
 	Super::BeginPlay();
 
-	auto const gameModeBase = dynamic_cast<ALetsGoGameModeBase*>(GetWorld()->GetAuthGameMode());
+	auto const gameModeBase = dynamic_cast<AMatchGameMode*>(GetWorld()->GetAuthGameMode());
 	auto const diContainer = gameModeBase->GetDiContainer();
 	auto const pickupItemFactory = diContainer->GetInstance<PickupItemFactory>();
 	_pickupItemFactory = &pickupItemFactory.Get();
@@ -44,6 +44,6 @@ void APickupSpawnPoint::SpawnPickup()
 		return;
 	}
 	
-	auto const pickupItem = AssetUtils::SpawnBlueprint<APickupItem>(this, pickupBlueprint);
+	auto const pickupItem = AssetUtils::SpawnBlueprint<APickupItem>(GetWorld(), this, pickupBlueprint);
 	pickupItem->AttachToComponent(_spawnPivot, FAttachmentTransformRules::KeepRelativeTransform);
 }
