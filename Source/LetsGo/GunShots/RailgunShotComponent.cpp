@@ -1,11 +1,6 @@
 #include "RailgunShotComponent.h"
 #include "DrawDebugHelpers.h"
 
-void URailgunShotComponent::Init()
-{
-	_lineBatcher = GetWorld()->LineBatcher;
-}
-
 void URailgunShotComponent::OnShot(USceneComponent* firePivot, USceneComponent* aimProvider)
 {
 	auto const pivotLocation = firePivot->GetComponentLocation();
@@ -14,4 +9,5 @@ void URailgunShotComponent::OnShot(USceneComponent* firePivot, USceneComponent* 
 	auto const shotDirection = (targetAimLocation - pivotLocation).GetSafeNormal();
 	auto const rayEndLocation = pivotLocation + shotDirection * _rayDistance;
 	DrawDebugLine(GetWorld(), pivotLocation, rayEndLocation, FColor::Red, false, 10);
+	BpOnShot(pivotLocation, rayEndLocation);
 }

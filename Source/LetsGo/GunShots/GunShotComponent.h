@@ -6,7 +6,7 @@
 ///<summary>
 ///Gun shot base component
 ///</summary>
-UCLASS( Abstract, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS( ClassGroup=(Custom) )
 class LETSGO_API UGunShotComponent : public UActorComponent
 {
 	GENERATED_BODY()

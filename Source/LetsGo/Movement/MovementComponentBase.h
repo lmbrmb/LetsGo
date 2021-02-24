@@ -9,7 +9,7 @@ const FName JUMP_FORCE_ID = FName("Jump");
 ///<summary>
 /// [Abstract] Movement component
 ///</summary>
-UCLASS( Abstract, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS( Abstract, ClassGroup=(Custom) )
 class LETSGO_API UMovementComponentBase : public UActorComponent
 {
 	GENERATED_BODY()

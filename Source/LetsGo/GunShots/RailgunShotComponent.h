@@ -4,21 +4,20 @@
 #include "RailgunShotComponent.generated.h"
 
 ///<summary>
-///Railgun shot
+///Railgun shot component
 ///</summary>
-UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-//EditInlineNew
+UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent) )
 class LETSGO_API URailgunShotComponent final : public UGunShotComponent
 {
 	GENERATED_BODY()
 
 protected:
-	virtual void Init() override;
-	
 	virtual void OnShot(USceneComponent* firePivot, USceneComponent* aimProvider) override;
-private:
-	ULineBatchComponent* _lineBatcher;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpOnShot(FVector startPosition, FVector endPosition);
+
+private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float _rayDistance = 500;
 };

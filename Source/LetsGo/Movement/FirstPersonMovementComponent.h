@@ -4,7 +4,7 @@
 #include "Camera/CameraComponent.h"
 #include "FirstPersonMovementComponent.generated.h"
 
-UCLASS(EditInlineNew, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+UCLASS(meta = (BlueprintSpawnableComponent))
 class LETSGO_API UFirstPersonMovementComponent final : public UMovementComponentBase
 {
 	GENERATED_BODY()

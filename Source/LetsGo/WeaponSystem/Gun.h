@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "WeaponBase.h"
 #include "FirePivotMode.h"
+#include "GunState.h"
 #include "Gun.generated.h"
 
 const int UNDEFINED_TIME = -1.0f;
@@ -34,9 +35,6 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpFireStarted();
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void BpShot(FTransform transform);
-
 	EShotPerformed ShotPerformed;
 	
 	UFUNCTION(BlueprintImplementableEvent)
@@ -44,13 +42,29 @@ public:
 	
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpReloadStarted();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpReloadFinished();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpAmmoLoaded();
 	
 private:
+	GunState _state = GunState::Idle;
+
+	void SetState(GunState state);
+	
+	void ProcessIdleState();
+
+	void ProcessReloadingState();
+
+	void ProcessShootingState();
+	
 	// Fire
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	float _delayBetweenShots = 0.5f;
+	float _shotDuration = 0.5f;
 	
-	float _startFireTime = UNDEFINED_TIME;
+	float _shotStartTime = UNDEFINED_TIME;
 
 	bool _isFireTriggered = false;
 	
@@ -81,29 +95,53 @@ private:
 	int _firePivotIndex = INITIAL_FIRE_PIVOT_INDEX;
 
 	// Reload
+
+	/// <summary>
+	/// How much time it takes to start loading ammo after reloading triggered
+	/// </summary>
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	float _reloadDuration = 0;
-
-	float _startReloadTime = UNDEFINED_TIME;
-
-	// Private methods
-	bool IsFiring() const;
+	float _loadAmmoDelay = 0.5f;
 	
+	float _reloadStartTime = UNDEFINED_TIME;
+	
+	/// <summary>
+	/// How much time it takes to insert one portion of ammo
+	/// </summary>
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float _ammoLoadDuration = 0;
+
+	/// <summary>
+	/// How much ammo will be added to clip per one load time
+	/// </summary>
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	int _ammoPerLoad = 1;
+	
+	float _ammoLoadStartTime = UNDEFINED_TIME;
+	
+	// Private methods
+	bool IsShooting() const;
+	
+	void StartShot();
+
 	void ConsumeAmmo();
 
 	bool IsClipFull() const;
 	
 	bool IsEnoughAmmoForShot() const;
 	
-	bool HasAmmoToReload() const;
+	bool HasAmmoToLoad() const;
 	
 	void StartReload();
 
-	void FinishReload();
+	void LoadAmmo();
 	
-	bool IsReloading() const;
+	void FinishReload();
 
-	bool IsReloadStarted() const;
+	bool IsLoadAmmoDelayActive() const;
+	
+	bool IsLoadingAmmo() const;
+
+	bool IsLoadingAmmoStarted() const;
 
 	void TriggerFire(bool isFireTriggered);
 };
