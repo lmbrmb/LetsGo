@@ -3,7 +3,7 @@
 
 UGunShotComponent::UGunShotComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
 void UGunShotComponent::BeginPlay()

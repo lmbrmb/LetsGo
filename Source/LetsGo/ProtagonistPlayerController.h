@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GameFramework/PlayerController.h"
-#include "ProtagonistPawn.h"
+#include "LetsGo/Avatars/Avatar.h"
 #include "ProtagonistPlayerController.generated.h"
 
 ///<summary>
@@ -14,9 +14,9 @@ class LETSGO_API AProtagonistPlayerController final : public APlayerController
 
 public:
 	virtual void SetPawn(APawn* InPawn) override;
+
+	AAvatar* GetAvatar();
 	
 private:
-	AProtagonistPawn* _protagonistPawn = nullptr;
-
-	void DebugDisplayPawnInfo() const;
+	AAvatar* _avatar = nullptr;
 };

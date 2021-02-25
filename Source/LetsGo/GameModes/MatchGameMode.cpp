@@ -1,8 +1,11 @@
 #include "MatchGameMode.h"
 #include "LetsGo/MatchDependencyInjectionContainerFactory.h"
-#include "LetsGo/Characters/ProtagonistPawn.h"
+#include "LetsGo/Avatars/Avatar.h"
+#include "LetsGo/HealthSystem/HealthComponent.h"
 #include "LetsGo/Logs/DevLogger.h"
 #include "LetsGo/Utils/AssetUtils.h"
+
+const int BOT_COUNT = 3;
 
 AMatchGameMode::AMatchGameMode()
 {
@@ -17,8 +20,18 @@ AMatchGameMode::~AMatchGameMode()
 void AMatchGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
+	
 	MatchDependencyInjectionContainerFactory containerFactory;
 	_diContainer = containerFactory.CreateContainer<ESPMode::Fast>();
+
+	auto const playerFactory = GetDiContainer()->GetInstance<AvatarFactory>();
+	_avatarFactory = &playerFactory.Get();
+
+	_avatarsData.Add(new AvatarData(FGuid::NewGuid(), AvatarType::LocalPlayer));
+	for(auto i = 0; i<BOT_COUNT; i++)
+	{
+		_avatarsData.Add(new AvatarData(FGuid::NewGuid(), AvatarType::Bot));
+	}
 }
 
 TTypeContainer<ESPMode::Fast>* AMatchGameMode::GetDiContainer() const
@@ -28,13 +41,12 @@ TTypeContainer<ESPMode::Fast>* AMatchGameMode::GetDiContainer() const
 
 void AMatchGameMode::BeginPlay()
 {
-	auto const botFactory = GetDiContainer()->GetInstance<BotFactory>();
-	_botFactory = &botFactory.Get();
+	Super::BeginPlay();
 
-	auto const playerFactory = GetDiContainer()->GetInstance<PlayerFactory>();
-	_playerFactory = &playerFactory.Get();
-
-	SpawnPlayers();
+	for (auto avatarData : _avatarsData)
+	{
+		SpawnAvatar(avatarData);
+	}
 }
 
 void AMatchGameMode::RegisterSpawnPoint(FTransform spawnPoint)
@@ -63,28 +75,40 @@ FTransform AMatchGameMode::GetNextSpawnPoint()
 	return _spawnPoints[_spawnPointIndex];
 }
 
-void AMatchGameMode::SpawnPlayers()
+void AMatchGameMode::SpawnAvatar(AvatarData* avatarData)
 {
-	//TODO: get actual info
-	auto const botsCount = 3;
+	auto const avatarType = avatarData->GetAvatarType();
+	auto const avatarBlueprint = GetAvatarBlueprint(avatarType);
 
-	SpawnLocalPlayerPawn();
-
-	for (auto i = 0; i < botsCount; i++)
+	if (!avatarBlueprint)
 	{
-		SpawnBot();
+		DevLogger::GetLoggingChannel()->Log("Avatar blueprint is null", LogSeverity::Error);
+		return;
 	}
+
+	auto const avatar = AssetUtils::SpawnBlueprint<AAvatar>(GetWorld(), nullptr, avatarBlueprint, GetNextSpawnPoint());
+	avatar->SetAvatarData(avatarData);
+	auto const healthComponent = avatar->FindComponentByClass<UHealthComponent>();
+	healthComponent->Died.AddUObject(this, &AMatchGameMode::OnAvatarDied);
 }
 
-void AMatchGameMode::SpawnLocalPlayerPawn()
+UBlueprint* AMatchGameMode::GetAvatarBlueprint(const AvatarType avatarType) const
 {
-	auto const playerBlueprint = _playerFactory->GetBlueprint("Player1");
-	AssetUtils::SpawnBlueprint<AProtagonistPawn>(GetWorld(), nullptr, playerBlueprint, GetNextSpawnPoint());
+	switch (avatarType)
+	{
+		case AvatarType::LocalPlayer:
+			return  _avatarFactory->GetLocalPlayerBlueprint();
+
+		case AvatarType::RemotePlayer:
+			return  _avatarFactory->GetRemotePlayerBlueprint();
+
+		case AvatarType::Bot:
+			return _avatarFactory->GetBotBlueprint();
+	}
+	return nullptr;
 }
 
-void AMatchGameMode::SpawnBot()
+void AMatchGameMode::OnAvatarDied(AActor* actor)
 {
-	//TODO: bot skill
-	auto const botBlueprint = _botFactory->GetBlueprint("Bot1");
-	AssetUtils::SpawnBlueprint<AActor>(GetWorld(), nullptr, botBlueprint, GetNextSpawnPoint());
+	actor->Destroy();
 }

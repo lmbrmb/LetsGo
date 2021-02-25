@@ -1,8 +1,8 @@
 #pragma once
 
 #include "GameFramework/GameModeBase.h"
-#include "LetsGo/Characters/BotFactory.h"
-#include "LetsGo/Characters/PlayerFactory.h"
+#include "LetsGo/Avatars/AvatarData.h"
+#include "LetsGo/Avatars/AvatarFactory.h"
 #include "Misc/TypeContainer.h"
 #include "MatchGameMode.generated.h"
 
@@ -27,9 +27,13 @@ protected:
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 
 	virtual void BeginPlay() override;
+
+	virtual void OnAvatarDied(AActor* actor);
 	
 private:
 	const int UNDEFINED_INDEX = -1;
+
+	const float RESPAWN_TIME = 3.0f;
 	
 	TTypeContainer<ESPMode::Fast>* _diContainer = nullptr;
 
@@ -38,14 +42,12 @@ private:
 	int _spawnPointIndex = UNDEFINED_INDEX;
 
 	FTransform GetNextSpawnPoint();
+
+	AvatarFactory* _avatarFactory;
+
+	void SpawnAvatar(AvatarData* avatarData);
+
+	UBlueprint* GetAvatarBlueprint(const AvatarType avatarType) const;
 	
-	void SpawnPlayers();
-
-	void SpawnLocalPlayerPawn();
-
-	void SpawnBot();
-
-	BotFactory* _botFactory;
-
-	PlayerFactory* _playerFactory;
+	TArray<AvatarData*> _avatarsData;
 };

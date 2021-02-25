@@ -5,8 +5,7 @@
 #include "LetsGo/InventorySystem/WeaponItemFactory.h"
 #include "LetsGo/PickupItems/PickupItemFactory.h"
 #include "LetsGo/WeaponSystem/WeaponFactory.h"
-#include "LetsGo/Characters/BotFactory.h"
-#include "LetsGo/Characters/PlayerFactory.h"
+#include "LetsGo/Avatars/AvatarFactory.h"
 
 class MatchDependencyInjectionContainerFactory final
 {
@@ -28,15 +27,13 @@ TTypeContainer<Mode>* MatchDependencyInjectionContainerFactory::CreateContainer(
 	const TSharedRef<WeaponItemFactory> weaponItemFactory = MakeShareable(new WeaponItemFactory());
 	const TSharedRef<HealthItemFactory> healthItemFactory = MakeShareable(new HealthItemFactory());
 	const TSharedRef<WeaponFactory> weaponFactory = MakeShareable(new WeaponFactory());
-	const TSharedRef<BotFactory> botFactory = MakeShareable(new BotFactory());
-	const TSharedRef<PlayerFactory> playerFactory = MakeShareable(new PlayerFactory());
+	const TSharedRef<AvatarFactory> avatarFactory = MakeShareable(new AvatarFactory());
 	
 	container->template RegisterInstance<PickupItemFactory>(pickupItemFactory);
 	container->template RegisterInstance<WeaponItemFactory>(weaponItemFactory);
 	container->template RegisterInstance<HealthItemFactory>(healthItemFactory);
 	container->template RegisterInstance<WeaponFactory>(weaponFactory);
-	container->template RegisterInstance<BotFactory>(botFactory);
-	container->template RegisterInstance<PlayerFactory>(playerFactory);
+	container->template RegisterInstance<AvatarFactory>(avatarFactory);
 	
 	return container;
 }

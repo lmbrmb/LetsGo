@@ -13,4 +13,11 @@ UCLASS()
 class LETSGO_API ADeathmatchGameMode final : public AMatchGameMode
 {
 	GENERATED_BODY()
+
+protected:
+	virtual void BeginPlay() override;
+
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	int _fragLimit = 10;
 };

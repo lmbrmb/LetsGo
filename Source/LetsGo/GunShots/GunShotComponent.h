@@ -18,12 +18,12 @@ protected:
 	virtual void BeginPlay() override;
 	
 	///<summary>
-	///[Template method]
+	///[Template method] Initialization
 	///</summary>
 	virtual void Init() {};
 	
 	///<summary>
-	///[Template method]
+	///[Template method] Gun.OnShot event handler
 	///</summary>
 	virtual void OnShot(USceneComponent* firePivot, USceneComponent* aimProvider) {};
 };

@@ -1,6 +1,14 @@
 #include "HealthComponent.h"
 #include "LetsGo/InventorySystem/HealthItem.h"
 
+void UHealthComponent::OnChanged()
+{
+	if(IsDead())
+	{
+		Died.Broadcast(GetOwner());
+	}
+}
+
 void UHealthComponent::OnInventoryItemAdded(InventoryItem* item)
 {
 	auto const healthItem = dynamic_cast<HealthItem*>(item);

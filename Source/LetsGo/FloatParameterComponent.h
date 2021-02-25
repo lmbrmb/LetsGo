@@ -50,4 +50,6 @@ protected:
 	void Init();
 	
 	void ChangeValue(float amount);
+
+	virtual void OnChanged(){};
 };

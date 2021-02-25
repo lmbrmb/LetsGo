@@ -51,6 +51,7 @@ void UFloatParameterComponent::SetCurrentValue(float currentValue)
 	CurrentValue = FMath::Max(MinValue, FMath::Min(MaxValue, currentValue));
 	if(previous != CurrentValue)
 	{
+		OnChanged();
 		Changed.Broadcast();
 	}
 }
