@@ -17,7 +17,7 @@ InventoryItem* HealthItemFactory::Create(FName itemId)
 	if(_healAmounts.Contains(itemId))
 	{
 		auto const healAmount = _healAmounts[itemId];
-		return new HealthItem(itemId, true, healAmount);
+		return new HealthItem(itemId, true, false, 1, 1, healAmount);
 	}
 	
 	return nullptr;

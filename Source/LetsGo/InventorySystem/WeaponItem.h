@@ -8,5 +8,11 @@
 class LETSGO_API WeaponItem final : public InventoryItem
 {
 public:
-	explicit WeaponItem(FName id, bool isConsumable);
+	explicit WeaponItem(
+		const FName& id,
+		const bool isConsumable,
+		const bool isSingleInstance,
+		const int quantity,
+		const int maxQuantity
+	);
 };

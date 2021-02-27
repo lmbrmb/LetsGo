@@ -110,5 +110,8 @@ UBlueprint* AMatchGameMode::GetAvatarBlueprint(const AvatarType avatarType) cons
 
 void AMatchGameMode::OnAvatarDied(AActor* actor)
 {
+	auto const avatar = static_cast<AAvatar*>(actor);
+	auto const avatarData= avatar->GetAvatarData();
+	// TODO: respawn task
 	actor->Destroy();
 }

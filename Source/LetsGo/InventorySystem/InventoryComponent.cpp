@@ -1,9 +1,12 @@
 #include "InventoryComponent.h"
+
+#include "AmmoItemFactory.h"
 #include "InventoryItem.h"
 #include "HealthItemFactory.h"
 #include "WeaponItemFactory.h"
 #include "LetsGo/GameModes/MatchGameMode.h"
 #include "LetsGo/Logs/DevLogger.h"
+#include "LetsGo/Utils/AssertUtils.h"
 #include "LetsGo/Utils/FactoryUtils.h"
 
 void UInventoryComponent::BeginPlay()
@@ -14,11 +17,17 @@ void UInventoryComponent::BeginPlay()
 	auto const matchGameMode = dynamic_cast<AMatchGameMode*, AGameModeBase>(authGameMode);
 	auto const diContainer = matchGameMode->GetDiContainer();
 	
-	auto const weaponInventoryItemFactory = diContainer->GetInstance<WeaponItemFactory>();
-	_inventoryItemFactories.Add(&weaponInventoryItemFactory.Get());
+	auto const weaponItemFactory = diContainer->GetInstance<WeaponItemFactory>();
+	_inventoryItemFactories.Add(&weaponItemFactory.Get());
 
+	auto const ammoItemFactory = diContainer->GetInstance<AmmoItemFactory>();
+	_inventoryItemFactories.Add(&ammoItemFactory.Get());
+	
 	auto const powerUpInventoryItemFactory = diContainer->GetInstance<HealthItemFactory>();
 	_inventoryItemFactories.Add(&powerUpInventoryItemFactory.Get());
+
+	auto const itemConversionFactory = diContainer->GetInstance<ItemConversionFactory>();
+	_itemConversionFactory = &itemConversionFactory.Get();
 }
 
 InventoryItem* UInventoryComponent::GetInventoryItem(FName itemId) const
@@ -36,32 +45,94 @@ UInventoryComponent::UInventoryComponent()
 
 bool UInventoryComponent::TryAddItem(FName itemId)
 {
-	auto const inventoryItem = FactoryUtils::CreateSingle<InventoryItem*, InventoryItemFactory*>(
+	auto createdItem = FactoryUtils::CreateSingle<InventoryItem*, InventoryItemFactory*>(
 		_inventoryItemFactories, [itemId](auto* factory) {return factory->Create(itemId); }
 	);
-	
-	if(inventoryItem == nullptr)
+
+	if (createdItem == nullptr)
 	{
-		DevLogger::GetLoggingChannel()->Log("Can't add item", LogSeverity::Error);
+		DevLogger::GetLoggingChannel()->Log("Item is not created", LogSeverity::Error);
 		return false;
 	}
 
-	//TODO: check item existance, max item count, conversion
-
-	auto const isConsumable = inventoryItem->IsConsumable();
+	auto hasThisItem = false;
+	auto const createdItemInitialQuantity = createdItem->GetQuantity();
+	auto const isSingleInstance = createdItem->IsSingleInstance();
 	
-	if(!isConsumable)
+	// Merge quantity
+	for (auto existingItem : _inventoryItems)
 	{
-		_inventoryItems.Add(inventoryItem);
+		if(existingItem->GetId() != itemId)
+		{
+			continue;
+		}
+
+		hasThisItem = true;
+		
+		auto const itemQuantity = createdItem->GetQuantity();
+		if (itemQuantity <= 0)
+		{
+			break;
+		}
+
+		auto const added = existingItem->IncreaseQuantity(itemQuantity);
+		createdItem->DecreaseQuantity(added);
+
+		// Minor search optimization: one found, no need to iterate further because it's single
+		if(isSingleInstance)
+		{
+			break;
+		}
+	}
+
+	auto const createdItemFinalQuantity = createdItem->GetQuantity();
+	auto const isAddedToExisting = createdItemInitialQuantity > createdItemFinalQuantity;
+	
+	if(hasThisItem && isSingleInstance)
+	{
+		delete createdItem;
+		
+		if(isAddedToExisting)
+		{
+			return true;
+		}
+		
+		// Trying to convert
+		auto const convertedItemId = _itemConversionFactory->GetConvertedItemId(itemId);
+
+		if (BoolUtils::IsStringEmpty(convertedItemId))
+		{
+			// Item can't be converted
+			return false;
+		}
+
+		// Conversion succeeded - adding converted item
+		return TryAddItem(convertedItemId);
+	}
+
+	// Merged
+	if(createdItemFinalQuantity <= 0)
+	{
+		DevLogger::GetLoggingChannel()->Log("ItemWasted. " + createdItem->GetId().ToString(), LogSeverity::Error);
+		delete createdItem;
+		return true;
 	}
 	
-	ItemAdded.Broadcast(inventoryItem);
+	auto const isConsumable = createdItem->IsConsumable();
 
-	if(isConsumable)
+	if (!isConsumable)
 	{
-		delete inventoryItem;
+		_inventoryItems.Add(createdItem);
 	}
-	
+
+	ItemAdded.Broadcast(createdItem);
+
+	if (isConsumable)
+	{
+		delete createdItem;
+		return true;
+	}
+
 	return true;
 }
 

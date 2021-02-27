@@ -3,6 +3,7 @@
 #include "Components/ActorComponent.h"
 #include "WeaponBase.h"
 #include "WeaponFactory.h"
+#include "LetsGo/InventorySystem/AmmoItemFactory.h"
 #include "LetsGo/InventorySystem/InventoryItem.h"
 
 #include "WeaponManagerComponent.generated.h"
@@ -58,9 +59,15 @@ private:
 	
 	TArray<AWeaponBase*> _weapons;
 
-	void EquipWeapon(int weaponIndex);
-	
 	AWeaponBase* _weapon = nullptr;
 
 	int _weaponIndex = UNDEFINED_INDEX;
+	
+	void EquipWeapon(int weaponIndex);
+
+	bool TryProcessItemAsWeapon(InventoryItem* item);
+	
+	bool TryProcessItemAsAmmo(InventoryItem* item);
+
+	TArray<TFunction<bool(InventoryItem*)>> _itemProcessors;
 };

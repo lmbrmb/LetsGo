@@ -17,7 +17,7 @@ InventoryItem* WeaponItemFactory::Create(FName itemId)
 {
 	if(_knownWeaponItems.Contains(itemId))
 	{
-		return new WeaponItem(itemId, false);
+		return new WeaponItem(itemId, false, true, 1, 1);
 	}
 	
 	return nullptr;

@@ -141,7 +141,7 @@ private:
 		const FQuat& rootRotation,
 		const FVector& direction,
 		const FHitResult& planeHitResult,
-		const float& translationAmount,
+		const float translationAmount,
 		int callNumber
 	);
 

@@ -13,6 +13,8 @@ class LETSGO_API AWeaponBase : public AActor
 	
 public:	
 	AWeaponBase();
+	
+	FName GetId();
 
 	void SetAimProvider(USceneComponent* aimProvider );
 	
@@ -24,4 +26,8 @@ public:
 	
 protected:
 	USceneComponent* AimProvider;
+
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	FName _id;
 };

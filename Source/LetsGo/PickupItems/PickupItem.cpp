@@ -1,10 +1,5 @@
 #include "PickupItem.h"
 
-FName APickupItem::GetId()
-{
-	return _id;
-}
-
 APickupItem::APickupItem()
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -12,7 +7,13 @@ APickupItem::APickupItem()
 	SetRootComponent(_root);
 }
 
-APickupItem::~APickupItem()
+FName APickupItem::GetId()
 {
-	//Do nothing
+	return _id;
+}
+
+void APickupItem::Take()
+{
+	Taken.Broadcast(this);
+	Destroy();
 }

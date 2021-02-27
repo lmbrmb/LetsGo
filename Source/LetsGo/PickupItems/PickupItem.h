@@ -13,12 +13,16 @@ class LETSGO_API APickupItem final : public AActor
 
 public:
 	APickupItem();
-
-	~APickupItem();
 	
 	UFUNCTION(BlueprintCallable)
 	FName GetId();
 
+	UFUNCTION(BlueprintCallable)
+	void Take();
+
+	DECLARE_EVENT_OneParam(APickupItem, Taken, APickupItem*)
+	Taken Taken;
+	
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Custom, Meta = (AllowPrivateAccess = "true"))
 	USceneComponent* _root;

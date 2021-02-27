@@ -1,5 +1,6 @@
 #pragma once
 
+#include "LetsGo/PickupItems/PickupItem.h"
 #include "LetsGo/PickupItems/PickupItemFactory.h"
 #include "PickupSpawnPoint.generated.h"
 
@@ -16,12 +17,19 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
+	
 private:
-	PickupItemFactory* _pickupItemFactory = nullptr;
+	const float UNDEFINED_TIME = -1;
+	
+	UBlueprint* _pickupItemBlueprint = nullptr;
 
 	void SpawnPickup();
 
+	void OnPickupTaken(APickupItem* pickupItem);
+
+	UFUNCTION()
+	void RespawnPickupOnTimer();
+	
 	UPROPERTY(BlueprintReadOnly, Category = Custom, meta = (AllowPrivateAccess = "true"))
 	USceneComponent* _root = nullptr;
 	
@@ -29,5 +37,16 @@ private:
 	USceneComponent* _spawnPivot = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	float _pickupRespawnTime = 10;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
 	FName _id = "";
+
+	FDelegateHandle _delegateHandleOnPickupTaken;
+
+	FTimerDelegate _timerDelegate;
+	
+	FTimerHandle _timerHandle;
+	
+	float _pickupTakenTime = UNDEFINED_TIME;
 };

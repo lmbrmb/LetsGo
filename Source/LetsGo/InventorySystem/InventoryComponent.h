@@ -2,6 +2,8 @@
 
 #include "InventoryItem.h"
 #include "InventoryItemFactory.h"
+#include "ItemConversionFactory.h"
+
 #include "InventoryComponent.generated.h"
 
 ///<summary>
@@ -44,4 +46,6 @@ private:
 	TArray<InventoryItem*> _inventoryItems;
 
 	TArray<InventoryItemFactory*> _inventoryItemFactories;
+
+	ItemConversionFactory* _itemConversionFactory;
 };

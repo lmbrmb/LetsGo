@@ -8,10 +8,11 @@
 class LETSGO_API AmmoItem final : public InventoryItem
 {
 public:
-	explicit AmmoItem(FName id, bool isConsumable, int ammoAmount);
-
-	int GetAmmoAmount() const;
-	
-private:
-	int _ammoAmount;
+	explicit AmmoItem(
+		const FName& id,
+		const bool isConsumable,
+		const bool isSingleInstance,
+		const int quantity,
+		const int maxQuantity
+	);
 };

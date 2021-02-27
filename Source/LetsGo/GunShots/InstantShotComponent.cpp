@@ -71,5 +71,6 @@ float UInstantShotComponent::GetBulletDamage() const
 	
 	auto const distancePercent = _hitResult.Distance / _distance;
 	auto const distanceModifier = _damageOverDistanceCurve->GetFloatValue(distancePercent);
-	return _bulletDamage * distanceModifier;
+	auto const resultingDamage = FMath::RoundToInt(_bulletDamage * distanceModifier) ;
+	return resultingDamage;
 }

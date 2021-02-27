@@ -1,13 +1,13 @@
 #include "AmmoItem.h"
 
-AmmoItem::AmmoItem(FName id, bool isConsumable, int ammoAmount) :
-	InventoryItem(id, isConsumable),
-	_ammoAmount(ammoAmount)
+AmmoItem::AmmoItem(
+	const FName& id,
+	const bool isConsumable,
+	const bool isSingleInstance,
+	const int quantity,
+	const int maxQuantity
+)
+	: InventoryItem(id, isConsumable, isSingleInstance, quantity, maxQuantity)
 {
 	//Do nothing
-}
-
-int AmmoItem::GetAmmoAmount() const
-{
-	return _ammoAmount;
 }
