@@ -47,6 +47,4 @@ private:
 	FTimerDelegate _timerDelegate;
 	
 	FTimerHandle _timerHandle;
-	
-	float _pickupTakenTime = UNDEFINED_TIME;
 };

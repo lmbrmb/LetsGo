@@ -39,7 +39,6 @@ void APickupSpawnPoint::SpawnPickup()
 	auto const pickupItem = AssetUtils::SpawnBlueprint<APickupItem>(GetWorld(), this, _pickupItemBlueprint);
 	pickupItem->AttachToComponent(_spawnPivot, FAttachmentTransformRules::KeepRelativeTransform);
 	_delegateHandleOnPickupTaken = pickupItem->Taken.AddUObject(this, &APickupSpawnPoint::OnPickupTaken);
-	_pickupTakenTime = UNDEFINED_TIME;
 }
 
 void APickupSpawnPoint::OnPickupTaken(APickupItem* pickupItem)
@@ -50,7 +49,6 @@ void APickupSpawnPoint::OnPickupTaken(APickupItem* pickupItem)
 	auto world = GetWorld();
 	
 	GetWorldTimerManager().SetTimer(_timerHandle, _timerDelegate, _pickupRespawnTime, false);
-	_pickupTakenTime = GetWorld()->TimeSeconds;
 }
 
 void APickupSpawnPoint::RespawnPickupOnTimer()

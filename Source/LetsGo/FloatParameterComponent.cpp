@@ -1,6 +1,7 @@
 #include "FloatParameterComponent.h"
 #include "Kismet/KismetStringLibrary.h"
 #include "Logs/DevLogger.h"
+#include "Utils/AssertUtils.h"
 
 UFloatParameterComponent::UFloatParameterComponent()
 {
@@ -15,32 +16,9 @@ void UFloatParameterComponent::BeginPlay()
 
 void UFloatParameterComponent::Init()
 {
-	if(MinValue > MaxValue)
-	{
-		DevLogger::GetLoggingChannel()->Log(
-			"Min value " + UKismetStringLibrary::Conv_FloatToString(MinValue)
-			+ " is more than max value " + UKismetStringLibrary::Conv_FloatToString(MaxValue),
-			LogSeverity::Error
-		);
-	}
-	
-	if(InitialValue < MinValue)
-	{
-		DevLogger::GetLoggingChannel()->Log(
-			"Current value " + UKismetStringLibrary::Conv_FloatToString(InitialValue)
-			+ " is less than min value " + UKismetStringLibrary::Conv_FloatToString(MinValue),
-			LogSeverity::Warning
-		);
-	}
-
-	if (InitialValue > MaxValue)
-	{
-		DevLogger::GetLoggingChannel()->Log(
-			"Current value " + UKismetStringLibrary::Conv_FloatToString(InitialValue)
-			+ " is more than max value " + UKismetStringLibrary::Conv_FloatToString(MaxValue),
-			LogSeverity::Warning
-		);
-	}
+	AssertIsGreaterOrEqual(MinValue, MaxValue);
+	AssertIsGreaterOrEqual(InitialValue, MinValue);
+	AssertIsLessOrEqual(InitialValue, MaxValue);
 	
 	SetCurrentValue(InitialValue);
 }

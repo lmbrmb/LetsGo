@@ -1,6 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "AmmoProvider.h"
 #include "WeaponBase.h"
 #include "FirePivotMode.h"
 #include "GunState.h"
@@ -27,6 +29,8 @@ public:
 	virtual void StopFire() override;
 	
 	virtual void Reload() override;
+
+	void SetAmmoProvider(AmmoProvider* ammoProvider);
 	
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpFireStarted();
@@ -76,10 +80,7 @@ private:
 	int _clipCurrent = 0;
 	
 	// Ammo
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	int _initialAmmoCount = 0;
-	
-	int _ammoCount = 0;
+	AmmoProvider* _ammoProvider;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int _consumeAmmoPerShot = 1;
@@ -124,7 +125,9 @@ private:
 	
 	void StartShot();
 
-	void ConsumeAmmo();
+	void AddToClip(const int amount);
+	
+	void ConsumeClip(const int amount);
 
 	bool IsClipFull() const;
 	
@@ -133,7 +136,11 @@ private:
 	bool HasAmmoToLoad() const;
 	
 	void StartReload();
+	
+	int GetAmmoCount() const;
 
+	void ConsumeAmmo(const int amount) const;
+	
 	void LoadAmmo();
 	
 	void FinishReload();

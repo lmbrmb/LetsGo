@@ -9,7 +9,6 @@ void AGun::BeginPlay()
 {
 	Super::BeginPlay();
 
-	_ammoCount = _initialAmmoCount;
 	_clipCurrent = _clipMax;
 }
 
@@ -106,6 +105,11 @@ void AGun::Reload()
 	StartReload();
 }
 
+void AGun::SetAmmoProvider(AmmoProvider* ammoProvider)
+{
+	_ammoProvider = ammoProvider;
+}
+
 USceneComponent* AGun::GetFirePivot()
 {
 	int nextIndex = 0;
@@ -130,7 +134,7 @@ USceneComponent* AGun::GetFirePivot()
 void AGun::StartShot()
 {
 	_shotStartTime = GetWorld()->TimeSeconds;
-	ConsumeAmmo();
+	ConsumeClip(_consumeAmmoPerShot);
 	auto const firePivot = GetFirePivot();
 	ShotPerformed.Broadcast(firePivot, AimProvider);
 	SetState(GunState::Shooting);
@@ -142,9 +146,14 @@ bool AGun::IsShooting() const
 	return isShooting;
 }
 
-void AGun::ConsumeAmmo()
+void AGun::AddToClip(const int amount)
 {
-	_clipCurrent -= _consumeAmmoPerShot;
+	_clipCurrent += amount;
+}
+
+void AGun::ConsumeClip(const int amount)
+{
+	_clipCurrent -= amount;
 }
 
 bool AGun::IsClipFull() const
@@ -160,7 +169,7 @@ bool AGun::IsEnoughAmmoForShot() const
 
 bool AGun::HasAmmoToLoad() const
 {
-	auto const hasAmmoToLoad = _ammoCount >= _consumeAmmoPerShot;
+	auto const hasAmmoToLoad = GetAmmoCount() >= _consumeAmmoPerShot;
 	return hasAmmoToLoad;
 }
 
@@ -171,14 +180,29 @@ void AGun::StartReload()
 	SetState(GunState::Reloading);
 }
 
+int AGun::GetAmmoCount() const
+{
+	return _ammoProvider == nullptr ? 0 : _ammoProvider->Get();
+}
+
+void AGun::ConsumeAmmo(const int amount) const
+{
+	if(_ammoProvider == nullptr)
+	{
+		return;
+	}
+
+	_ammoProvider->Remove(amount);
+}
+
 void AGun::LoadAmmo()
 {
 	_ammoLoadStartTime = GetWorld()->TimeSeconds;
 	auto const ammoDelta = _clipMax - _clipCurrent;
-	auto ammoToLoad = FMath::Min(ammoDelta, _ammoCount);
+	auto ammoToLoad = FMath::Min(ammoDelta, GetAmmoCount());
 	ammoToLoad = FMath::Min(ammoToLoad, _ammoPerLoad);
-	_clipCurrent += ammoToLoad;
-	_ammoCount -= ammoToLoad;
+	AddToClip(ammoToLoad);
+	ConsumeAmmo(ammoToLoad);
 	BpAmmoLoaded();
 }
 

@@ -32,6 +32,15 @@ public:
 	/// <returns>True if empty, false otherwise</returns>
 	template<class T>
 	static bool IsStringEmpty(const T value);
+
+	template<class T>
+	static bool IsEqual(const T value, const T testValue);
+	
+	template<class T>
+	static bool IsGreaterOrEqual(const T value, const T testValue);
+
+	template<class T>
+	static bool IsLessOrEqual(const T value, const T testValue);
 };
 
 template <class T>
@@ -51,4 +60,22 @@ bool BoolUtils::IsStringEmpty(const T value)
 {
 	auto const str = FStringUtils::ToString(value);
 	return UKismetStringLibrary::IsEmpty(str);
+}
+
+template <class T>
+bool BoolUtils::IsEqual(const T value, const T testValue)
+{
+	return value == testValue;
+}
+
+template <class T>
+bool BoolUtils::IsGreaterOrEqual(const T value, const T testValue)
+{
+	return value >= testValue;
+}
+
+template <class T>
+bool BoolUtils::IsLessOrEqual(const T value, const T testValue)
+{
+	return value <= testValue;
 }
