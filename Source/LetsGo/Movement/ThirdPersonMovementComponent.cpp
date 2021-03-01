@@ -1,6 +1,5 @@
 #include "ThirdPersonMovementComponent.h"
 #include "LetsGo/Utils/FVectorUtils.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "LetsGo/Logs/DevLogger.h"
 
 const float MIN_MOVEMENT_INPUT_AMOUNT = 0.15f;
@@ -139,11 +138,11 @@ void UThirdPersonMovementComponent::ProcessActorRotation(const float deltaTime) 
 
 	auto const rotationSignedAngleDegrees = targetAngleSign * rotationDeltaDegrees;
 	auto const rotationVector = actorForwardDirection.RotateAngleAxis(rotationSignedAngleDegrees, FVector::UpVector);
-
+	auto const actorRotation = FRotationMatrix::MakeFromX(rotationVector).Rotator();
+	
 	//auto const actorLocation = Root->GetComponentLocation();
 	//DrawDebugLine(GetWorld(), actorLocation, actorLocation + rotationVector * 100, FColor::Yellow);
 	
-	auto const actorRotation = UKismetMathLibrary::MakeRotFromX(rotationVector);
 	Root->SetWorldRotation(actorRotation);
 }
 

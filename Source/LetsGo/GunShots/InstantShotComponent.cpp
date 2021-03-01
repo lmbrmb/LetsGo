@@ -2,6 +2,7 @@
 
 #include "DrawDebugHelpers.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
+#include "LetsGo/Utils/MathUtils.h"
 
 void UInstantShotComponent::Init()
 {
@@ -10,27 +11,79 @@ void UInstantShotComponent::Init()
 
 void UInstantShotComponent::OnShot(USceneComponent* firePivot, USceneComponent* aimProvider)
 {
+	FVector targetAimLocation;
+	float dispersionByDistance;
+	ProcessAimLocation(aimProvider, targetAimLocation, dispersionByDistance);
+	
 	for (auto i = 0; i < _bulletCount; i++)
 	{
-		ProcessBullet(firePivot, aimProvider);
+		ProcessBullet(firePivot, targetAimLocation, dispersionByDistance);
+	}
+	
+	BpOnShot(firePivot);
+}
+
+void UInstantShotComponent::ProcessAimLocation(
+	USceneComponent* aimProvider,
+	FVector& targetAimLocation,
+	float& dispersionByDistance
+)
+{
+	auto const aimStartLocation = aimProvider->GetComponentLocation();
+	auto const aimForward = aimProvider->GetForwardVector();
+	targetAimLocation = aimStartLocation + aimForward * _maxRange;
+	dispersionByDistance = 1.0f;
+	
+	auto const isHitted = GetWorld()->LineTraceSingleByChannel(
+		_hitResult,
+		aimStartLocation,
+		targetAimLocation,
+		ECC_WorldStatic,
+		_collisionQueryParams
+	);
+
+	if (isHitted)
+	{
+		auto const impactPoint = _hitResult.ImpactPoint;
+		auto const impactPointDistance = FVector::Distance(targetAimLocation, impactPoint);
+		dispersionByDistance = 1.0f - impactPointDistance / _maxRange;
+		targetAimLocation = impactPoint;
 	}
 }
 
-void UInstantShotComponent::ProcessBullet(USceneComponent* firePivot, USceneComponent* aimProvider)
+void UInstantShotComponent::ProcessBullet(
+	const USceneComponent* firePivot,
+	const FVector& targetAimLocation, 
+	const float dispersionByDistance
+)
 {
-	auto const rotation = firePivot->GetComponentRotation();
 	auto const rayStartLocation = firePivot->GetComponentLocation();
-	auto const aimForward = aimProvider->GetForwardVector();
-	auto const targetAimLocation = aimProvider->GetComponentLocation() + aimForward * _distance;
-	auto const shotDirection = GetBulletDirection(rayStartLocation, targetAimLocation);
-	auto rayEndLocation = rayStartLocation + shotDirection * _distance;
+	auto const shotDirection = GetBulletDirection(firePivot, rayStartLocation, targetAimLocation, dispersionByDistance);
+	auto rayEndLocation = rayStartLocation + shotDirection * _maxRange;
 	TraceBullet(rayStartLocation, rayEndLocation);
-	BpOnShot(rayStartLocation, rayEndLocation, rotation);
 }
 
-FVector UInstantShotComponent::GetBulletDirection(const FVector& rayStartLocation, const FVector& targetAimLocation )
+FVector UInstantShotComponent::GetBulletDirection(
+	const USceneComponent* firePivot,
+	const FVector& bulletStartLocation,
+	const FVector& targetAimLocation,
+	const float dispersionByDistance
+) const
 {
-	return (targetAimLocation - rayStartLocation).GetSafeNormal();
+	//No dispersion
+	if(_aimOffsetRadius <= 0)
+	{
+		return (targetAimLocation - bulletStartLocation).GetSafeNormal();
+	}
+
+	auto const randomPoint = MathUtils::GetRandomPointOnUnitCircle();
+	auto const randomRightOffset = GetDispersionOffset(randomPoint.X * dispersionByDistance, firePivot->GetRightVector());
+	auto const randomUpOffset = GetDispersionOffset(randomPoint.Y * dispersionByDistance, firePivot->GetUpVector());
+	
+	auto const aimLocationWithOffset = targetAimLocation + randomRightOffset + randomUpOffset;
+	auto const direction = (aimLocationWithOffset - bulletStartLocation).GetSafeNormal();
+	
+	return direction;
 }
 
 void UInstantShotComponent::TraceBullet(const FVector& rayStartLocation, FVector& rayEndLocation)
@@ -59,7 +112,9 @@ void UInstantShotComponent::TraceBullet(const FVector& rayStartLocation, FVector
 		}
 	}
 
-	DrawDebugLine(GetWorld(), rayStartLocation, rayEndLocation, FColor::Red, false, 10);
+	auto const lineColor = isHitted ? FColor::Red : FColor::Blue;
+	DrawDebugLine(GetWorld(), rayStartLocation, rayEndLocation, lineColor, false, 10);
+	BpOnBullet(_hitResult);
 }
 
 float UInstantShotComponent::GetBulletDamage() const
@@ -69,8 +124,16 @@ float UInstantShotComponent::GetBulletDamage() const
 		return _bulletDamage;
 	};
 	
-	auto const distancePercent = _hitResult.Distance / _distance;
+	auto const distancePercent = _hitResult.Distance / _maxRange;
 	auto const distanceModifier = _damageOverDistanceCurve->GetFloatValue(distancePercent);
 	auto const resultingDamage = FMath::RoundToInt(_bulletDamage * distanceModifier) ;
 	return resultingDamage;
+}
+
+FVector UInstantShotComponent::GetDispersionOffset(const float dispersion, const FVector offsetVector) const
+{
+	auto const maxRandomDistance = dispersion * _aimOffsetRadius;
+	auto const randomDistance = FMath::RandRange(0.0f, maxRandomDistance);
+	auto const randomOffset = randomDistance * offsetVector;
+	return randomOffset;
 }

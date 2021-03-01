@@ -17,7 +17,10 @@ protected:
 	virtual void OnShot(USceneComponent* firePivot, USceneComponent* aimProvider) override;
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void BpOnShot(FVector startPosition, FVector endLocation, FRotator rotation);
+	void BpOnShot(USceneComponent* firePivot);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpOnBullet(FHitResult hitResult);
 	
 private:
 	FHitResult _hitResult;
@@ -31,16 +34,36 @@ private:
 	float _bulletDamage = 50;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	float _distance = 500;
+	float _maxRange = 500;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float _aimOffsetRadius = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	UCurveFloat* _damageOverDistanceCurve;
 
-	void ProcessBullet(USceneComponent* firePivot, USceneComponent* aimProvider);
+	void ProcessAimLocation(
+		USceneComponent* aimProvider,
+		FVector& targetAimLocation,
+		float& dispersionByDistance
+	);
+	
+	void ProcessBullet(
+		const USceneComponent* firePivot,
+		const FVector& targetAimLocation,
+		const float dispersionByDistance
+	);
 
-	FVector GetBulletDirection(const FVector& rayStartLocation, const FVector& targetAimLocation);
+	FVector GetBulletDirection(
+		const USceneComponent* firePivot,
+		const FVector& bulletStartLocation,
+		const FVector& targetAimLocation,
+		const float dispersionByDistance
+	) const;
 	
 	void TraceBullet(const FVector& rayStartLocation, FVector& rayEndLocation);
 	
 	float GetBulletDamage() const;
+
+	FVector GetDispersionOffset(const float dispersion, const FVector offsetVector) const;
 };
