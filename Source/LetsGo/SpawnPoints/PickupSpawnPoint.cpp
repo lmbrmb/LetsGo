@@ -26,9 +26,8 @@ void APickupSpawnPoint::BeginPlay()
 	auto const diContainer = gameModeBase->GetDiContainer();
 	auto const pickupItemFactory = diContainer->GetInstance<PickupItemFactory>();
 	_pickupItemBlueprint = pickupItemFactory->GetBlueprint(_id);
+	
 	AssertIsNotNull(_pickupItemBlueprint);
-
-	_timerDelegate.BindUFunction(this, FName("RespawnPickupOnTimer"));
 
 	SpawnPickup();
 }
@@ -47,7 +46,7 @@ void APickupSpawnPoint::OnPickupTaken(APickupItem* pickupItem)
 	pickupItem->Taken.Remove(_delegateHandleOnPickupTaken);
 	_delegateHandleOnPickupTaken.Reset();
 
-	GetWorldTimerManager().SetTimer(_timerHandle, _timerDelegate, _pickupRespawnTime, false);
+	GetWorldTimerManager().SetTimer(_timerHandle, this, &APickupSpawnPoint::RespawnPickupOnTimer, _pickupRespawnTime, false);
 }
 
 void APickupSpawnPoint::RespawnPickupOnTimer()

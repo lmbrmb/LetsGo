@@ -3,6 +3,7 @@
 #include "LetsGo/Avatars/Avatar.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
 #include "LetsGo/Logs/DevLogger.h"
+#include "LetsGo/Utils/AssertUtils.h"
 #include "LetsGo/Utils/AssetUtils.h"
 
 const int BOT_COUNT = 3;
@@ -80,10 +81,10 @@ void AMatchGameMode::SpawnAvatar(AvatarData* avatarData)
 		DevLogger::GetLoggingChannel()->Log("Avatar blueprint is null", LogSeverity::Error);
 		return;
 	}
-
 	auto const avatar = AssetUtils::SpawnBlueprint<AAvatar>(GetWorld(), nullptr, avatarBlueprint, GetNextSpawnPoint());
 	avatar->SetAvatarData(avatarData);
 	auto const healthComponent = avatar->FindComponentByClass<UHealthComponent>();
+	AssertIsNotNull(healthComponent)
 	healthComponent->Died.AddUObject(this, &AMatchGameMode::OnAvatarDied);
 }
 
@@ -103,10 +104,28 @@ UBlueprint* AMatchGameMode::GetAvatarBlueprint(const AvatarType avatarType) cons
 	return nullptr;
 }
 
+void AMatchGameMode::RespawnAvatarOnTimer()
+{
+	AvatarData* avatarData;
+	_respawnQueue.Dequeue(avatarData);
+	SpawnAvatar(avatarData);
+}
+
 void AMatchGameMode::OnAvatarDied(AActor* actor)
 {
 	auto const avatar = static_cast<AAvatar*>(actor);
 	auto const avatarData= avatar->GetAvatarData();
-	// TODO: respawn task
-	actor->Destroy();
+	_respawnQueue.Enqueue(avatarData);
+
+	auto const healthComponent = avatar->FindComponentByClass<UHealthComponent>();
+	AssertIsNotNull(healthComponent)
+
+	healthComponent->Died.Remove(_delegateHandleOnAvatarDied);
+	_delegateHandleOnAvatarDied.Reset();
+
+	avatar->Destroy();
+
+	// Respawn timer in fire-and-forget mode
+	FTimerHandle timerHandle;
+	GetWorldTimerManager().SetTimer(timerHandle, this, &AMatchGameMode::RespawnAvatarOnTimer, _playerRespawnTime, false);
 }

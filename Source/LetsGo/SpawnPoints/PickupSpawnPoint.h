@@ -42,8 +42,6 @@ private:
 	FName _id = "";
 
 	FDelegateHandle _delegateHandleOnPickupTaken;
-
-	FTimerDelegate _timerDelegate;
 	
 	FTimerHandle _timerHandle;
 };

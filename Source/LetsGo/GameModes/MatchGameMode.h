@@ -33,7 +33,8 @@ protected:
 private:
 	const int UNDEFINED_INDEX = -1;
 
-	const float RESPAWN_TIME = 3.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	float _playerRespawnTime = 3.0f;
 	
 	TTypeContainer<ESPMode::Fast>* _diContainer = nullptr;
 
@@ -50,4 +51,10 @@ private:
 	UBlueprint* GetAvatarBlueprint(const AvatarType avatarType) const;
 	
 	TArray<AvatarData*> _avatarsData;
+
+	void RespawnAvatarOnTimer();
+
+	FDelegateHandle	_delegateHandleOnAvatarDied;
+
+	TQueue<AvatarData*> _respawnQueue;
 };
