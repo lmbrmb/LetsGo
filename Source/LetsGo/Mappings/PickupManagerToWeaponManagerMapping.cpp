@@ -15,5 +15,5 @@ void UPickupManagerToWeaponManagerMapping::Map()
 	auto const weaponManagerComponent = owner->FindComponentByClass<UWeaponManagerComponent>();
 	AssertIsNotNull(weaponManagerComponent);
 	
-	pickupManagerComponent->ItemPickedUp.AddUObject(weaponManagerComponent, &UWeaponManagerComponent::OnItemPickedUp);
+	pickupManagerComponent->RegisterItemProcessor(weaponManagerComponent);
 }

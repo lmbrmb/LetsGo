@@ -23,7 +23,7 @@ void UFloatParameterComponent::Init()
 	SetCurrentValue(InitialValue);
 }
 
-void UFloatParameterComponent::SetCurrentValue(float currentValue)
+void UFloatParameterComponent::SetCurrentValue(const float currentValue)
 {
 	auto const previous = CurrentValue;
 	CurrentValue = FMath::Max(MinValue, FMath::Min(MaxValue, currentValue));
@@ -34,13 +34,13 @@ void UFloatParameterComponent::SetCurrentValue(float currentValue)
 	}
 }
 
-void UFloatParameterComponent::SetMinValue(float minValue)
+void UFloatParameterComponent::SetMinValue(const float minValue)
 {
 	MinValue = minValue;
 	SetCurrentValue(CurrentValue);
 }
 
-void UFloatParameterComponent::SetMaxValue(float maxValue)
+void UFloatParameterComponent::SetMaxValue(const float maxValue)
 {
 	MaxValue = maxValue;
 	SetCurrentValue(CurrentValue);
@@ -80,7 +80,7 @@ float UFloatParameterComponent::GetNormalizedValue() const
 	return current / max;
 }
 
-void UFloatParameterComponent::ChangeValue(float amount)
+void UFloatParameterComponent::ChangeValue(const float amount)
 {
 	SetCurrentValue(CurrentValue + amount);
 }

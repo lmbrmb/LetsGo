@@ -165,14 +165,18 @@ void UWeaponManagerComponent::EquipWeapon(int weaponIndex)
 	ActorUtils::SetEnabled(_weapon, true);
 }
 
-void UWeaponManagerComponent::OnItemPickedUp(Item* item)
+bool UWeaponManagerComponent::TryProcessItem(Item* item)
 {
 	for (auto itemProcessor : _itemProcessors)
 	{
 		auto const isProcessed = itemProcessor(item);
 		if(isProcessed)
-			return;
+		{
+			return true;
+		}
 	}
+
+	return false;
 }
 
 bool UWeaponManagerComponent::TryProcessItemAsGun(Item* item)
@@ -228,7 +232,13 @@ bool UWeaponManagerComponent::TryProcessItemAsAmmo(Item* item)
 
 	if (ammoProvider)
 	{
-		ammoProvider->Add(ammoItem->GetQuantity());
+		if(ammoProvider->IsMax())
+		{
+			return false;
+		}
+		
+		auto const quantity = ammoItem->GetQuantity();
+		ammoProvider->Add(quantity);
 	}
 	else
 	{
@@ -289,7 +299,7 @@ AGun* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 	{
 		ammoProvider = CreateAmmoProvider(gunItem);
 	}
-
+	
 	gun->SetAmmoProvider(ammoProvider);
 
 	if (_weaponPivot == nullptr)

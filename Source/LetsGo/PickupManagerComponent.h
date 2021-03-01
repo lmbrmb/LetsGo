@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Items/IItemProcessor.h"
 #include "LetsGo/Items/Item.h"
 #include "LetsGo/Items/IItemFactory.h"
 
@@ -20,15 +21,15 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	bool TryPickUpItem(FName itemId);
-	
-	/// <summary>
-	/// [Code] Item added event
-	/// </summary>
+
+	void RegisterItemProcessor(IItemProcessor* itemProcessor);
+
 	EItemPickedUp ItemPickedUp;
-	
 protected:
 	virtual void BeginPlay() override;
 	
 private:
 	TArray<IItemFactory*> _itemFactories;
+
+	TArray<IItemProcessor*> _itemProcessors;
 };

@@ -1,5 +1,4 @@
 #include "HealthComponent.h"
-#include "LetsGo/Items/HealthItem.h"
 
 void UHealthComponent::OnChanged()
 {
@@ -7,18 +6,6 @@ void UHealthComponent::OnChanged()
 	{
 		Died.Broadcast(GetOwner());
 	}
-}
-
-void UHealthComponent::OnItemPickedUp(Item* item)
-{
-	auto const healthItem = dynamic_cast<HealthItem*>(item);
-	if (healthItem == nullptr)
-	{
-		return;
-	}
-
-	auto const healAmount = healthItem->GetHealAmount();
-	Heal(healAmount);
 }
 
 void UHealthComponent::Heal(const float healAmount)
@@ -56,4 +43,9 @@ bool UHealthComponent::IsAlive() const
 bool UHealthComponent::IsDead() const
 {
 	return !IsAlive();
+}
+
+bool UHealthComponent::IsFullHealth() const
+{
+	return FMath::IsNearlyZero(MaxValue - CurrentValue);
 }

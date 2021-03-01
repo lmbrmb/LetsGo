@@ -8,18 +8,17 @@
 #include "LetsGo/Items/AmmoItem.h"
 #include "LetsGo/Items/AmmoItemFactory.h"
 #include "LetsGo/Items/GunItem.h"
+#include "LetsGo/Items/IItemProcessor.h"
 #include "LetsGo/Items/Item.h"
 #include "WeaponManagerComponent.generated.h"
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class LETSGO_API UWeaponManagerComponent final : public UActorComponent
+class LETSGO_API UWeaponManagerComponent final : public UActorComponent, public IItemProcessor
 {
 	GENERATED_BODY()
 
 public:
 	UWeaponManagerComponent();
-
-	void OnItemPickedUp(Item* item);
 
 	void StartFire();
 
@@ -41,6 +40,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetAimProvider(USceneComponent* aimProvider);
 
+	virtual bool TryProcessItem(Item* item) override;
+	
 protected:
 	virtual void BeginPlay() override;
 

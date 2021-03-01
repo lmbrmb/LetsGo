@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Utils/AssertUtils.h"
+#include "Utils/MathUtils.h"
 
 template<class T>
 class SharedValue
@@ -13,6 +14,10 @@ public:
 	T GetMin() const;
 
 	T GetMax() const;
+
+	bool IsMin() const;
+
+	bool IsMax() const;
 	
 	T Add(const T amount);
 
@@ -62,12 +67,31 @@ T SharedValue<T>::GetMax() const
 }
 
 template <class T>
+bool SharedValue<T>::IsMin() const
+{
+	return MathUtils::IsNearlyZero(_current - _min);
+}
+
+template <class T>
+bool SharedValue<T>::IsMax() const
+{
+	return MathUtils::IsNearlyZero(_max - _current);
+}
+
+template <class T>
 T SharedValue<T>::Add(const T amount)
 {
 	auto delta = _max - _current;
 	auto amountToAdd = FMath::Min(delta, amount);
+	
+	if (MathUtils::IsNearlyZero(amountToAdd))
+	{
+		return 0;
+	}
+	
 	_current += amountToAdd;
 	Added.Broadcast(amountToAdd);
+	
 	return amountToAdd;
 }
 
@@ -76,7 +100,14 @@ T SharedValue<T>::Remove(const T amount)
 {
 	auto delta = _current - _min;
 	auto amountToRemove = FMath::Min(delta, amount);
+
+	if (MathUtils::IsNearlyZero(amountToRemove))
+	{
+		return 0;
+	}
+	
 	_current -= amountToRemove;
-	Added.Broadcast(amountToRemove);
+	Removed.Broadcast(amountToRemove);
+	
 	return amountToRemove;
 }

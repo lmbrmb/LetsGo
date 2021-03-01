@@ -14,11 +14,11 @@ public:
 	DECLARE_EVENT(UHealth, EChanged)
 	EChanged Changed;
 
-	void SetCurrentValue(float currentValue);
+	void SetCurrentValue(const float currentValue);
 	
-	void SetMinValue(float minValue);
+	void SetMinValue(const float minValue);
 	
-	void SetMaxValue(float maxValue);
+	void SetMaxValue(const float maxValue);
 
 	void MinimizeCurrentValue();
 	
@@ -49,7 +49,7 @@ protected:
 
 	void Init();
 	
-	void ChangeValue(float amount);
+	void ChangeValue(const float amount);
 
 	virtual void OnChanged(){};
 };

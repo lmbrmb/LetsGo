@@ -1,7 +1,6 @@
 #pragma once
 
 #include "LetsGo/FloatParameterComponent.h"
-#include "LetsGo/Items/Item.h"
 #include "HealthComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -13,8 +12,6 @@ public:
 	DECLARE_EVENT_OneParam(UHealthComponent, Died, AActor*);
 
 	Died Died;
-	
-	void OnItemPickedUp(Item* item);
 
 	void Heal(float healAmount);
 
@@ -25,6 +22,8 @@ public:
 	bool IsAlive() const;
 
 	bool IsDead() const;
+
+	bool IsFullHealth() const;
 
 protected:
 	virtual void OnChanged() override;

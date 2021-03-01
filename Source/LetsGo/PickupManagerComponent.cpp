@@ -43,7 +43,26 @@ bool UPickupManagerComponent::TryPickUpItem(FName itemId)
 		return false;
 	}
 
-	ItemPickedUp.Broadcast(item);
+	auto isProcessed = false;
 
-	return true;
+	for (auto itemProcessor : _itemProcessors)
+	{
+		isProcessed = itemProcessor->TryProcessItem(item);
+		if(isProcessed)
+		{
+			break;
+		}
+	}
+
+	if(isProcessed)
+	{
+		ItemPickedUp.Broadcast(item);
+	}
+
+	return isProcessed;
+}
+
+void UPickupManagerComponent::RegisterItemProcessor(IItemProcessor* itemProcessor)
+{
+	_itemProcessors.Add(itemProcessor);
 }

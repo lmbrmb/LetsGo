@@ -1,6 +1,5 @@
 #include "PickupSpawnPoint.h"
 #include "LetsGo/GameModes/MatchGameMode.h"
-#include "LetsGo/Logs/DevLogger.h"
 #include "LetsGo/PickupItems/PickupItem.h"
 #include "LetsGo/PickupItems/PickupItemFactory.h"
 #include "LetsGo/Utils/AssertUtils.h"
@@ -37,8 +36,10 @@ void APickupSpawnPoint::BeginPlay()
 void APickupSpawnPoint::SpawnPickup()
 {
 	auto const pickupItem = AssetUtils::SpawnBlueprint<APickupItem>(GetWorld(), this, _pickupItemBlueprint);
-	pickupItem->AttachToComponent(_spawnPivot, FAttachmentTransformRules::KeepRelativeTransform);
+	AssertIsNotNull(pickupItem);
+	//Tricky: Subscribe first, then attach to pivot because pickup can be taken on spawn
 	_delegateHandleOnPickupTaken = pickupItem->Taken.AddUObject(this, &APickupSpawnPoint::OnPickupTaken);
+	pickupItem->AttachToComponent(_spawnPivot, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 void APickupSpawnPoint::OnPickupTaken(APickupItem* pickupItem)
