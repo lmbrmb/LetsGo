@@ -8,7 +8,7 @@
 class LETSGO_API PickupItemFactory : public BlueprintFactory
 {
 public:
-	PickupItemFactory();
+	explicit PickupItemFactory();
 };
 
 Expose_TNameOf(PickupItemFactory)

@@ -1,6 +1,6 @@
-#include "WeaponFactory.h"
+#include "GunFactory.h"
 
-WeaponFactory::WeaponFactory()
+GunFactory::GunFactory()
 {
 	Assets.Add("SawedOffShotgun", "/Game/Assets/Blueprints/Weapons/BP_SawedOffShotgun");
 	Assets.Add("Minigun", "/Game/Assets/Blueprints/Weapons/BP_Minigun");

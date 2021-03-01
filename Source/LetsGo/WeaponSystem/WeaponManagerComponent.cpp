@@ -1,8 +1,8 @@
 #include "WeaponManagerComponent.h"
 #include "LetsGo/GameModes/MatchGameMode.h"
-#include "LetsGo/InventorySystem/AmmoItem.h"
-#include "LetsGo/InventorySystem/InventoryItem.h"
-#include "LetsGo/InventorySystem/WeaponItem.h"
+#include "LetsGo/Items/Item.h"
+#include "LetsGo/Items/AmmoItem.h"
+#include "LetsGo/Items/GunItem.h"
 #include "LetsGo/Logs/DevLogger.h"
 #include "LetsGo/Utils/AssetUtils.h"
 #include "LetsGo/Utils/ActorUtils.h"
@@ -20,14 +20,17 @@ UWeaponManagerComponent::UWeaponManagerComponent()
 
 void UWeaponManagerComponent::BeginPlay()
 {
-	_itemProcessors.Add([this](auto item) { return TryProcessItemAsWeapon(item); });
+	_itemProcessors.Add( [this](auto item) { return TryProcessItemAsGun(item); });
 	_itemProcessors.Add([this](auto item) { return TryProcessItemAsAmmo(item); });
 	
-	auto const gameModeBase = dynamic_cast<AMatchGameMode*>(GetWorld()->GetAuthGameMode());
+	auto const gameModeBase = Cast<AMatchGameMode>(GetWorld()->GetAuthGameMode());
 	auto const diContainer = gameModeBase->GetDiContainer();
 	
-	auto const weaponFactory = diContainer->GetInstance<WeaponFactory>();
-	_weaponFactory = &weaponFactory.Get();
+	auto const gunFactory = diContainer->GetInstance<GunFactory>();
+	_gunFactory = &gunFactory.Get();
+
+	auto const ammoItemFactory = diContainer->GetInstance<AmmoItemFactory>();
+	_ammoItemFactory = &ammoItemFactory.Get();
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
@@ -64,7 +67,7 @@ void UWeaponManagerComponent::PreviousWeapon()
 	ChangeWeapon(-1);
 }
 
-void UWeaponManagerComponent::ChangeWeapon(int indexModifier)
+void UWeaponManagerComponent::ChangeWeapon(const int indexModifier)
 {
 	if (indexModifier == 0)
 	{
@@ -162,7 +165,7 @@ void UWeaponManagerComponent::EquipWeapon(int weaponIndex)
 	ActorUtils::SetEnabled(_weapon, true);
 }
 
-void UWeaponManagerComponent::OnInventoryItemAdded(InventoryItem* item)
+void UWeaponManagerComponent::OnItemPickedUp(Item* item)
 {
 	for (auto itemProcessor : _itemProcessors)
 	{
@@ -172,29 +175,34 @@ void UWeaponManagerComponent::OnInventoryItemAdded(InventoryItem* item)
 	}
 }
 
-bool UWeaponManagerComponent::TryProcessItemAsWeapon(InventoryItem* item)
+bool UWeaponManagerComponent::TryProcessItemAsGun(Item* item)
 {
-	auto const weaponItem = dynamic_cast<WeaponItem*>(item);
-	if (weaponItem == nullptr)
+	auto const gunItem = dynamic_cast<GunItem*>(item);
+	if (gunItem == nullptr)
+	{
+		return false;
+	}
+
+	// Can carry only one gun of type
+	// Add ammo if already have this gun
+	for (auto weapon : _weapons)
+	{
+		if(weapon->GetId() == gunItem->GetId())
+		{
+			auto const ammoId = gunItem->GetAmmoId();
+			auto const ammoItem = _ammoItemFactory->Get(ammoId);
+			return TryProcessItemAsAmmo(ammoItem);
+		}
+	}
+
+	auto const gun = CreateGun(gunItem);
+
+	if(!gun)
 	{
 		return false;
 	}
 	
-	auto const itemId = item->GetId();
-	auto const weaponBlueprint = _weaponFactory->GetBlueprint(itemId);
-	auto const weapon = AssetUtils::SpawnBlueprint<AWeaponBase>(GetWorld(), GetOwner(), weaponBlueprint);
-	weapon->SetAimProvider(_aimProvider);
-
-	if (_weaponPivot == nullptr)
-	{
-		DevLogger::GetLoggingChannel()->Log("Weapon pivot is null", LogSeverity::Warning);
-	}
-	else
-	{
-		weapon->AttachToComponent(_weaponPivot, FAttachmentTransformRules::KeepRelativeTransform);
-	}
-
-	auto const weaponIndex = _weapons.Add(weapon);
+	auto const weaponIndex = _weapons.Add(gun);
 
 	if (_equipWeaponOnPickup)
 	{
@@ -202,13 +210,13 @@ bool UWeaponManagerComponent::TryProcessItemAsWeapon(InventoryItem* item)
 	}
 	else
 	{
-		ActorUtils::SetEnabled(weapon, false);
+		ActorUtils::SetEnabled(gun, false);
 	}
 	
 	return true;
 }
 
-bool UWeaponManagerComponent::TryProcessItemAsAmmo(InventoryItem* item)
+bool UWeaponManagerComponent::TryProcessItemAsAmmo(Item* item)
 {
 	auto const ammoItem = dynamic_cast<AmmoItem*>(item);
 	if (ammoItem == nullptr)
@@ -216,7 +224,82 @@ bool UWeaponManagerComponent::TryProcessItemAsAmmo(InventoryItem* item)
 		return false;
 	}
 
-	// TODO: process ammo
+	auto ammoProvider = GetAmmoProvider(ammoItem->GetId());
+
+	if (ammoProvider)
+	{
+		ammoProvider->Add(ammoItem->GetQuantity());
+	}
+	else
+	{
+		CreateAmmoProvider(ammoItem);
+	}
 	
 	return true;
+}
+
+AmmoProvider* UWeaponManagerComponent::GetAmmoProvider(const FName ammoId)
+{
+	if (_ammoProviders.Contains(ammoId))
+	{
+		return _ammoProviders[ammoId];
+	}
+	
+	return nullptr;
+}
+
+AmmoProvider* UWeaponManagerComponent::CreateAmmoProvider(const GunItem* gunItem)
+{
+	auto const ammoId = gunItem->GetAmmoId();
+	auto const ammoItem = static_cast<AmmoItem*>(_ammoItemFactory->Get(ammoId));
+	auto const maxAmmo = ammoItem->GetMaxQuantity();
+	auto const currentAmmo = gunItem->GetInitialAmmoCount();
+	auto const ammoProvider = new AmmoProvider(0, maxAmmo, currentAmmo);
+	_ammoProviders.Add(ammoId, ammoProvider);
+	return ammoProvider;
+}
+
+AmmoProvider* UWeaponManagerComponent::CreateAmmoProvider(const AmmoItem* ammoItem)
+{
+	auto const ammoId = ammoItem->GetId();
+	auto const maxAmmo = ammoItem->GetMaxQuantity();
+	auto const currentAmmo = ammoItem->GetQuantity();
+	auto const ammoProvider = new AmmoProvider(0, maxAmmo, currentAmmo);
+	_ammoProviders.Add(ammoId, ammoProvider);
+	return ammoProvider;
+}
+
+AGun* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
+{
+	auto const gunId = gunItem->GetId();
+	auto const weaponBlueprint = _gunFactory->GetBlueprint(gunId);
+	
+	if(weaponBlueprint == nullptr)
+	{
+		return nullptr;
+	}
+	
+	auto const gun = AssetUtils::SpawnBlueprint<AGun>(GetWorld(), GetOwner(), weaponBlueprint);
+	gun->SetId(gunId);
+	gun->SetAimProvider(_aimProvider);
+	auto const ammoId = gunItem->GetAmmoId();
+	auto ammoProvider = GetAmmoProvider(ammoId);
+
+	if (!ammoProvider)
+	{
+		ammoProvider = CreateAmmoProvider(gunItem);
+	}
+
+	gun->SetAmmoProvider(ammoProvider);
+
+	if (_weaponPivot == nullptr)
+	{
+		DevLogger::GetLoggingChannel()->Log("Weapon pivot is null", LogSeverity::Warning);
+	}
+	else
+	{
+		gun->AttachToComponent(_weaponPivot, FAttachmentTransformRules::KeepRelativeTransform);
+	}
+	
+	return gun;
 }

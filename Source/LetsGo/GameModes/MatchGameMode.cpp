@@ -7,11 +7,6 @@
 
 const int BOT_COUNT = 3;
 
-AMatchGameMode::AMatchGameMode()
-{
-	//Do nothing
-}
-
 AMatchGameMode::~AMatchGameMode()
 {
 	delete _diContainer;

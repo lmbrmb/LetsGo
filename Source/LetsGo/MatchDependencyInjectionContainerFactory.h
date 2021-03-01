@@ -1,20 +1,19 @@
 #pragma once
 
-#include "InventorySystem/ItemConversionFactory.h"
 #include "Misc/TypeContainer.h"
-#include "LetsGo/InventorySystem/HealthItemFactory.h"
-#include "LetsGo/InventorySystem/WeaponItemFactory.h"
-#include "LetsGo/InventorySystem/AmmoItemFactory.h"
+#include "LetsGo/Items/HealthItemFactory.h"
+#include "LetsGo/Items/GunItemFactory.h"
+#include "LetsGo/Items/AmmoItemFactory.h"
 #include "LetsGo/PickupItems/PickupItemFactory.h"
-#include "LetsGo/WeaponSystem/WeaponFactory.h"
+#include "LetsGo/WeaponSystem/GunFactory.h"
 #include "LetsGo/Avatars/AvatarFactory.h"
 
 class MatchDependencyInjectionContainerFactory final
 {
 public:
-	MatchDependencyInjectionContainerFactory();
+	MatchDependencyInjectionContainerFactory() = default;
 	
-	~MatchDependencyInjectionContainerFactory();
+	~MatchDependencyInjectionContainerFactory() = default;
 
 	template<ESPMode Mode = ESPMode::Fast>
 	TTypeContainer<Mode>* CreateContainer();
@@ -26,19 +25,17 @@ TTypeContainer<Mode>* MatchDependencyInjectionContainerFactory::CreateContainer(
 	auto const container = new TTypeContainer<Mode>();
 
 	const TSharedRef<PickupItemFactory> pickupItemFactory = MakeShareable(new PickupItemFactory());
-	const TSharedRef<WeaponItemFactory> weaponItemFactory = MakeShareable(new WeaponItemFactory());
+	const TSharedRef<GunItemFactory> gunItemFactory = MakeShareable(new GunItemFactory());
 	const TSharedRef<HealthItemFactory> healthItemFactory = MakeShareable(new HealthItemFactory());
 	const TSharedRef<AmmoItemFactory> ammoItemFactory = MakeShareable(new AmmoItemFactory());
-	const TSharedRef<ItemConversionFactory> itemConversionFactory = MakeShareable(new ItemConversionFactory());
-	const TSharedRef<WeaponFactory> weaponFactory = MakeShareable(new WeaponFactory());
+	const TSharedRef<GunFactory> gunFactory = MakeShareable(new GunFactory());
 	const TSharedRef<AvatarFactory> avatarFactory = MakeShareable(new AvatarFactory());
 	
 	container->template RegisterInstance<PickupItemFactory>(pickupItemFactory);
-	container->template RegisterInstance<WeaponItemFactory>(weaponItemFactory);
+	container->template RegisterInstance<GunItemFactory>(gunItemFactory);
 	container->template RegisterInstance<AmmoItemFactory>(ammoItemFactory);
-	container->template RegisterInstance<ItemConversionFactory>(itemConversionFactory);
 	container->template RegisterInstance<HealthItemFactory>(healthItemFactory);
-	container->template RegisterInstance<WeaponFactory>(weaponFactory);
+	container->template RegisterInstance<GunFactory>(gunFactory);
 	container->template RegisterInstance<AvatarFactory>(avatarFactory);
 	
 	return container;

@@ -8,9 +8,9 @@
 class BlueprintFactory
 {
 public:
-	BlueprintFactory();
-
-	virtual ~BlueprintFactory();
+	BlueprintFactory() = default;
+	
+	virtual ~BlueprintFactory() = default;
 	
 	UBlueprint* GetBlueprint(const FName id);
 

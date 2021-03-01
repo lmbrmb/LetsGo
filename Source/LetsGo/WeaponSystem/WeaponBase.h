@@ -16,6 +16,8 @@ public:
 	
 	FName GetId();
 
+	void SetId(const FName id);
+	
 	void SetAimProvider(USceneComponent* aimProvider );
 	
 	virtual void StartFire() {};
@@ -28,6 +30,5 @@ protected:
 	USceneComponent* AimProvider;
 
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	FName _id;
 };

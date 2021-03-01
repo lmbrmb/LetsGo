@@ -1,18 +1,8 @@
 #include "BlueprintFactory.h"
-#include "Logs/DevLogger.h"
+
 #include "Utils/AssetUtils.h"
 
-BlueprintFactory::BlueprintFactory()
-{
-	//Do nothing
-}
-
-BlueprintFactory::~BlueprintFactory()
-{
-	//Do nothing
-}
-
-UBlueprint* BlueprintFactory::GetBlueprint(FName id)
+UBlueprint* BlueprintFactory::GetBlueprint(const FName id)
 {
 	if (Blueprints.Contains(id))
 	{
@@ -21,7 +11,7 @@ UBlueprint* BlueprintFactory::GetBlueprint(FName id)
 
 	if (!Assets.Contains(id))
 	{
-		DevLogger::GetLoggingChannel()->LogValue("Factory does not contain asset id:", id);
+		DevLogger::GetLoggingChannel()->LogValue("Unknown blueprint:" , id);
 		return nullptr;
 	}
 

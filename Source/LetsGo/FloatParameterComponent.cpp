@@ -16,9 +16,9 @@ void UFloatParameterComponent::BeginPlay()
 
 void UFloatParameterComponent::Init()
 {
-	AssertIsGreaterOrEqual(MinValue, MaxValue);
-	AssertIsGreaterOrEqual(InitialValue, MinValue);
+	AssertIsLessOrEqual(MinValue, MaxValue);
 	AssertIsLessOrEqual(InitialValue, MaxValue);
+	AssertIsGreaterOrEqual(InitialValue, MinValue);
 	
 	SetCurrentValue(InitialValue);
 }

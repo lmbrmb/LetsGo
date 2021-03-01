@@ -1,15 +1,16 @@
 #pragma once
 
 #include "MappingComponent.h"
-#include "InventoryToHealthMapping.generated.h"
+
+#include "PickupManagerToHealthMapping.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class LETSGO_API UInventoryToHealthMapping final : public UMappingComponent
+class LETSGO_API UPickupManagerToHealthMapping final : public UMappingComponent
 {
 	GENERATED_BODY()
 
 public:	
-	UInventoryToHealthMapping();
+	UPickupManagerToHealthMapping() = default;
 
 protected:
 	virtual void Map() override;

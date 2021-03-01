@@ -11,6 +11,6 @@ void APlayerSpawnPoint::BeginPlay()
 	Super::BeginPlay();
 
 	auto const authGameMode = GetWorld()->GetAuthGameMode();
-	auto const matchGameMode = dynamic_cast<AMatchGameMode*, AGameModeBase>(authGameMode);
+	auto const matchGameMode = Cast<AMatchGameMode>(authGameMode);
 	matchGameMode->RegisterSpawnPoint(GetTransform());
 }

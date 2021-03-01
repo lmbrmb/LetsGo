@@ -15,7 +15,7 @@ class LETSGO_API AMatchGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
-	AMatchGameMode();
+	AMatchGameMode() = default;
 	
 	virtual ~AMatchGameMode();
 

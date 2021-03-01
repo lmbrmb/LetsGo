@@ -2,12 +2,15 @@
 
 #include "LoggingChannel.h"
 
+/// <summary>
+/// [Abstract] Logging channel factory contract
+/// </summary>
 class LoggingChannelFactory
 {
 public:
-	LoggingChannelFactory();
+	LoggingChannelFactory() = default;
 
-	virtual ~LoggingChannelFactory();
+	virtual ~LoggingChannelFactory() = default;
 
 	virtual LoggingChannel* CreateLoggingChannel() = 0;
 };

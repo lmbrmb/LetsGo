@@ -10,7 +10,7 @@ void UGunShotComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	auto const owner = GetOwner();
-	auto const gun = dynamic_cast<AGun*>(owner);
+	auto const gun = Cast<AGun>(owner);
 	gun->ShotPerformed.AddUObject(this, &UGunShotComponent::OnShot);
 	Init();
 }

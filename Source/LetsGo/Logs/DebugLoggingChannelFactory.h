@@ -8,9 +8,9 @@
 class DebugLoggingChannelFactory final : public LoggingChannelFactory
 {
 public:
-	DebugLoggingChannelFactory();
+	DebugLoggingChannelFactory() = default;
 	
-	virtual ~DebugLoggingChannelFactory();
+	virtual ~DebugLoggingChannelFactory() = default;
 
 	virtual LoggingChannel* CreateLoggingChannel() override;
 };

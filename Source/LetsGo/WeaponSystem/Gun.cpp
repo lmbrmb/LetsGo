@@ -134,7 +134,7 @@ USceneComponent* AGun::GetFirePivot()
 void AGun::StartShot()
 {
 	_shotStartTime = GetWorld()->TimeSeconds;
-	ConsumeClip(_consumeAmmoPerShot);
+	_clipCurrent -= _consumeAmmoPerShot;
 	auto const firePivot = GetFirePivot();
 	ShotPerformed.Broadcast(firePivot, AimProvider);
 	SetState(GunState::Shooting);
@@ -144,16 +144,6 @@ bool AGun::IsShooting() const
 {
 	auto const isShooting = _shotStartTime > 0 && GetWorld()->TimeSeconds - _shotStartTime < _shotDuration;
 	return isShooting;
-}
-
-void AGun::AddToClip(const int amount)
-{
-	_clipCurrent += amount;
-}
-
-void AGun::ConsumeClip(const int amount)
-{
-	_clipCurrent -= amount;
 }
 
 bool AGun::IsClipFull() const
@@ -182,7 +172,7 @@ void AGun::StartReload()
 
 int AGun::GetAmmoCount() const
 {
-	return _ammoProvider == nullptr ? 0 : _ammoProvider->Get();
+	return _ammoProvider == nullptr ? 0 : _ammoProvider->GetCurrent();
 }
 
 void AGun::ConsumeAmmo(const int amount) const
@@ -201,7 +191,7 @@ void AGun::LoadAmmo()
 	auto const ammoDelta = _clipMax - _clipCurrent;
 	auto ammoToLoad = FMath::Min(ammoDelta, GetAmmoCount());
 	ammoToLoad = FMath::Min(ammoToLoad, _ammoPerLoad);
-	AddToClip(ammoToLoad);
+	_clipCurrent += ammoToLoad;
 	ConsumeAmmo(ammoToLoad);
 	BpAmmoLoaded();
 }

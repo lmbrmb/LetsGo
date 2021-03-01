@@ -7,7 +7,10 @@ class FactoryUtils
 public:
 	template <class TResult, class TFactory, class TFactoryArray>
 	static TResult CreateSingle(TFactoryArray factories, TFunction<TResult(TFactory)> function);
-	
+
+	template <class TResult, class TFactory, class TFactoryArray>
+	static TResult GetSingle(TFactoryArray factories, TFunction<TResult(TFactory)> function);
+
 private:
 	FactoryUtils() = delete;
 };
@@ -40,4 +43,33 @@ TResult FactoryUtils::CreateSingle(TFactoryArray factories, TFunction<TResult(TF
 	}
 	
 	return createdItems[0];
+}
+
+template <class TResult, class TFactory, class TFactoryArray>
+TResult FactoryUtils::GetSingle(TFactoryArray factories, TFunction<TResult(TFactory)> function)
+{
+	TArray<TResult> items;
+	for (auto const factory : factories)
+	{
+		auto const result = function(factory);
+		if (result)
+		{
+			items.Add(result);
+		}
+	}
+
+	auto const itemsCount = items.Num();
+	if (itemsCount == 0)
+	{
+		DevLogger::GetLoggingChannel()->Log("No items created", LogSeverity::Error);
+		return nullptr;
+	}
+
+	if (itemsCount > 1)
+	{
+		DevLogger::GetLoggingChannel()->LogValue("Got more than one item", itemsCount, LogSeverity::Error);
+		return nullptr;
+	}
+
+	return items[0];
 }

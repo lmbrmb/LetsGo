@@ -8,7 +8,7 @@
 class AvatarFactory final : private BlueprintFactory
 {
 public:
-	AvatarFactory();
+	explicit AvatarFactory();
 	
 	UBlueprint* GetLocalPlayerBlueprint();
 	

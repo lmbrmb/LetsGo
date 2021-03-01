@@ -4,14 +4,14 @@
 #include "LetsGo/Utils/FStringUtils.h"
 
 /// <summary>
-/// Logging channel base class
+/// [Abstract] Logging channel base class
 /// </summary>
 class LETSGO_API LoggingChannel
 {
 public:
-	LoggingChannel();
+	LoggingChannel() = default;
 
-	virtual ~LoggingChannel();
+	virtual ~LoggingChannel() = default;
 
 	template<class T>
 	void Log(T value, LogSeverity severity = LogSeverity::Debug)

@@ -1,5 +1,5 @@
 #include "HealthComponent.h"
-#include "LetsGo/InventorySystem/HealthItem.h"
+#include "LetsGo/Items/HealthItem.h"
 
 void UHealthComponent::OnChanged()
 {
@@ -9,7 +9,7 @@ void UHealthComponent::OnChanged()
 	}
 }
 
-void UHealthComponent::OnInventoryItemAdded(InventoryItem* item)
+void UHealthComponent::OnItemPickedUp(Item* item)
 {
 	auto const healthItem = dynamic_cast<HealthItem*>(item);
 	if (healthItem == nullptr)

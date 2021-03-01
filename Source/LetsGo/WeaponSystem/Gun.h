@@ -125,10 +125,6 @@ private:
 	
 	void StartShot();
 
-	void AddToClip(const int amount);
-	
-	void ConsumeClip(const int amount);
-
 	bool IsClipFull() const;
 	
 	bool IsEnoughAmmoForShot() const;

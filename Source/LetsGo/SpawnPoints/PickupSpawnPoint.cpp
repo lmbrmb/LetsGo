@@ -1,8 +1,8 @@
 #include "PickupSpawnPoint.h"
-#include "Kismet/KismetStringLibrary.h"
 #include "LetsGo/GameModes/MatchGameMode.h"
 #include "LetsGo/Logs/DevLogger.h"
 #include "LetsGo/PickupItems/PickupItem.h"
+#include "LetsGo/PickupItems/PickupItemFactory.h"
 #include "LetsGo/Utils/AssertUtils.h"
 #include "LetsGo/Utils/AssetUtils.h"
 
@@ -23,7 +23,7 @@ void APickupSpawnPoint::BeginPlay()
 
 	AssertStringIsNotEmpty(_id);
 
-	auto const gameModeBase = dynamic_cast<AMatchGameMode*>(GetWorld()->GetAuthGameMode());
+	auto const gameModeBase = Cast<AMatchGameMode>(GetWorld()->GetAuthGameMode());
 	auto const diContainer = gameModeBase->GetDiContainer();
 	auto const pickupItemFactory = diContainer->GetInstance<PickupItemFactory>();
 	_pickupItemBlueprint = pickupItemFactory->GetBlueprint(_id);
@@ -46,8 +46,6 @@ void APickupSpawnPoint::OnPickupTaken(APickupItem* pickupItem)
 	pickupItem->Taken.Remove(_delegateHandleOnPickupTaken);
 	_delegateHandleOnPickupTaken.Reset();
 
-	auto world = GetWorld();
-	
 	GetWorldTimerManager().SetTimer(_timerHandle, _timerDelegate, _pickupRespawnTime, false);
 }
 

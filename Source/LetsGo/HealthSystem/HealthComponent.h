@@ -1,7 +1,7 @@
 #pragma once
 
 #include "LetsGo/FloatParameterComponent.h"
-#include "LetsGo/InventorySystem/InventoryItem.h"
+#include "LetsGo/Items/Item.h"
 #include "HealthComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -14,11 +14,11 @@ public:
 
 	Died Died;
 	
-	void OnInventoryItemAdded(InventoryItem* item);
+	void OnItemPickedUp(Item* item);
 
-	void Heal(float amount);
+	void Heal(float healAmount);
 
-	void Injure(float amount);
+	void Injure(float damageAmount);
 	
 	void Kill();
 
