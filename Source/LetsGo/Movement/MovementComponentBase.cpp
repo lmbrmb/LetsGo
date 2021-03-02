@@ -169,6 +169,12 @@ void UMovementComponentBase::Move(
 	const int callNumber
 )
 {
+	if (callNumber > MAX_MOVE_CALL_DEPTH)
+	{
+		DevLogger::GetLoggingChannel()->LogValue("Move() reached max call depth", MAX_MOVE_CALL_DEPTH, LogSeverity::Warning);
+		return;
+	}
+	
 	if (!planeHitResult.bBlockingHit)
 	{
 		// Not blocked
@@ -182,8 +188,9 @@ void UMovementComponentBase::Move(
 	
 	if (angleDegrees > _maxSlopeDegreesUp)
 	{
-		// Slope is too steep, potentially a wall - can't move
-		//TODO: move along wall
+		// Slope is too steep, potentially a wall
+		auto const directionAlongWall = direction.RotateAngleAxis(90, planeNormal);
+		Move(rootLocation, rootRotation, directionAlongWall, planeHitResult, translationAmount, callNumber + 1);
 		return;
 	}
 
@@ -212,12 +219,6 @@ void UMovementComponentBase::Move(
 	if (!isBlocked)
 	{
 		Root->AddWorldOffset(translation, false);
-		return;
-	}
-	
-	if (callNumber >= MAX_MOVE_CALL_DEPTH)
-	{
-		DevLogger::GetLoggingChannel()->LogValue("Move() reached max call depth", MAX_MOVE_CALL_DEPTH, LogSeverity::Warning);
 		return;
 	}
 	
