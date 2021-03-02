@@ -1,18 +1,18 @@
-#include "Gun.h"
+#include "GunV1.h"
 
-AGun::AGun()
+AGunV1::AGunV1()
 {
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void AGun::BeginPlay()
+void AGunV1::BeginPlay()
 {
 	Super::BeginPlay();
 
 	_clipCurrent = _clipMax;
 }
 
-void AGun::Tick(float DeltaSeconds)
+void AGunV1::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
@@ -27,15 +27,18 @@ void AGun::Tick(float DeltaSeconds)
 		case GunState::Shooting:
 			ProcessShootingState();
 			break;
+		default:
+			DevLogger::GetLoggingChannel()->Log("Unhandled state", LogSeverity::Error);
+			break;
 	}
 }
 
-void AGun::SetState(GunState state)
+void AGunV1::SetState(GunState state)
 {
 	_state = state;
 }
 
-void AGun::ProcessIdleState()
+void AGunV1::ProcessIdleState()
 {
 	if(IsEnoughAmmoForShot())
 	{
@@ -55,7 +58,7 @@ void AGun::ProcessIdleState()
 	}
 }
 
-void AGun::ProcessReloadingState()
+void AGunV1::ProcessReloadingState()
 {
 	if(IsLoadAmmoDelayActive())
 	{
@@ -75,7 +78,7 @@ void AGun::ProcessReloadingState()
 	}
 }
 
-void AGun::ProcessShootingState()
+void AGunV1::ProcessShootingState()
 {
 	if (IsShooting())
 	{
@@ -85,17 +88,23 @@ void AGun::ProcessShootingState()
 	SetState(GunState::Idle);
 }
 
-void AGun::StartFire()
+void AGunV1::Init(AmmoProvider* ammoProvider, USceneComponent* aimProvider)
+{
+	_ammoProvider = ammoProvider;
+	_aimProvider = aimProvider;
+}
+
+void AGunV1::StartFire()
 {
 	TriggerFire(true);
 }
 
-void AGun::StopFire()
+void AGunV1::StopFire()
 {
 	TriggerFire(false);
 }
 
-void AGun::Reload()
+void AGunV1::Reload()
 {
 	if (IsClipFull() || IsLoadingAmmoStarted())
 	{
@@ -105,12 +114,7 @@ void AGun::Reload()
 	StartReload();
 }
 
-void AGun::SetAmmoProvider(AmmoProvider* ammoProvider)
-{
-	_ammoProvider = ammoProvider;
-}
-
-USceneComponent* AGun::GetFirePivot()
+USceneComponent* AGunV1::GetFirePivot()
 {
 	int nextIndex = 0;
 	switch (_firePivotMode)
@@ -131,51 +135,51 @@ USceneComponent* AGun::GetFirePivot()
 	return _firePivots[_firePivotIndex];
 }
 
-void AGun::StartShot()
+void AGunV1::StartShot()
 {
 	_shotStartTime = GetWorld()->TimeSeconds;
 	_clipCurrent -= _consumeAmmoPerShot;
 	auto const firePivot = GetFirePivot();
-	ShotPerformed.Broadcast(firePivot, AimProvider);
+	ShotPerformed.Broadcast(firePivot, _aimProvider);
 	SetState(GunState::Shooting);
 }
 
-bool AGun::IsShooting() const
+bool AGunV1::IsShooting() const
 {
 	auto const isShooting = _shotStartTime > 0 && GetWorld()->TimeSeconds - _shotStartTime < _shotDuration;
 	return isShooting;
 }
 
-bool AGun::IsClipFull() const
+bool AGunV1::IsClipFull() const
 {
 	return _clipCurrent == _clipMax;
 }
 
-bool AGun::IsEnoughAmmoForShot() const
+bool AGunV1::IsEnoughAmmoForShot() const
 {
 	auto const isEnoughAmmoForShot = _clipCurrent >= _consumeAmmoPerShot;
 	return isEnoughAmmoForShot;
 }
 
-bool AGun::HasAmmoToLoad() const
+bool AGunV1::HasAmmoToLoad() const
 {
 	auto const hasAmmoToLoad = GetAmmoCount() >= _consumeAmmoPerShot;
 	return hasAmmoToLoad;
 }
 
-void AGun::StartReload()
+void AGunV1::StartReload()
 {
 	_reloadStartTime = GetWorld()->TimeSeconds;
 	BpReloadStarted();
 	SetState(GunState::Reloading);
 }
 
-int AGun::GetAmmoCount() const
+int AGunV1::GetAmmoCount() const
 {
 	return _ammoProvider == nullptr ? 0 : _ammoProvider->GetCurrent();
 }
 
-void AGun::ConsumeAmmo(const int amount) const
+void AGunV1::ConsumeAmmo(const int amount) const
 {
 	if(_ammoProvider == nullptr)
 	{
@@ -185,7 +189,7 @@ void AGun::ConsumeAmmo(const int amount) const
 	_ammoProvider->Remove(amount);
 }
 
-void AGun::LoadAmmo()
+void AGunV1::LoadAmmo()
 {
 	_ammoLoadStartTime = GetWorld()->TimeSeconds;
 	auto const ammoDelta = _clipMax - _clipCurrent;
@@ -196,7 +200,7 @@ void AGun::LoadAmmo()
 	BpAmmoLoaded();
 }
 
-void AGun::FinishReload()
+void AGunV1::FinishReload()
 {
 	_ammoLoadStartTime = UNDEFINED_TIME;
 	_reloadStartTime = UNDEFINED_TIME;
@@ -204,24 +208,24 @@ void AGun::FinishReload()
 	SetState(GunState::Idle);
 }
 
-bool AGun::IsLoadAmmoDelayActive() const
+bool AGunV1::IsLoadAmmoDelayActive() const
 {
 	auto const isLoadAmmoDelayActive = GetWorld()->TimeSeconds - _reloadStartTime < _loadAmmoDelay;
 	return isLoadAmmoDelayActive;
 }
 
-bool AGun::IsLoadingAmmo() const
+bool AGunV1::IsLoadingAmmo() const
 {
 	auto const isLoadingAmmo = GetWorld()->TimeSeconds - _ammoLoadStartTime < _ammoLoadDuration;
 	return isLoadingAmmo;
 }
 
-bool AGun::IsLoadingAmmoStarted() const
+bool AGunV1::IsLoadingAmmoStarted() const
 {
 	return _ammoLoadStartTime > 0;
 }
 
-void AGun::TriggerFire(bool isFireTriggered)
+void AGunV1::TriggerFire(bool const isFireTriggered)
 {
 	auto const prevIsFiringTriggered = _isFireTriggered;
 	_isFireTriggered = isFireTriggered;

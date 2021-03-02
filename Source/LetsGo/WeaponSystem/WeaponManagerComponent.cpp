@@ -38,7 +38,10 @@ void UWeaponManagerComponent::StartFire()
 {
 	RETURN_IF_NO_WEAPON;
 
-	_weapon->StartFire();
+	if(_gun)
+	{
+		_gun->StartFire();
+	}
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
@@ -46,7 +49,10 @@ void UWeaponManagerComponent::StopFire()
 {
 	RETURN_IF_NO_WEAPON;
 
-	_weapon->StopFire();
+	if(_gun)
+	{
+		_gun->StopFire();
+	}
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
@@ -54,7 +60,10 @@ void UWeaponManagerComponent::Reload()
 {
 	RETURN_IF_NO_WEAPON;
 
-	_weapon->Reload();
+	if(_gun)
+	{
+		_gun->Reload();
+	}
 }
 
 void UWeaponManagerComponent::NextWeapon()
@@ -155,13 +164,20 @@ void UWeaponManagerComponent::EquipWeapon(int weaponIndex)
 	
 	if (_weapon)
 	{
-		_weapon->StopFire();
+		if(_gun)
+		{
+			_gun->StopFire();
+		}
+		
 		ActorUtils::SetEnabled(_weapon, false);
 	}
 
 	_weaponIndex = weaponIndex;
 	_weapon = _weapons[_weaponIndex];
 
+	// Refresh all known weapons
+	_gun = Cast<IGun>(_weapon);
+	
 	ActorUtils::SetEnabled(_weapon, true);
 }
 
@@ -279,19 +295,32 @@ AmmoProvider* UWeaponManagerComponent::CreateAmmoProvider(const AmmoItem* ammoIt
 	return ammoProvider;
 }
 
-AGun* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
+AWeaponBase* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 {
 	auto const gunId = gunItem->GetId();
 	auto const weaponBlueprint = _gunFactory->GetBlueprint(gunId);
 	
-	if(weaponBlueprint == nullptr)
+	if(!weaponBlueprint)
 	{
 		return nullptr;
 	}
 	
-	auto const gun = AssetUtils::SpawnBlueprint<AGun>(GetWorld(), GetOwner(), weaponBlueprint);
-	gun->SetId(gunId);
-	gun->SetAimProvider(_aimProvider);
+	auto const weapon = AssetUtils::SpawnBlueprint<AWeaponBase>(GetWorld(), GetOwner(), weaponBlueprint);
+
+	if(!weapon)
+	{
+		return nullptr;
+	}
+	
+	weapon->SetId(gunId);
+	
+	auto const gun = Cast<IGun>(weapon);
+
+	if (!gun)
+	{
+		return nullptr;
+	}
+	
 	auto const ammoId = gunItem->GetAmmoId();
 	auto ammoProvider = GetAmmoProvider(ammoId);
 
@@ -299,8 +328,8 @@ AGun* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 	{
 		ammoProvider = CreateAmmoProvider(gunItem);
 	}
-	
-	gun->SetAmmoProvider(ammoProvider);
+
+	gun->Init(ammoProvider, _aimProvider);
 
 	if (_weaponPivot == nullptr)
 	{
@@ -308,8 +337,8 @@ AGun* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 	}
 	else
 	{
-		gun->AttachToComponent(_weaponPivot, FAttachmentTransformRules::KeepRelativeTransform);
+		weapon->AttachToComponent(_weaponPivot, FAttachmentTransformRules::KeepRelativeTransform);
 	}
 	
-	return gun;
+	return weapon;
 }

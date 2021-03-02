@@ -1,15 +1,16 @@
 #pragma once
 
-#include "AmmoProvider.h"
 #include "Components/ActorComponent.h"
 #include "WeaponBase.h"
 #include "Gun.h"
 #include "GunFactory.h"
+#include "AmmoProvider.h"
 #include "LetsGo/Items/AmmoItem.h"
 #include "LetsGo/Items/AmmoItemFactory.h"
 #include "LetsGo/Items/GunItem.h"
 #include "LetsGo/Items/IItemProcessor.h"
 #include "LetsGo/Items/Item.h"
+
 #include "WeaponManagerComponent.generated.h"
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -72,6 +73,8 @@ private:
 
 	AWeaponBase* _weapon = nullptr;
 
+	IGun* _gun = nullptr;
+
 	int _weaponIndex = UNDEFINED_INDEX;
 
 	void EquipWeapon(int weaponIndex);
@@ -88,5 +91,5 @@ private:
 
 	AmmoProvider* CreateAmmoProvider(const AmmoItem* ammoItem);
 
-	AGun* CreateGun(const GunItem* gunItem);
+	AWeaponBase* CreateGun(const GunItem* gunItem);
 };
