@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
+
 #include "PlayerSpawnPoint.generated.h"
 
 UCLASS()

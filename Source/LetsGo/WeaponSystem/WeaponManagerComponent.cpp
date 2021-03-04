@@ -22,9 +22,10 @@ void UWeaponManagerComponent::BeginPlay()
 {
 	_itemProcessors.Add( [this](auto item) { return TryProcessItemAsGun(item); });
 	_itemProcessors.Add([this](auto item) { return TryProcessItemAsAmmo(item); });
-	
-	auto const gameModeBase = Cast<AMatchGameMode>(GetWorld()->GetAuthGameMode());
-	auto const diContainer = gameModeBase->GetDiContainer();
+
+	auto const authGameMode = GetWorld()->GetAuthGameMode();
+	auto const matchGameMode = Cast<AMatchGameMode>(authGameMode);
+	auto const diContainer = matchGameMode->GetDiContainer();
 	
 	auto const gunFactory = diContainer->GetInstance<GunFactory>();
 	_gunFactory = &gunFactory.Get();

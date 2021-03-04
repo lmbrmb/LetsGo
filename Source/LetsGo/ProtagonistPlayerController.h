@@ -2,6 +2,7 @@
 
 #include "GameFramework/PlayerController.h"
 #include "LetsGo/Avatars/Avatar.h"
+
 #include "ProtagonistPlayerController.generated.h"
 
 ///<summary>

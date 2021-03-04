@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GunShotComponent.h"
+
 #include "InstantShotComponent.generated.h"
 
 ///<summary>

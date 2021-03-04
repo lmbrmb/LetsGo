@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MappingComponent.h"
+
 #include "InputToFpMovementMapping.generated.h"
 
 ///<summary>

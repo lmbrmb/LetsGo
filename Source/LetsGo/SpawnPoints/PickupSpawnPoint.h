@@ -1,6 +1,7 @@
 #pragma once
 
 #include "LetsGo/PickupItems/PickupItem.h"
+
 #include "PickupSpawnPoint.generated.h"
 
 ///<summary>

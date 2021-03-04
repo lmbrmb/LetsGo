@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Components/ActorComponent.h"
+
 #include "FloatParameterComponent.generated.h"
 
 UCLASS( Abstract, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )

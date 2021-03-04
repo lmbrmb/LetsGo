@@ -2,6 +2,7 @@
 
 #include "GameFramework/Pawn.h"
 #include "AvatarData.h"
+
 #include "Avatar.generated.h"
 
 ///<summary>

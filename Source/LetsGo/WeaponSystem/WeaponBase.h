@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
+
 #include "WeaponBase.generated.h"
 
 ///<summary>

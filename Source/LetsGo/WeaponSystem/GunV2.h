@@ -4,6 +4,7 @@
 #include "FirePivotMode.h"
 #include "Gun.h"
 #include "GunState.h"
+
 #include "GunV2.generated.h"
 
 ///<summary>
