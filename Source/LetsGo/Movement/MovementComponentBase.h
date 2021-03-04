@@ -1,12 +1,12 @@
 #pragma once
-#include "LetsGo/Force.h"
+
 #include "Components/ShapeComponent.h"
+#include "LetsGo/Forces/IForce.h"
+#include "LetsGo/Forces/ForceFactory.h"
+
 #include "MovementComponentBase.generated.h"
 
-const FName GRAVITY_FORCE_NAME = FName("Gravity");
-const FName JUMP_FORCE_ID = FName("Jump");
-
-///<summary>
+//<summary>
 /// [Abstract] Movement component
 ///</summary>
 UCLASS( Abstract, ClassGroup=(Custom) )
@@ -23,7 +23,13 @@ public:
 
 	void Jump();
 	
-protected:	
+protected:
+	static const FName GRAVITY_FORCE_ID;
+
+	static const FName JUMP_FORCE_ID;
+
+	static const float SLOPE_ZERO;
+
 	UMovementComponentBase();
 
 	virtual ~UMovementComponentBase();
@@ -76,11 +82,17 @@ protected:
 	
 private:
 	UPROPERTY(EditAnywhere, Category = "Jump", meta = (AllowPrivateAccess = "true"))
-	float _jumpForceMagnitude = 1200.0f;
+	float _jumpForceCurveMagnitudeMultiplier = 1;
 
 	UPROPERTY(EditAnywhere, Category = "Jump", meta = (AllowPrivateAccess = "true"))
-	float _jumpForceDuration = 0.5f;
-
+	float _jumpForceCurveTimeMultiplier = 1;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UCurveFloat* _jumpForceUpCurve;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UCurveFloat* _jumpForceVelocityCurve;
+	
 	UPROPERTY(EditAnywhere, Category = "Jump", meta = (AllowPrivateAccess = "true"))
 	int _jumpCount = 1;
 
@@ -94,8 +106,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Custom", meta = (AllowPrivateAccess = "true"))
 	float _maxSlopeDegrees = 45;
-
-	const float SLOPE_ZERO = 90.0f;
 	
 	float _maxSlopeDegreesUp = SLOPE_ZERO + _maxSlopeDegrees;
 	
@@ -145,7 +155,9 @@ private:
 		int callNumber
 	);
 
-	TArray<Force*> _forces;
+	TArray<IForce*> _forces;
 
+	ForceFactory* _forceFactory;
+	
 	void UpdateVelocity();
 };

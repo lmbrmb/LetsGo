@@ -7,6 +7,7 @@
 #include "LetsGo/PickupItems/PickupItemFactory.h"
 #include "LetsGo/WeaponSystem/GunFactory.h"
 #include "LetsGo/Avatars/AvatarFactory.h"
+#include "LetsGo/Forces/ForceFactory.h"
 
 class MatchDependencyInjectionContainerFactory final
 {
@@ -30,6 +31,7 @@ TTypeContainer<Mode>* MatchDependencyInjectionContainerFactory::CreateContainer(
 	const TSharedRef<AmmoItemFactory> ammoItemFactory = MakeShareable(new AmmoItemFactory());
 	const TSharedRef<GunFactory> gunFactory = MakeShareable(new GunFactory());
 	const TSharedRef<AvatarFactory> avatarFactory = MakeShareable(new AvatarFactory());
+	const TSharedRef<ForceFactory> forceFactory = MakeShareable(new ForceFactory());
 	
 	container->template RegisterInstance<PickupItemFactory>(pickupItemFactory);
 	container->template RegisterInstance<GunItemFactory>(gunItemFactory);
@@ -37,6 +39,7 @@ TTypeContainer<Mode>* MatchDependencyInjectionContainerFactory::CreateContainer(
 	container->template RegisterInstance<HealthItemFactory>(healthItemFactory);
 	container->template RegisterInstance<GunFactory>(gunFactory);
 	container->template RegisterInstance<AvatarFactory>(avatarFactory);
+	container->template RegisterInstance<ForceFactory>(forceFactory);
 	
 	return container;
 }

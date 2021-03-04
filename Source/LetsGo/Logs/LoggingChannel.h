@@ -22,7 +22,7 @@ public:
 	template<class T>
 	void LogValue(const FString message, T value, LogSeverity severity = LogSeverity::Debug)
 	{
-		Log(message + FStringUtils::ToString(value), severity);
+		Log(message + " " + FStringUtils::ToString(value), severity);
 	}
 
 protected:

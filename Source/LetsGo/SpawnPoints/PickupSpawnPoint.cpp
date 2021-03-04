@@ -22,8 +22,10 @@ void APickupSpawnPoint::BeginPlay()
 
 	AssertStringIsNotEmpty(_id);
 
-	auto const gameModeBase = Cast<AMatchGameMode>(GetWorld()->GetAuthGameMode());
-	auto const diContainer = gameModeBase->GetDiContainer();
+	auto const authGameMode = GetWorld()->GetAuthGameMode();
+	auto const matchGameMode = Cast<AMatchGameMode>(authGameMode);
+	auto const diContainer = matchGameMode->GetDiContainer();
+	
 	auto const pickupItemFactory = diContainer->GetInstance<PickupItemFactory>();
 	_pickupItemBlueprint = pickupItemFactory->GetBlueprint(_id);
 	

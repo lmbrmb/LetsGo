@@ -3,9 +3,10 @@
 #include "MovementComponentBase.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+
 #include "ThirdPersonMovementComponent.generated.h"
 
-UCLASS(meta = (BlueprintSpawnableComponent))
+UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent))
 class LETSGO_API UThirdPersonMovementComponent final : public UMovementComponentBase
 {
 	GENERATED_BODY()

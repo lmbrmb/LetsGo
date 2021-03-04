@@ -1,7 +1,16 @@
 #include "MovementComponentBase.h"
+
 #include "DrawDebugHelpers.h"
 #include "LetsGo/Logs/DevLogger.h"
 #include "LetsGo/Utils/FVectorUtils.h"
+
+#include "LetsGo/GameModes/MatchGameMode.h"
+
+const FName UMovementComponentBase:: GRAVITY_FORCE_ID = "Gravity";
+
+const FName UMovementComponentBase::JUMP_FORCE_ID = "Jump";
+
+const float UMovementComponentBase::SLOPE_ZERO = 90.0f;
 
 UMovementComponentBase::UMovementComponentBase()
 {
@@ -24,9 +33,16 @@ void UMovementComponentBase::BeginPlay()
 	CollisionShape = RootCollider->GetCollisionShape();
 	CollisionQueryParams.AddIgnoredActor(actor);
 	
+	auto const authGameMode = World->GetAuthGameMode();
+	auto const matchGameMode = Cast<AMatchGameMode>(authGameMode);
+	auto const diContainer = matchGameMode->GetDiContainer();
+
+	auto const forceFactory = diContainer->GetInstance<ForceFactory>();
+	_forceFactory = &forceFactory.Get();
+	
 	if (!FMath::IsNearlyZero(_gravityForceMagnitude))
 	{
-		auto const gravityForce = Force::CreateInfiniteForce(GRAVITY_FORCE_NAME, FVector::DownVector, _gravityForceMagnitude);
+		auto const gravityForce = _forceFactory->Create(GRAVITY_FORCE_ID, FVector::DownVector, _gravityForceMagnitude);
 		_forces.Add(gravityForce);
 	}
 	
@@ -64,7 +80,18 @@ void UMovementComponentBase::CheckGround()
 		CollisionQueryParams
 	);
 
+	auto const wasInAir = IsInAir;
+	
 	IsInAir = !isOnGround;
+
+	if(wasInAir != IsInAir)
+	{
+		if(isOnGround)
+		{
+			_jumpIndex = 0;
+			_forces.RemoveAll([](IForce* f) {return f->GetId() == JUMP_FORCE_ID; });
+		}
+	}
 }
 
 void UMovementComponentBase::ProcessForces(const float& deltaTime)
@@ -81,18 +108,11 @@ void UMovementComponentBase::ProcessForces(const float& deltaTime)
 	for (auto i = forcesCount - 1; i >= 0; i--)
 	{
 		auto const force = _forces[i];
-
-		if (force->IsActive())
-		{
-			const auto forceVector = force->Take(deltaTime);
-			forceSum += forceVector;
-		}
-		else
-		{
-			_forces.RemoveAt(i);
-		}
+		const auto forceVector = force->GetVector(deltaTime);
+		forceSum += forceVector;
 	}
-	Root->AddRelativeLocation(forceSum, true);
+	auto const deltaLocation = forceSum * deltaTime;
+	Root->AddRelativeLocation(deltaLocation, true);
 }
 
 inline void UMovementComponentBase::ProcessMovement(const float& deltaTime)
@@ -120,44 +140,47 @@ inline void UMovementComponentBase::ProcessMovement(const float& deltaTime)
 		translationAmount,
 		FIRST_MOVE_CALL_NUMBER
 	);
-	//TODO: slide down surface
 }
 
 void UMovementComponentBase::Jump()
 {
-	if (!IsInAir)
-	{
-		_jumpIndex = 0;
-	}
-
 	if (_jumpIndex >= _jumpCount)
 	{
 		return;
 	}
 
 	_jumpIndex++;
+	
+	// Current jump force will be replaced with new one
+	_forces.RemoveAll([](IForce* f) {return f->GetId() == JUMP_FORCE_ID; });
 
-	for (auto i = _forces.Num() - 1; i >= 0; i--)
+	// Jump up force
+	auto const jumpUpDirection = FVector::UpVector;
+	auto const jumpForceUp = _forceFactory->Create(
+		JUMP_FORCE_ID,
+		jumpUpDirection,
+		_jumpForceUpCurve,
+		_jumpForceCurveMagnitudeMultiplier,
+		_jumpForceCurveTimeMultiplier
+	);
+	_forces.Add(jumpForceUp);
+
+	// Jump velocity force
+	auto const velocity = FVector::VectorPlaneProject(_velocity, FVector::UpVector);
+	if(FMath::IsNearlyZero(velocity.SizeSquared(), 0.1f))
 	{
-		auto const force = _forces[i];
-		if (force->GetId() == JUMP_FORCE_ID)
-		{
-			_forces.RemoveAt(i);
-		}
+		return;
 	}
-
-	auto const normalizedVelocity = _velocity.GetSafeNormal();
-	auto jumpDirection = FVector::UpVector + normalizedVelocity;
-	jumpDirection.Normalize();
-
-	auto const dotUp = FVector::DotProduct(jumpDirection, FVector::UpVector);
-	auto const multiplier = 2 - dotUp;
-	auto const magnitude = _jumpForceMagnitude * multiplier;
-	auto const jumpForce = Force::CreateFiniteForce(JUMP_FORCE_ID, _jumpForceDuration, jumpDirection, magnitude);
-
-	// Replacing current jump force if exists
-	_forces.RemoveAll([](Force* f) {return f->GetId() == JUMP_FORCE_ID; });
-	_forces.Add(jumpForce);
+	
+	auto const jumpVelocityDirection = velocity.GetSafeNormal();
+	auto const jumpVelocityForce = _forceFactory->Create(
+		JUMP_FORCE_ID,
+		jumpVelocityDirection,
+		_jumpForceVelocityCurve,
+		_jumpForceCurveMagnitudeMultiplier,
+		_jumpForceCurveTimeMultiplier
+	);
+	_forces.Add(jumpVelocityForce);
 }
 
 void UMovementComponentBase::Move(
@@ -169,9 +192,11 @@ void UMovementComponentBase::Move(
 	const int callNumber
 )
 {
+	DrawDebugLine(GetWorld(), rootLocation, rootLocation + direction * 100, FColor::Green, false, 1);
+	
 	if (!planeHitResult.bBlockingHit)
 	{
-		// Not blocked
+		// Not blocked, in air
 		auto const translation = direction * translationAmount;
 		Root->AddWorldOffset(translation, true);
 		return;
@@ -183,7 +208,7 @@ void UMovementComponentBase::Move(
 	if (angleDegrees > _maxSlopeDegreesUp)
 	{
 		// Slope is too steep, potentially a wall - can't move
-		//TODO: move along wall
+		// TODO: try step on it
 		return;
 	}
 
@@ -195,14 +220,15 @@ void UMovementComponentBase::Move(
 		return;
 	}
 
+	// Moving along plane
 	auto const directionProjectedOnPlane = FVector::VectorPlaneProject(direction, planeNormal);
 	auto const translation = directionProjectedOnPlane * translationAmount;
-	auto const castLocation = rootLocation + translation;
+	auto const castEndLocation = rootLocation + translation;
 	
 	auto const isBlocked = World->SweepSingleByChannel(
 		_bufferHitResult,
 		rootLocation,
-		castLocation,
+		castEndLocation,
 		rootRotation,
 		ECC_WorldStatic,
 		CollisionShape,
