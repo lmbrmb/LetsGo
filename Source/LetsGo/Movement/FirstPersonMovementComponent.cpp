@@ -17,7 +17,7 @@ float UFirstPersonMovementComponent::GetMovementSpeed()
 	auto const speed = isMovingForward
 		? _actorMoveForwardSpeed * (_isSprinting ? _sprintMultiplier : 1.0f)
 		: _actorMoveBackwardSpeed;
-	auto const environmentMultiplier = IsInAir ? _airMultiplier : 1.0f;
+	auto const environmentMultiplier = GetIsInAir() ? _airMultiplier : 1.0f;
 	auto const movementSpeed = speed * environmentMultiplier * _absoluteMovementAmount;
 	return movementSpeed;
 }

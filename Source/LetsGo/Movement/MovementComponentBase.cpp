@@ -80,11 +80,11 @@ void UMovementComponentBase::CheckGround()
 		CollisionQueryParams
 	);
 
-	auto const wasInAir = IsInAir;
+	auto const wasInAir = _isInAir;
 	
-	IsInAir = !isOnGround;
+	_isInAir = !isOnGround;
 
-	if(wasInAir != IsInAir)
+	if(wasInAir != _isInAir)
 	{
 		if(isOnGround)
 		{
@@ -183,6 +183,11 @@ void UMovementComponentBase::Jump()
 	_forces.Add(jumpVelocityForce);
 }
 
+bool UMovementComponentBase::GetIsInAir() const
+{
+	return _isInAir;
+}
+
 void UMovementComponentBase::Move(
 	const FVector& rootLocation,
 	const FQuat& rootRotation,
@@ -192,8 +197,6 @@ void UMovementComponentBase::Move(
 	const int callNumber
 )
 {
-	DrawDebugLine(GetWorld(), rootLocation, rootLocation + direction * 100, FColor::Green, false, 1);
-	
 	if (!planeHitResult.bBlockingHit)
 	{
 		// Not blocked, in air

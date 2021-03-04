@@ -1,5 +1,6 @@
 #pragma once
 
+#include "MovementInfoProvider.h"
 #include "Components/ShapeComponent.h"
 #include "LetsGo/Forces/IForce.h"
 #include "LetsGo/Forces/ForceFactory.h"
@@ -9,17 +10,23 @@
 //<summary>
 /// [Abstract] Movement component
 ///</summary>
-UCLASS( Abstract, ClassGroup=(Custom) )
-class LETSGO_API UMovementComponentBase : public UActorComponent
+UCLASS( ClassGroup=(Custom))
+class LETSGO_API UMovementComponentBase : public UActorComponent, public IMovementInfoProvider
 {
 	GENERATED_BODY()
 
 public:
 	/// <summary>
-	/// Returns movement amount. Range [0..1]
+	/// IMovementInfoProvider.GetIsInAir default implementation
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
-	virtual float GetAbsoluteMovementAmount();
+	virtual float GetAbsoluteMovementAmount() override;
+	
+	/// <summary>
+	/// IMovementInfoProvider.GetIsInAir implementation
+	/// </summary>
+	UFUNCTION(BlueprintCallable)
+	virtual bool GetIsInAir() const override;
 
 	void Jump();
 	
@@ -77,10 +84,10 @@ protected:
 	FCollisionShape CollisionShape;
 
 	FCollisionQueryParams CollisionQueryParams;
-
-	bool IsInAir = false;
 	
 private:
+	bool _isInAir = false;
+	
 	UPROPERTY(EditAnywhere, Category = "Jump", meta = (AllowPrivateAccess = "true"))
 	float _jumpForceCurveMagnitudeMultiplier = 1;
 

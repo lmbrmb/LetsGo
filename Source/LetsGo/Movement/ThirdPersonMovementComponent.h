@@ -12,6 +12,9 @@ class LETSGO_API UThirdPersonMovementComponent final : public UMovementComponent
 	GENERATED_BODY()
 
 public:
+	/// <summary>
+	/// IMovementInfoProvider.GetAbsoluteMovementAmount implementation
+	/// </summary>
 	virtual float GetAbsoluteMovementAmount() override;
 
 	void AddActorForwardMovementInput(const float amount);
