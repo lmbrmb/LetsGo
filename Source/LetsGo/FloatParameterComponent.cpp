@@ -31,6 +31,7 @@ void UFloatParameterComponent::SetCurrentValue(const float currentValue)
 	{
 		OnChanged();
 		Changed.Broadcast();
+		BpChanged.Broadcast();
 	}
 }
 
