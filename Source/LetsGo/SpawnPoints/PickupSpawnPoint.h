@@ -15,6 +15,8 @@ class LETSGO_API APickupSpawnPoint : public AActor
 public:	
 	APickupSpawnPoint();
 
+	float GetPickupSpawnTime() const;
+	
 protected:
 	virtual void BeginPlay() override;
 	
@@ -23,6 +25,8 @@ private:
 	
 	UBlueprint* _pickupItemBlueprint = nullptr;
 
+	float _pickupSpawnTime = 0;
+	
 	void SpawnPickup();
 
 	void OnPickupTaken(APickupItem* pickupItem);
@@ -37,7 +41,7 @@ private:
 	USceneComponent* _spawnPivot = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
-	float _pickupRespawnTime = 10;
+	float _pickupRespawnInterval = 10;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
 	FName _id = "";

@@ -16,6 +16,11 @@ APickupSpawnPoint::APickupSpawnPoint()
 	_spawnPivot->SetupAttachment(_root);
 }
 
+float APickupSpawnPoint::GetPickupSpawnTime() const
+{
+	return _pickupSpawnTime;
+}
+
 void APickupSpawnPoint::BeginPlay()
 {
 	Super::BeginPlay();
@@ -41,6 +46,7 @@ void APickupSpawnPoint::SpawnPickup()
 	//Tricky: Subscribe first, then attach to pivot because pickup can be taken on spawn
 	_delegateHandleOnPickupTaken = pickupItem->Taken.AddUObject(this, &APickupSpawnPoint::OnPickupTaken);
 	pickupItem->AttachToComponent(_spawnPivot, FAttachmentTransformRules::KeepRelativeTransform);
+	_pickupSpawnTime = GetWorld()->TimeSeconds;
 }
 
 void APickupSpawnPoint::OnPickupTaken(APickupItem* pickupItem)
@@ -48,7 +54,8 @@ void APickupSpawnPoint::OnPickupTaken(APickupItem* pickupItem)
 	pickupItem->Taken.Remove(_delegateHandleOnPickupTaken);
 	_delegateHandleOnPickupTaken.Reset();
 
-	GetWorldTimerManager().SetTimer(_timerHandle, this, &APickupSpawnPoint::RespawnPickupOnTimer, _pickupRespawnTime, false);
+	GetWorldTimerManager().SetTimer(_timerHandle, this, &APickupSpawnPoint::RespawnPickupOnTimer, _pickupRespawnInterval, false);
+	_pickupSpawnTime = GetWorld()->TimeSeconds + _pickupRespawnInterval;
 }
 
 void APickupSpawnPoint::RespawnPickupOnTimer()
