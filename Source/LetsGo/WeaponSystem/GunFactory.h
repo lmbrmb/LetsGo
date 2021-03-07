@@ -5,7 +5,7 @@
 class LETSGO_API GunFactory final : public BlueprintFactory
 {
 public:
-	explicit GunFactory();
+	explicit GunFactory(const bool lazyInitialization);
 };
 
 Expose_TNameOf(GunFactory)

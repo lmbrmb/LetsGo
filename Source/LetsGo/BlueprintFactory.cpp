@@ -20,3 +20,11 @@ UBlueprint* BlueprintFactory::GetBlueprint(const FName id)
 	Blueprints.Add(id, blueprint);
 	return blueprint;
 }
+
+void BlueprintFactory::LoadAllBlueprints()
+{
+	for (auto const asset : Assets)
+	{
+		GetBlueprint(asset.Key);
+	}
+}

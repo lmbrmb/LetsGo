@@ -11,7 +11,7 @@ FVector UFirstPersonMovementComponent::GetInputMovementDirection()
 
 float UFirstPersonMovementComponent::GetMovementSpeed()
 {
-	auto const forwardVector = Root->GetForwardVector();
+	auto const forwardVector = RootCollider->GetForwardVector();
 	auto const dotForward = FVector::DotProduct(forwardVector, _inputMovementDirection);
 	auto const isMovingForward = dotForward >= MIN_DOT_FORWARD;
 	auto const speed = isMovingForward
@@ -52,7 +52,7 @@ void UFirstPersonMovementComponent::ProcessActorYaw(float deltaTime) const
 	}
 
 	auto const yawDelta = _actorYawInputAmount * _actorYawSpeed * deltaTime;
-	Root->AddRelativeRotation(FRotator(0, yawDelta, 0));
+	RootCollider->AddRelativeRotation(FRotator(0, yawDelta, 0));
 }
 
 void UFirstPersonMovementComponent::Init(AActor* actor)
@@ -80,8 +80,8 @@ void UFirstPersonMovementComponent::ProcessInput()
 	_absoluteMovementAmount = absoluteMovementAmount;
 
 	auto direction = FVector::ZeroVector;
-	auto const rootForward = Root->GetForwardVector();
-	auto const rootRight = Root->GetRightVector();
+	auto const rootForward = RootCollider->GetForwardVector();
+	auto const rootRight = RootCollider->GetRightVector();
 	
 	if (hasForwardMovementInput)
 	{
@@ -93,9 +93,7 @@ void UFirstPersonMovementComponent::ProcessInput()
 		direction += rootRight * _actorRightMovementInputAmount;
 	}
 
-	direction.Normalize();
-
-	_inputMovementDirection = direction;
+	_inputMovementDirection = direction.GetSafeNormal();
 }
 
 void UFirstPersonMovementComponent::ResetInput()
@@ -106,7 +104,7 @@ void UFirstPersonMovementComponent::ResetInput()
 	_actorYawInputAmount = 0;
 }
 
-float UFirstPersonMovementComponent::GetAbsoluteMovementAmount()
+float UFirstPersonMovementComponent::GetAbsoluteMovementAmount() const
 {
 	return _absoluteMovementAmount;
 }

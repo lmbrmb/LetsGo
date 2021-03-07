@@ -1,16 +1,15 @@
 #include "MovementComponentBase.h"
 
+#include "LetsGo/Utils/FVectorUtils.h"
+#include "LetsGo/GameModes/MatchGameMode.h"
+#include "LetsGo/Utils/AssertUtils.h"
+
 #include "DrawDebugHelpers.h"
 #include "LetsGo/Logs/DevLogger.h"
-#include "LetsGo/Utils/FVectorUtils.h"
-
-#include "LetsGo/GameModes/MatchGameMode.h"
 
 const FName UMovementComponentBase:: GRAVITY_FORCE_ID = "Gravity";
 
 const FName UMovementComponentBase::JUMP_FORCE_ID = "Jump";
-
-const float UMovementComponentBase::SLOPE_ZERO = 90.0f;
 
 UMovementComponentBase::UMovementComponentBase()
 {
@@ -28,8 +27,9 @@ void UMovementComponentBase::BeginPlay()
 	
 	auto const actor = GetOwner();
 	World = GetWorld();
-	Root = actor->GetRootComponent();
-	RootCollider = actor->FindComponentByClass<UShapeComponent>();
+	auto const rootComponent = actor->GetRootComponent();
+	RootCollider = Cast<UShapeComponent>(rootComponent);
+	AssertIsNotNull(RootCollider);
 	CollisionShape = RootCollider->GetCollisionShape();
 	CollisionQueryParams.AddIgnoredActor(actor);
 	
@@ -57,9 +57,9 @@ void UMovementComponentBase::TickComponent(
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	CheckGround();
 	ProcessInput();
 	ProcessForces(DeltaTime);
+	CheckGround();
 	ProcessMovement(DeltaTime);
 	CustomTick(DeltaTime);
 	UpdateVelocity();
@@ -68,13 +68,13 @@ void UMovementComponentBase::TickComponent(
 
 void UMovementComponentBase::CheckGround()
 {
-	auto const location = Root->GetComponentLocation();
+	auto const location = RootCollider->GetComponentLocation();
 	auto const targetLocation = location + FVector::DownVector * 10;
 	auto const isOnGround = World->SweepSingleByChannel(
 		_groundHitResult,
 		location,
 		targetLocation,
-		Root->GetComponentQuat(),
+		RootCollider->GetComponentQuat(),
 		ECC_WorldStatic,
 		CollisionShape,
 		CollisionQueryParams
@@ -112,7 +112,7 @@ void UMovementComponentBase::ProcessForces(const float& deltaTime)
 		forceSum += forceVector;
 	}
 	auto const deltaLocation = forceSum * deltaTime;
-	Root->AddRelativeLocation(deltaLocation, true);
+	RootCollider->AddRelativeLocation(deltaLocation, true);
 }
 
 inline void UMovementComponentBase::ProcessMovement(const float& deltaTime)
@@ -130,15 +130,14 @@ inline void UMovementComponentBase::ProcessMovement(const float& deltaTime)
 	}
 
 	auto const translationAmount = speed * deltaTime;
-	auto const currentLocation = Root->GetComponentLocation();
-	auto const currentRotation = Root->GetComponentQuat();
+	auto const rootColliderLocation = RootCollider->GetComponentLocation();
+	auto const rootColliderRotation = RootCollider->GetComponentQuat();
 	Move(
-		currentLocation,
-		currentRotation,
+		rootColliderLocation,
+		rootColliderRotation,
 		direction,
 		_groundHitResult,
-		translationAmount,
-		FIRST_MOVE_CALL_NUMBER
+		translationAmount
 	);
 }
 
@@ -150,6 +149,8 @@ void UMovementComponentBase::Jump()
 	}
 
 	_jumpIndex++;
+
+	BpJump.Broadcast();
 	
 	// Current jump force will be replaced with new one
 	_forces.RemoveAll([](IForce* f) {return f->GetId() == JUMP_FORCE_ID; });
@@ -189,80 +190,66 @@ bool UMovementComponentBase::GetIsInAir() const
 }
 
 void UMovementComponentBase::Move(
-	const FVector& rootLocation,
-	const FQuat& rootRotation,
-	const FVector& direction,
-	const FHitResult& planeHitResult,
-	const float translationAmount,
-	const int callNumber
+	const FVector& rootColliderLocation,
+	const FQuat& rootColliderRotation,
+	const FVector& inputDirection,
+	const FHitResult& groundHitResult,
+	const float translationAmount
 )
 {
-	if (!planeHitResult.bBlockingHit)
+	FVector translation;
+	if(!groundHitResult.bBlockingHit)
 	{
-		// Not blocked, in air
-		auto const translation = direction * translationAmount;
-		Root->AddWorldOffset(translation, true);
+		// No block - potentially in air
+		translation = inputDirection * translationAmount;
+		RootCollider->AddWorldOffset(translation, true);
 		return;
 	}
 
-	auto const planeNormal = planeHitResult.Normal;
-	auto const angleDegrees = FVectorUtils::GetUnsignedAngleDegrees(direction, planeNormal);
-	
-	if (angleDegrees > _maxSlopeDegreesUp)
-	{
-		// Slope is too steep, potentially a wall - can't move
-		// TODO: try step on it
-		return;
-	}
-
-	if (angleDegrees < _maxSlopeDegreesDown)
-	{
-		// Slope break - no translation restriction
-		auto const translation = direction * translationAmount;
-		Root->AddWorldOffset(translation, true);
-		return;
-	}
-
-	// Moving along plane
-	auto const directionProjectedOnPlane = FVector::VectorPlaneProject(direction, planeNormal);
-	auto const translation = directionProjectedOnPlane * translationAmount;
-	auto const castEndLocation = rootLocation + translation;
+	//Sweep in direction
+	auto planeNormal = groundHitResult.Normal;
+	auto projectedDirection = FVector::VectorPlaneProject(inputDirection, planeNormal).GetSafeNormal();
+	translation = projectedDirection * translationAmount;
+	auto const castEndLocation = rootColliderLocation + translation;
 	
 	auto const isBlocked = World->SweepSingleByChannel(
 		_bufferHitResult,
-		rootLocation,
+		rootColliderLocation,
 		castEndLocation,
-		rootRotation,
+		rootColliderRotation,
 		ECC_WorldStatic,
 		CollisionShape,
 		CollisionQueryParams
 	);
 
+	AssertIsEqual(isBlocked, (bool)_bufferHitResult.bBlockingHit);
+	
 	if (!isBlocked)
 	{
-		Root->AddWorldOffset(translation, false);
+		// No block - can move along plane
+		// No need to sweep because movement end position is already checked
+		RootCollider->AddWorldOffset(translation, false);
 		return;
 	}
-	
-	if (callNumber >= MAX_MOVE_CALL_DEPTH)
+
+	planeNormal = _bufferHitResult.Normal;
+	auto const obstacleDeltaZ = rootColliderLocation.Z - _bufferHitResult.ImpactPoint.Z;
+	auto const canStepOn = obstacleDeltaZ < _maxStepHeight;
+	if (!canStepOn)
 	{
-		DevLogger::GetLoggingChannel()->LogValue("Move() reached max call depth", MAX_MOVE_CALL_DEPTH, LogSeverity::Warning);
+		// The obstacle is too high - can't step on it
 		return;
 	}
-	
-	Move(
-		rootLocation,
-		rootRotation,
-		direction,
-		_bufferHitResult,
-		translationAmount,
-		callNumber + 1
-	);
+
+	// Moving along plane normal
+	projectedDirection = FVector::VectorPlaneProject(inputDirection, planeNormal).GetSafeNormal();
+	translation = projectedDirection * translationAmount;
+	RootCollider->AddWorldOffset(translation, true);
 }
 
 void UMovementComponentBase::UpdateVelocity()
 {
-	auto const location = Root->GetComponentLocation();
+	auto const location = RootCollider->GetComponentLocation();
 	_velocity = location - _previousLocation;
 	_previousLocation = location;
 }
@@ -290,7 +277,7 @@ void UMovementComponentBase::ProcessInput()
 	//Do nothing
 }
 
-float UMovementComponentBase::GetAbsoluteMovementAmount()
+float UMovementComponentBase::GetAbsoluteMovementAmount() const
 {
 	//Stub
 	return 0;

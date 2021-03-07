@@ -1,7 +1,7 @@
 #pragma once
 
 ///<summary>
-/// Blueprint factory.
+/// [Abstract] Blueprint factory.
 /// Allows to get blueprint by asset name
 /// Derived factory should expose it's name for proper dependency injection
 ///</summary>
@@ -24,4 +24,9 @@ protected:
 	/// Loaded blueprints cache
 	/// </summary>
 	TMap<const FName, UBlueprint*> Blueprints;
+
+	/// <summary>
+	/// Load all blueprints. Cache warmup
+	/// </summary>
+	void LoadAllBlueprints();
 };

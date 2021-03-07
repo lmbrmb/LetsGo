@@ -8,8 +8,8 @@
 class AvatarFactory final : private BlueprintFactory
 {
 public:
-	explicit AvatarFactory();
-	
+	explicit AvatarFactory(const bool lazyInitialization);
+
 	UBlueprint* GetLocalPlayerBlueprint();
 	
 	UBlueprint* GetRemotePlayerBlueprint();

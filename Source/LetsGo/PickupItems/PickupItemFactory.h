@@ -5,10 +5,10 @@
 ///<summary>
 ///Pickup item factory
 ///</summary>
-class LETSGO_API PickupItemFactory : public BlueprintFactory
+class LETSGO_API PickupItemFactory final : public BlueprintFactory
 {
 public:
-	explicit PickupItemFactory();
+	explicit PickupItemFactory(const bool lazyInitialization);
 };
 
 Expose_TNameOf(PickupItemFactory)

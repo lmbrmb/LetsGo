@@ -11,10 +11,7 @@ class LETSGO_API UFirstPersonMovementComponent final : public UMovementComponent
 	GENERATED_BODY()
 
 public:
-	/// <summary>
-	/// IMovementInfoProvider.GetAbsoluteMovementAmount implementation
-	/// </summary>
-	virtual float GetAbsoluteMovementAmount() override;
+	virtual float GetAbsoluteMovementAmount() const override;
 	
 	void AddActorForwardMovementInput(float amount);
 

@@ -1,13 +1,12 @@
 #include "ThirdPersonMovementComponent.h"
 #include "LetsGo/Utils/FVectorUtils.h"
-#include "LetsGo/Logs/DevLogger.h"
 
 const float MIN_MOVEMENT_INPUT_AMOUNT = 0.15f;
 const float MIN_ROTATION_INPUT = 0.05f;
 const float MIN_MOVEMENT_DOT = 0.25f;
 const float SKIP_ROTATION_DOT = 0.99f;
 
-float UThirdPersonMovementComponent::GetAbsoluteMovementAmount()
+float UThirdPersonMovementComponent::GetAbsoluteMovementAmount() const
 {
 	return _absoluteMovementAmount;
 }
@@ -55,9 +54,6 @@ void UThirdPersonMovementComponent::ProcessInput()
 	direction = FVector::VectorPlaneProject(direction, FVector::UpVector);
 	direction.Normalize();
 	_inputMovementDirection = direction;
-
-	/*auto const actorLocation = Root->GetComponentLocation();
-	DrawDebugLine(GetWorld(), actorLocation, actorLocation + _inputMovementDirection * 100, FColor::Green);*/
 }
 
 void UThirdPersonMovementComponent::CustomTick(float deltaTime)
@@ -119,7 +115,7 @@ void UThirdPersonMovementComponent::ProcessSpringArmRotation(const float deltaTi
 
 void UThirdPersonMovementComponent::ProcessActorRotation(const float deltaTime) const
 {
-	const auto actorForwardDirection = Root->GetForwardVector();
+	const auto actorForwardDirection = RootCollider->GetForwardVector();
 	const auto targetDirectionDot = FVector::DotProduct(actorForwardDirection, _inputMovementDirection);
 	
 	if (targetDirectionDot >= SKIP_ROTATION_DOT)
@@ -143,7 +139,7 @@ void UThirdPersonMovementComponent::ProcessActorRotation(const float deltaTime) 
 	//auto const actorLocation = Root->GetComponentLocation();
 	//DrawDebugLine(GetWorld(), actorLocation, actorLocation + rotationVector * 100, FColor::Yellow);
 	
-	Root->SetWorldRotation(actorRotation);
+	RootCollider->SetWorldRotation(actorRotation);
 }
 
 float UThirdPersonMovementComponent::ClampSpringArmPitch(float pitch) const

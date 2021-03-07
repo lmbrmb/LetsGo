@@ -319,6 +319,8 @@ AWeaponBase* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 
 	if (!gun)
 	{
+		DevLogger::GetLoggingChannel()->LogValue("IGun is null. Gun item id:", gunItem->GetId());
+		weapon->Destroy();
 		return nullptr;
 	}
 	
