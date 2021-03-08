@@ -17,8 +17,16 @@ public:
 	AAvatar();
 
 	AvatarData* GetAvatarData() const;
-
+	
 	void SetAvatarData(AvatarData* avatarData);
+
+	DECLARE_EVENT_OneParam(
+		IGun,
+		EAvatarDataSet,
+		const AvatarData* avatarData
+		);
+
+	EAvatarDataSet AvatarDataSet;
 	
 private:
 	AvatarData* _avatarData;

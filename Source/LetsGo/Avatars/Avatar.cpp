@@ -13,4 +13,5 @@ AvatarData* AAvatar::GetAvatarData() const
 void AAvatar::SetAvatarData(AvatarData* avatarData)
 {
 	_avatarData = avatarData;
+	AvatarDataSet.Broadcast(_avatarData);
 }

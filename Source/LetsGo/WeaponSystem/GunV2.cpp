@@ -53,8 +53,9 @@ void AGunV2::ProcessShootingState()
 	SetState(GunState::Idle);
 }
 
-void AGunV2::Init(AmmoProvider* ammoProvider, USceneComponent* aimProvider)
+void AGunV2::Init(const FGuid instigatorId, AmmoProvider* ammoProvider, USceneComponent* aimProvider)
 {
+	_instigatorId = instigatorId;
 	_ammoProvider = ammoProvider;
 	_aimProvider = aimProvider;
 }
@@ -99,7 +100,7 @@ void AGunV2::StartShot()
 {
 	_shotStartTime = GetWorld()->TimeSeconds;
 	auto const firePivot = GetFirePivot();
-	ShotPerformed.Broadcast(firePivot, _aimProvider);
+	ShotPerformed.Broadcast(_instigatorId, firePivot, _aimProvider);
 	SetState(GunState::Shooting);
 }
 

@@ -22,10 +22,17 @@ class LETSGO_API IGun
 	GENERATED_BODY()
 
 public:
-	DECLARE_EVENT_TwoParams(IGun, EShotPerformed, USceneComponent*, USceneComponent*);
+	DECLARE_EVENT_ThreeParams(
+	IGun,
+		EShotPerformed,
+		const FGuid& instigatorId,
+		const USceneComponent*,
+		const USceneComponent*
+		);
+	
 	EShotPerformed ShotPerformed;
 	
-	virtual void Init(AmmoProvider* ammoProvider, USceneComponent* aimProvider ) = 0;
+	virtual void Init(const FGuid instigatorId, AmmoProvider* ammoProvider, USceneComponent* aimProvider ) = 0;
 
 	virtual void StartFire() = 0;
 

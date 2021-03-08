@@ -3,7 +3,7 @@
 #include "Components/ActorComponent.h"
 #include "MappingComponent.generated.h"
 
-UCLASS(Abstract, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Abstract, ClassGroup=(Custom) )
 class LETSGO_API UMappingComponent : public UActorComponent
 {
 	GENERATED_BODY()

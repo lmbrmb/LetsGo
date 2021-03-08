@@ -19,14 +19,16 @@ void UHealthComponent::Heal(const float healAmount)
 	ChangeValue(healValue);
 }
 
-void UHealthComponent::Injure(const float damageAmount)
+void UHealthComponent::Injure(Damage damage)
 {
 	if (IsDead())
 	{
 		return;
 	}
 
+	auto const damageAmount = damage.GetAmount();
 	auto const damageValue = -1 * FMath::Abs(damageAmount);
+	//TODO: save last damage
 	ChangeValue(damageValue);
 }
 
