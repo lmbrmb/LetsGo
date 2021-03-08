@@ -23,6 +23,9 @@ public:
 
 	DECLARE_EVENT_OneParam(APickupItem, Taken, APickupItem*)
 	Taken Taken;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpOnTaken();
 	
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Custom, Meta = (AllowPrivateAccess = "true"))

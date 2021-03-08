@@ -4,7 +4,7 @@
 HealthItemFactory::HealthItemFactory()
 {
 	_healthData.Add("MajorHealth", new HealthData( 50));
-	_healthData.Add("MinorHealth", new HealthData(25));
+	_healthData.Add("MinorHealth", new HealthData(20));
 }
 
 HealthItem* HealthItemFactory::CreateItem(const FName itemId)

@@ -15,5 +15,6 @@ FName APickupItem::GetId()
 void APickupItem::Take()
 {
 	Taken.Broadcast(this);
+	BpOnTaken();
 	Destroy();
 }
