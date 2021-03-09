@@ -4,7 +4,7 @@
 #include "LetsGo/Items/HealthItemFactory.h"
 #include "LetsGo/Items/GunItemFactory.h"
 #include "LetsGo/Items/AmmoItemFactory.h"
-#include "LetsGo/PickupItems/PickupItemFactory.h"
+#include "LetsGo/Pickups/PickupItemFactory.h"
 #include "LetsGo/WeaponSystem/GunFactory.h"
 #include "LetsGo/Avatars/AvatarFactory.h"
 #include "LetsGo/Forces/ForceFactory.h"

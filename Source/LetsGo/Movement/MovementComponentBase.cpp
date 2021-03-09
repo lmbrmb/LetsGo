@@ -18,7 +18,6 @@ UMovementComponentBase::UMovementComponentBase()
 
 UMovementComponentBase::~UMovementComponentBase()
 {
-	//Do nothing
 }
 
 void UMovementComponentBase::BeginPlay()

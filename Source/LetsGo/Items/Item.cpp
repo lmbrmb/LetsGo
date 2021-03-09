@@ -3,7 +3,6 @@
 Item::Item(const FName id) :
 	_id(id)
 {
-	//Do nothing
 }
 
 FName Item::GetId() const

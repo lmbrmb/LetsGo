@@ -1,7 +1,7 @@
 #include "PickupSpawnPoint.h"
 #include "LetsGo/GameModes/MatchGameMode.h"
-#include "LetsGo/PickupItems/PickupItem.h"
-#include "LetsGo/PickupItems/PickupItemFactory.h"
+#include "LetsGo/Pickups/PickupItem.h"
+#include "LetsGo/Pickups/PickupItemFactory.h"
 #include "LetsGo/Utils/AssertUtils.h"
 #include "LetsGo/Utils/AssetUtils.h"
 

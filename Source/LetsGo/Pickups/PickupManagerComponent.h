@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Items/IItemProcessor.h"
+#include "LetsGo/Items/IItemProcessor.h"
 #include "LetsGo/Items/Item.h"
 #include "LetsGo/Items/IItemFactory.h"
 

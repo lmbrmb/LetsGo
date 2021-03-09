@@ -15,7 +15,6 @@ public:
 	AmmoType(ammoType),
 	InitialAmmoCount(initialAmmoCount)
 	{
-		//Do nothing
 	}
 
 	FName AmmoType;

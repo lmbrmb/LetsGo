@@ -4,13 +4,15 @@ struct Damage
 {
 public:
 	Damage(const FGuid instigatorId, const float amount);
+
+	~Damage() = default;
 	
 	FGuid GetInstigatorId() const;
 
 	float GetAmount() const;
 
 private:
-	const FGuid _instigatorId;
+	FGuid _instigatorId;
 	
-	const float _amount;
+	float _amount;
 };

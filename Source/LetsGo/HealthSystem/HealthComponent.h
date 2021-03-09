@@ -15,9 +15,9 @@ public:
 
 	Died Died;
 
-	void Heal(float healAmount);
+	void Heal(const float healAmount);
 
-	void Injure(Damage damage);
+	void Injure(const Damage damage);
 	
 	void Kill();
 
@@ -29,4 +29,7 @@ public:
 
 protected:
 	virtual void OnChanged() override;
+
+private:
+	Damage _lastDamage = Damage(FGuid(0,0,0,0), 0);
 };

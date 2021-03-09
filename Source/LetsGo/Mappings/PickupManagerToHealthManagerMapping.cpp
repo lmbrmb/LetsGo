@@ -1,6 +1,6 @@
 #include "PickupManagerToHealthManagerMapping.h"
 
-#include "LetsGo/PickupManagerComponent.h"
+#include "LetsGo/Pickups/PickupManagerComponent.h"
 #include "LetsGo/HealthSystem/HealthManagerComponent.h"
 #include "LetsGo/Utils/AssertUtils.h"
 

@@ -17,7 +17,6 @@ public:
 	Quantity(quantity),
 	MaxQuantity(maxQuantity)
 	{
-		//Do nothing
 	}
 
 	int Quantity;

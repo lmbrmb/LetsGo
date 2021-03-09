@@ -7,7 +7,6 @@ HealthItem::HealthItem(
 	: Item(id),
 	_healAmount(healAmount)
 {
-	//Do nothing
 }
 
 int HealthItem::GetHealAmount() const

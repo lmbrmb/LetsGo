@@ -9,7 +9,6 @@ AmmoItem::AmmoItem(
 	_quantity(quantity),
 	_maxQuantity(maxQuantity)
 {
-	//Do nothing
 }
 
 int AmmoItem::GetQuantity() const

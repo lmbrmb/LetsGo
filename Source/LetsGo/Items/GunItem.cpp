@@ -9,7 +9,6 @@ GunItem::GunItem(
 	_ammoId(ammoId),
 	_initialAmmoCount(initialAmmoCount)
 {
-	//Do nothing
 }
 
 int GunItem::GetInitialAmmoCount() const

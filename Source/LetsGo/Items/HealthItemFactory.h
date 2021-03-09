@@ -14,7 +14,6 @@ public:
 	explicit HealthData(float healAmount) :
 	HealAmount(healAmount)
 	{
-		//Do nothing
 	}
 
 	float HealAmount;

@@ -1,7 +1,7 @@
 #include "PickupManagerToWeaponManagerMapping.h"
 
 #include "LetsGo/Utils/AssertUtils.h"
-#include "LetsGo/PickupManagerComponent.h"
+#include "LetsGo/Pickups/PickupManagerComponent.h"
 #include "LetsGo/WeaponSystem/WeaponManagerComponent.h"
 #include "LetsGo/Logs/DevLogger.h"
 

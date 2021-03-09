@@ -3,13 +3,13 @@
 #include "GameFramework/PlayerController.h"
 #include "LetsGo/Avatars/Avatar.h"
 
-#include "ProtagonistPlayerController.generated.h"
+#include "MatchPlayerController.generated.h"
 
 ///<summary>
-/// Main character player controller
+/// Match player controller
 ///</summary>
 UCLASS()
-class LETSGO_API AProtagonistPlayerController final : public APlayerController
+class LETSGO_API AMatchPlayerController final : public APlayerController
 {
 	GENERATED_BODY()
 
