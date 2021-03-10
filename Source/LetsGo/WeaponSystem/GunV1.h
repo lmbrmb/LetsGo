@@ -21,7 +21,7 @@ public:
 	AGunV1();
 
 	// IGun.Init implementation
-	virtual void Init(const FGuid instigatorId, AmmoProvider* ammoProvider, USceneComponent* aimProvider) override;
+	virtual void Init(const int32 instigatorId, AmmoProvider* ammoProvider, USceneComponent* aimProvider) override;
 
 	// IGun.StartFire implementation
 	virtual void StartFire() override;
@@ -55,7 +55,7 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 	
 private:
-	FGuid _instigatorId;
+	int32 _instigatorId;
 	
 	const int UNDEFINED_TIME = -1.0f;
 	

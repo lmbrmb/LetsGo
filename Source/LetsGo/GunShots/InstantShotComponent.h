@@ -16,7 +16,7 @@ protected:
 	virtual void Init() override;
 
 	virtual void OnShot(
-		const FGuid& instigatorId,
+		const int32 instigatorId,
 		const USceneComponent* firePivot,
 		const USceneComponent* aimProvider
 	) override;
@@ -54,7 +54,7 @@ private:
 	);
 	
 	void ProcessBullet(
-		const FGuid& instigatorId,
+		const int32 instigatorId,
 		const USceneComponent* firePivot,
 		const FVector& targetAimLocation,
 		const float dispersionByDistance
@@ -68,7 +68,7 @@ private:
 	) const;
 	
 	void TraceBullet(
-		const FGuid& instigatorId,
+		const int32 instigatorId,
 		const FVector& rayStartLocation,
 		FVector& rayEndLocation
 	);

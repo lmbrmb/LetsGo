@@ -128,7 +128,7 @@ void UWeaponManagerComponent::SetAimProvider(USceneComponent* aimProvider)
 	_aimProvider = aimProvider;
 }
 
-void UWeaponManagerComponent::SetInstigatorId(const FGuid instigatorId)
+void UWeaponManagerComponent::SetInstigatorId(const int32 instigatorId)
 {
 	_instigatorId = instigatorId;
 }
@@ -337,11 +337,6 @@ AWeaponBase* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 		ammoProvider = CreateAmmoProvider(gunItem);
 	}
 
-	if(!_instigatorId.IsValid())
-	{
-		DevLogger::GetLoggingChannel()->Log("Instigator id is not valid", LogSeverity::Warning);
-	}
-	
 	gun->Init(_instigatorId, ammoProvider, _aimProvider);
 
 	if (_weaponPivot == nullptr)

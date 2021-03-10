@@ -5,13 +5,13 @@
 class AvatarData
 {
 public:
-	explicit AvatarData(FGuid playerId, AvatarType avatarType);
+	explicit AvatarData(const int32 playerId, const AvatarType avatarType);
 
-	FGuid GetPlayerId() const;
+	int32 GetPlayerId() const;
 
 	AvatarType GetAvatarType() const;
 private:
-	FGuid _playerId;
+	int32 _playerId;
 
 	AvatarType _avatarType;
 };

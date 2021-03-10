@@ -1,12 +1,12 @@
 #include "AvatarData.h"
 
-AvatarData::AvatarData(FGuid guid, AvatarType avatarType)
+AvatarData::AvatarData(const int32 playerId, const AvatarType avatarType)
 {
-	_playerId = guid;
+	_playerId = playerId;
 	_avatarType = avatarType;
 }
 
-FGuid AvatarData::GetPlayerId() const
+int32 AvatarData::GetPlayerId() const
 {
 	return _playerId;
 }

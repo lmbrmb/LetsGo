@@ -19,9 +19,9 @@ public:
 
 	bool IsInitialized() const;
 	
-	void Init(const FGuid playerId, const AvatarType avatarType);
+	void Init(const int32 playerId, const AvatarType avatarType);
 
-	FGuid GetPlayerId() const;
+	int32 GetPlayerId() const;
 
 	AvatarType GetAvatarType() const;
 	
@@ -34,7 +34,9 @@ public:
 	EInitialized Initialized;
 	
 private:
-	FGuid _playerId;
+	static const int32 UNDEFINED_PLAYER_ID;
+	
+	int32 _playerId = UNDEFINED_PLAYER_ID;
 
 	AvatarType _avatarType;
 };

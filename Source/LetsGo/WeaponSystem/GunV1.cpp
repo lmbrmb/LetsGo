@@ -88,7 +88,7 @@ void AGunV1::ProcessShootingState()
 	SetState(GunState::Idle);
 }
 
-void AGunV1::Init(const FGuid instigatorId, AmmoProvider* ammoProvider, USceneComponent* aimProvider)
+void AGunV1::Init(const int32 instigatorId, AmmoProvider* ammoProvider, USceneComponent* aimProvider)
 {
 	_instigatorId = instigatorId;
 	_ammoProvider = ammoProvider;

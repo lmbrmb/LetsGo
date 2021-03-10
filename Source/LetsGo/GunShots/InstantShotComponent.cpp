@@ -10,7 +10,7 @@ void UInstantShotComponent::Init()
 	_collisionQueryParams.AddIgnoredActor(GetOwner());
 }
 
-void UInstantShotComponent::OnShot(const FGuid& instigatorId, const USceneComponent* firePivot, const USceneComponent* aimProvider)
+void UInstantShotComponent::OnShot(const int32 instigatorId, const USceneComponent* firePivot, const USceneComponent* aimProvider)
 {
 	FVector targetAimLocation;
 	float dispersionByDistance;
@@ -53,7 +53,7 @@ void UInstantShotComponent::ProcessAimLocation(
 }
 
 void UInstantShotComponent::ProcessBullet(
-	const FGuid& instigatorId,
+	const int32 instigatorId,
 	const USceneComponent* firePivot,
 	const FVector& targetAimLocation, 
 	const float dispersionByDistance
@@ -88,7 +88,7 @@ FVector UInstantShotComponent::GetBulletDirection(
 	return direction;
 }
 
-void UInstantShotComponent::TraceBullet(const FGuid& instigatorId, const FVector& rayStartLocation, FVector& rayEndLocation)
+void UInstantShotComponent::TraceBullet(const int32 instigatorId, const FVector& rayStartLocation, FVector& rayEndLocation)
 {
 	auto const isHitted = GetWorld()->LineTraceSingleByChannel(
 		_hitResult,

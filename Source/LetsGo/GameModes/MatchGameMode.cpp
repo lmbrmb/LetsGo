@@ -1,7 +1,10 @@
 #include "MatchGameMode.h"
+
+#include "GameFramework/GameStateBase.h"
+#include "GameFramework/PlayerState.h"
+#include "Kismet/GameplayStatics.h"
 #include "LetsGo/MatchDependencyInjectionContainerFactory.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
-#include "LetsGo/Logs/DevLogger.h"
 #include "LetsGo/Utils/AssertUtils.h"
 #include "LetsGo/Utils/AssetUtils.h"
 
@@ -23,13 +26,24 @@ void AMatchGameMode::InitGame(const FString& MapName, const FString& Options, FS
 	auto const playerFactory = GetDiContainer()->GetInstance<AvatarFactory>();
 	_avatarFactory = &playerFactory.Get();
 
-	_avatarsData.Add(new AvatarData(FGuid::NewGuid(), AvatarType::LocalPlayer));
-	for(auto i = 0; i<BOT_COUNT; i++)
-	{
-		_avatarsData.Add(new AvatarData(FGuid::NewGuid(), AvatarType::Bot));
-	}
-
 	_matchAnalytics = new MatchAnalytics(this);
+}
+
+void AMatchGameMode::PopulateAvatarsData()
+{
+	for (auto i = 0; i < BOT_COUNT; i++)
+	{
+		_avatarsData.Add(new AvatarData(MAX_int32 - i, AvatarType::Bot));
+	}
+	
+	auto const localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	AssertIsNotNull(localPlayerController);
+
+	auto const localPlayerState = localPlayerController->GetPlayerState<APlayerState>();
+	AssertIsNotNull(localPlayerState);
+
+	auto const localPlayerId = localPlayerState->GetPlayerId();
+	_avatarsData.Add(new AvatarData(localPlayerId, AvatarType::LocalPlayer));
 }
 
 TTypeContainer<ESPMode::Fast>* AMatchGameMode::GetDiContainer() const
@@ -46,6 +60,8 @@ void AMatchGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
+	PopulateAvatarsData();
+	
 	for (auto avatarData : _avatarsData)
 	{
 		SpawnAvatar(avatarData);
@@ -116,7 +132,7 @@ UBlueprint* AMatchGameMode::GetAvatarBlueprint(const AvatarType avatarType) cons
 
 void AMatchGameMode::RespawnAvatarOnTimer()
 {
-	FGuid playerId;
+	int32 playerId;
 	_respawnQueue.Dequeue(playerId);
 
 	for (auto avatarData : _avatarsData)

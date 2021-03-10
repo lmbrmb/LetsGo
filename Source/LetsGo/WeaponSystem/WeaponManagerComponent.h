@@ -41,7 +41,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetAimProvider(USceneComponent* aimProvider);
 
-	void SetInstigatorId(const FGuid instigatorId);
+	void SetInstigatorId(const int32 instigatorId);
 	
 	virtual bool TryProcessItem(Item* item) override;
 	
@@ -51,7 +51,7 @@ protected:
 private:
 	const int UNDEFINED_INDEX = -1;
 
-	FGuid _instigatorId;
+	int32 _instigatorId;
 	
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = Custom)
 	bool _equipWeaponOnPickup = true;

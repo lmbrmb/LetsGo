@@ -7,10 +7,6 @@ class IMatchEventProcessor
 {
 public:
 	virtual ~IMatchEventProcessor() = default;
-
-	virtual bool IsOneTimeOnly() = 0;
 	
-	virtual bool TryProcessMatchEvent(const MatchEvent& matchEvent) = 0;
-
-	virtual FMatchHighlight GetHighlight() const = 0;
+	virtual FMatchHighlight ProcessMatchEvent(const MatchEvent& matchEvent) = 0;
 };

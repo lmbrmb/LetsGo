@@ -1,16 +1,18 @@
 #include "FirstBloodMatchEventProcessor.h"
 
-bool FirstBloodMatchEventProcessor::IsOneTimeOnly()
+FMatchHighlight FirstBloodMatchEventProcessor::ProcessMatchEvent(const MatchEvent& matchEvent)
 {
-	return true;
-}
+	if(_isHappened)
+	{
+		return FMatchHighlight::None;
+	}
 
-bool FirstBloodMatchEventProcessor::TryProcessMatchEvent(const MatchEvent& matchEvent)
-{
-	return matchEvent.DamagedPlayerHealth <= 0;
-}
+	auto const isFirstBlood = matchEvent.DamagedPlayerHealth <= 0;
 
-FMatchHighlight FirstBloodMatchEventProcessor::GetHighlight() const
-{
-	return FMatchHighlight::FirstBlood;
+	if(isFirstBlood)
+	{
+		_isHappened = true;
+	}
+	
+	return isFirstBlood ? FMatchHighlight::FirstBlood : FMatchHighlight::None;
 }

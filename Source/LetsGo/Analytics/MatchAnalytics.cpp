@@ -38,21 +38,13 @@ void MatchAnalytics::OnAvatarHealthChanged(const UHealthComponent* healthCompone
 
 void MatchAnalytics::ProcessMatchEvent(const MatchEvent& matchEvent)
 {
-	for(auto i = _matchEventProcessors.Num() - 1; i >= 0; i-- )
+	for(auto matchEventProcessor : _matchEventProcessors )
 	{
-		auto const matchEventProcessor = _matchEventProcessors[i];
-		auto const isProcessed = matchEventProcessor->TryProcessMatchEvent(matchEvent);
-		if (isProcessed)
+		auto const highlight = matchEventProcessor->ProcessMatchEvent(matchEvent);
+		if (highlight != FMatchHighlight::None)
 		{
 			auto const playerId = matchEvent.InstigatorPlayerId;
-			auto const highlight = matchEventProcessor->GetHighlight();
 			MatchHighlight.Broadcast(playerId, highlight);
-			if(matchEventProcessor->IsOneTimeOnly())
-			{
-				_matchEventProcessors.RemoveAt(i);
-			}
 		}
 	}
-	
-	_matchEventHistory.Add(matchEvent);
 }

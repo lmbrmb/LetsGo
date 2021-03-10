@@ -5,8 +5,8 @@ struct MatchEvent
 public:
 	MatchEvent(
 		const float time,
-		const FGuid instigatorPlayerId,
-		const FGuid damagedPlayerId,
+		const int32 instigatorPlayerId,
+		const int32 damagedPlayerId,
 		const float damagedPlayerHealth
 	):
 		Time(time),
@@ -18,9 +18,9 @@ public:
 
 	const float Time;
 	
-	const FGuid InstigatorPlayerId;
+	const int32 InstigatorPlayerId;
 
-	const FGuid DamagedPlayerId;
+	const int32 DamagedPlayerId;
 
 	const float DamagedPlayerHealth;
 };

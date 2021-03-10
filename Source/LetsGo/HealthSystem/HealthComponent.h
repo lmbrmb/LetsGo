@@ -42,5 +42,5 @@ protected:
 	virtual void OnChanged(float delta) override;
 
 private:
-	Damage _lastDamage = Damage(FGuid(0,0,0,0), 0);
+	Damage _lastDamage = Damage(MIN_int32, 0);
 };

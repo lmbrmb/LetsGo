@@ -16,7 +16,7 @@ public:
 	DECLARE_EVENT_TwoParams(
 	MatchAnalytics,
 		EMatchHighlight,
-		const FGuid& playerId,
+		const int32 playerId,
 		const FMatchHighlight matchHighlight
 		);
 
@@ -28,8 +28,6 @@ private:
 	void OnAvatarHealthChanged(const UHealthComponent* healthComponent, const float delta);
 
 	void ProcessMatchEvent(const MatchEvent& matchEvent);
-	
-	TArray<MatchEvent> _matchEventHistory;
 
 	TArray<IMatchEventProcessor*> _matchEventProcessors;
 	

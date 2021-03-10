@@ -1,12 +1,12 @@
 #include "Damage.h"
 
-Damage::Damage(const FGuid instigatorId, const float amount) :
+Damage::Damage(const int32 instigatorId, const float amount) :
 _instigatorId(instigatorId),
 _amount(amount)
 {
 }
 
-FGuid Damage::GetInstigatorId() const
+int32 Damage::GetInstigatorId() const
 {
 	return _instigatorId;
 }

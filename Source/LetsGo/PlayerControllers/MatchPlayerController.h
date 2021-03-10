@@ -16,7 +16,7 @@ class LETSGO_API AMatchPlayerController final : public APlayerController
 public:
 	virtual void SetPawn(APawn* InPawn) override;
 
-	AAvatar* GetAvatar();
+	AAvatar* GetAvatar() const;
 	
 private:
 	AAvatar* _avatar = nullptr;

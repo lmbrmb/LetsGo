@@ -15,7 +15,7 @@ class LETSGO_API UProjectileShotComponent : public UGunShotComponent
 
 public:
 	virtual void OnShot(
-		const FGuid& instigatorId,
+		const int32 instigatorId,
 		const USceneComponent* firePivot,
 		const USceneComponent* aimProvider
 	) override;

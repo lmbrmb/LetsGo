@@ -11,8 +11,18 @@ UAnnouncementManagerComponent::UAnnouncementManagerComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UAnnouncementManagerComponent::OnMatchHighlight(const FGuid& playerId, const FMatchHighlight matchHighlight)
+void UAnnouncementManagerComponent::SetPlayerId(int32 playerId)
 {
+	_playerId = playerId;
+}
+
+void UAnnouncementManagerComponent::OnMatchHighlight(const int32 playerId, const FMatchHighlight matchHighlight)
+{
+	if(playerId != _playerId)
+	{
+		return;
+	}
+	
 	auto const queueWasEmpty = _matchHighlights.IsEmpty();
 	_matchHighlights.Enqueue(matchHighlight);
 	

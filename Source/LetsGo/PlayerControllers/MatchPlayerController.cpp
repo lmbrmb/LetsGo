@@ -6,7 +6,7 @@ void AMatchPlayerController::SetPawn(APawn* InPawn)
 	_avatar = static_cast<AAvatar*>(InPawn);
 }
 
-AAvatar* AMatchPlayerController::GetAvatar()
+AAvatar* AMatchPlayerController::GetAvatar() const
 {
 	return _avatar;
 }

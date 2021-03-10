@@ -3,16 +3,16 @@
 struct Damage
 {
 public:
-	Damage(const FGuid instigatorId, const float amount);
+	explicit Damage(const int32 instigatorId, const float amount);
 
 	~Damage() = default;
 	
-	FGuid GetInstigatorId() const;
+	int32 GetInstigatorId() const;
 
 	float GetAmount() const;
 
 private:
-	FGuid _instigatorId;
+	int32 _instigatorId;
 	
 	float _amount;
 };

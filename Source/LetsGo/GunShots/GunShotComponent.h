@@ -27,7 +27,7 @@ protected:
 	///[Template method] Gun.OnShot event handler
 	///</summary>
 	virtual void OnShot(
-		const FGuid& instigatorId,
+		const int32 instigatorId,
 		const USceneComponent* firePivot,
 		const USceneComponent* aimProvider
 	) {};

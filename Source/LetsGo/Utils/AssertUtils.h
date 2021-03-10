@@ -5,12 +5,12 @@
 // ReSharper disable once CppUnusedIncludeDirective
 #include "LetsGo/Logs/DevLogger.h"
 
-const FString ASSERTION_FAILED = "Assertion failed. ";
+#define ASSERTION_FAILED __FUNCTION__ + FString(" | Line: ") + FStringUtils::ToString(__LINE__) + FString(" | Assertion failed | ")
 
 #define AssertIsNotNull(value) \
 if (BoolUtils::IsNull(value)) \
 {\
-	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Value is null", LogSeverity::Error); \
+	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Value is null.", LogSeverity::Error); \
 	return; \
 };
 

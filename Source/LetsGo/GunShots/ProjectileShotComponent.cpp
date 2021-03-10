@@ -1,7 +1,7 @@
 #include "ProjectileShotComponent.h"
 
 inline void UProjectileShotComponent::OnShot(
-	const FGuid& instigatorId,
+	const int32 instigatorId,
 	const USceneComponent* firePivot,
 	const USceneComponent* aimProvider
 )

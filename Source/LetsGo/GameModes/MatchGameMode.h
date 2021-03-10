@@ -58,24 +58,26 @@ private:
 	TArray<FTransform> _spawnPoints;
 
 	int _spawnPointIndex = UNDEFINED_INDEX;
-
-	FTransform GetNextSpawnPoint();
+	
+	TArray<AvatarData*> _avatarsData;
 
 	AvatarFactory* _avatarFactory;
+
+	TQueue<int32> _respawnQueue;
+
+	TQueue<AActor*> _destroyQueue;
+
+	MatchAnalytics* _matchAnalytics;
+
+	FTransform GetNextSpawnPoint();
 
 	void SpawnAvatar(AvatarData* avatarData);
 
 	UBlueprint* GetAvatarBlueprint(const AvatarType avatarType) const;
 	
-	TArray<AvatarData*> _avatarsData;
-
 	void RespawnAvatarOnTimer();
 
 	void DestroyAvatarOnTimer();
-	
-	TQueue<FGuid> _respawnQueue;
 
-	TQueue<AActor*> _destroyQueue;
-	
-	MatchAnalytics* _matchAnalytics;
+	void PopulateAvatarsData();
 };
