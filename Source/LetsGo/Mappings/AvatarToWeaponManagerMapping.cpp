@@ -1,41 +1,24 @@
 #include "AvatarToWeaponManagerMapping.h"
-#include "LetsGo/Avatars/Avatar.h"
-#include "LetsGo/Logs/DevLogger.h"
 
 void UAvatarToWeaponManagerMapping::Map()
 {
 	auto const actor = GetOwner();
-
 	auto const avatar = Cast<AAvatar>(actor);
-	if (!avatar)
-	{
-		DevLogger::GetLoggingChannel()->LogValue(
-			"Component is not found: ",
-			AAvatar::StaticClass()->GetName(),
-			LogSeverity::Error
-		);
-		return;
-	}
-
+	
+	AssertIsNotNull(avatar);
+	
 	const auto weaponManagerComponent = actor->FindComponentByClass<UWeaponManagerComponent>();
-	if (!weaponManagerComponent)
-	{
-		DevLogger::GetLoggingChannel()->LogValue(
-			"Component is not found: ",
-			UWeaponManagerComponent::StaticClass()->GetName(),
-			LogSeverity::Error
-		);
-		return;
-	}
+
+	AssertIsNotNull(weaponManagerComponent);
 
 	_weaponManagerComponent = weaponManagerComponent;
 
-	auto const avatarData = avatar->GetAvatarData();
-	if(avatarData)
+	auto const isInitialized = avatar->IsInitialized();
+	if(isInitialized)
 	{
-		OnAvatarDataSet(avatarData);
+		OnAvatarInitialized(avatar);
 	}
-	avatar->AvatarDataSet.AddUObject(this, &UAvatarToWeaponManagerMapping::OnAvatarDataSet);
+	avatar->Initialized.AddUObject(this, &UAvatarToWeaponManagerMapping::OnAvatarInitialized);
 }
 
 bool UAvatarToWeaponManagerMapping::ShouldDestroyAfterMapping() const
@@ -44,7 +27,7 @@ bool UAvatarToWeaponManagerMapping::ShouldDestroyAfterMapping() const
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
-void UAvatarToWeaponManagerMapping::OnAvatarDataSet(const AvatarData* avatarData)
+void UAvatarToWeaponManagerMapping::OnAvatarInitialized(const AAvatar* avatar)
 {
-	_weaponManagerComponent->SetInstigatorId(avatarData->GetPlayerId());
+	_weaponManagerComponent->SetInstigatorId(avatar->GetPlayerId());
 }

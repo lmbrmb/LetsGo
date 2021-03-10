@@ -1,28 +1,19 @@
 #include "InputToFpMovementMapping.h"
 #include "LetsGo/InputConstant.h"
-#include "LetsGo/Logs/DevLogger.h"
 #include "LetsGo/Movement/FirstPersonMovementComponent.h"
+#include "LetsGo/Utils/AssertUtils.h"
 
 void UInputToFpMovementMapping::Map()
 {
 	auto const actor = GetOwner();
 
 	auto const inputComponent = actor->InputComponent;
-	if (!inputComponent)
-	{
-		DevLogger::GetLoggingChannel()->Log("No input component", LogSeverity::Error);
-		return;
-	}
+
+	AssertIsNotNull(inputComponent);
 
 	const auto firstPersonMovementComponent = actor->FindComponentByClass<UFirstPersonMovementComponent>();
-	if (!firstPersonMovementComponent)
-	{
-		DevLogger::GetLoggingChannel()->LogValue(
-			"Component is not found: ", UFirstPersonMovementComponent::StaticClass()->GetName(),
-			LogSeverity::Error
-		);
-		return;
-	}
+	
+	AssertIsNotNull(firstPersonMovementComponent);
 
 	inputComponent->BindAxis(InputConstant::AxisMoveHorizontal, firstPersonMovementComponent,
 		&UFirstPersonMovementComponent::AddActorRightMovementInput);

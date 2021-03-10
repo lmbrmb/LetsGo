@@ -27,11 +27,10 @@ void UFloatParameterComponent::SetCurrentValue(const float currentValue)
 {
 	auto const previous = CurrentValue;
 	CurrentValue = FMath::Max(MinValue, FMath::Min(MaxValue, currentValue));
-	if(previous != CurrentValue)
+	auto const delta = CurrentValue - previous;
+	if(!FMath::IsNearlyZero(delta))
 	{
-		OnChanged();
-		Changed.Broadcast();
-		BpChanged.Broadcast();
+		OnChanged(delta);
 	}
 }
 

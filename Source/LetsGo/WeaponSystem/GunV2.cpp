@@ -80,7 +80,7 @@ USceneComponent* AGunV2::GetFirePivot()
 	int nextIndex = 0;
 	switch (_firePivotMode)
 	{
-		case FirePivotMode::Cycle:
+		case FFirePivotMode::Cycle:
 			nextIndex = _firePivotIndex + 1;
 
 			if (nextIndex >= _firePivots.Num())
@@ -88,7 +88,7 @@ USceneComponent* AGunV2::GetFirePivot()
 				nextIndex = 0;
 			}
 			break;
-		case FirePivotMode::AlwaysFirst:
+		case FFirePivotMode::AlwaysFirst:
 		default:
 			break;
 	}

@@ -5,13 +5,24 @@ AAvatar::AAvatar()
 	PrimaryActorTick.bCanEverTick = false;
 }
 
-AvatarData* AAvatar::GetAvatarData() const
+bool AAvatar::IsInitialized() const
 {
-	return _avatarData;
+	return _playerId.IsValid();
 }
 
-void AAvatar::SetAvatarData(AvatarData* avatarData)
+void AAvatar::Init(const FGuid playerId, const AvatarType avatarType)
 {
-	_avatarData = avatarData;
-	AvatarDataSet.Broadcast(_avatarData);
+	_playerId = playerId;
+	_avatarType = avatarType;
+	Initialized.Broadcast(this);
+}
+
+FGuid AAvatar::GetPlayerId() const
+{
+	return _playerId;
+}
+
+AvatarType AAvatar::GetAvatarType() const
+{
+	return _avatarType;
 }

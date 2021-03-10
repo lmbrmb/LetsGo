@@ -12,15 +12,6 @@ class LETSGO_API UFloatParameterComponent : public UActorComponent
 public:
 	UFloatParameterComponent();
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FChangedDelegate);
-	
-	DECLARE_EVENT(UHealth, EChanged);
-	
-	EChanged Changed;
-	
-	UPROPERTY(BlueprintAssignable)
-	FChangedDelegate BpChanged;
-
 	void SetCurrentValue(const float currentValue);
 	
 	void SetMinValue(const float minValue);
@@ -58,5 +49,8 @@ protected:
 	
 	void ChangeValue(const float amount);
 
-	virtual void OnChanged(){};
+	virtual void OnChanged(const float delta)
+	{
+		//Do nothing
+	};
 };

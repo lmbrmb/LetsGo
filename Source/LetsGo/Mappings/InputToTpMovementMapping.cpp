@@ -1,28 +1,18 @@
 #include "InputToTpMovementMapping.h"
 #include "LetsGo/InputConstant.h"
-#include "LetsGo/Logs/DevLogger.h"
 #include "LetsGo/Movement/ThirdPersonMovementComponent.h"
+#include "LetsGo/Utils/AssertUtils.h"
 
 void UInputToTpMovementMapping::Map()
 {
 	auto const actor = GetOwner();
-
 	auto const inputComponent = actor->InputComponent;
-	if (!inputComponent)
-	{
-		DevLogger::GetLoggingChannel()->Log("No input component", LogSeverity::Error);
-		return;
-	}
+	
+	AssertIsNotNull(inputComponent);
 
 	const auto thirdPersonMovementComponent = actor->FindComponentByClass<UThirdPersonMovementComponent>();
-	if (!thirdPersonMovementComponent)
-	{
-		DevLogger::GetLoggingChannel()->LogValue(
-			"Component is not found: ", UThirdPersonMovementComponent::StaticClass()->GetName(),
-			LogSeverity::Error
-		);
-		return;
-	}
+
+	AssertIsNotNull(thirdPersonMovementComponent);
 	
 	inputComponent->BindAxis(InputConstant::AxisMoveHorizontal, thirdPersonMovementComponent,
 		&UThirdPersonMovementComponent::AddActorRightMovementInput);

@@ -4,7 +4,7 @@
 
 #include "PickupManagerToHealthManagerMapping.generated.h"
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent))
 class LETSGO_API UPickupManagerToHealthManagerMapping final : public UMappingComponent
 {
 	GENERATED_BODY()

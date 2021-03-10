@@ -8,7 +8,7 @@
 ///<summary>
 ///Maps user input to UWeaponManagerComponent methods
 ///</summary>
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent))
 class LETSGO_API UInputToWeaponManagerMapping final : public UMappingComponent
 {
 	GENERATED_BODY()

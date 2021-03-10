@@ -1,10 +1,13 @@
 #include "HealthComponent.h"
 
-void UHealthComponent::OnChanged()
+void UHealthComponent::OnChanged(const float delta)
 {
+	HealthChanged.Broadcast(this, delta);
+	BpHealthChanged.Broadcast();
+	
 	if(IsDead())
 	{
-		Died.Broadcast(GetOwner());
+		Died.Broadcast(this, delta);
 	}
 }
 
@@ -50,4 +53,9 @@ bool UHealthComponent::IsDead() const
 bool UHealthComponent::IsFullHealth() const
 {
 	return FMath::IsNearlyZero(MaxValue - CurrentValue);
+}
+
+Damage UHealthComponent::GetLastDamage() const
+{
+	return _lastDamage;
 }

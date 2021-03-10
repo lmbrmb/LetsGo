@@ -1,9 +1,12 @@
 #pragma once
 
 #include "GameFramework/GameModeBase.h"
+
 #include "LetsGo/Avatars/AvatarData.h"
 #include "LetsGo/Avatars/AvatarFactory.h"
 #include "Misc/TypeContainer.h"
+#include "LetsGo/Analytics/MatchAnalytics.h"
+#include "LetsGo/HealthSystem/HealthComponent.h"
 
 #include "MatchGameMode.generated.h"
 
@@ -16,12 +19,22 @@ class LETSGO_API AMatchGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+	DECLARE_EVENT_OneParam(
+	MatchAnalytics,
+		EAvatarSpawned,
+		const AAvatar* avatar
+		);
+
+	EAvatarSpawned AvatarSpawned;
+	
 	AMatchGameMode() = default;
 	
 	virtual ~AMatchGameMode();
 
 	TTypeContainer<ESPMode::Fast>* GetDiContainer() const;
 
+	MatchAnalytics* GetMatchAnalytics() const;
+	
 	void RegisterSpawnPoint(FTransform spawnPoint);
 
 protected:
@@ -29,13 +42,16 @@ protected:
 
 	virtual void BeginPlay() override;
 
-	virtual void OnAvatarDied(AActor* actor);
+	virtual void OnAvatarDied(const UHealthComponent* healthComponent, const float delta);
 	
 private:
 	const int UNDEFINED_INDEX = -1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
-	float _playerRespawnTime = 3.0f;
+	float _avatarRespawnTime = 3.0f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	float _avatarDestroyTime = 0.5f;
 	
 	TTypeContainer<ESPMode::Fast>* _diContainer = nullptr;
 
@@ -55,7 +71,11 @@ private:
 
 	void RespawnAvatarOnTimer();
 
-	FDelegateHandle	_delegateHandleOnAvatarDied;
+	void DestroyAvatarOnTimer();
+	
+	TQueue<FGuid> _respawnQueue;
 
-	TQueue<AvatarData*> _respawnQueue;
+	TQueue<AActor*> _destroyQueue;
+	
+	MatchAnalytics* _matchAnalytics;
 };

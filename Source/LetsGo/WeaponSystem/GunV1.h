@@ -97,7 +97,7 @@ private:
 	TArray<USceneComponent*> _firePivots;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	FirePivotMode _firePivotMode;
+	FFirePivotMode _firePivotMode;
 
 	USceneComponent* GetFirePivot();
 

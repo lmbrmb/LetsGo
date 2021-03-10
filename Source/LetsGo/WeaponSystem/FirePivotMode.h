@@ -1,7 +1,7 @@
 #pragma once
 
-UENUM()
-enum class FirePivotMode
+UENUM(BlueprintType)
+enum class FFirePivotMode : uint8
 {
 	AlwaysFirst UMETA(DisplayName = "Always first"),
 	Cycle UMETA(DisplayName = "Cycle"),

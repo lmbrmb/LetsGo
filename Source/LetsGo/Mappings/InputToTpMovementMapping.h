@@ -7,7 +7,7 @@
 ///<summary>
 ///Maps user input to UThirdPersonMovementComponent method calls
 ///</summary>
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent))
 class LETSGO_API UInputToTpMovementMapping final : public UMappingComponent
 {
 	GENERATED_BODY()

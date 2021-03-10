@@ -1,6 +1,5 @@
 #include "MatchGameMode.h"
 #include "LetsGo/MatchDependencyInjectionContainerFactory.h"
-#include "LetsGo/Avatars/Avatar.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
 #include "LetsGo/Logs/DevLogger.h"
 #include "LetsGo/Utils/AssertUtils.h"
@@ -11,6 +10,7 @@ const int BOT_COUNT = 3;
 AMatchGameMode::~AMatchGameMode()
 {
 	delete _diContainer;
+	delete _matchAnalytics;
 }
 
 void AMatchGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
@@ -28,11 +28,18 @@ void AMatchGameMode::InitGame(const FString& MapName, const FString& Options, FS
 	{
 		_avatarsData.Add(new AvatarData(FGuid::NewGuid(), AvatarType::Bot));
 	}
+
+	_matchAnalytics = new MatchAnalytics(this);
 }
 
 TTypeContainer<ESPMode::Fast>* AMatchGameMode::GetDiContainer() const
 {
 	return _diContainer;
+}
+
+MatchAnalytics* AMatchGameMode::GetMatchAnalytics() const
+{
+	return _matchAnalytics;
 }
 
 void AMatchGameMode::BeginPlay()
@@ -82,10 +89,12 @@ void AMatchGameMode::SpawnAvatar(AvatarData* avatarData)
 		return;
 	}
 	auto const avatar = AssetUtils::SpawnBlueprint<AAvatar>(GetWorld(), nullptr, avatarBlueprint, GetNextSpawnPoint());
-	avatar->SetAvatarData(avatarData);
+	avatar->Init(avatarData->GetPlayerId(), avatarData->GetAvatarType());
 	auto const healthComponent = avatar->FindComponentByClass<UHealthComponent>();
-	AssertIsNotNull(healthComponent)
+	AssertIsNotNull(healthComponent);
 	healthComponent->Died.AddUObject(this, &AMatchGameMode::OnAvatarDied);
+
+	AvatarSpawned.Broadcast(avatar);
 }
 
 UBlueprint* AMatchGameMode::GetAvatarBlueprint(const AvatarType avatarType) const
@@ -100,32 +109,48 @@ UBlueprint* AMatchGameMode::GetAvatarBlueprint(const AvatarType avatarType) cons
 
 		case AvatarType::Bot:
 			return _avatarFactory->GetBotBlueprint();
+		default:
+			return nullptr;
 	}
-	return nullptr;
 }
 
 void AMatchGameMode::RespawnAvatarOnTimer()
 {
-	AvatarData* avatarData;
-	_respawnQueue.Dequeue(avatarData);
-	SpawnAvatar(avatarData);
+	FGuid playerId;
+	_respawnQueue.Dequeue(playerId);
+
+	for (auto avatarData : _avatarsData)
+	{
+		if (avatarData->GetPlayerId() == playerId)
+		{
+			SpawnAvatar(avatarData);
+			break;
+		}
+	}
 }
 
-void AMatchGameMode::OnAvatarDied(AActor* actor)
+void AMatchGameMode::DestroyAvatarOnTimer()
 {
-	auto const avatar = static_cast<AAvatar*>(actor);
-	auto const avatarData= avatar->GetAvatarData();
-	_respawnQueue.Enqueue(avatarData);
+	AActor* actor;
+	_destroyQueue.Dequeue(actor);
+	actor->Destroy();
+}
 
-	auto const healthComponent = avatar->FindComponentByClass<UHealthComponent>();
-	AssertIsNotNull(healthComponent)
-
-	healthComponent->Died.Remove(_delegateHandleOnAvatarDied);
-	_delegateHandleOnAvatarDied.Reset();
-
-	avatar->Destroy();
-
-	// Respawn timer in fire-and-forget mode
-	FTimerHandle timerHandle;
-	GetWorldTimerManager().SetTimer(timerHandle, this, &AMatchGameMode::RespawnAvatarOnTimer, _playerRespawnTime, false);
+void AMatchGameMode::OnAvatarDied(const UHealthComponent* healthComponent, const float delta)
+{
+	// Timers are in fire-and-forget mode
+	
+	auto const avatarActor = healthComponent->GetOwner();
+	_destroyQueue.Enqueue(avatarActor);
+	FTimerHandle destroyTimerHandle;
+	GetWorldTimerManager().SetTimer(destroyTimerHandle, this, &AMatchGameMode::DestroyAvatarOnTimer, _avatarDestroyTime, false);
+	
+	auto const owner = healthComponent->GetOwner();
+	auto const avatar = Cast<const AAvatar>(owner);
+	AssertIsNotNull(avatar)
+	
+	auto const playerId = avatar->GetPlayerId();
+	_respawnQueue.Enqueue(playerId);
+	FTimerHandle respawnTimerHandle;
+	GetWorldTimerManager().SetTimer(respawnTimerHandle, this, &AMatchGameMode::RespawnAvatarOnTimer, _avatarRespawnTime, false);
 }

@@ -1,29 +1,17 @@
 #include "InputToWeaponManagerMapping.h"
 #include "LetsGo/InputConstant.h"
-#include "LetsGo/Logs/DevLogger.h"
 #include "LetsGo/Utils/InputUtils.h"
 
 void UInputToWeaponManagerMapping::Map()
 {
 	auto const actor = GetOwner();
-
 	auto const inputComponent = actor->InputComponent;
-	if (!inputComponent)
-	{
-		DevLogger::GetLoggingChannel()->Log("No input component", LogSeverity::Error);
-		return;
-	}
+
+	AssertIsNotNull(inputComponent)
 
 	const auto weaponManagerComponent = actor->FindComponentByClass<UWeaponManagerComponent>();
-	if (!weaponManagerComponent)
-	{
-		DevLogger::GetLoggingChannel()->LogValue(
-			"Component is not found: ",
-			UWeaponManagerComponent::StaticClass()->GetName(),
-			LogSeverity::Error
-		);
-		return;
-	}
+
+	AssertIsNotNull(weaponManagerComponent)
 
 	_weaponManagerComponent = weaponManagerComponent;
 	

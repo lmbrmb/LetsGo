@@ -11,10 +11,19 @@ class LETSGO_API UHealthComponent final : public UFloatParameterComponent
 	GENERATED_BODY()
 
 public:
-	DECLARE_EVENT_OneParam(UHealthComponent, Died, AActor*);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHealthChangedDelegate);
 
-	Died Died;
+	UPROPERTY(BlueprintAssignable)
+	FHealthChangedDelegate BpHealthChanged;
+	
+	DECLARE_EVENT_TwoParams(UHealthComponent, FDied, const UHealthComponent*, float delta);
 
+	DECLARE_EVENT_TwoParams(UHealthComponent, FHealthChanged, const UHealthComponent*, float delta);
+	
+	FDied Died;
+
+	FHealthChanged HealthChanged;
+	
 	void Heal(const float healAmount);
 
 	void Injure(const Damage damage);
@@ -27,8 +36,10 @@ public:
 
 	bool IsFullHealth() const;
 
+	Damage GetLastDamage() const;
+	
 protected:
-	virtual void OnChanged() override;
+	virtual void OnChanged(float delta) override;
 
 private:
 	Damage _lastDamage = Damage(FGuid(0,0,0,0), 0);

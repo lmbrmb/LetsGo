@@ -1,7 +1,8 @@
 #pragma once
 
 #include "GameFramework/Pawn.h"
-#include "AvatarData.h"
+
+#include "AvatarType.h"
 
 #include "Avatar.generated.h"
 
@@ -16,18 +17,24 @@ class LETSGO_API AAvatar : public APawn
 public:
 	AAvatar();
 
-	AvatarData* GetAvatarData() const;
+	bool IsInitialized() const;
 	
-	void SetAvatarData(AvatarData* avatarData);
+	void Init(const FGuid playerId, const AvatarType avatarType);
 
+	FGuid GetPlayerId() const;
+
+	AvatarType GetAvatarType() const;
+	
 	DECLARE_EVENT_OneParam(
 		IGun,
-		EAvatarDataSet,
-		const AvatarData* avatarData
+		EInitialized,
+		const AAvatar* avatar
 		);
 
-	EAvatarDataSet AvatarDataSet;
+	EInitialized Initialized;
 	
 private:
-	AvatarData* _avatarData;
+	FGuid _playerId;
+
+	AvatarType _avatarType;
 };

@@ -7,7 +7,7 @@
 ///<summary>
 ///Maps UInventoryComponent and WeaponManagerComponent interaction (via event callbacks).
 ///</summary>
-UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent))
 class LETSGO_API UPickupManagerToWeaponManagerMapping final : public UMappingComponent
 {
 	GENERATED_BODY()
