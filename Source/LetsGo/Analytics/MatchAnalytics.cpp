@@ -1,5 +1,6 @@
 #include "MatchAnalytics.h"
 
+#include "ExcellentMatchEventProcessor.h"
 #include "FirstBloodMatchEventProcessor.h"
 #include "LetsGo/GameModes/MatchGameMode.h"
 #include "LetsGo/Utils/AssertUtils.h"
@@ -8,6 +9,7 @@ MatchAnalytics::MatchAnalytics(AMatchGameMode* matchGameMode)
 {
 	matchGameMode->AvatarSpawned.AddRaw(this, &MatchAnalytics::OnAvatarSpawned);
 	_matchEventProcessors.Add(new FirstBloodMatchEventProcessor());
+	_matchEventProcessors.Add(new ExcellentMatchEventProcessor());
 	_world = matchGameMode->GetWorld();
 }
 

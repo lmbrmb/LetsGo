@@ -1,8 +1,10 @@
 #pragma once
+
 #include "IMatchEventProcessor.h"
 
 /// <summary>
-/// One time
+/// First blood match event processor.
+/// Conditions: Player got the very first frag in match.
 /// </summary>
 class FirstBloodMatchEventProcessor final : public IMatchEventProcessor
 {

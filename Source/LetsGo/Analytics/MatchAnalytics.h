@@ -30,8 +30,6 @@ private:
 	void ProcessMatchEvent(const MatchEvent& matchEvent);
 
 	TArray<IMatchEventProcessor*> _matchEventProcessors;
-	
-	bool _isFirstBloodProcessed = false;
 
 	UWorld* _world;
 };

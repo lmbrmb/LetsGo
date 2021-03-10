@@ -7,12 +7,12 @@ FMatchHighlight FirstBloodMatchEventProcessor::ProcessMatchEvent(const MatchEven
 		return FMatchHighlight::None;
 	}
 
-	auto const isFirstBlood = matchEvent.DamagedPlayerHealth <= 0;
+	auto const isDead = matchEvent.DamagedPlayerHealth <= 0;
 
-	if(isFirstBlood)
+	if(isDead)
 	{
 		_isHappened = true;
 	}
 	
-	return isFirstBlood ? FMatchHighlight::FirstBlood : FMatchHighlight::None;
+	return isDead ? FMatchHighlight::FirstBlood : FMatchHighlight::None;
 }
