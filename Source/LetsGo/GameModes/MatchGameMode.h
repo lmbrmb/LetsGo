@@ -80,4 +80,6 @@ private:
 	void DestroyAvatarOnTimer();
 
 	void PopulateAvatarsData();
+
+	void TriggerMatchStart();
 };

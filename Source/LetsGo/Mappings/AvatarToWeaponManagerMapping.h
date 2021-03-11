@@ -17,8 +17,6 @@ class LETSGO_API UAvatarToWeaponManagerMapping final : public UMappingComponent
 protected:
 	virtual void Map() override;
 
-	virtual bool ShouldDestroyAfterMapping() const override;
-
 private:
 	 void OnAvatarInitialized(const AAvatar* avatar);
 

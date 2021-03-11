@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Components/ActorComponent.h"
-#include "WeaponBase.h"
 #include "Gun.h"
 #include "GunFactory.h"
 #include "AmmoProvider.h"
@@ -41,7 +40,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetAimProvider(USceneComponent* aimProvider);
 
-	void SetInstigatorId(const int32 instigatorId);
+	void SetPlayerId(const int32 playerId);
 	
 	virtual bool TryProcessItem(Item* item) override;
 	
@@ -51,7 +50,7 @@ protected:
 private:
 	const int UNDEFINED_INDEX = -1;
 
-	int32 _instigatorId;
+	int32 _playerId;
 	
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = Custom)
 	bool _equipWeaponOnPickup = true;
@@ -67,21 +66,21 @@ private:
 	GunFactory* _gunFactory;
 
 	AmmoItemFactory* _ammoItemFactory;
-
-	TArray<AWeaponBase*> _weapons;
+	
+	TArray<AActor*> _weaponActors;
 
 	/// <summary>
 	/// Gun Id / Ammo provider
 	/// </summary>
 	TMap<FName, AmmoProvider*> _ammoProviders;
 
-	AWeaponBase* _weapon = nullptr;
+	AActor* _weaponActor = nullptr;
 
 	IGun* _gun = nullptr;
 
 	int _weaponIndex = UNDEFINED_INDEX;
 
-	void EquipWeapon(int weaponIndex);
+	void EquipWeapon(const int weaponIndex);
 
 	TArray<TFunction<bool(Item*)>> _itemProcessors;
 
@@ -95,5 +94,5 @@ private:
 
 	AmmoProvider* CreateAmmoProvider(const AmmoItem* ammoItem);
 
-	AWeaponBase* CreateGun(const GunItem* gunItem);
+	AActor* CreateGun(const GunItem* gunItem);
 };

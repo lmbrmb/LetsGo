@@ -46,6 +46,11 @@ void AMatchGameMode::PopulateAvatarsData()
 	_avatarsData.Add(new AvatarData(localPlayerId, AvatarType::LocalPlayer));
 }
 
+void AMatchGameMode::TriggerMatchStart()
+{
+	//TODO: broadcast match start event
+}
+
 TTypeContainer<ESPMode::Fast>* AMatchGameMode::GetDiContainer() const
 {
 	return _diContainer;
@@ -66,6 +71,9 @@ void AMatchGameMode::BeginPlay()
 	{
 		SpawnAvatar(avatarData);
 	}
+
+	FTimerHandle matchStartTimerHandle;
+	GetWorldTimerManager().SetTimer(matchStartTimerHandle, this, &AMatchGameMode::TriggerMatchStart, _avatarDestroyTime, false);
 }
 
 void AMatchGameMode::RegisterSpawnPoint(FTransform spawnPoint)

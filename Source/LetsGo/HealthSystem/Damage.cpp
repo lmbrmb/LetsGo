@@ -1,14 +1,24 @@
 #include "Damage.h"
 
-Damage::Damage(const int32 instigatorId, const float amount) :
-_instigatorId(instigatorId),
-_amount(amount)
+Damage::Damage(
+	const int32 instigatorId,
+	const FName weaponId,
+	const float amount
+) :
+	_instigatorId(instigatorId),
+	_weaponId(weaponId),
+	_amount(amount)
 {
 }
 
 int32 Damage::GetInstigatorId() const
 {
 	return _instigatorId;
+}
+
+FName Damage::GetWeaponId() const
+{
+	return _weaponId;
 }
 
 float Damage::GetAmount() const

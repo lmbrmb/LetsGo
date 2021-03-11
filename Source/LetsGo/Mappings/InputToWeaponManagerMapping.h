@@ -6,7 +6,7 @@
 #include "InputToWeaponManagerMapping.generated.h"
 
 ///<summary>
-///Maps user input to UWeaponManagerComponent methods
+///Maps user input to UWeaponManagerComponent methods. Persistent
 ///</summary>
 UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent))
 class LETSGO_API UInputToWeaponManagerMapping final : public UMappingComponent
@@ -15,8 +15,6 @@ class LETSGO_API UInputToWeaponManagerMapping final : public UMappingComponent
 
 protected:
 	virtual void Map() override;
-
-	virtual bool ShouldDestroyAfterMapping() const override;
 
 private:
 	int _lastDpadHorizontalAxisValue = 0;

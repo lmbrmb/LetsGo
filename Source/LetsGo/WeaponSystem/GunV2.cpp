@@ -53,13 +53,6 @@ void AGunV2::ProcessShootingState()
 	SetState(GunState::Idle);
 }
 
-void AGunV2::Init(const int32 instigatorId, AmmoProvider* ammoProvider, USceneComponent* aimProvider)
-{
-	_instigatorId = instigatorId;
-	_ammoProvider = ammoProvider;
-	_aimProvider = aimProvider;
-}
-
 void AGunV2::StartFire()
 {
 	TriggerFire(true);
@@ -100,7 +93,7 @@ void AGunV2::StartShot()
 {
 	_shotStartTime = GetWorld()->TimeSeconds;
 	auto const firePivot = GetFirePivot();
-	ShotPerformed.Broadcast(_instigatorId, firePivot, _aimProvider);
+	ShotPerformed.Broadcast(firePivot);
 	SetState(GunState::Shooting);
 }
 
@@ -118,17 +111,17 @@ bool AGunV2::IsEnoughAmmoForShot() const
 
 int AGunV2::GetAmmoCount() const
 {
-	return _ammoProvider == nullptr ? 0 : _ammoProvider->GetCurrent();
+	return GetAmmoProvider() == nullptr ? 0 : GetAmmoProvider()->GetCurrent();
 }
 
 void AGunV2::ConsumeAmmo(const int amount) const
 {
-	if (_ammoProvider == nullptr)
+	if (GetAmmoProvider() == nullptr)
 	{
 		return;
 	}
 
-	_ammoProvider->Remove(amount);
+	GetAmmoProvider()->Remove(amount);
 }
 
 void AGunV2::TriggerFire(const bool isFireTriggered)

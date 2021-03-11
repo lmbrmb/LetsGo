@@ -1,10 +1,5 @@
 #include "AnnouncementManagerComponent.h"
-#include "Logs/DevLogger.h"
 #include "GameFramework/GameModeBase.h"
-
-void UAnnouncementManagerComponent::BeginPlay()
-{
-}
 
 UAnnouncementManagerComponent::UAnnouncementManagerComponent()
 {
@@ -16,52 +11,46 @@ void UAnnouncementManagerComponent::SetPlayerId(int32 playerId)
 	_playerId = playerId;
 }
 
-void UAnnouncementManagerComponent::OnMatchHighlight(const int32 playerId, const FMatchHighlight matchHighlight)
+void UAnnouncementManagerComponent::OnMedalAchieved(const Medal& medal)
 {
-	if(playerId != _playerId)
+	if(medal.PlayerId != _playerId)
 	{
 		return;
 	}
 	
-	auto const queueWasEmpty = _matchHighlights.IsEmpty();
-	_matchHighlights.Enqueue(matchHighlight);
+	auto const queueWasEmpty = _medalsToAnnounce.IsEmpty();
+	_medalsToAnnounce.Enqueue(medal.MedalType);
 	
 	if (!queueWasEmpty)
 	{
 		return;
 	}
 
-	CreateAnnouncementTask(_announcementDelay);
+	CreateMedalAnnouncementTask(_announcementDelay);
 }
 
-void UAnnouncementManagerComponent::AnnounceOnTimer()
-{
-	FMatchHighlight matchHighlight;
-	_matchHighlights.Dequeue(matchHighlight);
-	
-	if(matchHighlight == FMatchHighlight::None)
-	{
-		DevLogger::GetLoggingChannel()->Log("Match highlight is None", LogSeverity::Warning);
-		return;
-	}
-	
-	BpAnnounce(matchHighlight);
-
-	if(!_matchHighlights.IsEmpty())
-	{
-		CreateAnnouncementTask(_consequentAnnouncementDelay);
-	}
-}
-
-void UAnnouncementManagerComponent::CreateAnnouncementTask(const float delay)
+void UAnnouncementManagerComponent::CreateMedalAnnouncementTask(const float delay)
 {
 	auto const authGameMode = GetWorld()->GetAuthGameMode();
 	FTimerHandle announceTimerHandle;
 	authGameMode->GetWorldTimerManager().SetTimer(
 		announceTimerHandle, 
 		this, 
-		&UAnnouncementManagerComponent::AnnounceOnTimer, 
+		&UAnnouncementManagerComponent::AnnounceMedalOnTimer, 
 		delay, 
 		false
 	);
+}
+
+void UAnnouncementManagerComponent::AnnounceMedalOnTimer()
+{
+	FMedalType medalType;
+	_medalsToAnnounce.Dequeue(medalType);
+
+	BpAnnounceMedal(medalType);
+
+	if (!_medalsToAnnounce.IsEmpty())
+	{
+		CreateMedalAnnouncementTask(_consequentAnnouncementDelay);
+	}
 }

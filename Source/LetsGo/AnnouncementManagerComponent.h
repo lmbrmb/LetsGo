@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Analytics/MatchHighlight.h"
+#include "Analytics/Medal.h"
+#include "Analytics/MedalType.h"
 #include "Components/ActorComponent.h"
 
 #include "AnnouncementManagerComponent.generated.h"
@@ -12,9 +13,6 @@ UCLASS( ClassGroup=(Custom), Blueprintable, meta=(BlueprintSpawnableComponent) )
 class LETSGO_API UAnnouncementManagerComponent : public UActorComponent
 {
 	GENERATED_BODY()
-
-protected:
-	virtual void BeginPlay() override;
 	
 public:	
 	UAnnouncementManagerComponent();
@@ -22,12 +20,9 @@ public:
 	void SetPlayerId(int32 playerId);
 	
 	UFUNCTION(BlueprintImplementableEvent)
-	void BpAnnounce(const FMatchHighlight matchHighlight);
+	void BpAnnounceMedal(const FMedalType medalType);
 	
-	void OnMatchHighlight(
-		const int32 playerId,
-		const FMatchHighlight matchHighlight
-	);
+	void OnMedalAchieved(const Medal& medal);
 	
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
@@ -36,11 +31,11 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
 	float _consequentAnnouncementDelay = 2.0f;
 
-	TQueue<FMatchHighlight> _matchHighlights;
+	TQueue<FMedalType> _medalsToAnnounce;
 
 	int32 _playerId;
 	
-	void AnnounceOnTimer();
+	void AnnounceMedalOnTimer();
 
-	void CreateAnnouncementTask(const float delay);
+	void CreateMedalAnnouncementTask(const float delay);
 };

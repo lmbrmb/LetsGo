@@ -88,13 +88,6 @@ void AGunV1::ProcessShootingState()
 	SetState(GunState::Idle);
 }
 
-void AGunV1::Init(const int32 instigatorId, AmmoProvider* ammoProvider, USceneComponent* aimProvider)
-{
-	_instigatorId = instigatorId;
-	_ammoProvider = ammoProvider;
-	_aimProvider = aimProvider;
-}
-
 void AGunV1::StartFire()
 {
 	TriggerFire(true);
@@ -141,7 +134,7 @@ void AGunV1::StartShot()
 	_shotStartTime = GetWorld()->TimeSeconds;
 	_clipCurrent -= _consumeAmmoPerShot;
 	auto const firePivot = GetFirePivot();
-	ShotPerformed.Broadcast(_instigatorId, firePivot, _aimProvider);
+	ShotPerformed.Broadcast(firePivot);
 	SetState(GunState::Shooting);
 }
 
@@ -177,17 +170,17 @@ void AGunV1::StartReload()
 
 int AGunV1::GetAmmoCount() const
 {
-	return _ammoProvider == nullptr ? 0 : _ammoProvider->GetCurrent();
+	return GetAmmoProvider() == nullptr ? 0 : GetAmmoProvider()->GetCurrent();
 }
 
 void AGunV1::ConsumeAmmo(const int amount) const
 {
-	if(_ammoProvider == nullptr)
+	if(GetAmmoProvider() == nullptr)
 	{
 		return;
 	}
 
-	_ammoProvider->Remove(amount);
+	GetAmmoProvider()->Remove(amount);
 }
 
 void AGunV1::LoadAmmo()

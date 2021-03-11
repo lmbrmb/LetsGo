@@ -4,11 +4,9 @@ void UAvatarToWeaponManagerMapping::Map()
 {
 	auto const actor = GetOwner();
 	auto const avatar = Cast<AAvatar>(actor);
-	
 	AssertIsNotNull(avatar);
 	
 	const auto weaponManagerComponent = actor->FindComponentByClass<UWeaponManagerComponent>();
-
 	AssertIsNotNull(weaponManagerComponent);
 
 	_weaponManagerComponent = weaponManagerComponent;
@@ -18,16 +16,15 @@ void UAvatarToWeaponManagerMapping::Map()
 	{
 		OnAvatarInitialized(avatar);
 	}
-	avatar->Initialized.AddUObject(this, &UAvatarToWeaponManagerMapping::OnAvatarInitialized);
-}
-
-bool UAvatarToWeaponManagerMapping::ShouldDestroyAfterMapping() const
-{
-	return false;
+	else
+	{
+		avatar->Initialized.AddUObject(this, &UAvatarToWeaponManagerMapping::OnAvatarInitialized);
+	}
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
 void UAvatarToWeaponManagerMapping::OnAvatarInitialized(const AAvatar* avatar)
 {
-	_weaponManagerComponent->SetInstigatorId(avatar->GetPlayerId());
+	_weaponManagerComponent->SetPlayerId(avatar->GetPlayerId());
+	DestroyComponent();
 }

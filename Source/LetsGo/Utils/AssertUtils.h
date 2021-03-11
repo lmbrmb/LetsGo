@@ -30,6 +30,15 @@ if (!BoolUtils::IsEqual(leftHandValue, rightHandValue)) \
 	return; \
 };
 
+#define AssertIsNotEqual(leftHandValue, rightHandValue) \
+if (BoolUtils::IsEqual(leftHandValue, rightHandValue)) \
+{ \
+	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Values are equal", LogSeverity::Error); \
+	DevLogger::GetLoggingChannel()->LogValue("Left hand value: ", leftHandValue, LogSeverity::Error); \
+	DevLogger::GetLoggingChannel()->LogValue("Right hand value: ", rightHandValue, LogSeverity::Error); \
+	return; \
+};
+
 #define AssertIsGreaterOrEqual(leftHandValue, rightHandValue) \
 if (!BoolUtils::IsGreaterOrEqual(leftHandValue, rightHandValue)) \
 { \

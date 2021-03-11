@@ -31,11 +31,6 @@ void UInputToWeaponManagerMapping::Map()
 		weaponManagerComponent, &UWeaponManagerComponent::ChangeWeaponPivot);
 }
 
-bool UInputToWeaponManagerMapping::ShouldDestroyAfterMapping() const
-{
-	return false;
-}
-
 void UInputToWeaponManagerMapping::ChangeWeaponDpad(float rawAxisValue)
 {
 	auto const axisValue = InputUtils::GetDpadHorizontalAxis(rawAxisValue);

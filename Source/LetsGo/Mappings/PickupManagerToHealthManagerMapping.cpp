@@ -15,4 +15,5 @@ void UPickupManagerToHealthManagerMapping::Map()
 	AssertIsNotNull(healthManagerComponent);
 
 	pickupManagerComponent->RegisterItemProcessor(healthManagerComponent);
+	DestroyComponent();
 }

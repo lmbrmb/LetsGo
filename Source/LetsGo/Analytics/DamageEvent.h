@@ -1,16 +1,18 @@
 #pragma once
 
-struct MatchEvent
+struct DamageEvent
 {
 public:
-	MatchEvent(
+	DamageEvent(
 		const float time,
 		const int32 instigatorPlayerId,
+		const FName& instigatorWeaponId,
 		const int32 damagedPlayerId,
 		const float damagedPlayerHealth
 	):
 		Time(time),
 		InstigatorPlayerId(instigatorPlayerId),
+		InstigatorWeaponId(instigatorWeaponId),
 		DamagedPlayerId(damagedPlayerId),
 		DamagedPlayerHealth(damagedPlayerHealth)
 	{
@@ -20,6 +22,8 @@ public:
 	
 	const int32 InstigatorPlayerId;
 
+	const FName InstigatorWeaponId;
+	
 	const int32 DamagedPlayerId;
 
 	const float DamagedPlayerHealth;

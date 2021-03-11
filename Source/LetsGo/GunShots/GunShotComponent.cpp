@@ -1,16 +1,21 @@
 #include "GunShotComponent.h"
-#include "LetsGo/WeaponSystem/Gun.h"
 
 UGunShotComponent::UGunShotComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UGunShotComponent::BeginPlay()
+void UGunShotComponent::SetWeaponId(const FName& weaponId)
 {
-	Super::BeginPlay();
-	auto const owner = GetOwner();
-	auto const gun = Cast<IGun>(owner);
-	gun->ShotPerformed.AddUObject(this, &UGunShotComponent::OnShot);
-	Init();
+	WeaponId = weaponId;
+}
+
+void UGunShotComponent::SetPlayerId(const int32 instigatorId)
+{
+	PlayerId = instigatorId;
+}
+
+void UGunShotComponent::SetAimProvider(USceneComponent* aimProvider)
+{
+	AimProvider = aimProvider;
 }

@@ -15,20 +15,18 @@ class LETSGO_API UGunShotComponent : public UActorComponent
 public:	
 	UGunShotComponent();
 
+	void SetWeaponId(const FName& weaponId);
+	
+	void SetPlayerId(const int32 instigatorId);
+	
+	void SetAimProvider(USceneComponent* aimProvider);
+
+	virtual void OnShot(const USceneComponent* firePivot) {};
+	
 protected:
-	virtual void BeginPlay() override;
-	
-	///<summary>
-	///[Template method] Initialization
-	///</summary>
-	virtual void Init() {};
-	
-	///<summary>
-	///[Template method] Gun.OnShot event handler
-	///</summary>
-	virtual void OnShot(
-		const int32 instigatorId,
-		const USceneComponent* firePivot,
-		const USceneComponent* aimProvider
-	) {};
+	FName WeaponId;
+
+	int32 PlayerId;
+
+	USceneComponent* AimProvider = nullptr;
 };

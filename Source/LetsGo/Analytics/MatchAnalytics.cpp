@@ -1,15 +1,18 @@
 #include "MatchAnalytics.h"
 
-#include "ExcellentMatchEventProcessor.h"
-#include "FirstBloodMatchEventProcessor.h"
+#include "ExcellentMedalProcessor.h"
+#include "FirstBloodMedalProcessor.h"
+#include "ImpressiveMedalProcessor.h"
 #include "LetsGo/GameModes/MatchGameMode.h"
 #include "LetsGo/Utils/AssertUtils.h"
 
 MatchAnalytics::MatchAnalytics(AMatchGameMode* matchGameMode)
 {
 	matchGameMode->AvatarSpawned.AddRaw(this, &MatchAnalytics::OnAvatarSpawned);
-	_matchEventProcessors.Add(new FirstBloodMatchEventProcessor());
-	_matchEventProcessors.Add(new ExcellentMatchEventProcessor());
+	_damageMedalProcessors.Add(new FirstBloodMedalProcessor());
+	_damageMedalProcessors.Add(new ExcellentMedalProcessor());
+	_damageMedalProcessors.Add(new ImpressiveMedalProcessor());
+	_healthProcessors.Add([this](const UHealthComponent* healthComponent, const float delta) { TryProcessDamage(healthComponent, delta); });
 	_world = matchGameMode->GetWorld();
 }
 
@@ -24,29 +27,44 @@ void MatchAnalytics::OnAvatarSpawned(const AAvatar* avatar)
 // ReSharper disable once CppMemberFunctionMayBeStatic
 void MatchAnalytics::OnAvatarHealthChanged(const UHealthComponent* healthComponent, const float delta)
 {
+	for (auto healthProcessor : _healthProcessors)
+	{
+		healthProcessor(healthComponent, delta);
+	}
+}
+
+void MatchAnalytics::TryProcessDamage(const UHealthComponent* healthComponent, const float delta)
+{
+	if (delta >= 0)
+	{
+		return;
+	}
+
 	auto const damagedPlayerActor = healthComponent->GetOwner();
 	auto const damagedPlayerAvatar = Cast<AAvatar>(damagedPlayerActor);
 	AssertIsNotNull(damagedPlayerAvatar);
 	auto const lastDamage = healthComponent->GetLastDamage();
 	auto const time = _world->TimeSeconds;
-	auto const matchEvent = MatchEvent(
+	auto const damageEvent = DamageEvent(
 		time,
 		lastDamage.GetInstigatorId(),
+		lastDamage.GetWeaponId(),
 		damagedPlayerAvatar->GetPlayerId(),
 		healthComponent->GetCurrentValue()
 	);
-	ProcessMatchEvent(matchEvent);
+	ProcessDamageEvent(damageEvent);
 }
 
-void MatchAnalytics::ProcessMatchEvent(const MatchEvent& matchEvent)
+void MatchAnalytics::ProcessDamageEvent(const DamageEvent& damageEvent)
 {
-	for(auto matchEventProcessor : _matchEventProcessors )
+	Medal medal;
+	for(auto damageMedalProcessor : _damageMedalProcessors)
 	{
-		auto const highlight = matchEventProcessor->ProcessMatchEvent(matchEvent);
-		if (highlight != FMatchHighlight::None)
+		auto const isMedalAchieved = damageMedalProcessor->ProcessDamageEvent(damageEvent, medal);
+		if (isMedalAchieved)
 		{
-			auto const playerId = matchEvent.InstigatorPlayerId;
-			MatchHighlight.Broadcast(playerId, highlight);
+			AssertIsNotEqual((int)medal.MedalType, (int)FMedalType::None);
+			MedalAchieved.Broadcast(medal);
 		}
 	}
 }

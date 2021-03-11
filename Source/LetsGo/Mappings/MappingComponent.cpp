@@ -8,14 +8,6 @@ UMappingComponent::UMappingComponent()
 void UMappingComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	Map();
-	if(ShouldDestroyAfterMapping())
-	{
-		DestroyComponent();
-	}
-}
 
-bool UMappingComponent::ShouldDestroyAfterMapping() const
-{
-	return true;
+	Map();
 }

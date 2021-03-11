@@ -1,7 +1,7 @@
 #pragma once
 
-#include "WeaponBase.h"
 #include "FirePivotMode.h"
+#include "Weapon.h"
 #include "Gun.h"
 #include "GunState.h"
 
@@ -13,23 +13,20 @@
 /// Reloading fills clip, bullets are taken from ammo provider.
 ///</summary>
 UCLASS()
-class LETSGO_API AGunV1 final : public AWeaponBase, public IGun
+class LETSGO_API AGunV1 final : public AActor, public IWeapon, public IGun
 {
 	GENERATED_BODY()
 
 public:
 	AGunV1();
 
-	// IGun.Init implementation
-	virtual void Init(const int32 instigatorId, AmmoProvider* ammoProvider, USceneComponent* aimProvider) override;
-
-	// IGun.StartFire implementation
+	// IGun implementation
 	virtual void StartFire() override;
 
-	// IGun.StopFire implementation
+	// IGun implementation
 	virtual void StopFire() override;
 
-	// IGun.Reload implementation
+	// IGun implementation
 	virtual void Reload() override;
 	
 	UFUNCTION(BlueprintImplementableEvent)
@@ -55,8 +52,6 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 	
 private:
-	int32 _instigatorId;
-	
 	const int UNDEFINED_TIME = -1.0f;
 	
 	const int INITIAL_FIRE_PIVOT_INDEX = -1.0f;
@@ -89,8 +84,6 @@ private:
 	// Ammo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int _consumeAmmoPerShot = 1;
-
-	AmmoProvider* _ammoProvider;
 	
 	// Fire pivots
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
@@ -126,9 +119,6 @@ private:
 	int _ammoPerLoad = 1;
 	
 	float _ammoLoadStartTime = UNDEFINED_TIME;
-
-	// Aim
-	USceneComponent* _aimProvider;
 	
 	// Private methods
 	bool IsShooting() const;

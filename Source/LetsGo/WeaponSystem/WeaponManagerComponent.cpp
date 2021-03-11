@@ -1,4 +1,6 @@
 #include "WeaponManagerComponent.h"
+
+#include "Weapon.h"
 #include "LetsGo/GameModes/MatchGameMode.h"
 #include "LetsGo/Items/Item.h"
 #include "LetsGo/Items/AmmoItem.h"
@@ -8,7 +10,7 @@
 #include "LetsGo/Utils/ActorUtils.h"
 
 #define RETURN_IF_NO_WEAPON \
-if (_weapon == nullptr) \
+if (_weaponActor == nullptr) \
 { \
 	return; \
 } \
@@ -85,7 +87,7 @@ void UWeaponManagerComponent::ChangeWeapon(const int indexModifier)
 		return;
 	}
 	
-	auto const weaponsCount = _weapons.Num();
+	auto const weaponsCount = _weaponActors.Num();
 
 	if (weaponsCount == 0)
 	{
@@ -128,9 +130,9 @@ void UWeaponManagerComponent::SetAimProvider(USceneComponent* aimProvider)
 	_aimProvider = aimProvider;
 }
 
-void UWeaponManagerComponent::SetInstigatorId(const int32 instigatorId)
+void UWeaponManagerComponent::SetPlayerId(const int32 playerId)
 {
-	_instigatorId = instigatorId;
+	_playerId = playerId;
 }
 
 void UWeaponManagerComponent::ChangeWeaponPivot()
@@ -155,36 +157,36 @@ void UWeaponManagerComponent::ChangeWeaponPivot()
 	_weaponPivotIndex = nextIndex;
 	_weaponPivot = _weaponPivots[_weaponPivotIndex];
 	
-	for (auto weapon : _weapons)
+	for (auto weaponActor : _weaponActors)
 	{
-		weapon->AttachToComponent(_weaponPivot, FAttachmentTransformRules::KeepRelativeTransform);
+		weaponActor->AttachToComponent(_weaponPivot, FAttachmentTransformRules::KeepRelativeTransform);
 	}
 }
 
-void UWeaponManagerComponent::EquipWeapon(int weaponIndex)
+void UWeaponManagerComponent::EquipWeapon(const int weaponIndex)
 {
 	if(_weaponIndex == weaponIndex)
 	{
 		return;
 	}
 	
-	if (_weapon)
+	if (_weaponActor)
 	{
 		if(_gun)
 		{
 			_gun->StopFire();
 		}
 		
-		ActorUtils::SetEnabled(_weapon, false);
+		ActorUtils::SetEnabled(_weaponActor, false);
 	}
 
 	_weaponIndex = weaponIndex;
-	_weapon = _weapons[_weaponIndex];
+	_weaponActor = _weaponActors[_weaponIndex];
 
 	// Refresh all known weapons
-	_gun = Cast<IGun>(_weapon);
+	_gun = Cast<IGun>(_weaponActor);
 	
-	ActorUtils::SetEnabled(_weapon, true);
+	ActorUtils::SetEnabled(_weaponActor, true);
 }
 
 bool UWeaponManagerComponent::TryProcessItem(Item* item)
@@ -211,8 +213,9 @@ bool UWeaponManagerComponent::TryProcessItemAsGun(Item* item)
 
 	// Can carry only one gun of type
 	// Add ammo if already have this gun
-	for (auto weapon : _weapons)
+	for (auto weaponActor : _weaponActors)
 	{
+		auto const weapon = Cast<IWeapon>(weaponActor);
 		if(weapon->GetId() == gunItem->GetId())
 		{
 			auto const ammoId = gunItem->GetAmmoId();
@@ -228,7 +231,7 @@ bool UWeaponManagerComponent::TryProcessItemAsGun(Item* item)
 		return false;
 	}
 	
-	auto const weaponIndex = _weapons.Add(gun);
+	auto const weaponIndex = _weaponActors.Add(gun);
 
 	if (_equipWeaponOnPickup)
 	{
@@ -301,7 +304,7 @@ AmmoProvider* UWeaponManagerComponent::CreateAmmoProvider(const AmmoItem* ammoIt
 	return ammoProvider;
 }
 
-AWeaponBase* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
+AActor* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 {
 	auto const gunId = gunItem->GetId();
 	auto const weaponBlueprint = _gunFactory->GetBlueprint(gunId);
@@ -311,21 +314,29 @@ AWeaponBase* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 		return nullptr;
 	}
 	
-	auto const weapon = AssetUtils::SpawnBlueprint<AWeaponBase>(GetWorld(), GetOwner(), weaponBlueprint);
-
-	if(!weapon)
+	auto const weaponActor = AssetUtils::SpawnBlueprint<AActor>(GetWorld(), GetOwner(), weaponBlueprint);
+	if(!weaponActor)
 	{
+		DevLogger::GetLoggingChannel()->LogValue("Weapon blueprint is not spawned. Gun item id:", gunItem->GetId());
+		return nullptr;
+	}
+
+	auto const weapon = Cast<IWeapon>(weaponActor);
+	if (!weapon)
+	{
+		DevLogger::GetLoggingChannel()->LogValue( "IWeapon is null. Gun item id:", gunItem->GetId());
+		weaponActor->Destroy();
 		return nullptr;
 	}
 	
-	weapon->SetId(gunId);
+	weapon->InitializeWeapon(gunId, _playerId);
 	
 	auto const gun = Cast<IGun>(weapon);
 
 	if (!gun)
 	{
 		DevLogger::GetLoggingChannel()->LogValue("IGun is null. Gun item id:", gunItem->GetId());
-		weapon->Destroy();
+		weaponActor->Destroy();
 		return nullptr;
 	}
 	
@@ -337,7 +348,7 @@ AWeaponBase* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 		ammoProvider = CreateAmmoProvider(gunItem);
 	}
 
-	gun->Init(_instigatorId, ammoProvider, _aimProvider);
+	gun->InitializeGun(ammoProvider, _aimProvider);
 
 	if (_weaponPivot == nullptr)
 	{
@@ -345,8 +356,8 @@ AWeaponBase* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 	}
 	else
 	{
-		weapon->AttachToComponent(_weaponPivot, FAttachmentTransformRules::KeepRelativeTransform);
+		weaponActor->AttachToComponent(_weaponPivot, FAttachmentTransformRules::KeepRelativeTransform);
 	}
 	
-	return weapon;
+	return weaponActor;
 }

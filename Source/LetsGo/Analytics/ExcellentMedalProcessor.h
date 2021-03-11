@@ -1,17 +1,17 @@
 #pragma once
 
-#include "IMatchEventProcessor.h"
+#include "IDamageMedalProcessor.h"
 
 /// <summary>
-/// Excellent match event processor.
+/// Excellent medal processor.
 /// Conditions: Player got 2 frags in 3 seconds. Frag count resets on player death
 /// </summary>
-class ExcellentMatchEventProcessor final : public IMatchEventProcessor
+class ExcellentMedalProcessor final : public IDamageMedalProcessor
 {
 public:
-	ExcellentMatchEventProcessor() = default;
+	ExcellentMedalProcessor() = default;
 	
-	virtual FMatchHighlight ProcessMatchEvent(const MatchEvent& matchEvent) override;
+	virtual bool ProcessDamageEvent(const DamageEvent& damageEvent, Medal& outMedal) override;
 
 private:
 	static const float REQUIRED_TIME_INTERVAL;

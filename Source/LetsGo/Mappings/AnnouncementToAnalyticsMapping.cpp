@@ -19,5 +19,6 @@ void UAnnouncementToAnalyticsMapping::Map()
 	auto const matchAnalytics = matchGameMode->GetMatchAnalytics();
 	AssertIsNotNull(matchAnalytics);
 
-	matchAnalytics->MatchHighlight.AddUObject(announcementManagerComponent, &UAnnouncementManagerComponent::OnMatchHighlight);
+	matchAnalytics->MedalAchieved.AddUObject(announcementManagerComponent, &UAnnouncementManagerComponent::OnMedalAchieved);
+	DestroyComponent();
 }

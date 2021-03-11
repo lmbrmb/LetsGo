@@ -2,36 +2,36 @@
 
 #include "DrawDebugHelpers.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
-#include "LetsGo/Logs/DevLogger.h"
 #include "LetsGo/Utils/MathUtils.h"
 
-void UInstantShotComponent::Init()
+void UInstantShotComponent::BeginPlay()
 {
+	Super::BeginPlay();
+	
 	_collisionQueryParams.AddIgnoredActor(GetOwner());
 }
 
-void UInstantShotComponent::OnShot(const int32 instigatorId, const USceneComponent* firePivot, const USceneComponent* aimProvider)
+void UInstantShotComponent::OnShot(const USceneComponent* firePivot)
 {
 	FVector targetAimLocation;
 	float dispersionByDistance;
-	ProcessAimLocation(aimProvider, targetAimLocation, dispersionByDistance);
+	ProcessAimLocation( targetAimLocation, dispersionByDistance);
 	
 	for (auto i = 0; i < _bulletCount; i++)
 	{
-		ProcessBullet(instigatorId, firePivot, targetAimLocation, dispersionByDistance);
+		ProcessBullet(firePivot, targetAimLocation, dispersionByDistance);
 	}
 	
 	BpOnShot(firePivot);
 }
 
 void UInstantShotComponent::ProcessAimLocation(
-	const USceneComponent* aimProvider,
 	FVector& targetAimLocation,
 	float& dispersionByDistance
 )
 {
-	auto const aimStartLocation = aimProvider->GetComponentLocation();
-	auto const aimForward = aimProvider->GetForwardVector();
+	auto const aimStartLocation = AimProvider->GetComponentLocation();
+	auto const aimForward = AimProvider->GetForwardVector();
 	targetAimLocation = aimStartLocation + aimForward * _maxRange;
 	dispersionByDistance = 1.0f;
 	
@@ -53,7 +53,6 @@ void UInstantShotComponent::ProcessAimLocation(
 }
 
 void UInstantShotComponent::ProcessBullet(
-	const int32 instigatorId,
 	const USceneComponent* firePivot,
 	const FVector& targetAimLocation, 
 	const float dispersionByDistance
@@ -62,7 +61,7 @@ void UInstantShotComponent::ProcessBullet(
 	auto const rayStartLocation = firePivot->GetComponentLocation();
 	auto const shotDirection = GetBulletDirection(firePivot, rayStartLocation, targetAimLocation, dispersionByDistance);
 	auto rayEndLocation = rayStartLocation + shotDirection * _maxRange;
-	TraceBullet(instigatorId, rayStartLocation, rayEndLocation);
+	TraceBullet(rayStartLocation, rayEndLocation);
 }
 
 FVector UInstantShotComponent::GetBulletDirection(
@@ -88,7 +87,7 @@ FVector UInstantShotComponent::GetBulletDirection(
 	return direction;
 }
 
-void UInstantShotComponent::TraceBullet(const int32 instigatorId, const FVector& rayStartLocation, FVector& rayEndLocation)
+void UInstantShotComponent::TraceBullet(const FVector& rayStartLocation, FVector& rayEndLocation)
 {
 	auto const isHitted = GetWorld()->LineTraceSingleByChannel(
 		_hitResult,
@@ -109,7 +108,7 @@ void UInstantShotComponent::TraceBullet(const int32 instigatorId, const FVector&
 			auto const healthComponent = actorPtr->FindComponentByClass<UHealthComponent>();
 			if (healthComponent)
 			{
-				healthComponent->Injure(Damage(instigatorId, damageAmount));
+				healthComponent->Injure(Damage(PlayerId, WeaponId, damageAmount));
 			}
 		}
 	}
