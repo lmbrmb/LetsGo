@@ -4,10 +4,14 @@
 #include "LetsGo/Items/HealthItemFactory.h"
 #include "LetsGo/Items/GunItemFactory.h"
 #include "LetsGo/Items/AmmoItemFactory.h"
-#include "LetsGo/Pickups/PickupItemFactory.h"
-#include "LetsGo/WeaponSystem/GunFactory.h"
-#include "LetsGo/Avatars/AvatarFactory.h"
+#include "LetsGo/AssetFactories/PickupItemFactory.h"
+#include "LetsGo/AssetFactories/GunFactory.h"
+#include "LetsGo/AssetFactories/AvatarFactory.h"
+#include "LetsGo/AssetFactories/MaterialFactory.h"
+#include "LetsGo/AssetFactories/SkeletalMeshFactory.h"
+#include "LetsGo/AssetFactories/SkinFactory.h"
 #include "LetsGo/Avatars/AvatarDataFactory.h"
+#include "LetsGo/Avatars/AvatarSpawnFactory.h"
 #include "LetsGo/NicknameGenerators/NicknameGeneratorFactory.h"
 #include "LetsGo/Forces/ForceFactory.h"
 
@@ -43,7 +47,6 @@ TTypeContainer<Mode>* MatchDependencyInjectionContainerFactory::CreateContainer(
 	const TSharedRef<HealthItemFactory> healthItemFactory = MakeShareable(new HealthItemFactory());
 	const TSharedRef<AmmoItemFactory> ammoItemFactory = MakeShareable(new AmmoItemFactory());
 	const TSharedRef<GunFactory> gunFactory = MakeShareable(new GunFactory(LAZY_INITIALIZATION));
-	const TSharedRef<AvatarFactory> avatarFactory = MakeShareable(new AvatarFactory(LAZY_INITIALIZATION));
 	const TSharedRef<ForceFactory> forceFactory = MakeShareable(new ForceFactory());
 
 	auto const nicknameGeneratorFactoryInstance = new NicknameGeneratorFactory();
@@ -51,16 +54,34 @@ TTypeContainer<Mode>* MatchDependencyInjectionContainerFactory::CreateContainer(
 
 	const auto nicknameGenerator = nicknameGeneratorFactoryInstance->Create();
 	const TSharedRef<AvatarDataFactory> avatarDataFactory = MakeShareable(new AvatarDataFactory(nicknameGenerator));
+
+	auto const avatarFactoryInstance = new AvatarFactory(LAZY_INITIALIZATION);
+	const TSharedRef<AvatarFactory> avatarFactory = MakeShareable(avatarFactoryInstance);
+
+	auto const materialFactoryInstance = new MaterialFactory(LAZY_INITIALIZATION);
+	const TSharedRef<MaterialFactory> materialFactory = MakeShareable(materialFactoryInstance);
+
+	auto const skeletalMeshFactoryInstance = new SkeletalMeshFactory(LAZY_INITIALIZATION);
+	const TSharedRef<SkeletalMeshFactory> skeletalMeshFactory = MakeShareable(skeletalMeshFactoryInstance);
+
+	auto const skinFactoryInstance = new SkinFactory(materialFactoryInstance, skeletalMeshFactoryInstance);
+	const TSharedRef<SkinFactory> skinFactory = MakeShareable(skinFactoryInstance);
+	
+	const TSharedRef<AvatarSpawnFactory> avatarSpawnFactory = MakeShareable(new AvatarSpawnFactory(avatarFactoryInstance, skinFactoryInstance)) ;
 	
 	container->template RegisterInstance<PickupItemFactory>(pickupItemFactory);
 	container->template RegisterInstance<GunItemFactory>(gunItemFactory);
 	container->template RegisterInstance<AmmoItemFactory>(ammoItemFactory);
 	container->template RegisterInstance<HealthItemFactory>(healthItemFactory);
 	container->template RegisterInstance<GunFactory>(gunFactory);
-	container->template RegisterInstance<AvatarFactory>(avatarFactory);
 	container->template RegisterInstance<ForceFactory>(forceFactory);
 	container->template RegisterInstance<AvatarDataFactory>(avatarDataFactory);
 	container->template RegisterInstance<NicknameGeneratorFactory>(nicknameGeneratorFactory);
+	container->template RegisterInstance<MaterialFactory>(materialFactory);
+	container->template RegisterInstance<SkeletalMeshFactory>(skeletalMeshFactory);
+	container->template RegisterInstance<SkinFactory>(skinFactory);
+	container->template RegisterInstance<AvatarFactory>(avatarFactory);
+	container->template RegisterInstance<AvatarSpawnFactory>(avatarSpawnFactory);
 	
 	return container;
 }

@@ -1,7 +1,7 @@
 #include "PickupSpawnPoint.h"
 #include "LetsGo/GameModes/MatchGameMode.h"
 #include "LetsGo/Pickups/PickupItem.h"
-#include "LetsGo/Pickups/PickupItemFactory.h"
+#include "LetsGo/AssetFactories/PickupItemFactory.h"
 #include "LetsGo/Utils/AssertUtils.h"
 #include "LetsGo/Utils/AssetUtils.h"
 
@@ -32,7 +32,7 @@ void APickupSpawnPoint::BeginPlay()
 	auto const diContainer = matchGameMode->GetDiContainer();
 	
 	auto const pickupItemFactory = diContainer->GetInstance<PickupItemFactory>();
-	_pickupItemBlueprint = pickupItemFactory->GetBlueprint(_id);
+	_pickupItemBlueprint = pickupItemFactory->GetOrLoad(_id);
 	
 	AssertIsNotNull(_pickupItemBlueprint);
 

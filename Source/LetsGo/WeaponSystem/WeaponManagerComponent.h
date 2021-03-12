@@ -2,7 +2,7 @@
 
 #include "Components/ActorComponent.h"
 #include "Gun.h"
-#include "GunFactory.h"
+#include "LetsGo/AssetFactories/GunFactory.h"
 #include "AmmoProvider.h"
 #include "LetsGo/Items/AmmoItem.h"
 #include "LetsGo/Items/AmmoItemFactory.h"

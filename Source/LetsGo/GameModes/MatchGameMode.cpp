@@ -3,12 +3,15 @@
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
-#include "LetsGo/MatchDependencyInjectionContainerFactory.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
+#include "LetsGo/MatchDependencyInjectionContainerFactory.h"
 #include "LetsGo/Utils/AssertUtils.h"
-#include "LetsGo/Utils/AssetUtils.h"
 
 const int BOT_COUNT = 3;
+
+const FName LOCAL_PLAYER_NAME = "%UserName%";
+
+const FName LOCAL_PLAYER_SKIN_ID = "Kachujin";
 
 AMatchGameMode::~AMatchGameMode()
 {
@@ -23,11 +26,11 @@ void AMatchGameMode::InitGame(const FString& MapName, const FString& Options, FS
 	MatchDependencyInjectionContainerFactory containerFactory;
 	_diContainer = containerFactory.CreateContainer<ESPMode::Fast>();
 
-	auto const avatarFactory = GetDiContainer()->GetInstance<AvatarFactory>();
-	_avatarFactory = &avatarFactory.Get();
-
 	auto const avatarDataFactory = GetDiContainer()->GetInstance<AvatarDataFactory>();
 	_avatarDataFactory = &avatarDataFactory.Get();
+
+	auto const avatarSpawnFactory = GetDiContainer()->GetInstance<AvatarSpawnFactory>();
+	_avatarSpawnFactory = &avatarSpawnFactory.Get();
 	
 	_matchAnalytics = new MatchAnalytics(this);
 }
@@ -52,7 +55,8 @@ void AMatchGameMode::PopulateAvatarsData()
 	AssertIsNotNull(localPlayerState);
 
 	auto const localPlayerId = localPlayerState->GetPlayerId();
-	auto const avatarData = _avatarDataFactory->Create(localPlayerId, AvatarType::LocalPlayer, FName(""), "Local player");
+	
+	auto const avatarData = _avatarDataFactory->Create(localPlayerId, AvatarType::LocalPlayer, LOCAL_PLAYER_SKIN_ID, LOCAL_PLAYER_NAME);
 	_avatarsData.Add(avatarData);
 }
 
@@ -115,38 +119,17 @@ FTransform AMatchGameMode::GetNextSpawnPoint()
 
 void AMatchGameMode::SpawnAvatar(AvatarData* avatarData)
 {
-	auto const avatarType = avatarData->GetAvatarType();
-	auto const avatarBlueprint = GetAvatarBlueprint(avatarType);
-
-	if (!avatarBlueprint)
+	auto const avatar = _avatarSpawnFactory->SpawnAvatar(avatarData, GetWorld(), GetNextSpawnPoint());
+	if(avatar == nullptr)
 	{
-		DevLogger::GetLoggingChannel()->Log("Avatar blueprint is null", LogSeverity::Error);
 		return;
 	}
-	auto const avatar = AssetUtils::SpawnBlueprint<AAvatar>(GetWorld(), nullptr, avatarBlueprint, GetNextSpawnPoint());
-	avatar->Init(avatarData->GetPlayerId(), avatarData->GetAvatarType());
+	
 	auto const healthComponent = avatar->FindComponentByClass<UHealthComponent>();
 	AssertIsNotNull(healthComponent);
 	healthComponent->Died.AddUObject(this, &AMatchGameMode::OnAvatarDied);
 
 	AvatarSpawned.Broadcast(avatar);
-}
-
-UBlueprint* AMatchGameMode::GetAvatarBlueprint(const AvatarType avatarType) const
-{
-	switch (avatarType)
-	{
-		case AvatarType::LocalPlayer:
-			return  _avatarFactory->GetLocalPlayerBlueprint();
-
-		case AvatarType::RemotePlayer:
-			return  _avatarFactory->GetRemotePlayerBlueprint();
-
-		case AvatarType::Bot:
-			return _avatarFactory->GetBotBlueprint();
-		default:
-			return nullptr;
-	}
 }
 
 void AMatchGameMode::RespawnAvatarOnTimer()

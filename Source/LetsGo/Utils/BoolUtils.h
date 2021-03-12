@@ -41,7 +41,21 @@ public:
 
 	template<class T>
 	static bool IsLessOrEqual(const T value, const T testValue);
+
+	static bool IsTrue(const bool value);
+
+	static bool IsFalse(const bool value);
 };
+
+inline bool BoolUtils::IsTrue(const bool value)
+{
+	return value == true;
+}
+
+inline bool BoolUtils::IsFalse(const bool value)
+{
+	return value == false;
+}
 
 template <class T>
 bool BoolUtils::IsNull(const T value)

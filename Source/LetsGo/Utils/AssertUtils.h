@@ -56,3 +56,17 @@ if (!BoolUtils::IsLessOrEqual(leftHandValue, rightHandValue)) \
 	DevLogger::GetLoggingChannel()->LogValue("Right hand value: ", rightHandValue, LogSeverity::Error); \
 	return; \
 };
+
+#define AssertIsTrue(value) \
+if (!BoolUtils::IsEqual(value, true)) \
+{ \
+	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Value is not true", LogSeverity::Error); \
+	return; \
+};
+
+#define AssertIsFalse(value) \
+if (!BoolUtils::IsEqual(value, false)) \
+{ \
+	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Value is not false", LogSeverity::Error); \
+	return; \
+};

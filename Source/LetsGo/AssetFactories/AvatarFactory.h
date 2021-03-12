@@ -1,11 +1,11 @@
 #pragma once
 
-#include "LetsGo/BlueprintFactory.h"
+#include "CachedAssetFactory.h"
 
 ///<summary>
 /// Avatar blueprint factory
 ///</summary>
-class AvatarFactory final : private BlueprintFactory
+class AvatarFactory final : private CachedAssetFactory<UBlueprint>
 {
 public:
 	explicit AvatarFactory(const bool lazyInitialization);

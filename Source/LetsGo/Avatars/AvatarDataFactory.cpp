@@ -39,6 +39,7 @@ FName AvatarDataFactory::GetRandomSkinId()
 	{
 		nextIndex = 0;
 	}
-	
-	return _avatarSkinIds[nextIndex];
+
+	_skinIndex = nextIndex;
+	return _avatarSkinIds[_skinIndex];
 }

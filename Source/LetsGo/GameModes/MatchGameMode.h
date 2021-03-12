@@ -3,10 +3,11 @@
 #include "GameFramework/GameModeBase.h"
 
 #include "LetsGo/Avatars/AvatarData.h"
-#include "LetsGo/Avatars/AvatarFactory.h"
+#include "LetsGo/AssetFactories/AvatarFactory.h"
 #include "Misc/TypeContainer.h"
 #include "LetsGo/Analytics/MatchAnalytics.h"
 #include "LetsGo/Avatars/AvatarDataFactory.h"
+#include "LetsGo/Avatars/AvatarSpawnFactory.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
 
 #include "MatchGameMode.generated.h"
@@ -76,8 +77,8 @@ private:
 	
 	TArray<AvatarData*> _avatarsData;
 
-	AvatarFactory* _avatarFactory;
-
+	AvatarSpawnFactory* _avatarSpawnFactory;
+	
 	AvatarDataFactory* _avatarDataFactory;
 
 	TQueue<int32> _respawnQueue;
@@ -89,8 +90,6 @@ private:
 	FTransform GetNextSpawnPoint();
 
 	void SpawnAvatar(AvatarData* avatarData);
-
-	UBlueprint* GetAvatarBlueprint(const AvatarType avatarType) const;
 	
 	void RespawnAvatarOnTimer();
 

@@ -307,7 +307,7 @@ AmmoProvider* UWeaponManagerComponent::CreateAmmoProvider(const AmmoItem* ammoIt
 AActor* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 {
 	auto const gunId = gunItem->GetId();
-	auto const weaponBlueprint = _gunFactory->GetBlueprint(gunId);
+	auto const weaponBlueprint = _gunFactory->GetOrLoad(gunId);
 	
 	if(!weaponBlueprint)
 	{
