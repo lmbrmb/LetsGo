@@ -1,5 +1,8 @@
 #pragma once
 
+/// <summary>
+/// Math utilities
+/// </summary>
 class MathUtils
 {
 public:
@@ -19,6 +22,12 @@ public:
 		auto const x = FMath::Cos(seed);
 		auto const y = FMath::Sin(seed);
 		return FVector2D(x, y);
+	}
+
+	static bool TestProbability(const float probability)
+	{
+		auto const random = FMath::RandRange(0.0f, 1.0f);
+		return random >= probability;
 	}
 
 private:

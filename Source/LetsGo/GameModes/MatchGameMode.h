@@ -6,12 +6,13 @@
 #include "LetsGo/Avatars/AvatarFactory.h"
 #include "Misc/TypeContainer.h"
 #include "LetsGo/Analytics/MatchAnalytics.h"
+#include "LetsGo/Avatars/AvatarDataFactory.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
 
 #include "MatchGameMode.generated.h"
 
 ///<summary>
-///Base game mode for all matches. Has Dependency Injection container.
+///Base game mode for all matches. Provides Dependency Injection container.
 ///</summary>
 UCLASS()
 class LETSGO_API AMatchGameMode : public AGameModeBase
@@ -20,12 +21,21 @@ class LETSGO_API AMatchGameMode : public AGameModeBase
 
 public:
 	DECLARE_EVENT_OneParam(
-	MatchAnalytics,
+		AMatchGameMode,
 		EAvatarSpawned,
 		const AAvatar* avatar
 		);
 
+	DECLARE_EVENT(
+		AMatchGameMode,
+		EMatchStarted
+		);
+	
 	EAvatarSpawned AvatarSpawned;
+
+	EMatchStarted MatchStarted;
+
+	bool GetIsMatchStarted() const;
 	
 	AMatchGameMode() = default;
 	
@@ -45,6 +55,8 @@ protected:
 	virtual void OnAvatarDied(const UHealthComponent* healthComponent, const float delta);
 	
 private:
+	bool _IsMatchStarted = false;
+	
 	const int UNDEFINED_INDEX = -1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
@@ -53,6 +65,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
 	float _avatarDestroyTime = 0.5f;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	float _matchStartDelay = 0.5f;
+
 	TTypeContainer<ESPMode::Fast>* _diContainer = nullptr;
 
 	TArray<FTransform> _spawnPoints;
@@ -62,6 +77,8 @@ private:
 	TArray<AvatarData*> _avatarsData;
 
 	AvatarFactory* _avatarFactory;
+
+	AvatarDataFactory* _avatarDataFactory;
 
 	TQueue<int32> _respawnQueue;
 

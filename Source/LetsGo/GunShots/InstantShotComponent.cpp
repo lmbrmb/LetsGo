@@ -114,7 +114,7 @@ void UInstantShotComponent::TraceBullet(const FVector& rayStartLocation, FVector
 	}
 
 	auto const lineColor = isHitted ? FColor::Red : FColor::Blue;
-	DrawDebugLine(GetWorld(), rayStartLocation, rayEndLocation, lineColor, false, 10);
+	DrawDebugLine(GetWorld(), rayStartLocation, rayEndLocation, lineColor, false, 1);
 	BpOnBullet(_hitResult);
 }
 

@@ -26,10 +26,10 @@ public:
 	
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
-	float _announcementDelay = 1.0f;
+	float _announcementDelay = 0.25f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
-	float _consequentAnnouncementDelay = 2.0f;
+	float _consequentAnnouncementDelay = 1.5f;
 
 	TQueue<FMedalType> _medalsToAnnounce;
 

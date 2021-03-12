@@ -3,7 +3,7 @@
 #include "LetsGo/BlueprintFactory.h"
 
 ///<summary>
-/// Avatar factory
+/// Avatar blueprint factory
 ///</summary>
 class AvatarFactory final : private BlueprintFactory
 {

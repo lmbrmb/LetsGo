@@ -23,17 +23,26 @@ void AMatchGameMode::InitGame(const FString& MapName, const FString& Options, FS
 	MatchDependencyInjectionContainerFactory containerFactory;
 	_diContainer = containerFactory.CreateContainer<ESPMode::Fast>();
 
-	auto const playerFactory = GetDiContainer()->GetInstance<AvatarFactory>();
-	_avatarFactory = &playerFactory.Get();
+	auto const avatarFactory = GetDiContainer()->GetInstance<AvatarFactory>();
+	_avatarFactory = &avatarFactory.Get();
 
+	auto const avatarDataFactory = GetDiContainer()->GetInstance<AvatarDataFactory>();
+	_avatarDataFactory = &avatarDataFactory.Get();
+	
 	_matchAnalytics = new MatchAnalytics(this);
+}
+
+bool AMatchGameMode::GetIsMatchStarted() const
+{
+	return _IsMatchStarted;
 }
 
 void AMatchGameMode::PopulateAvatarsData()
 {
 	for (auto i = 0; i < BOT_COUNT; i++)
 	{
-		_avatarsData.Add(new AvatarData(MAX_int32 - i, AvatarType::Bot));
+		auto const avatarData = _avatarDataFactory->GenerateRandom(MAX_int32 - i, AvatarType::Bot);
+		_avatarsData.Add(avatarData);
 	}
 	
 	auto const localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
@@ -43,12 +52,14 @@ void AMatchGameMode::PopulateAvatarsData()
 	AssertIsNotNull(localPlayerState);
 
 	auto const localPlayerId = localPlayerState->GetPlayerId();
-	_avatarsData.Add(new AvatarData(localPlayerId, AvatarType::LocalPlayer));
+	auto const avatarData = _avatarDataFactory->Create(localPlayerId, AvatarType::LocalPlayer, FName(""), "Local player");
+	_avatarsData.Add(avatarData);
 }
 
 void AMatchGameMode::TriggerMatchStart()
 {
-	//TODO: broadcast match start event
+	_IsMatchStarted = true;
+	MatchStarted.Broadcast();
 }
 
 TTypeContainer<ESPMode::Fast>* AMatchGameMode::GetDiContainer() const
@@ -73,7 +84,7 @@ void AMatchGameMode::BeginPlay()
 	}
 
 	FTimerHandle matchStartTimerHandle;
-	GetWorldTimerManager().SetTimer(matchStartTimerHandle, this, &AMatchGameMode::TriggerMatchStart, _avatarDestroyTime, false);
+	GetWorldTimerManager().SetTimer(matchStartTimerHandle, this, &AMatchGameMode::TriggerMatchStart, _matchStartDelay, false);
 }
 
 void AMatchGameMode::RegisterSpawnPoint(FTransform spawnPoint)

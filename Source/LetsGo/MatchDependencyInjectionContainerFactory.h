@@ -7,8 +7,14 @@
 #include "LetsGo/Pickups/PickupItemFactory.h"
 #include "LetsGo/WeaponSystem/GunFactory.h"
 #include "LetsGo/Avatars/AvatarFactory.h"
+#include "LetsGo/Avatars/AvatarDataFactory.h"
+#include "LetsGo/NicknameGenerators/NicknameGeneratorFactory.h"
 #include "LetsGo/Forces/ForceFactory.h"
 
+/// <summary>
+/// Match dependency injection container factory
+/// Composes DI container for MatchGameMode
+/// </summary>
 class MatchDependencyInjectionContainerFactory final
 {
 public:
@@ -39,6 +45,12 @@ TTypeContainer<Mode>* MatchDependencyInjectionContainerFactory::CreateContainer(
 	const TSharedRef<GunFactory> gunFactory = MakeShareable(new GunFactory(LAZY_INITIALIZATION));
 	const TSharedRef<AvatarFactory> avatarFactory = MakeShareable(new AvatarFactory(LAZY_INITIALIZATION));
 	const TSharedRef<ForceFactory> forceFactory = MakeShareable(new ForceFactory());
+
+	auto const nicknameGeneratorFactoryInstance = new NicknameGeneratorFactory();
+	const TSharedRef<NicknameGeneratorFactory> nicknameGeneratorFactory = MakeShareable(nicknameGeneratorFactoryInstance);;
+
+	const auto nicknameGenerator = nicknameGeneratorFactoryInstance->Create();
+	const TSharedRef<AvatarDataFactory> avatarDataFactory = MakeShareable(new AvatarDataFactory(nicknameGenerator));
 	
 	container->template RegisterInstance<PickupItemFactory>(pickupItemFactory);
 	container->template RegisterInstance<GunItemFactory>(gunItemFactory);
@@ -47,6 +59,8 @@ TTypeContainer<Mode>* MatchDependencyInjectionContainerFactory::CreateContainer(
 	container->template RegisterInstance<GunFactory>(gunFactory);
 	container->template RegisterInstance<AvatarFactory>(avatarFactory);
 	container->template RegisterInstance<ForceFactory>(forceFactory);
+	container->template RegisterInstance<AvatarDataFactory>(avatarDataFactory);
+	container->template RegisterInstance<NicknameGeneratorFactory>(nicknameGeneratorFactory);
 	
 	return container;
 }
