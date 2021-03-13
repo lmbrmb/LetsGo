@@ -8,6 +8,8 @@
 
 class AMatchGameMode;
 
+DECLARE_EVENT_OneParam(MatchAnalytics, EMedalAchieved, const Medal& medal);
+
 /// <summary>
 /// Analyzes match events. Checks and notifies if player earned medal
 /// </summary>
@@ -15,8 +17,6 @@ class MatchAnalytics
 {
 public:
 	explicit MatchAnalytics(AMatchGameMode* matchGameMode);
-	
-	DECLARE_EVENT_OneParam(MatchAnalytics, EMedalAchieved, const Medal& medal);
 
 	EMedalAchieved MedalAchieved;
 

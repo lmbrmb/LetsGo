@@ -8,19 +8,20 @@ UFloatParameterComponent::UFloatParameterComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-
 void UFloatParameterComponent::BeginPlay()
 {
+	AssertIsLessOrEqual(MinValue, MaxValue);
+	AssertIsLessOrEqual(InitialValue, MaxValue);
+	AssertIsGreaterOrEqual(InitialValue, MinValue);
+
+	SetCurrentValue(InitialValue);
+	
 	Init();
 }
 
 void UFloatParameterComponent::Init()
 {
-	AssertIsLessOrEqual(MinValue, MaxValue);
-	AssertIsLessOrEqual(InitialValue, MaxValue);
-	AssertIsGreaterOrEqual(InitialValue, MinValue);
-	
-	SetCurrentValue(InitialValue);
+	//Do nothing
 }
 
 void UFloatParameterComponent::SetCurrentValue(const float currentValue)

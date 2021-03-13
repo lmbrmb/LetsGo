@@ -5,6 +5,10 @@
 
 #include "Gun.generated.h"
 
+DECLARE_EVENT_OneParam(IGun, EShotPerformed, const USceneComponent* firePivot);
+
+DECLARE_EVENT_OneParam(IGun, EGunInitialized, IGun*);
+
 /// <summary>
 /// [Generated] Must-have class for IGun
 /// </summary>
@@ -22,18 +26,6 @@ class LETSGO_API IGun
 	GENERATED_BODY()
 
 public:
-	DECLARE_EVENT_OneParam(
-		IGun,
-		EShotPerformed,
-		const USceneComponent* firePivot
-		);
-
-	DECLARE_EVENT_OneParam(
-		IGun,
-		EGunInitialized,
-		IGun*
-		);
-	
 	EShotPerformed ShotPerformed;
 
 	EGunInitialized GunInitialized;

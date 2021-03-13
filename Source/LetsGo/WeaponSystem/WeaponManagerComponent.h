@@ -7,12 +7,13 @@
 #include "LetsGo/Items/AmmoItem.h"
 #include "LetsGo/Items/AmmoItemFactory.h"
 #include "LetsGo/Items/GunItem.h"
+#include "LetsGo/Items/GunItemFactory.h"
 #include "LetsGo/Items/IItemProcessor.h"
 #include "LetsGo/Items/Item.h"
 
 #include "WeaponManagerComponent.generated.h"
 
-UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+UCLASS(ClassGroup = (Custom), Blueprintable, meta = (BlueprintSpawnableComponent))
 class LETSGO_API UWeaponManagerComponent final : public UActorComponent, public IItemProcessor
 {
 	GENERATED_BODY()
@@ -50,9 +51,14 @@ protected:
 private:
 	const int UNDEFINED_INDEX = -1;
 
-	int32 _playerId;
+	bool _isInitialized = false;
 	
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = Custom)
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
+	FName _startWeaponId;
+	
+	int32 _playerId = UNDEFINED_INDEX;
+	
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
 	bool _equipWeaponOnPickup = true;
 
 	USceneComponent* _aimProvider;
@@ -63,6 +69,8 @@ private:
 
 	int _weaponPivotIndex = UNDEFINED_INDEX;
 
+	GunItemFactory* _gunItemFactory;
+	
 	GunFactory* _gunFactory;
 
 	AmmoItemFactory* _ammoItemFactory;
@@ -95,4 +103,8 @@ private:
 	AmmoProvider* CreateAmmoProvider(const AmmoItem* ammoItem);
 
 	AActor* CreateGun(const GunItem* gunItem);
+
+	void OnPartialInitialization();
+
+	void CreateStartWeapon();
 };

@@ -5,23 +5,39 @@
 
 #include "HealthComponent.generated.h"
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class UHealthComponent;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHealthChangedDelegate);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDiedDelegate);
+
+DECLARE_EVENT_TwoParams(UHealthComponent, FDied, const UHealthComponent*, float delta);
+
+DECLARE_EVENT_TwoParams(UHealthComponent, FHealthChanged, const UHealthComponent*, float delta);
+
+UCLASS( ClassGroup=(Custom), Blueprintable, meta=(BlueprintSpawnableComponent) )
 class LETSGO_API UHealthComponent final : public UFloatParameterComponent
 {
 	GENERATED_BODY()
 
 public:
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHealthChangedDelegate);
-
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, BlueprintReadWrite)
 	FHealthChangedDelegate BpHealthChanged;
-	
-	DECLARE_EVENT_TwoParams(UHealthComponent, FDied, const UHealthComponent*, float delta);
 
-	DECLARE_EVENT_TwoParams(UHealthComponent, FHealthChanged, const UHealthComponent*, float delta);
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Decrease Health Over Time")
+	float _decreaseHealthInterval = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Decrease Health Over Time")
+	float _decreaseHealthAmount = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Decrease Health Over Time")
+	float _decreaseHealthStopValue = 0;
 	
 	FDied Died;
 
+	UPROPERTY(BlueprintAssignable, BlueprintReadWrite)
+	FDiedDelegate BpDied;
+	
 	FHealthChanged HealthChanged;
 	
 	void Heal(const float healAmount);
@@ -41,6 +57,10 @@ public:
 protected:
 	virtual void OnChanged(float delta) override;
 
+	virtual void Init() override;
+	
 private:
-	Damage _lastDamage = Damage(MIN_int32, FName(""), 0);
+	Damage _lastDamage;
+
+	void DecreaseHealthOnTimer();
 };

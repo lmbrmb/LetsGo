@@ -6,6 +6,8 @@
 
 #include "PickupManagerComponent.generated.h"
 
+DECLARE_EVENT_OneParam(UPickupManagerComponent, EItemPickedUp, Item* item);
+
 ///<summary>
 /// Pickup manager component
 ///</summary>
@@ -16,8 +18,6 @@ class LETSGO_API UPickupManagerComponent final : public UActorComponent
 	
 public:
 	UPickupManagerComponent();
-	
-	DECLARE_EVENT_OneParam(UPickupManagerComponent, EItemPickedUp, Item* item);
 	
 	UFUNCTION(BlueprintCallable)
 	bool TryPickUpItem(FName itemId);

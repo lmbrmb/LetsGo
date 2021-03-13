@@ -1,5 +1,7 @@
 #include "HealthComponent.h"
 
+#include "LetsGo/Utils/AssertUtils.h"
+
 void UHealthComponent::OnChanged(const float delta)
 {
 	HealthChanged.Broadcast(this, delta);
@@ -8,7 +10,32 @@ void UHealthComponent::OnChanged(const float delta)
 	if(IsDead())
 	{
 		Died.Broadcast(this, delta);
+		BpDied.Broadcast();
 	}
+}
+
+void UHealthComponent::Init()
+{
+	FTimerHandle decreaseHealthTimerHandle;
+
+	AssertIsGreaterOrEqual(_decreaseHealthInterval, 0.0f)
+	AssertIsGreaterOrEqual(_decreaseHealthAmount, 0.0f);
+	AssertIsGreaterOrEqual(_decreaseHealthStopValue, 0.0f);
+	
+	if(_decreaseHealthAmount > 0)
+	{
+		GetWorld()->GetTimerManager().SetTimer(decreaseHealthTimerHandle, this, &UHealthComponent::DecreaseHealthOnTimer, _decreaseHealthInterval, true);
+	}
+}
+
+void UHealthComponent::DecreaseHealthOnTimer()
+{
+	if(CurrentValue <= _decreaseHealthStopValue)
+	{
+		return;
+	}
+
+	Injure(Damage(_decreaseHealthAmount));
 }
 
 void UHealthComponent::Heal(const float healAmount)

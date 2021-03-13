@@ -12,6 +12,10 @@
 
 #include "MatchGameMode.generated.h"
 
+DECLARE_EVENT_OneParam(AMatchGameMode, EAvatarSpawned, const AAvatar* avatar);
+
+DECLARE_EVENT(AMatchGameMode, EMatchStarted);
+
 ///<summary>
 ///Base game mode for all matches. Provides Dependency Injection container.
 ///</summary>
@@ -21,17 +25,6 @@ class LETSGO_API AMatchGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
-	DECLARE_EVENT_OneParam(
-		AMatchGameMode,
-		EAvatarSpawned,
-		const AAvatar* avatar
-		);
-
-	DECLARE_EVENT(
-		AMatchGameMode,
-		EMatchStarted
-		);
-	
 	EAvatarSpawned AvatarSpawned;
 
 	EMatchStarted MatchStarted;
@@ -64,7 +57,7 @@ private:
 	float _avatarRespawnTime = 3.0f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
-	float _avatarDestroyTime = 0.5f;
+	float _avatarDestroyTime = 2.5f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
 	float _matchStartDelay = 0.5f;

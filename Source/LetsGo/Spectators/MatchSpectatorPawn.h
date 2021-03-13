@@ -3,6 +3,8 @@
 #include "GameFramework/SpectatorPawn.h"
 #include "MatchSpectatorPawn.generated.h"
 
+DECLARE_EVENT(AMatchSpectatorPawn, EPossessed);
+
 /// <summary>
 /// Match spectator pawn
 /// </summary>
@@ -12,11 +14,6 @@ class LETSGO_API AMatchSpectatorPawn : public ASpectatorPawn
 	GENERATED_BODY()
 
 public:
-	DECLARE_EVENT(
-	AMatchSpectatorPawn,
-		EPossessed
-		);
-
 	EPossessed Possessed;
 	
 protected:

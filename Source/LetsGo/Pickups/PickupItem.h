@@ -4,6 +4,10 @@
 
 #include "PickupItem.generated.h"
 
+class APickupItem;
+
+DECLARE_EVENT_OneParam(APickupItem, Taken, APickupItem*)
+
 ///<summary>
 ///Pickup item
 ///</summary>
@@ -21,7 +25,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Take();
 
-	DECLARE_EVENT_OneParam(APickupItem, Taken, APickupItem*)
 	Taken Taken;
 
 	UFUNCTION(BlueprintImplementableEvent)

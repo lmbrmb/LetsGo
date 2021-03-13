@@ -45,7 +45,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float MaxValue = 0;
 
-	void Init();
+	virtual void Init();
 	
 	void ChangeValue(const float amount);
 

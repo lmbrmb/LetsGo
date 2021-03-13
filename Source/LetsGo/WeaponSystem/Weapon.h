@@ -3,6 +3,10 @@
 #include "UObject/Interface.h"
 #include "Weapon.generated.h"
 
+class IWeapon;
+
+DECLARE_EVENT_OneParam(IGun, EWeaponInitialized, IWeapon*);
+
 /// <summary>
 /// [Generated] Must-have class for IWeapon
 /// </summary>
@@ -21,12 +25,6 @@ class LETSGO_API IWeapon
 
 	// Not virtual - default implementation is ok
 public:
-	DECLARE_EVENT_OneParam(
-		IGun,
-		EWeaponInitialized,
-		IWeapon*
-		);
-
 	EWeaponInitialized WeaponInitialized;
 	
 	bool IsWeaponInitialized() const;
@@ -40,7 +38,7 @@ public:
 private:
 	FName _id;
 
-	int32 _playerId;
+	int32 _playerId = MIN_int32;
 	
 	bool _isWeaponInitialized = false;
 };

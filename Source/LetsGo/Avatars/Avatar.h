@@ -6,6 +6,10 @@
 
 #include "Avatar.generated.h"
 
+class AAvatar;
+
+DECLARE_EVENT_OneParam(IGun, EInitialized, const AAvatar* avatar);
+
 ///<summary>
 ///Avatar. Hero. Player representation
 ///</summary>
@@ -24,12 +28,6 @@ public:
 	int32 GetPlayerId() const;
 
 	AvatarType GetAvatarType() const;
-	
-	DECLARE_EVENT_OneParam(
-		IGun,
-		EInitialized,
-		const AAvatar* avatar
-		);
 
 	EInitialized Initialized;
 	

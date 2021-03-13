@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
 #include "LetsGo/MatchDependencyInjectionContainerFactory.h"
+#include "LetsGo/Utils/ActorUtils.h"
 #include "LetsGo/Utils/AssertUtils.h"
 
 const int BOT_COUNT = 3;
@@ -151,7 +152,7 @@ void AMatchGameMode::DestroyAvatarOnTimer()
 {
 	AActor* actor;
 	_destroyQueue.Dequeue(actor);
-	actor->Destroy();
+	ActorUtils::DestroyActorRecursively(actor);
 }
 
 void AMatchGameMode::OnAvatarDied(const UHealthComponent* healthComponent, const float delta)

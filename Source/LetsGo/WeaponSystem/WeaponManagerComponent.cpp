@@ -34,6 +34,9 @@ void UWeaponManagerComponent::BeginPlay()
 
 	auto const ammoItemFactory = diContainer->GetInstance<AmmoItemFactory>();
 	_ammoItemFactory = &ammoItemFactory.Get();
+
+	auto const gunItemFactory = diContainer->GetInstance<GunItemFactory>();
+	_gunItemFactory = &gunItemFactory.Get();
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
@@ -117,22 +120,25 @@ void UWeaponManagerComponent::AddWeaponPivot(USceneComponent* weaponPivot)
 	
 	_weaponPivots.Add(weaponPivot);
 
-	if (_weaponPivotIndex != UNDEFINED_INDEX)
+	if(_weaponPivot)
 	{
 		return;
 	}
 
 	ChangeWeaponPivot();
+	OnPartialInitialization();
 }
 
 void UWeaponManagerComponent::SetAimProvider(USceneComponent* aimProvider)
 {
 	_aimProvider = aimProvider;
+	OnPartialInitialization();
 }
 
 void UWeaponManagerComponent::SetPlayerId(const int32 playerId)
 {
 	_playerId = playerId;
+	OnPartialInitialization();
 }
 
 void UWeaponManagerComponent::ChangeWeaponPivot()
@@ -179,7 +185,7 @@ void UWeaponManagerComponent::EquipWeapon(const int weaponIndex)
 		
 		ActorUtils::SetEnabled(_weaponActor, false);
 	}
-
+	
 	_weaponIndex = weaponIndex;
 	_weaponActor = _weaponActors[_weaponIndex];
 
@@ -360,4 +366,27 @@ AActor* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 	}
 	
 	return weaponActor;
+}
+
+void UWeaponManagerComponent::OnPartialInitialization()
+{
+	if(_isInitialized)
+	{
+		return;
+	}
+	
+	if(_aimProvider == nullptr || _weaponPivot == nullptr || _playerId == UNDEFINED_INDEX)
+	{
+		return;
+	}
+
+	_isInitialized = true;
+	
+	CreateStartWeapon();
+}
+
+void UWeaponManagerComponent::CreateStartWeapon()
+{
+	auto const startingWeaponItem = _gunItemFactory->Get(_startWeaponId);
+	TryProcessItemAsGun(startingWeaponItem);
 }

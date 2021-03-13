@@ -3,6 +3,10 @@
 struct Damage
 {
 public:
+	Damage();
+
+	Damage(const float amount);
+	
 	Damage(
 		const int32 instigatorId,
 		const FName weaponId,
