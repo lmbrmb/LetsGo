@@ -25,8 +25,22 @@ bool UHealthManagerComponent::TryProcessItem(Item* item)
 	{
 		return false;
 	}
+
+	auto healAmount = healthItem->GetHealAmount();
 	
-	auto const healAmount = healthItem->GetHealAmount();
+	auto const canHealAboveNormal = healthItem->GetId() == "MajorHealth";
+	if(!canHealAboveNormal)
+	{
+		auto const normalHealthDelta = _healthComponent->GetMaxNormalHealth() - _healthComponent->GetCurrentValue();
+		healAmount = FMath::Min(healAmount, normalHealthDelta);
+		
+		if(normalHealthDelta < 0)
+		{
+			return false;
+		}
+	}
+	
+	
 	_healthComponent->Heal(healAmount);
 	
 	return true;
@@ -34,6 +48,8 @@ bool UHealthManagerComponent::TryProcessItem(Item* item)
 
 void UHealthManagerComponent::BeginPlay()
 {
+	Super::BeginPlay();
+
 	auto const actor = GetOwner();
 	_healthComponent = actor->FindComponentByClass<UHealthComponent>();
 	AssertIsNotNull(_healthComponent);

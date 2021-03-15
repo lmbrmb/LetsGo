@@ -10,6 +10,8 @@ UFloatParameterComponent::UFloatParameterComponent()
 
 void UFloatParameterComponent::BeginPlay()
 {
+	Super::BeginPlay();
+	
 	AssertIsLessOrEqual(MinValue, MaxValue);
 	AssertIsLessOrEqual(InitialValue, MaxValue);
 	AssertIsGreaterOrEqual(InitialValue, MinValue);

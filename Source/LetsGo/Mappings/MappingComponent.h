@@ -15,4 +15,9 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void Map() {};
+
+	void StartDestroyTask();
+
+private:
+	void DestroyOnTimer();
 };

@@ -9,7 +9,7 @@ HealthItem::HealthItem(
 {
 }
 
-int HealthItem::GetHealAmount() const
+float HealthItem::GetHealAmount() const
 {
 	return _healAmount;
 }

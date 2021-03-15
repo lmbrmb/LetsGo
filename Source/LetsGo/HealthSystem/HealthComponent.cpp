@@ -5,32 +5,42 @@
 void UHealthComponent::OnChanged(const float delta)
 {
 	HealthChanged.Broadcast(this, delta);
-	BpHealthChanged.Broadcast();
 	
 	if(IsDead())
 	{
 		Died.Broadcast(this, delta);
-		BpDied.Broadcast();
 	}
 }
 
 void UHealthComponent::Init()
 {
-	FTimerHandle decreaseHealthTimerHandle;
-
 	AssertIsGreaterOrEqual(_decreaseHealthInterval, 0.0f)
 	AssertIsGreaterOrEqual(_decreaseHealthAmount, 0.0f);
-	AssertIsGreaterOrEqual(_decreaseHealthStopValue, 0.0f);
+	AssertIsGreaterOrEqual(_maxNormalHealth, 0.0f);
 	
 	if(_decreaseHealthAmount > 0)
 	{
-		GetWorld()->GetTimerManager().SetTimer(decreaseHealthTimerHandle, this, &UHealthComponent::DecreaseHealthOnTimer, _decreaseHealthInterval, true);
+		GetWorld()->GetTimerManager().SetTimer(_decreaseHealthTimerHandle, this, &UHealthComponent::DecreaseHealthOnTimer, _decreaseHealthInterval, true);
 	}
+}
+
+void UHealthComponent::BeginDestroy()
+{
+	if(_decreaseHealthTimerHandle.IsValid())
+	{
+		auto const world = GetWorld();
+		if(world)
+		{
+			world->GetTimerManager().ClearTimer(_decreaseHealthTimerHandle);
+		}
+	}
+	
+	Super::BeginDestroy();
 }
 
 void UHealthComponent::DecreaseHealthOnTimer()
 {
-	if(CurrentValue <= _decreaseHealthStopValue)
+	if(CurrentValue <= _maxNormalHealth)
 	{
 		return;
 	}
@@ -80,6 +90,11 @@ bool UHealthComponent::IsDead() const
 bool UHealthComponent::IsFullHealth() const
 {
 	return FMath::IsNearlyZero(MaxValue - CurrentValue);
+}
+
+float UHealthComponent::GetMaxNormalHealth() const
+{
+	return _maxNormalHealth;
 }
 
 Damage UHealthComponent::GetLastDamage() const

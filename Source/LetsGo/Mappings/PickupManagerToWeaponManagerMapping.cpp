@@ -16,5 +16,5 @@ void UPickupManagerToWeaponManagerMapping::Map()
 	AssertIsNotNull(weaponManagerComponent);
 	
 	pickupManagerComponent->RegisterItemProcessor(weaponManagerComponent);
-	DestroyComponent();
+	StartDestroyTask();
 }

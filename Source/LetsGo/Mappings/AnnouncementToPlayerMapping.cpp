@@ -20,5 +20,5 @@ void UAnnouncementToPlayerMapping::Map()
 	
 	auto const playerId =playerState->GetPlayerId();
 	announcementManagerComponent->SetPlayerId(playerId);
-	DestroyComponent();
+	StartDestroyTask();
 }

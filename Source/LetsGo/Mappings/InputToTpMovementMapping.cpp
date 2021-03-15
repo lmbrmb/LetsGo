@@ -24,5 +24,5 @@ void UInputToTpMovementMapping::Map()
 		&UThirdPersonMovementComponent::AddSpringArmPitchInput);
 	inputComponent->BindAction(InputConstant::ActionJump, EInputEvent::IE_Pressed, thirdPersonMovementComponent,
 		&UThirdPersonMovementComponent::Jump);
-	DestroyComponent();
+	StartDestroyTask();
 }

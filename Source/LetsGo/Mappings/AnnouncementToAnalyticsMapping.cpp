@@ -20,5 +20,5 @@ void UAnnouncementToAnalyticsMapping::Map()
 	AssertIsNotNull(matchAnalytics);
 
 	matchAnalytics->MedalAchieved.AddUObject(announcementManagerComponent, &UAnnouncementManagerComponent::OnMedalAchieved);
-	DestroyComponent();
+	StartDestroyTask();
 }

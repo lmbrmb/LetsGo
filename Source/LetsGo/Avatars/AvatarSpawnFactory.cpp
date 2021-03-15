@@ -39,12 +39,10 @@ UBlueprint* AvatarSpawnFactory::GetAvatarBlueprint(const AvatarType avatarType) 
 		case AvatarType::LocalPlayer:
 			return  _avatarFactory->GetLocalPlayerBlueprint();
 
-		case AvatarType::RemotePlayer:
-			return  _avatarFactory->GetRemotePlayerBlueprint();
-
 		case AvatarType::Bot:
 			return _avatarFactory->GetBotBlueprint();
 		default:
+			DevLogger::GetLoggingChannel()->LogValue("Unhandled AvatarType:", static_cast<int>(avatarType), LogSeverity::Error);
 			return nullptr;
 	}
 }

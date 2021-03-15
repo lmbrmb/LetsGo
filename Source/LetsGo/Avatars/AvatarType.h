@@ -4,6 +4,5 @@ enum class AvatarType
 {
 	None,
 	LocalPlayer,
-	RemotePlayer,
 	Bot
 };

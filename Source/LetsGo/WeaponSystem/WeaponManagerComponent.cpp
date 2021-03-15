@@ -22,6 +22,8 @@ UWeaponManagerComponent::UWeaponManagerComponent()
 
 void UWeaponManagerComponent::BeginPlay()
 {
+	Super::BeginPlay();
+
 	_itemProcessors.Add( [this](auto item) { return TryProcessItemAsGun(item); });
 	_itemProcessors.Add([this](auto item) { return TryProcessItemAsAmmo(item); });
 

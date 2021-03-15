@@ -26,5 +26,5 @@ void UAvatarToWeaponManagerMapping::Map()
 void UAvatarToWeaponManagerMapping::OnAvatarInitialized(const AAvatar* avatar)
 {
 	_weaponManagerComponent->SetPlayerId(avatar->GetPlayerId());
-	DestroyComponent();
+	StartDestroyTask();
 }

@@ -66,5 +66,5 @@ void UGunShotToGunMapping::OnPartialInitialization()
 	}
 	
 	_gun->ShotPerformed.AddUObject(_gunShotComponent, &UGunShotComponent::OnShot);
-	DestroyComponent();
+	StartDestroyTask();
 }

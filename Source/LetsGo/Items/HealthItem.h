@@ -13,8 +13,8 @@ public:
 		const float healAmount
 	);
 
-	int GetHealAmount() const;
+	float GetHealAmount() const;
 	
 private:
-	int _healAmount;
+	float _healAmount;
 };

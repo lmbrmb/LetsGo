@@ -148,8 +148,6 @@ void UMovementComponentBase::Jump()
 	}
 
 	_jumpIndex++;
-
-	BpJump.Broadcast();
 	
 	// Current jump force will be replaced with new one
 	_forces.RemoveAll([](IForce* f) {return f->GetId() == JUMP_FORCE_ID; });

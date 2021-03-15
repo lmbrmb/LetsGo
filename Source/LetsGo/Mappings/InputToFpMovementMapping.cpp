@@ -29,5 +29,5 @@ void UInputToFpMovementMapping::Map()
 		firstPersonMovementComponent, &UFirstPersonMovementComponent::StartSprint);
 	inputComponent->BindAction(InputConstant::ActionSprint, EInputEvent::IE_Released,
 		firstPersonMovementComponent, &UFirstPersonMovementComponent::StopSprint);
-	DestroyComponent();
+	StartDestroyTask();
 }

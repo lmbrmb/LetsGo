@@ -12,8 +12,6 @@ public:
 
 	UBlueprint* GetLocalPlayerBlueprint();
 	
-	UBlueprint* GetRemotePlayerBlueprint();
-	
 	UBlueprint* GetBotBlueprint();
 };
 

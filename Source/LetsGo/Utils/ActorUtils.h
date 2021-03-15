@@ -15,8 +15,9 @@ public:
 
 	static void DestroyActorRecursively(AActor* actor)
 	{
-		for (auto child : actor->Children)
+		for(auto i = actor->Children.Num()-1; i >= 0; i--)
 		{
+			auto const child = actor->Children[i];
 			DestroyActorRecursively(child);
 		}
 

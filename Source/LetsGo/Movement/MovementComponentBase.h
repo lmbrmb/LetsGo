@@ -6,8 +6,6 @@
 
 #include "MovementComponentBase.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FJumpDelegate);
-
 //<summary>
 /// [Abstract] Movement component
 ///</summary>
@@ -17,9 +15,6 @@ class LETSGO_API UMovementComponentBase : public UActorComponent
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintAssignable)
-	FJumpDelegate BpJump;
-	
 	UFUNCTION(BlueprintCallable)
 	virtual float GetAbsoluteMovementAmount() const;
 	
