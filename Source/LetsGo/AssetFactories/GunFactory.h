@@ -9,6 +9,9 @@ class LETSGO_API GunFactory final : public CachedAssetFactory<UBlueprintGenerate
 {
 public:
 	explicit GunFactory(const bool lazyInitialization);
+	
+private:
+	static const FString _assetPath;
 };
 
 Expose_TNameOf(GunFactory)

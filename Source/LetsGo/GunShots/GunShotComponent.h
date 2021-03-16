@@ -4,6 +4,8 @@
 
 #include "GunShotComponent.generated.h"
 
+DECLARE_EVENT_OneParam(UGunShotComponent, EShotPerformed_UGunShotComponent, const bool isHitted);
+
 ///<summary>
 ///Gun shot base component
 ///</summary>
@@ -15,13 +17,15 @@ class LETSGO_API UGunShotComponent : public UActorComponent
 public:	
 	UGunShotComponent();
 
+	EShotPerformed_UGunShotComponent ShotPerformed;
+	
 	void SetWeaponId(const FName& weaponId);
 	
 	void SetPlayerId(const int32 instigatorId);
 	
 	void SetAimProvider(USceneComponent* aimProvider);
 
-	virtual void OnShot(const USceneComponent* firePivot) {};
+	virtual void OnShotRequested(const USceneComponent* firePivot) {};
 	
 protected:
 	FName WeaponId;

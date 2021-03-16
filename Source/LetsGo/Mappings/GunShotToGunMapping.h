@@ -29,4 +29,6 @@ private:
 	bool _isGunDataSet = false;
 
 	void OnPartialInitialization();
+
+	void BindOnShotPerformed() const;
 };

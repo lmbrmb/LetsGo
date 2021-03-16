@@ -68,6 +68,11 @@ void AGunV2::Reload()
 	// Do nothing
 }
 
+void AGunV2::OnShotPerformed(const bool isHitted)
+{
+	ShotPerformed.Broadcast(this, isHitted);
+}
+
 USceneComponent* AGunV2::GetFirePivot()
 {
 	int nextIndex = 0;
@@ -93,7 +98,7 @@ void AGunV2::StartShot()
 {
 	_shotStartTime = GetWorld()->TimeSeconds;
 	auto const firePivot = GetFirePivot();
-	ShotPerformed.Broadcast(firePivot);
+	ShotRequested.Broadcast(firePivot);
 	SetState(GunState::Shooting);
 }
 
@@ -132,11 +137,11 @@ void AGunV2::TriggerFire(const bool isFireTriggered)
 	{
 		if (_isFireTriggered)
 		{
-			BpFireStarted();
+			BpOnFireStarted();
 		}
 		else
 		{
-			BpFireStopped();
+			BpOnFireStopped();
 		}
 	}
 }

@@ -11,18 +11,20 @@ void UInstantShotComponent::BeginPlay()
 	_collisionQueryParams.AddIgnoredActor(GetOwner());
 }
 
-void UInstantShotComponent::OnShot(const USceneComponent* firePivot)
+void UInstantShotComponent::OnShotRequested(const USceneComponent* firePivot)
 {
 	FVector targetAimLocation;
 	float dispersionByDistance;
 	ProcessAimLocation( targetAimLocation, dispersionByDistance);
-	
+
+	auto isHitted = false;
 	for (auto i = 0; i < _bulletCount; i++)
 	{
-		ProcessBullet(firePivot, targetAimLocation, dispersionByDistance);
+		ProcessBullet(firePivot, targetAimLocation, dispersionByDistance, isHitted);
 	}
-	
-	BpOnShot(firePivot);
+
+	ShotPerformed.Broadcast(isHitted);
+	BpOnShotPerformed(firePivot);
 }
 
 void UInstantShotComponent::ProcessAimLocation(
@@ -55,13 +57,14 @@ void UInstantShotComponent::ProcessAimLocation(
 void UInstantShotComponent::ProcessBullet(
 	const USceneComponent* firePivot,
 	const FVector& targetAimLocation, 
-	const float dispersionByDistance
+	const float dispersionByDistance,
+	bool& isHitted
 )
 {
 	auto const rayStartLocation = firePivot->GetComponentLocation();
 	auto const shotDirection = GetBulletDirection(firePivot, rayStartLocation, targetAimLocation, dispersionByDistance);
 	auto rayEndLocation = rayStartLocation + shotDirection * _maxRange;
-	TraceBullet(rayStartLocation, rayEndLocation);
+	TraceBullet(rayStartLocation, rayEndLocation, isHitted);
 }
 
 FVector UInstantShotComponent::GetBulletDirection(
@@ -87,9 +90,13 @@ FVector UInstantShotComponent::GetBulletDirection(
 	return direction;
 }
 
-void UInstantShotComponent::TraceBullet(const FVector& rayStartLocation, FVector& rayEndLocation)
+void UInstantShotComponent::TraceBullet(
+	const FVector& rayStartLocation,
+	FVector& rayEndLocation,
+	bool& isHitted
+)
 {
-	auto const isHitted = GetWorld()->LineTraceSingleByChannel(
+	auto const isBlockingHit = GetWorld()->LineTraceSingleByChannel(
 		_hitResult,
 		rayStartLocation,
 		rayEndLocation,
@@ -97,7 +104,7 @@ void UInstantShotComponent::TraceBullet(const FVector& rayStartLocation, FVector
 		_collisionQueryParams
 	);
 
-	if (isHitted)
+	if (isBlockingHit)
 	{
 		rayEndLocation = _hitResult.ImpactPoint;
 
@@ -109,11 +116,12 @@ void UInstantShotComponent::TraceBullet(const FVector& rayStartLocation, FVector
 			if (healthComponent)
 			{
 				healthComponent->Injure(Damage(PlayerId, WeaponId, damageAmount));
+				isHitted |= isBlockingHit;
 			}
 		}
 	}
 
-	auto const lineColor = isHitted ? FColor::Red : FColor::Blue;
+	auto const lineColor = isBlockingHit ? FColor::Red : FColor::Blue;
 	DrawDebugLine(GetWorld(), rayStartLocation, rayEndLocation, lineColor, false, 1);
 	BpOnBullet(_hitResult);
 }

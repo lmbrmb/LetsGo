@@ -13,16 +13,16 @@ class LETSGO_API UInstantShotComponent : public UGunShotComponent
 	GENERATED_BODY()
 
 public:
-	virtual void OnShot(const USceneComponent* firePivot) override;
+	virtual void OnShotRequested(const USceneComponent* firePivot) override;
 	
 protected:
 	virtual void BeginPlay() override;
 	
 	UFUNCTION(BlueprintImplementableEvent)
-	void BpOnShot(const USceneComponent* firePivot);
+	void BpOnShotPerformed(const USceneComponent* firePivot);
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void BpOnBullet(FHitResult hitResult);
+	void BpOnBullet(const FHitResult hitResult);
 	
 private:
 	FHitResult _hitResult;
@@ -52,7 +52,8 @@ private:
 	void ProcessBullet(
 		const USceneComponent* firePivot,
 		const FVector& targetAimLocation,
-		const float dispersionByDistance
+		const float dispersionByDistance,
+		bool& isHitted
 	);
 
 	FVector GetBulletDirection(
@@ -64,7 +65,8 @@ private:
 	
 	void TraceBullet(
 		const FVector& rayStartLocation,
-		FVector& rayEndLocation
+		FVector& rayEndLocation,
+		bool& isHitted
 	);
 	
 	float GetBulletDamage() const;

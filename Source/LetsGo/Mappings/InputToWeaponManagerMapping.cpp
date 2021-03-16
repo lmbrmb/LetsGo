@@ -31,7 +31,7 @@ void UInputToWeaponManagerMapping::Map()
 		weaponManagerComponent, &UWeaponManagerComponent::ChangeWeaponPivot);
 }
 
-void UInputToWeaponManagerMapping::ChangeWeaponDpad(float rawAxisValue)
+void UInputToWeaponManagerMapping::ChangeWeaponDpad(const float rawAxisValue)
 {
 	auto const axisValue = InputUtils::GetDpadHorizontalAxis(rawAxisValue);
 	if(_lastDpadHorizontalAxisValue != axisValue)

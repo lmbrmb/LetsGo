@@ -20,7 +20,7 @@ public:
 	void SetPlayerId(int32 playerId);
 	
 	UFUNCTION(BlueprintImplementableEvent)
-	void BpAnnounceMedal(const FMedalType medalType);
+	void BpOnAnnounceMedal(const FMedalType medalType);
 	
 	void OnMedalAchieved(const Medal& medal);
 	

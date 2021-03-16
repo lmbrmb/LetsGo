@@ -20,6 +20,8 @@ class LETSGO_API AGunV1 final : public AActor, public IWeapon, public IGun
 public:
 	AGunV1();
 
+	virtual void OnShotPerformed(const bool isHitted) override;
+	
 	// IGun implementation
 	virtual void StartFire() override;
 
@@ -28,23 +30,21 @@ public:
 
 	// IGun implementation
 	virtual void Reload() override;
-	
-	UFUNCTION(BlueprintImplementableEvent)
-	void BpFireStarted();
-
-	EShotPerformed ShotPerformed;
-	
-	UFUNCTION(BlueprintImplementableEvent)
-	void BpFireStopped();
-	
-	UFUNCTION(BlueprintImplementableEvent)
-	void BpReloadStarted();
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void BpReloadFinished();
+	void BpOnFireStarted();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpOnFireStopped();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpOnReloadStarted();
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void BpAmmoLoaded();
+	void BpOnReloadFinished();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpOnAmmoLoaded();
 
 protected:
 	virtual void BeginPlay() override;

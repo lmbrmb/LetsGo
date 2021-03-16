@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MappingComponent.h"
+
 #include "LetsGo/WeaponSystem/WeaponManagerComponent.h"
 
 #include "InputToWeaponManagerMapping.generated.h"
@@ -20,6 +21,6 @@ private:
 	int _lastDpadHorizontalAxisValue = 0;
 
 	UWeaponManagerComponent* _weaponManagerComponent = nullptr;
-	
-	void ChangeWeaponDpad(float indexModifier);
+
+	void ChangeWeaponDpad(const float rawAxisValue);
 };

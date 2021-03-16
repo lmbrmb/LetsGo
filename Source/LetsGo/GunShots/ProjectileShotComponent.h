@@ -14,5 +14,5 @@ class LETSGO_API UProjectileShotComponent : public UGunShotComponent
 	GENERATED_BODY()
 
 public:
-	virtual void OnShot(const USceneComponent* firePivot) override;
+	virtual void OnShotRequested(const USceneComponent* firePivot) override;
 };

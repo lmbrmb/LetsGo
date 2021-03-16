@@ -44,8 +44,10 @@ void UWeaponManagerComponent::BeginPlay()
 // ReSharper disable once CppMemberFunctionMayBeConst
 void UWeaponManagerComponent::StartFire()
 {
+	_isFireStarted = true;
+	
 	RETURN_IF_NO_WEAPON;
-
+	
 	if(_gun)
 	{
 		_gun->StartFire();
@@ -57,6 +59,8 @@ void UWeaponManagerComponent::StopFire()
 {
 	RETURN_IF_NO_WEAPON;
 
+	_isFireStarted = false;
+	
 	if(_gun)
 	{
 		_gun->StopFire();
@@ -195,6 +199,11 @@ void UWeaponManagerComponent::EquipWeapon(const int weaponIndex)
 	_gun = Cast<IGun>(_weaponActor);
 	
 	ActorUtils::SetEnabled(_weaponActor, true);
+
+	if(_isFireStarted)
+	{
+		_gun->StartFire();
+	}
 }
 
 bool UWeaponManagerComponent::TryProcessItem(Item* item)
@@ -241,7 +250,7 @@ bool UWeaponManagerComponent::TryProcessItemAsGun(Item* item)
 	
 	auto const weaponIndex = _weaponActors.Add(gun);
 
-	if (_equipWeaponOnPickup)
+	if (_shouldEquipWeaponOnPickup)
 	{
 		EquipWeapon(weaponIndex);
 	}
@@ -367,6 +376,8 @@ AActor* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 		weaponActor->AttachToComponent(_weaponPivot, FAttachmentTransformRules::KeepRelativeTransform);
 	}
 	
+	gun->ShotPerformed.AddUObject(this, &UWeaponManagerComponent::OnGunShotPerformed);
+	
 	return weaponActor;
 }
 
@@ -391,4 +402,9 @@ void UWeaponManagerComponent::CreateStartWeapon()
 {
 	auto const startingWeaponItem = _gunItemFactory->Get(_startWeaponId);
 	TryProcessItemAsGun(startingWeaponItem);
+}
+
+void UWeaponManagerComponent::OnGunShotPerformed(const IGun* gun, const bool isHitted)
+{
+	BpOnGunShotPerformed(isHitted);
 }

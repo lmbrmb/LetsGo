@@ -44,22 +44,27 @@ public:
 	void SetPlayerId(const int32 playerId);
 	
 	virtual bool TryProcessItem(Item* item) override;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpOnGunShotPerformed(const bool isHitted);
 	
 protected:
 	virtual void BeginPlay() override;
 
 private:
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
+	FName _startWeaponId;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
+	bool _shouldEquipWeaponOnPickup = true;
+	
 	const int UNDEFINED_INDEX = -1;
 
 	bool _isInitialized = false;
-	
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
-	FName _startWeaponId;
+
+	bool _isFireStarted;
 	
 	int32 _playerId = UNDEFINED_INDEX;
-	
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
-	bool _equipWeaponOnPickup = true;
 
 	USceneComponent* _aimProvider;
 
@@ -107,4 +112,6 @@ private:
 	void OnPartialInitialization();
 
 	void CreateStartWeapon();
+
+	void OnGunShotPerformed(const IGun* gun, const bool isHitted);
 };

@@ -9,6 +9,9 @@ class LETSGO_API PickupItemFactory final : public CachedAssetFactory<UBlueprintG
 {
 public:
 	explicit PickupItemFactory(const bool lazyInitialization);
+	
+private:
+	static const FString _assetPath;
 };
 
 Expose_TNameOf(PickupItemFactory)

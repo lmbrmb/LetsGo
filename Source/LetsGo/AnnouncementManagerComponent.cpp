@@ -47,7 +47,7 @@ void UAnnouncementManagerComponent::AnnounceMedalOnTimer()
 	FMedalType medalType;
 	_medalsToAnnounce.Dequeue(medalType);
 
-	BpAnnounceMedal(medalType);
+	BpOnAnnounceMedal(medalType);
 
 	if (!_medalsToAnnounce.IsEmpty())
 	{

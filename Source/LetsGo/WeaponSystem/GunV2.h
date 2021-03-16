@@ -28,15 +28,15 @@ public:
 
 	// IGun implementation
 	virtual void Reload() override;
-	
-	UFUNCTION(BlueprintImplementableEvent)
-	void BpFireStarted();
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void BpFireStopped();
+	void BpOnFireStarted();
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void BpAmmoLoaded();
+	void BpOnFireStopped();
+
+	// IGun implementation
+	virtual void OnShotPerformed(const bool isHitted) override;
 
 protected:
 	virtual void Tick(float DeltaSeconds) override;

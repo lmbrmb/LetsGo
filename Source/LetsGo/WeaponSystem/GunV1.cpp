@@ -5,6 +5,11 @@ AGunV1::AGunV1()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+void AGunV1::OnShotPerformed(const bool isHitted)
+{
+	ShotPerformed.Broadcast(this, isHitted);
+}
+
 void AGunV1::BeginPlay()
 {
 	Super::BeginPlay();
@@ -134,7 +139,7 @@ void AGunV1::StartShot()
 	_shotStartTime = GetWorld()->TimeSeconds;
 	_clipCurrent -= _consumeAmmoPerShot;
 	auto const firePivot = GetFirePivot();
-	ShotPerformed.Broadcast(firePivot);
+	ShotRequested.Broadcast(firePivot);
 	SetState(GunState::Shooting);
 }
 
@@ -164,7 +169,7 @@ bool AGunV1::HasAmmoToLoad() const
 void AGunV1::StartReload()
 {
 	_reloadStartTime = GetWorld()->TimeSeconds;
-	BpReloadStarted();
+	BpOnReloadStarted();
 	SetState(GunState::Reloading);
 }
 
@@ -191,14 +196,14 @@ void AGunV1::LoadAmmo()
 	ammoToLoad = FMath::Min(ammoToLoad, _ammoPerLoad);
 	_clipCurrent += ammoToLoad;
 	ConsumeAmmo(ammoToLoad);
-	BpAmmoLoaded();
+	BpOnAmmoLoaded();
 }
 
 void AGunV1::FinishReload()
 {
 	_ammoLoadStartTime = UNDEFINED_TIME;
 	_reloadStartTime = UNDEFINED_TIME;
-	BpReloadFinished();
+	BpOnReloadFinished();
 	SetState(GunState::Idle);
 }
 
@@ -227,11 +232,11 @@ void AGunV1::TriggerFire(bool const isFireTriggered)
 	{
 		if(_isFireTriggered)
 		{
-			BpFireStarted();
+			BpOnFireStarted();
 		}
 		else
 		{
-			BpFireStopped();
+			BpOnFireStopped();
 		}
 	}
 }

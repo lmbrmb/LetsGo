@@ -4,12 +4,13 @@
 
 const FName LOCAL_PLAYER_ID = "LocalPlayer";
 const FName BOT_ID = "Bot";
-const FString ASSET_PATH = "/Game/Assets/Blueprints/Avatars/";
+
+const FString AvatarFactory::_assetPath = "/Game/Assets/Blueprints/Avatars/";
 
 AvatarFactory::AvatarFactory(const bool lazyInitialization)
 {
-	Paths.Add(LOCAL_PLAYER_ID, AssetUtils::GenerateAssetPath(ASSET_PATH, "BP_Avatar_LocalPlayer_FirstPerson"));
-	Paths.Add(BOT_ID, AssetUtils::GenerateAssetPath(ASSET_PATH, "BP_Avatar_Bot"));
+	Paths.Add(LOCAL_PLAYER_ID, AssetUtils::GenerateAssetPath(_assetPath, "BP_Avatar_LocalPlayer_FirstPerson"));
+	Paths.Add(BOT_ID, AssetUtils::GenerateAssetPath(_assetPath, "BP_Avatar_Bot"));
 	
 	if (!lazyInitialization)
 	{

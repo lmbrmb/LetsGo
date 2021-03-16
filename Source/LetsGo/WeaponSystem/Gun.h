@@ -5,7 +5,9 @@
 
 #include "Gun.generated.h"
 
-DECLARE_EVENT_OneParam(IGun, EShotPerformed, const USceneComponent* firePivot);
+DECLARE_EVENT_OneParam(IGun, EShotRequested, const USceneComponent* firePivot);
+
+DECLARE_EVENT_TwoParams(IGun, EShotPerformed_IGun, const IGun* gun, const bool isHitted);
 
 DECLARE_EVENT_OneParam(IGun, EGunInitialized, IGun*);
 
@@ -26,8 +28,10 @@ class LETSGO_API IGun
 	GENERATED_BODY()
 
 public:
-	EShotPerformed ShotPerformed;
+	EShotRequested ShotRequested;
 
+	EShotPerformed_IGun ShotPerformed;
+	
 	EGunInitialized GunInitialized;
 
 	AmmoProvider* GetAmmoProvider() const;
@@ -38,6 +42,8 @@ public:
 	
 	void InitializeGun(AmmoProvider* ammoProvider, USceneComponent* aimProvider);
 
+	virtual void OnShotPerformed(const bool isHitted) = 0;
+	
 	virtual void StartFire() = 0;
 
 	virtual void StopFire() = 0;

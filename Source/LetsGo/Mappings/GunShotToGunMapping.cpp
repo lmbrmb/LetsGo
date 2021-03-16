@@ -3,6 +3,8 @@
 #include "LetsGo/GunShots/GunShotComponent.h"
 #include "LetsGo/Utils/AssertUtils.h"
 #include "LetsGo/WeaponSystem/Gun.h"
+#include "LetsGo/WeaponSystem/GunV1.h"
+#include "LetsGo/WeaponSystem/GunV2.h"
 #include "LetsGo/WeaponSystem/Weapon.h"
 
 void UGunShotToGunMapping::Map()
@@ -64,7 +66,32 @@ void UGunShotToGunMapping::OnPartialInitialization()
 	{
 		return;
 	}
+	_gun->ShotRequested.AddUObject(_gunShotComponent, &UGunShotComponent::OnShotRequested);
+
+	BindOnShotPerformed();
 	
-	_gun->ShotPerformed.AddUObject(_gunShotComponent, &UGunShotComponent::OnShot);
 	StartDestroyTask();
+}
+
+void UGunShotToGunMapping::BindOnShotPerformed() const
+{
+	// Can't bind to interface method:
+	// _gunShotComponent->ShotPerformed.AddUObject(_gun, &IGun::OnShotPerformed);
+	// Error: "You cannot use UObject method delegates with raw pointers"
+	
+	auto const gunV1 = Cast<AGunV1>(_gun);
+	if (gunV1)
+	{
+		_gunShotComponent->ShotPerformed.AddUObject(gunV1, &AGunV1::OnShotPerformed);
+		return;
+	}
+	
+	auto const gunV2 = Cast<AGunV2>(_gun);
+	if(gunV2)
+	{
+		_gunShotComponent->ShotPerformed.AddUObject(gunV2, &AGunV2::OnShotPerformed);
+		return;
+	}
+
+	DevLogger::GetLoggingChannel()->Log("Can't bind gun to shot. Unknown gun implementation", LogSeverity::Error);
 }
