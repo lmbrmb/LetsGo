@@ -5,14 +5,14 @@
 ///<summary>
 /// Avatar blueprint factory
 ///</summary>
-class AvatarFactory final : private CachedAssetFactory<UBlueprint>
+class AvatarFactory final : private CachedAssetFactory<UBlueprintGeneratedClass>
 {
 public:
 	explicit AvatarFactory(const bool lazyInitialization);
 
-	UBlueprint* GetLocalPlayerBlueprint();
+	UBlueprintGeneratedClass* GetLocalPlayerBlueprint();
 	
-	UBlueprint* GetBotBlueprint();
+	UBlueprintGeneratedClass* GetBotBlueprint();
 };
 
 Expose_TNameOf(AvatarFactory)

@@ -32,16 +32,15 @@ void APickupSpawnPoint::BeginPlay()
 	auto const diContainer = matchGameMode->GetDiContainer();
 	
 	auto const pickupItemFactory = diContainer->GetInstance<PickupItemFactory>();
-	_pickupItemBlueprint = pickupItemFactory->GetOrLoad(_id);
-	
-	AssertIsNotNull(_pickupItemBlueprint);
+	_pickupItemBlueprintGeneratedClass = pickupItemFactory->GetOrLoad(_id);
+	AssertIsNotNull(_pickupItemBlueprintGeneratedClass);
 
 	SpawnPickup();
 }
 
 void APickupSpawnPoint::SpawnPickup()
 {
-	auto const pickupItem = AssetUtils::SpawnBlueprint<APickupItem>(GetWorld(), this, _pickupItemBlueprint);
+	auto const pickupItem = AssetUtils::SpawnBlueprint<APickupItem>(GetWorld(), this, _pickupItemBlueprintGeneratedClass);
 	AssertIsNotNull(pickupItem);
 	//Tricky: Subscribe first, then attach to pivot because pickup can be taken on spawn
 	_delegateHandleOnPickupTaken = pickupItem->Taken.AddUObject(this, &APickupSpawnPoint::OnPickupTaken);

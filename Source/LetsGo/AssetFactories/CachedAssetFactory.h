@@ -44,17 +44,19 @@ T* CachedAssetFactory<T>::GetOrLoad(const FName id)
 		DevLogger::GetLoggingChannel()->LogValue("Can't load asset. Asset path:", path, LogSeverity::Error);
 		return nullptr;
 	}
+
 	auto const tObject = Cast<T>(object);
 
 	if (!tObject)
 	{
-		auto const className = T::StaticClass()->GetName();
-		DevLogger::GetLoggingChannel()->LogValue("Can't cast loaded asset to desired type. Class name:", className, LogSeverity::Error);
+		DevLogger::GetLoggingChannel()->Log("Can't cast loaded asset to desired type.", LogSeverity::Error);
+		DevLogger::GetLoggingChannel()->LogValue("Loaded object type:", object->GetClass()->GetName(), LogSeverity::Error);
+		DevLogger::GetLoggingChannel()->LogValue("Desired cast type:", T::StaticClass()->GetName(), LogSeverity::Error);
+		
 		return nullptr;
 	}
 
 	Loaded.Add(id, tObject);
-	
 	return tObject;
 }
 

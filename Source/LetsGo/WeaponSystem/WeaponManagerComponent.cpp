@@ -315,14 +315,14 @@ AmmoProvider* UWeaponManagerComponent::CreateAmmoProvider(const AmmoItem* ammoIt
 AActor* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 {
 	auto const gunId = gunItem->GetId();
-	auto const weaponBlueprint = _gunFactory->GetOrLoad(gunId);
+	auto const gunBlueprintGeneratedClass = _gunFactory->GetOrLoad(gunId);
 	
-	if(!weaponBlueprint)
+	if(!gunBlueprintGeneratedClass)
 	{
 		return nullptr;
 	}
 	
-	auto const weaponActor = AssetUtils::SpawnBlueprint<AActor>(GetWorld(), GetOwner(), weaponBlueprint);
+	auto const weaponActor = AssetUtils::SpawnBlueprint<AActor>(GetWorld(), GetOwner(), gunBlueprintGeneratedClass);
 	if(!weaponActor)
 	{
 		DevLogger::GetLoggingChannel()->LogValue("Weapon blueprint is not spawned. Gun item id:", gunItem->GetId());

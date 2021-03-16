@@ -23,7 +23,7 @@ protected:
 private:
 	const float UNDEFINED_TIME = -1;
 	
-	UBlueprint* _pickupItemBlueprint = nullptr;
+	UBlueprintGeneratedClass* _pickupItemBlueprintGeneratedClass = nullptr;
 
 	float _pickupSpawnTime = 0;
 	

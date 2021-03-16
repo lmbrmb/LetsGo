@@ -5,7 +5,7 @@
 /// <summary>
 /// Gun factory
 /// </summary>
-class LETSGO_API GunFactory final : public CachedAssetFactory<UBlueprint>
+class LETSGO_API GunFactory final : public CachedAssetFactory<UBlueprintGeneratedClass>
 {
 public:
 	explicit GunFactory(const bool lazyInitialization);

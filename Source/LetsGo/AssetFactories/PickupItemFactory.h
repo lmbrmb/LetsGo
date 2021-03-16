@@ -5,7 +5,7 @@
 ///<summary>
 ///Pickup item factory
 ///</summary>
-class LETSGO_API PickupItemFactory final : public CachedAssetFactory<UBlueprint>
+class LETSGO_API PickupItemFactory final : public CachedAssetFactory<UBlueprintGeneratedClass>
 {
 public:
 	explicit PickupItemFactory(const bool lazyInitialization);

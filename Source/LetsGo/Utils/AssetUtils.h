@@ -5,32 +5,18 @@
 class AssetUtils
 {
 public:
-	static UBlueprint* LoadBlueprint(const FString path)
-	{
-		auto const assetObject = StaticLoadObject(UObject::StaticClass(), nullptr, *path);
-		if (!assetObject)
-		{
-			DevLogger::GetLoggingChannel()->LogValue("Can't find asset: ", path, LogSeverity::Error);
-			return nullptr;
-		}
-
-		return Cast<UBlueprint>(assetObject);
-	}
-
 	template <class T>
 	static T* SpawnBlueprint(
 		UWorld* world,
 		AActor* owner,
-		UBlueprint* blueprint,
+		UClass* theClass,
 		FTransform transform
 	)
 	{
-		FActorSpawnParameters spawnParams;
-		spawnParams.Owner = owner;
-		spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		auto const spawnParams = GetSpawnParameters(owner);
 
 		auto const spawnedActor = world->SpawnActor<T>(
-			blueprint->GeneratedClass,
+			theClass,
 			transform,
 			spawnParams
 			);
@@ -48,31 +34,28 @@ public:
 	static T* SpawnBlueprint(
 		UWorld* world,
 		AActor* owner,
-		UBlueprint* blueprint,
+		UClass* theClass,
 		FVector location = FVector::ZeroVector,
-		FRotator rotation = FRotator::ZeroRotator
+		FRotator rotation = FRotator::ZeroRotator,
+		FVector scale = FVector::OneVector
 	)
 	{
-		FActorSpawnParameters spawnParams;
-		spawnParams.Owner = owner;
-		spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		return SpawnBlueprint<T>(world, owner, theClass, FTransform(rotation, location, scale));
+	}
 
-		auto const spawnedActor = world->SpawnActor<T>(
-			blueprint->GeneratedClass,
-			location,
-			rotation,
-			spawnParams
-			);
-		
-		if (!spawnedActor)
-		{
-			auto const className = T::StaticClass()->GetName();
-			DevLogger::GetLoggingChannel()->LogValue("Actor is not spawned. Blueprint class name:", className, LogSeverity::Error);
-		}
-
-		return spawnedActor;
+	static FString GenerateAssetPath(const FString& path, const FString& name)
+	{
+		return path + name + "." + name + "_C";
 	}
 
 private:
 	AssetUtils() = delete;
+
+	static FActorSpawnParameters GetSpawnParameters(AActor* owner)
+	{
+		FActorSpawnParameters spawnParams;
+		spawnParams.Owner = owner;
+		spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		return spawnParams;
+	}
 };

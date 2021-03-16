@@ -12,13 +12,13 @@ AvatarSpawnFactory::AvatarSpawnFactory(AvatarFactory* avatarFactory, SkinFactory
 AAvatar* AvatarSpawnFactory::SpawnAvatar(const AvatarData* avatarData, UWorld* world, const FTransform transform) const
 {
 	auto const avatarType = avatarData->GetAvatarType();
-	auto const avatarBlueprint = GetAvatarBlueprint(avatarType);
+	auto const avatarGeneratedClass = GetAvatarGeneratedClass(avatarType);
 
-	if (!avatarBlueprint)
+	if (!avatarGeneratedClass)
 	{
 		return nullptr;
 	}
-	auto const avatar = AssetUtils::SpawnBlueprint<AAvatar>(world, nullptr, avatarBlueprint, transform);
+	auto const avatar = AssetUtils::SpawnBlueprint<AAvatar>(world, nullptr, avatarGeneratedClass, transform);
 	if(!avatar)
 	{
 		return nullptr;
@@ -32,7 +32,7 @@ AAvatar* AvatarSpawnFactory::SpawnAvatar(const AvatarData* avatarData, UWorld* w
 	return avatar;
 }
 
-UBlueprint* AvatarSpawnFactory::GetAvatarBlueprint(const AvatarType avatarType) const
+UBlueprintGeneratedClass* AvatarSpawnFactory::GetAvatarGeneratedClass(const AvatarType avatarType) const
 {
 	switch (avatarType)
 	{

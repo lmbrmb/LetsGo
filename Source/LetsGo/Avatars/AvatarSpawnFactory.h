@@ -21,7 +21,7 @@ private:
 
 	SkinFactory* _skinFactory;
 	
-	UBlueprint* GetAvatarBlueprint(const AvatarType avatarType) const;
+	UBlueprintGeneratedClass* GetAvatarGeneratedClass(const AvatarType avatarType) const;
 };
 
 Expose_TNameOf(AvatarSpawnFactory)
