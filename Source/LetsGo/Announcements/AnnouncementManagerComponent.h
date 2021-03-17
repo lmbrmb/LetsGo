@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Analytics/Medal.h"
-#include "Analytics/MedalType.h"
 #include "Components/ActorComponent.h"
+
+#include "LetsGo/Analytics/Medal.h"
+#include "LetsGo/Data/PlayerId.h"
 
 #include "AnnouncementManagerComponent.generated.h"
 
@@ -17,7 +18,7 @@ class LETSGO_API UAnnouncementManagerComponent : public UActorComponent
 public:	
 	UAnnouncementManagerComponent();
 
-	void SetPlayerId(int32 playerId);
+	void SetPlayerId(const PlayerId& playerId);
 	
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnAnnounceMedal(const FMedalType medalType);
@@ -33,7 +34,7 @@ private:
 
 	TQueue<FMedalType> _medalsToAnnounce;
 
-	int32 _playerId;
+	PlayerId _playerId;
 	
 	void AnnounceMedalOnTimer();
 

@@ -17,13 +17,13 @@ void UInstantShotComponent::OnShotRequested(const USceneComponent* firePivot)
 	float dispersionByDistance;
 	ProcessAimLocation( targetAimLocation, dispersionByDistance);
 
-	auto isHitted = false;
+	auto isAnyBulletDamaged = false;
 	for (auto i = 0; i < _bulletCount; i++)
 	{
-		ProcessBullet(firePivot, targetAimLocation, dispersionByDistance, isHitted);
+		ProcessBullet(firePivot, targetAimLocation, dispersionByDistance, isAnyBulletDamaged);
 	}
 
-	ShotPerformed.Broadcast(isHitted);
+	ShotPerformed.Broadcast(isAnyBulletDamaged);
 	BpOnShotPerformed(firePivot);
 }
 
@@ -58,13 +58,13 @@ void UInstantShotComponent::ProcessBullet(
 	const USceneComponent* firePivot,
 	const FVector& targetAimLocation, 
 	const float dispersionByDistance,
-	bool& isHitted
+	bool& isAnyBulletDamaged
 )
 {
 	auto const rayStartLocation = firePivot->GetComponentLocation();
 	auto const shotDirection = GetBulletDirection(firePivot, rayStartLocation, targetAimLocation, dispersionByDistance);
 	auto rayEndLocation = rayStartLocation + shotDirection * _maxRange;
-	TraceBullet(rayStartLocation, rayEndLocation, isHitted);
+	TraceBullet(rayStartLocation, rayEndLocation, isAnyBulletDamaged);
 }
 
 FVector UInstantShotComponent::GetBulletDirection(
@@ -93,7 +93,7 @@ FVector UInstantShotComponent::GetBulletDirection(
 void UInstantShotComponent::TraceBullet(
 	const FVector& rayStartLocation,
 	FVector& rayEndLocation,
-	bool& isHitted
+	bool& isAnyBulletDamaged
 )
 {
 	auto const isBlockingHit = GetWorld()->LineTraceSingleByChannel(
@@ -104,6 +104,8 @@ void UInstantShotComponent::TraceBullet(
 		_collisionQueryParams
 	);
 
+	auto isDamaged = false;
+	
 	if (isBlockingHit)
 	{
 		rayEndLocation = _hitResult.ImpactPoint;
@@ -115,15 +117,16 @@ void UInstantShotComponent::TraceBullet(
 			auto const healthComponent = actorPtr->FindComponentByClass<UHealthComponent>();
 			if (healthComponent)
 			{
-				healthComponent->Injure(Damage(PlayerId, WeaponId, damageAmount));
-				isHitted |= isBlockingHit;
+				healthComponent->Injure(Damage(InstigatorId, WeaponId, damageAmount));
+				isDamaged = true;
+				isAnyBulletDamaged = true;
 			}
 		}
 	}
 
 	auto const lineColor = isBlockingHit ? FColor::Red : FColor::Blue;
 	DrawDebugLine(GetWorld(), rayStartLocation, rayEndLocation, lineColor, false, 1);
-	BpOnBullet(_hitResult);
+	BpOnBullet(isDamaged, _hitResult);
 }
 
 float UInstantShotComponent::GetBulletDamage() const

@@ -2,11 +2,14 @@
 
 const float ExcellentMedalProcessor::UNDEFINED_TIME = -1.0f;
 
-const float ExcellentMedalProcessor::REQUIRED_TIME_INTERVAL = 3.0f;
+ExcellentMedalProcessor::ExcellentMedalProcessor(const float requiredTimeInterval) :
+	_requiredTimeInterval(requiredTimeInterval)
+{
+}
 
 bool ExcellentMedalProcessor::ProcessDamageEvent(const DamageEvent& damageEvent, Medal& outMedal)
 {
-	auto const damagedPlayerIsDead = damageEvent.DamagedPlayerHealth <= 0;
+	auto const damagedPlayerIsDead = damageEvent.GetDamagedPlayerHealth() <= 0;
 	
 	if(!damagedPlayerIsDead)
 	{
@@ -14,39 +17,39 @@ bool ExcellentMedalProcessor::ProcessDamageEvent(const DamageEvent& damageEvent,
 	}
 
 	//Reset fragged player frag time
-	auto const fraggedPlayerId = damageEvent.DamagedPlayerId;
-	if(_playerLastFragTime.Contains(fraggedPlayerId))
+	auto const fraggedPlayerIdValue = damageEvent.GetDamagedPlayerId().GetId();
+	if(_playerLastFragTime.Contains(fraggedPlayerIdValue))
 	{
-		_playerLastFragTime[fraggedPlayerId] = UNDEFINED_TIME;
+		_playerLastFragTime[fraggedPlayerIdValue] = UNDEFINED_TIME;
 	}
 	else
 	{
-		_playerLastFragTime.Add(fraggedPlayerId, UNDEFINED_TIME);
+		_playerLastFragTime.Add(fraggedPlayerIdValue, UNDEFINED_TIME);
 	}
 	
-	auto const instigatorPlayerId = damageEvent.InstigatorPlayerId;
+	auto const instigatorPlayerIdValue = damageEvent.GetInstigatorPlayerId().GetId();
 
 	//Update instigator player frag time
-	auto const damageEventTime = damageEvent.Time;
-	if (_playerLastFragTime.Contains(instigatorPlayerId))
+	auto const damageEventTime = damageEvent.GetTime();
+	if (_playerLastFragTime.Contains(instigatorPlayerIdValue))
 	{
-		auto const lastFragTime = _playerLastFragTime[instigatorPlayerId];
+		auto const lastFragTime = _playerLastFragTime[instigatorPlayerIdValue];
 		
 		if( lastFragTime != UNDEFINED_TIME
-			&& damageEventTime - lastFragTime <= REQUIRED_TIME_INTERVAL
+			&& damageEventTime - lastFragTime <= _requiredTimeInterval
 		)
 		{
-			outMedal.PlayerId = damageEvent.InstigatorPlayerId;
-			outMedal.MedalType = FMedalType::Excellent;
-			_playerLastFragTime[instigatorPlayerId] = UNDEFINED_TIME;
+			const Medal excellentMedal(damageEvent.GetInstigatorPlayerId(), FMedalType::Excellent);
+			outMedal = excellentMedal;
+			_playerLastFragTime[instigatorPlayerIdValue] = UNDEFINED_TIME;
 			return true;
 		}
 		
-		_playerLastFragTime[instigatorPlayerId] = damageEventTime;
+		_playerLastFragTime[instigatorPlayerIdValue] = damageEventTime;
 	}
 	else
 	{
-		_playerLastFragTime.Add(instigatorPlayerId, damageEventTime);
+		_playerLastFragTime.Add(instigatorPlayerIdValue, damageEventTime);
 	}
 
 	return false;

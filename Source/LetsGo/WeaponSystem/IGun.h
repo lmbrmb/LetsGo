@@ -1,36 +1,23 @@
 #pragma once
 
+#include "IWeapon.h"
 #include "AmmoProvider.h"
-#include "UObject/Interface.h"
-
-#include "Gun.generated.h"
 
 DECLARE_EVENT_OneParam(IGun, EShotRequested, const USceneComponent* firePivot);
 
-DECLARE_EVENT_TwoParams(IGun, EShotPerformed_IGun, const IGun* gun, const bool isHitted);
+DECLARE_EVENT_TwoParams(IGun, EShotPerformed, const IGun* gun, const bool isAnyBulletDamaged);
 
 DECLARE_EVENT_OneParam(IGun, EGunInitialized, IGun*);
 
 /// <summary>
-/// [Generated] Must-have class for IGun
+/// [Interface] Gun contract
 /// </summary>
-UINTERFACE(MinimalAPI)
-class UGun : public UInterface
+class IGun : public IWeapon
 {
-	GENERATED_BODY()
-};
-
-/// <summary>
-/// [Abstract] Gun contract
-/// </summary>
-class LETSGO_API IGun
-{
-	GENERATED_BODY()
-
 public:
 	EShotRequested ShotRequested;
 
-	EShotPerformed_IGun ShotPerformed;
+	EShotPerformed ShotPerformed;
 	
 	EGunInitialized GunInitialized;
 
@@ -42,13 +29,16 @@ public:
 	
 	void InitializeGun(AmmoProvider* ammoProvider, USceneComponent* aimProvider);
 
-	virtual void OnShotPerformed(const bool isHitted) = 0;
+	virtual void OnShotPerformed(const bool isAnyBulletDamaged) = 0;
 	
 	virtual void StartFire() = 0;
 
 	virtual void StopFire() = 0;
 
 	virtual void Reload() = 0;
+
+protected:
+	virtual ~IGun(){};
 
 private:
 	int32 _instigatorId = MIN_int32;

@@ -45,7 +45,8 @@ void AMatchGameMode::PopulateAvatarsData()
 {
 	for (auto i = 0; i < BOT_COUNT; i++)
 	{
-		auto const avatarData = _avatarDataFactory->GenerateRandom(MAX_int32 - i, AvatarType::Bot);
+		const PlayerId botId(MAX_int32 - i);
+		auto const avatarData = _avatarDataFactory->GenerateRandom(botId, AvatarType::Bot);
 		_avatarsData.Add(avatarData);
 	}
 	
@@ -55,7 +56,7 @@ void AMatchGameMode::PopulateAvatarsData()
 	auto const localPlayerState = localPlayerController->GetPlayerState<APlayerState>();
 	AssertIsNotNull(localPlayerState);
 
-	auto const localPlayerId = localPlayerState->GetPlayerId();
+	auto const localPlayerId = PlayerId(localPlayerState->GetPlayerId());
 	
 	auto const avatarData = _avatarDataFactory->Create(localPlayerId, AvatarType::LocalPlayer, LOCAL_PLAYER_SKIN_ID, LOCAL_PLAYER_NAME);
 	_avatarsData.Add(avatarData);
@@ -135,12 +136,12 @@ void AMatchGameMode::SpawnAvatar(AvatarData* avatarData)
 
 void AMatchGameMode::RespawnAvatarOnTimer()
 {
-	int32 playerId;
-	_respawnQueue.Dequeue(playerId);
+	int playerIdValue;
+	_respawnQueue.Dequeue(playerIdValue);
 
 	for (auto avatarData : _avatarsData)
 	{
-		if (avatarData->GetPlayerId() == playerId)
+		if (avatarData->GetPlayerId().GetId() == playerIdValue)
 		{
 			SpawnAvatar(avatarData);
 			break;
@@ -168,8 +169,8 @@ void AMatchGameMode::OnAvatarDied(const UHealthComponent* healthComponent, const
 	auto const avatar = Cast<const AAvatar>(owner);
 	AssertIsNotNull(avatar)
 	
-	auto const playerId = avatar->GetPlayerId();
-	_respawnQueue.Enqueue(playerId);
+	auto const playerIdValue = avatar->GetPlayerId().GetId();
+	_respawnQueue.Enqueue(playerIdValue);
 	FTimerHandle respawnTimerHandle;
 	GetWorldTimerManager().SetTimer(respawnTimerHandle, this, &AMatchGameMode::RespawnAvatarOnTimer, _avatarRespawnTime, false);
 }

@@ -1,8 +1,7 @@
 #pragma once
 
 #include "FirePivotMode.h"
-#include "Weapon.h"
-#include "Gun.h"
+#include "IGun.h"
 #include "GunState.h"
 
 #include "GunV2.generated.h"
@@ -13,7 +12,7 @@
 /// On fire ammo taken straight from ammo provider.
 ///</summary>
 UCLASS()
-class LETSGO_API AGunV2 final : public AActor, public IWeapon, public IGun
+class LETSGO_API AGunV2 final : public AActor, public IGun
 {
 	GENERATED_BODY()
 
@@ -36,7 +35,7 @@ public:
 	void BpOnFireStopped();
 
 	// IGun implementation
-	virtual void OnShotPerformed(const bool isHitted) override;
+	virtual void OnShotPerformed(const bool isAnyBulletDamaged) override;
 
 protected:
 	virtual void Tick(float DeltaSeconds) override;

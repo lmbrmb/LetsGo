@@ -59,7 +59,7 @@ void UHealthComponent::Heal(const float healAmount)
 	ChangeValue(healValue);
 }
 
-void UHealthComponent::Injure(const Damage damage)
+void UHealthComponent::Injure(const Damage& damage)
 {
 	if (IsDead())
 	{

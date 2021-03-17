@@ -1,18 +1,19 @@
 #pragma once
 
 #include "AvatarType.h"
+#include "LetsGo/Data/PlayerId.h"
 
 class AvatarData
 {
 public:
 	explicit AvatarData(
-		const int32 playerId,
+		const PlayerId& playerId,
 		const AvatarType avatarType,
-		const FName skinId, 
-		const FName nickname
+		const FName& skinId, 
+		const FName& nickname
 	);
 
-	int32 GetPlayerId() const;
+	PlayerId GetPlayerId() const;
 
 	AvatarType GetAvatarType() const;
 	
@@ -21,7 +22,7 @@ public:
 	FName GetNickname() const;
 
 private:
-	int32 _playerId;
+	PlayerId _playerId;
 
 	AvatarType _avatarType;
 

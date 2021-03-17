@@ -3,12 +3,13 @@
 #include "GameFramework/Pawn.h"
 
 #include "AvatarType.h"
+#include "LetsGo/Data/PlayerId.h"
 
 #include "Avatar.generated.h"
 
 class AAvatar;
 
-DECLARE_EVENT_OneParam(IGun, EInitialized, const AAvatar* avatar);
+DECLARE_EVENT_OneParam(AAvatar, EAvatarInitialized, const AAvatar* avatar);
 
 ///<summary>
 ///Avatar. Hero. Player representation
@@ -23,18 +24,16 @@ public:
 
 	bool IsInitialized() const;
 	
-	void Init(const int32 playerId, const AvatarType avatarType);
+	void Init(const PlayerId& playerId, const AvatarType avatarType);
 
-	int32 GetPlayerId() const;
+	const PlayerId& GetPlayerId() const;
 
 	AvatarType GetAvatarType() const;
 
-	EInitialized Initialized;
+	EAvatarInitialized Initialized;
 	
 private:
-	static const int32 UNDEFINED_PLAYER_ID;
-	
-	int32 _playerId = UNDEFINED_PLAYER_ID;
+	PlayerId _playerId;
 
 	AvatarType _avatarType;
 };

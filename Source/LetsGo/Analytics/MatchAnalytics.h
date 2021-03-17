@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IDamageMedalProcessor.h"
+#include "IHitMedalProcessor.h"
 #include "DamageEvent.h"
 #include "Medal.h"
 #include "LetsGo/Avatars/Avatar.h"
@@ -25,6 +26,8 @@ private:
 
 	void OnAvatarHealthChanged(const UHealthComponent* healthComponent, const float delta);
 
+	void OnShotPerformed(const PlayerId& instigatorId, const FName& instigatorWeaponId, const bool isHittedPlayer);
+
 	void TryProcessDamage(const UHealthComponent* healthComponent, const float delta);
 	
 	void ProcessDamageEvent(const DamageEvent& damageEvent);
@@ -32,6 +35,8 @@ private:
 	TArray<TFunction<void(const UHealthComponent*, const float)>> _healthProcessors;
 	
 	TArray<IDamageMedalProcessor*> _damageMedalProcessors;
+
+	TArray<IHitMedalProcessor*> _hitMedalProcessors;
 
 	UWorld* _world;
 };

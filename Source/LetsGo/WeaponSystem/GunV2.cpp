@@ -68,9 +68,9 @@ void AGunV2::Reload()
 	// Do nothing
 }
 
-void AGunV2::OnShotPerformed(const bool isHitted)
+void AGunV2::OnShotPerformed(const bool isAnyBulletDamaged)
 {
-	ShotPerformed.Broadcast(this, isHitted);
+	ShotPerformed.Broadcast(this, isAnyBulletDamaged);
 }
 
 USceneComponent* AGunV2::GetFirePivot()

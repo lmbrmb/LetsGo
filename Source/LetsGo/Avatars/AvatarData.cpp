@@ -1,19 +1,21 @@
 #include "AvatarData.h"
 
+#include "LetsGo/Data/PlayerId.h"
+
 AvatarData::AvatarData(
-	const int32 playerId,
+	const PlayerId& playerId,
 	const AvatarType avatarType,
-	const FName skinId,
-	const FName nickName
+	const FName& skinId,
+	const FName& nickname
 ) :
 	_playerId(playerId),
 	_avatarType(avatarType),
 	_skinId(skinId),
-	_nickname(nickName)
+	_nickname(nickname)
 {
 }
 
-int32 AvatarData::GetPlayerId() const
+PlayerId AvatarData::GetPlayerId() const
 {
 	return _playerId;
 }

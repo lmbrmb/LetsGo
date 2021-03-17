@@ -1,8 +1,7 @@
 #pragma once
 
 #include "FirePivotMode.h"
-#include "Weapon.h"
-#include "Gun.h"
+#include "IGun.h"
 #include "GunState.h"
 
 #include "GunV1.generated.h"
@@ -13,14 +12,14 @@
 /// Reloading fills clip, bullets are taken from ammo provider.
 ///</summary>
 UCLASS()
-class LETSGO_API AGunV1 final : public AActor, public IWeapon, public IGun
+class LETSGO_API AGunV1 final : public AActor, public IGun
 {
 	GENERATED_BODY()
 
 public:
 	AGunV1();
 
-	virtual void OnShotPerformed(const bool isHitted) override;
+	virtual void OnShotPerformed(const bool isAnyBulletDamaged) override;
 	
 	// IGun implementation
 	virtual void StartFire() override;

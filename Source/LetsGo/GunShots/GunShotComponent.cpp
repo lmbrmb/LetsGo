@@ -10,9 +10,9 @@ void UGunShotComponent::SetWeaponId(const FName& weaponId)
 	WeaponId = weaponId;
 }
 
-void UGunShotComponent::SetPlayerId(const int32 instigatorId)
+void UGunShotComponent::SetPlayerId(const PlayerId& instigatorId)
 {
-	PlayerId = instigatorId;
+	InstigatorId = instigatorId;
 }
 
 void UGunShotComponent::SetAimProvider(USceneComponent* aimProvider)

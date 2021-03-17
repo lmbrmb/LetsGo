@@ -7,7 +7,7 @@ bool FirstBloodMedalProcessor::ProcessDamageEvent(const DamageEvent& damageEvent
 		return false;
 	}
 
-	auto const isDead = damageEvent.DamagedPlayerHealth <= 0;
+	auto const isDead = damageEvent.GetDamagedPlayerHealth() <= 0;
 
 	if(!isDead)
 	{
@@ -16,8 +16,8 @@ bool FirstBloodMedalProcessor::ProcessDamageEvent(const DamageEvent& damageEvent
 	
 	_isHappened = true;
 
-	outMedal.PlayerId = damageEvent.InstigatorPlayerId;
-	outMedal.MedalType = FMedalType::FirstBlood;
+	const Medal firstBloodMedal(damageEvent.GetInstigatorPlayerId(), FMedalType::FirstBlood);
+	outMedal = firstBloodMedal;
 	
 	return true;
 }

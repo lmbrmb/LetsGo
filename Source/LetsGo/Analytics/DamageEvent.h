@@ -1,30 +1,39 @@
 #pragma once
 
+#include "LetsGo/Data/PlayerId.h"
+
+/// <summary>
+/// Analytics damage event. Immutable
+/// </summary>
 struct DamageEvent
 {
 public:
 	DamageEvent(
 		const float time,
-		const int32 instigatorPlayerId,
+		const PlayerId& instigatorPlayerId,
 		const FName& instigatorWeaponId,
-		const int32 damagedPlayerId,
+		const PlayerId& damagedPlayerId,
 		const float damagedPlayerHealth
-	):
-		Time(time),
-		InstigatorPlayerId(instigatorPlayerId),
-		InstigatorWeaponId(instigatorWeaponId),
-		DamagedPlayerId(damagedPlayerId),
-		DamagedPlayerHealth(damagedPlayerHealth)
-	{
-	};
+	);
 
-	const float Time;
+	float GetTime() const;
+
+	const PlayerId& GetInstigatorPlayerId() const;
+
+	const FName& GetInstigatorWeaponId() const;
+
+	const PlayerId& GetDamagedPlayerId() const;
+
+	float GetDamagedPlayerHealth() const;
+
+private:
+	float _time;
 	
-	const int32 InstigatorPlayerId;
+	PlayerId _instigatorPlayerId;
 
-	const FName InstigatorWeaponId;
+	FName _instigatorWeaponId;
 	
-	const int32 DamagedPlayerId;
+	PlayerId _damagedPlayerId;
 
-	const float DamagedPlayerHealth;
+	float _damagedPlayerHealth;
 };

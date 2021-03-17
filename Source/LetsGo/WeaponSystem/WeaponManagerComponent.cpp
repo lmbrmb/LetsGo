@@ -1,6 +1,6 @@
 #include "WeaponManagerComponent.h"
 
-#include "Weapon.h"
+#include "IWeapon.h"
 #include "LetsGo/GameModes/MatchGameMode.h"
 #include "LetsGo/Items/Item.h"
 #include "LetsGo/Items/AmmoItem.h"
@@ -141,7 +141,7 @@ void UWeaponManagerComponent::SetAimProvider(USceneComponent* aimProvider)
 	OnPartialInitialization();
 }
 
-void UWeaponManagerComponent::SetPlayerId(const int32 playerId)
+void UWeaponManagerComponent::SetPlayerId(const PlayerId& playerId)
 {
 	_playerId = playerId;
 	OnPartialInitialization();
@@ -196,7 +196,7 @@ void UWeaponManagerComponent::EquipWeapon(const int weaponIndex)
 	_weaponActor = _weaponActors[_weaponIndex];
 
 	// Refresh all known weapons
-	_gun = Cast<IGun>(_weaponActor);
+	_gun = dynamic_cast<IGun*>(_weaponActor);
 	
 	ActorUtils::SetEnabled(_weaponActor, true);
 
@@ -230,9 +230,8 @@ bool UWeaponManagerComponent::TryProcessItemAsGun(Item* item)
 
 	// Can carry only one gun of type
 	// Add ammo if already have this gun
-	for (auto weaponActor : _weaponActors)
+	for (auto weapon : _weapons)
 	{
-		auto const weapon = Cast<IWeapon>(weaponActor);
 		if(weapon->GetId() == gunItem->GetId())
 		{
 			auto const ammoId = gunItem->GetAmmoId();
@@ -241,14 +240,18 @@ bool UWeaponManagerComponent::TryProcessItemAsGun(Item* item)
 		}
 	}
 
-	auto const gun = CreateGun(gunItem);
+	auto const gunActor = CreateGun(gunItem);
 
-	if(!gun)
+	if(!gunActor)
 	{
 		return false;
 	}
+
+	// No null check, CreateGun already checked that created gun is IGun
+	auto const gun = dynamic_cast<IGun*>(gunActor);
+	_weapons.Add(gun);
 	
-	auto const weaponIndex = _weaponActors.Add(gun);
+	auto const weaponIndex = _weaponActors.Add(gunActor);
 
 	if (_shouldEquipWeaponOnPickup)
 	{
@@ -256,7 +259,7 @@ bool UWeaponManagerComponent::TryProcessItemAsGun(Item* item)
 	}
 	else
 	{
-		ActorUtils::SetEnabled(gun, false);
+		ActorUtils::SetEnabled(gunActor, false);
 	}
 	
 	return true;
@@ -303,7 +306,7 @@ AmmoProvider* UWeaponManagerComponent::GetAmmoProvider(const FName ammoId)
 AmmoProvider* UWeaponManagerComponent::CreateAmmoProvider(const GunItem* gunItem)
 {
 	auto const ammoId = gunItem->GetAmmoId();
-	auto const ammoItem = static_cast<AmmoItem*>(_ammoItemFactory->Get(ammoId));
+	auto const ammoItem = _ammoItemFactory->Get(ammoId);
 	auto const maxAmmo = ammoItem->GetMaxQuantity();
 	auto const currentAmmo = gunItem->GetInitialAmmoCount();
 	auto const ammoProvider = new AmmoProvider(0, maxAmmo, currentAmmo);
@@ -337,18 +340,8 @@ AActor* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 		DevLogger::GetLoggingChannel()->LogValue("Weapon blueprint is not spawned. Gun item id:", gunItem->GetId());
 		return nullptr;
 	}
-
-	auto const weapon = Cast<IWeapon>(weaponActor);
-	if (!weapon)
-	{
-		DevLogger::GetLoggingChannel()->LogValue( "IWeapon is null. Gun item id:", gunItem->GetId());
-		weaponActor->Destroy();
-		return nullptr;
-	}
 	
-	weapon->InitializeWeapon(gunId, _playerId);
-	
-	auto const gun = Cast<IGun>(weapon);
+	auto const gun = dynamic_cast<IGun*>(weaponActor);
 
 	if (!gun)
 	{
@@ -356,6 +349,8 @@ AActor* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 		weaponActor->Destroy();
 		return nullptr;
 	}
+
+	gun->InitializeWeapon(gunId, _playerId);
 	
 	auto const ammoId = gunItem->GetAmmoId();
 	auto ammoProvider = GetAmmoProvider(ammoId);
@@ -388,7 +383,7 @@ void UWeaponManagerComponent::OnPartialInitialization()
 		return;
 	}
 	
-	if(_aimProvider == nullptr || _weaponPivot == nullptr || _playerId == UNDEFINED_INDEX)
+	if(_aimProvider == nullptr || _weaponPivot == nullptr || !_playerId.IsValid())
 	{
 		return;
 	}
@@ -404,7 +399,10 @@ void UWeaponManagerComponent::CreateStartWeapon()
 	TryProcessItemAsGun(startingWeaponItem);
 }
 
-void UWeaponManagerComponent::OnGunShotPerformed(const IGun* gun, const bool isHitted)
+void UWeaponManagerComponent::OnGunShotPerformed(const IGun* gun, const bool isAnyBulletDamaged)
 {
-	BpOnGunShotPerformed(isHitted);
+	BpOnGunShotPerformed(isAnyBulletDamaged);
+
+	//TODO: gun id
+	ShotPerformed.Broadcast(gun->GetPlayerId(), gun->GetId(), isAnyBulletDamaged);
 }

@@ -2,8 +2,7 @@
 
 #include "MappingComponent.h"
 #include "LetsGo/GunShots/GunShotComponent.h"
-#include "LetsGo/WeaponSystem/Weapon.h"
-
+#include "LetsGo/WeaponSystem/IGun.h"
 
 #include "GunShotToGunMapping.generated.h"
 
@@ -17,9 +16,11 @@ protected:
 
 private:
 	IGun* _gun;
-	
+
+	AActor* _gunActor;
+
 	UGunShotComponent* _gunShotComponent;
-	
+
 	void OnWeaponInitialized(IWeapon* weapon);
 
 	void OnGunInitialized(IGun* gun);

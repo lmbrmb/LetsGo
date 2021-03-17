@@ -1,7 +1,7 @@
 #include "AnnouncementToPlayerMapping.h"
 
 #include "GameFramework/PlayerState.h"
-#include "LetsGo/AnnouncementManagerComponent.h"
+#include "LetsGo/Announcements/AnnouncementManagerComponent.h"
 #include "LetsGo/PlayerControllers/MatchPlayerController.h"
 #include "LetsGo/Utils/AssertUtils.h"
 
@@ -17,8 +17,8 @@ void UAnnouncementToPlayerMapping::Map()
 
 	auto const playerState = matchPlayerController->GetPlayerState<APlayerState>();
 	AssertIsNotNull(playerState);
-	
-	auto const playerId =playerState->GetPlayerId();
+
+	auto const playerId = PlayerId(playerState->GetPlayerId());
 	announcementManagerComponent->SetPlayerId(playerId);
 	StartDestroyTask();
 }

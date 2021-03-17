@@ -13,16 +13,16 @@ AvatarDataFactory::AvatarDataFactory(INicknameGenerator* nicknameGenerator) :
 
 // ReSharper disable once CppMemberFunctionMayBeStatic
 AvatarData* AvatarDataFactory::Create(
-	const int32 playerId, 
+	const PlayerId& playerId, 
 	const AvatarType avatarType, 
-	const FName skinId,
-	const FName nickname
+	const FName& skinId,
+	const FName& nickname
 )
 {
 	return new AvatarData(playerId, avatarType, skinId, nickname);
 }
 
-AvatarData* AvatarDataFactory::GenerateRandom(const int32 playerId, const AvatarType avatarType)
+AvatarData* AvatarDataFactory::GenerateRandom(const PlayerId& playerId, const AvatarType avatarType)
 {
 	auto const skinId = GetRandomSkinId();
 	auto const nickname = _nicknameGenerator->Generate();

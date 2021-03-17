@@ -6,20 +6,20 @@ UAnnouncementManagerComponent::UAnnouncementManagerComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UAnnouncementManagerComponent::SetPlayerId(int32 playerId)
+void UAnnouncementManagerComponent::SetPlayerId(const PlayerId& playerId)
 {
 	_playerId = playerId;
 }
 
 void UAnnouncementManagerComponent::OnMedalAchieved(const Medal& medal)
 {
-	if(medal.PlayerId != _playerId)
+	if(medal.GetPlayerId() != _playerId)
 	{
 		return;
 	}
 	
 	auto const queueWasEmpty = _medalsToAnnounce.IsEmpty();
-	_medalsToAnnounce.Enqueue(medal.MedalType);
+	_medalsToAnnounce.Enqueue(medal.GetMedalType());
 	
 	if (!queueWasEmpty)
 	{

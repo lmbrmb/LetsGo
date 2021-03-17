@@ -3,7 +3,6 @@
 #include "GameFramework/GameModeBase.h"
 
 #include "LetsGo/Avatars/AvatarData.h"
-#include "LetsGo/AssetFactories/AvatarFactory.h"
 #include "Misc/TypeContainer.h"
 #include "LetsGo/Analytics/MatchAnalytics.h"
 #include "LetsGo/Avatars/AvatarDataFactory.h"
@@ -74,7 +73,8 @@ private:
 	
 	AvatarDataFactory* _avatarDataFactory;
 
-	TQueue<int32> _respawnQueue;
+	// PlayerId value
+	TQueue<int> _respawnQueue;
 
 	TQueue<AActor*> _destroyQueue;
 

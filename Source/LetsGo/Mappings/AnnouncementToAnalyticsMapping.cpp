@@ -1,6 +1,6 @@
 #include "AnnouncementToAnalyticsMapping.h"
 
-#include "LetsGo/AnnouncementManagerComponent.h"
+#include "LetsGo/Announcements/AnnouncementManagerComponent.h"
 #include "LetsGo/GameModes/MatchGameMode.h"
 #include "LetsGo/Utils/AssertUtils.h"
 

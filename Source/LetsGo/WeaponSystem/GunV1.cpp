@@ -5,9 +5,9 @@ AGunV1::AGunV1()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void AGunV1::OnShotPerformed(const bool isHitted)
+void AGunV1::OnShotPerformed(const bool isAnyBulletDamaged)
 {
-	ShotPerformed.Broadcast(this, isHitted);
+	ShotPerformed.Broadcast(this, isAnyBulletDamaged);
 }
 
 void AGunV1::BeginPlay()

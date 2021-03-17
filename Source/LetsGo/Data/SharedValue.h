@@ -1,8 +1,12 @@
 #pragma once
 
-#include "Utils/AssertUtils.h"
-#include "Utils/MathUtils.h"
+#include "LetsGo/Utils/AssertUtils.h"
+#include "LetsGo/Utils/MathUtils.h"
 
+/// <summary>
+/// Generic shared value. Notifies if changed. Mutable
+/// </summary>
+/// <typeparam name="T">Value type</typeparam>
 template<class T>
 class SharedValue
 {

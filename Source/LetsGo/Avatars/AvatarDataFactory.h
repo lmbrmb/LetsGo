@@ -12,13 +12,13 @@ public:
 	AvatarDataFactory(INicknameGenerator* nicknameGenerator);
 
 	AvatarData* Create(
-		const int32 playerId,
+		const PlayerId& playerId,
 		const AvatarType avatarType,
-		const FName skinId,
-		const FName nickname
+		const FName& skinId,
+		const FName& nickname
 	);
 	
-	AvatarData* GenerateRandom(int32 playerId, AvatarType avatarType);
+	AvatarData* GenerateRandom(const PlayerId& playerId, AvatarType avatarType);
 
 private:
 	TArray<FName> _avatarSkinIds;

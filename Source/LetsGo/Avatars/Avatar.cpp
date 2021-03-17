@@ -1,6 +1,6 @@
 #include "Avatar.h"
 
-const int32 AAvatar::UNDEFINED_PLAYER_ID = MIN_int32;
+#include "LetsGo/Data/PlayerId.h"
 
 AAvatar::AAvatar()
 {
@@ -9,17 +9,17 @@ AAvatar::AAvatar()
 
 bool AAvatar::IsInitialized() const
 {
-	return _playerId != UNDEFINED_PLAYER_ID;
+	return _playerId.IsValid();
 }
 
-void AAvatar::Init(const int32 playerId, const AvatarType avatarType)
+void AAvatar::Init(const PlayerId& playerId, const AvatarType avatarType)
 {
 	_playerId = playerId;
 	_avatarType = avatarType;
 	Initialized.Broadcast(this);
 }
 
-int32 AAvatar::GetPlayerId() const
+const PlayerId& AAvatar::GetPlayerId() const
 {
 	return _playerId;
 }

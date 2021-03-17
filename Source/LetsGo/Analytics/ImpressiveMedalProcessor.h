@@ -1,22 +1,25 @@
 #pragma once
 
 #include "IDamageMedalProcessor.h"
+#include "IHitMedalProcessor.h"
 
 /// <summary>
 /// Impressive medal processor.
 /// Conditions: Player got 2 consequent railgun hits. Hit count resets on player death
 /// </summary>
-class ImpressiveMedalProcessor final : public IDamageMedalProcessor
+class ImpressiveMedalProcessor final : public IDamageMedalProcessor, public IHitMedalProcessor
 {
 public:
-	ImpressiveMedalProcessor() = default;
+	ImpressiveMedalProcessor(const int requiredHitCount, const FName& weaponId);
 	
 	virtual bool ProcessDamageEvent(const DamageEvent& damageEvent, Medal& outMedal) override;
 
-private:
-	static const int REQUIRED_HIT_COUNT;
+	virtual bool ProcessHitEvent(const HitEvent& hitEvent, Medal& outMedal) override;
 
-	static const FName RAILGUN_ID;
+private:
+	int _requiredHitCount;
+
+	FName _weaponId;
 	
-	TMap<int32, int> _playerRailgunHitCount;
+	TMap<int, int> _playerRailgunHitCount;
 };

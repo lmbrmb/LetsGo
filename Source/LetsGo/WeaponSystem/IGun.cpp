@@ -1,4 +1,4 @@
-#include "Gun.h"
+#include "IGun.h"
 
 AmmoProvider* IGun::GetAmmoProvider() const
 {

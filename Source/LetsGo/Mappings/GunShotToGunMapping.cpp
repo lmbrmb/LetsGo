@@ -2,35 +2,31 @@
 
 #include "LetsGo/GunShots/GunShotComponent.h"
 #include "LetsGo/Utils/AssertUtils.h"
-#include "LetsGo/WeaponSystem/Gun.h"
+#include "LetsGo/WeaponSystem/IGun.h"
 #include "LetsGo/WeaponSystem/GunV1.h"
 #include "LetsGo/WeaponSystem/GunV2.h"
-#include "LetsGo/WeaponSystem/Weapon.h"
 
 void UGunShotToGunMapping::Map()
 {
 	auto const owner = GetOwner();
 
-	auto const weapon = Cast<IWeapon>(owner);
-	AssertIsNotNull(weapon);
-
-	auto const gun = Cast<IGun>(owner);
+	auto gun = dynamic_cast<IGun*>(owner);
 	AssertIsNotNull(gun);
 
 	auto const gunShotComponent = owner->FindComponentByClass<UGunShotComponent>();
 	AssertIsNotNull(gunShotComponent);
 
 	_gunShotComponent = gunShotComponent;
-
+	_gunActor = owner;
 	_gun = gun;
 	
-	if(weapon->IsWeaponInitialized())
+	if(gun->IsWeaponInitialized())
 	{
-		OnWeaponInitialized(weapon);
+		OnWeaponInitialized(gun);
 	}
 	else
 	{
-		weapon->WeaponInitialized.AddUObject(this, &UGunShotToGunMapping::OnWeaponInitialized);
+		gun->WeaponInitialized.AddUObject(this, &UGunShotToGunMapping::OnWeaponInitialized);
 	}
 
 	if(gun->IsGunInitialized())
@@ -79,14 +75,14 @@ void UGunShotToGunMapping::BindOnShotPerformed() const
 	// _gunShotComponent->ShotPerformed.AddUObject(_gun, &IGun::OnShotPerformed);
 	// Error: "You cannot use UObject method delegates with raw pointers"
 	
-	auto const gunV1 = Cast<AGunV1>(_gun);
+	auto const gunV1 = Cast<AGunV1>(_gunActor);
 	if (gunV1)
 	{
 		_gunShotComponent->ShotPerformed.AddUObject(gunV1, &AGunV1::OnShotPerformed);
 		return;
 	}
 	
-	auto const gunV2 = Cast<AGunV2>(_gun);
+	auto const gunV2 = Cast<AGunV2>(_gunActor);
 	if(gunV2)
 	{
 		_gunShotComponent->ShotPerformed.AddUObject(gunV2, &AGunV2::OnShotPerformed);

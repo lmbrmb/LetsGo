@@ -2,14 +2,21 @@
 
 #include "MedalType.h"
 
+#include "LetsGo/Data/PlayerId.h"
+
 class Medal
 {
 public:
 	Medal();
 	
-	explicit Medal(const int32 playerId, const FMedalType medalType);
+	explicit Medal(const PlayerId& playerId, const FMedalType medalType);
 
-	int32 PlayerId;
+	const PlayerId& GetPlayerId() const;
 
-	FMedalType MedalType;
+	FMedalType GetMedalType() const;
+
+private:
+	PlayerId _playerId;
+
+	FMedalType _medalType;
 };

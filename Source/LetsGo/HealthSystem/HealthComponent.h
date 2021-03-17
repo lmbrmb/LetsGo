@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Damage.h"
+#include "LetsGo/Data/Damage.h"
 #include "LetsGo/FloatParameterComponent.h"
 
 #include "HealthComponent.generated.h"
@@ -23,7 +23,7 @@ public:
 	
 	void Heal(const float healAmount);
 
-	void Injure(const Damage damage);
+	void Injure(const Damage& damage);
 	
 	void Kill();
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LetsGo/SharedValue.h"
+#include "LetsGo/Data/SharedValue.h"
 
 class AmmoProvider : public SharedValue<int>
 {

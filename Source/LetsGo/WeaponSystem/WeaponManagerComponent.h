@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Components/ActorComponent.h"
-#include "Gun.h"
+#include "IGun.h"
 #include "LetsGo/AssetFactories/GunFactory.h"
 #include "AmmoProvider.h"
 #include "LetsGo/Items/AmmoItem.h"
@@ -12,6 +12,8 @@
 #include "LetsGo/Items/Item.h"
 
 #include "WeaponManagerComponent.generated.h"
+
+DECLARE_EVENT_ThreeParams(UWeaponManagerComponent, EShotPerformed_UWeaponManagerComponent, const PlayerId& playerId, const FName& gunId, const bool isAnyBulletDamaged);
 
 UCLASS(ClassGroup = (Custom), Blueprintable, meta = (BlueprintSpawnableComponent))
 class LETSGO_API UWeaponManagerComponent final : public UActorComponent, public IItemProcessor
@@ -41,12 +43,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetAimProvider(USceneComponent* aimProvider);
 
-	void SetPlayerId(const int32 playerId);
+	void SetPlayerId(const PlayerId& playerId);
 	
 	virtual bool TryProcessItem(Item* item) override;
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void BpOnGunShotPerformed(const bool isHitted);
+	void BpOnGunShotPerformed(const bool isAnyBulletDamaged);
+
+	EShotPerformed_UWeaponManagerComponent ShotPerformed;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -64,7 +68,7 @@ private:
 
 	bool _isFireStarted;
 	
-	int32 _playerId = UNDEFINED_INDEX;
+	PlayerId _playerId;
 
 	USceneComponent* _aimProvider;
 
@@ -79,6 +83,8 @@ private:
 	GunFactory* _gunFactory;
 
 	AmmoItemFactory* _ammoItemFactory;
+
+	TArray<IWeapon*> _weapons;
 	
 	TArray<AActor*> _weaponActors;
 
@@ -113,5 +119,5 @@ private:
 
 	void CreateStartWeapon();
 
-	void OnGunShotPerformed(const IGun* gun, const bool isHitted);
+	void OnGunShotPerformed(const IGun* gun, const bool isAnyBulletDamaged);
 };

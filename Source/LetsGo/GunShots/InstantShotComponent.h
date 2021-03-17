@@ -22,7 +22,7 @@ protected:
 	void BpOnShotPerformed(const USceneComponent* firePivot);
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void BpOnBullet(const FHitResult hitResult);
+	void BpOnBullet(const bool isDamaged, const FHitResult hitResult);
 	
 private:
 	FHitResult _hitResult;
@@ -53,7 +53,7 @@ private:
 		const USceneComponent* firePivot,
 		const FVector& targetAimLocation,
 		const float dispersionByDistance,
-		bool& isHitted
+		bool& isAnyBulletDamaged
 	);
 
 	FVector GetBulletDirection(
@@ -66,7 +66,7 @@ private:
 	void TraceBullet(
 		const FVector& rayStartLocation,
 		FVector& rayEndLocation,
-		bool& isHitted
+		bool& isAnyBulletDamaged
 	);
 	
 	float GetBulletDamage() const;

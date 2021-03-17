@@ -1,10 +1,11 @@
 #pragma once
 
 #include "Components/ActorComponent.h"
+#include "LetsGo/Data/PlayerId.h"
 
 #include "GunShotComponent.generated.h"
 
-DECLARE_EVENT_OneParam(UGunShotComponent, EShotPerformed_UGunShotComponent, const bool isHitted);
+DECLARE_EVENT_OneParam(UGunShotComponent, EShotPerformed_GunShot, const bool isAnyBulletDamaged);
 
 ///<summary>
 ///Gun shot base component
@@ -17,11 +18,11 @@ class LETSGO_API UGunShotComponent : public UActorComponent
 public:	
 	UGunShotComponent();
 
-	EShotPerformed_UGunShotComponent ShotPerformed;
+	EShotPerformed_GunShot ShotPerformed;
 	
 	void SetWeaponId(const FName& weaponId);
 	
-	void SetPlayerId(const int32 instigatorId);
+	void SetPlayerId(const PlayerId& instigatorId);
 	
 	void SetAimProvider(USceneComponent* aimProvider);
 
@@ -30,7 +31,7 @@ public:
 protected:
 	FName WeaponId;
 
-	int32 PlayerId;
+	PlayerId InstigatorId;
 
 	USceneComponent* AimProvider = nullptr;
 };
