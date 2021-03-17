@@ -14,19 +14,18 @@ class LETSGO_API UHealthWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
-public:
+protected:
 	UFUNCTION(BlueprintCallable)
 	UHealthComponent* GetHealthComponent();
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnAvatarChanged();
-	
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnAvatarHealthChanged();
-	
-protected:
+
 	virtual void NativeConstruct() override;
-	
+
 private:
 	void OnAvatarChanged(const AAvatar* avatar);
 	

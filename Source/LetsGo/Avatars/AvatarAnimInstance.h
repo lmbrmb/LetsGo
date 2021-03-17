@@ -24,7 +24,7 @@ class LETSGO_API UAvatarAnimInstance final : public UAnimInstance
 {
 	GENERATED_BODY()
 
-public:
+protected:
 	UFUNCTION(BlueprintCallable)
 	UHealthComponent* GetHealthComponent();
 
@@ -33,10 +33,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnAvatarDied();
-	
-protected:
+
 	virtual void NativeBeginPlay() override;
-	
+
 private:
 	UHealthComponent* _healthComponent = nullptr;
 	

@@ -20,10 +20,11 @@ public:
 
 	void SetPlayerId(const PlayerId& playerId);
 	
+	void OnMedalAchieved(const Medal& medal);
+
+protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnAnnounceMedal(const FMedalType medalType);
-	
-	void OnMedalAchieved(const Medal& medal);
 	
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))

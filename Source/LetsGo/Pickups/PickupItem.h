@@ -27,6 +27,7 @@ public:
 
 	Taken Taken;
 
+protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnTaken();
 	

@@ -49,14 +49,17 @@ public:
 	
 	virtual bool TryProcessItem(Item* item) override;
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void BpOnGunShotPerformed(const bool isAnyBulletDamaged);
-
 	EShotPerformed_UWeaponManagerComponent ShotPerformed;
 	
 protected:
 	virtual void BeginPlay() override;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpOnGunShotPerformed(const bool isAnyBulletDamaged);
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpOnWeaponChanged();
+	
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
 	FName _startWeaponId;

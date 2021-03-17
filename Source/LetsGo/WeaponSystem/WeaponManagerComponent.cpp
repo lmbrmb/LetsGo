@@ -114,7 +114,13 @@ void UWeaponManagerComponent::ChangeWeapon(const int indexModifier)
 		nextIndex = weaponsCount - 1;
 	}
 
+	if (_weaponIndex == nextIndex)
+	{
+		return;
+	}
+
 	EquipWeapon(nextIndex);
+	BpOnWeaponChanged();
 }
 
 void UWeaponManagerComponent::AddWeaponPivot(USceneComponent* weaponPivot)

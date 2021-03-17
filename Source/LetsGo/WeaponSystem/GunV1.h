@@ -30,12 +30,13 @@ public:
 	// IGun implementation
 	virtual void Reload() override;
 
+protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnFireStarted();
-	
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnFireStopped();
-	
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnReloadStarted();
 
@@ -45,11 +46,10 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnAmmoLoaded();
 
-protected:
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaSeconds) override;
-	
+
 private:
 	const int UNDEFINED_TIME = -1.0f;
 	

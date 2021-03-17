@@ -28,18 +28,18 @@ public:
 	// IGun implementation
 	virtual void Reload() override;
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void BpOnFireStarted();
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void BpOnFireStopped();
-
 	// IGun implementation
 	virtual void OnShotPerformed(const bool isAnyBulletDamaged) override;
 
 protected:
 	virtual void Tick(float DeltaSeconds) override;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpOnFireStarted();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpOnFireStopped();
+	
 private:
 	const int UNDEFINED_TIME = -1.0f;
 	
