@@ -232,7 +232,7 @@ bool UWeaponManagerComponent::TryProcessItemAsGun(Item* item)
 	// Add ammo if already have this gun
 	for (auto weapon : _weapons)
 	{
-		if(weapon->GetId() == gunItem->GetId())
+		if(weapon->GetWeaponId().GetId() == gunItem->GetId())
 		{
 			auto const ammoId = gunItem->GetAmmoId();
 			auto const ammoItem = _ammoItemFactory->Get(ammoId);
@@ -326,8 +326,8 @@ AmmoProvider* UWeaponManagerComponent::CreateAmmoProvider(const AmmoItem* ammoIt
 
 AActor* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 {
-	auto const gunId = gunItem->GetId();
-	auto const gunBlueprintGeneratedClass = _gunFactory->GetOrLoad(gunId);
+	auto const gunItemId = gunItem->GetId();
+	auto const gunBlueprintGeneratedClass = _gunFactory->GetOrLoad(gunItemId);
 	
 	if(!gunBlueprintGeneratedClass)
 	{
@@ -350,7 +350,8 @@ AActor* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 		return nullptr;
 	}
 
-	gun->InitializeWeapon(gunId, _playerId);
+	const WeaponId weaponId(gunItemId);
+	gun->InitializeWeapon(weaponId, _playerId);
 	
 	auto const ammoId = gunItem->GetAmmoId();
 	auto ammoProvider = GetAmmoProvider(ammoId);
@@ -403,6 +404,5 @@ void UWeaponManagerComponent::OnGunShotPerformed(const IGun* gun, const bool isA
 {
 	BpOnGunShotPerformed(isAnyBulletDamaged);
 
-	//TODO: gun id
-	ShotPerformed.Broadcast(gun->GetPlayerId(), gun->GetId(), isAnyBulletDamaged);
+	ShotPerformed.Broadcast(gun->GetPlayerId(), gun->GetWeaponId(), isAnyBulletDamaged);
 }

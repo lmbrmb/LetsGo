@@ -1,36 +1,34 @@
 #include "Damage.h"
 
 Damage::Damage():
-	_weaponId(""),
 	_amount(0)
 {
 }
 
 Damage::Damage(const float amount):
-	_weaponId(""),
 	_amount(amount)
 {
 }
 
 Damage::Damage(
-	const PlayerId& instigatorId,
-	const FName& weaponId,
+	const PlayerId& instigatorPlayerId,
+	const WeaponId& instigatorWeaponId,
 	const float amount
 ) :
-	_instigatorId(instigatorId),
-	_weaponId(weaponId),
+	_instigatorPlayerId(instigatorPlayerId),
+	_instigatorWeaponId(instigatorWeaponId),
 	_amount(amount)
 {
 }
 
-const PlayerId& Damage::GetInstigatorId() const
+const PlayerId& Damage::GetInstigatorPlayerId() const
 {
-	return _instigatorId;
+	return _instigatorPlayerId;
 }
 
-const FName& Damage::GetWeaponId() const
+const WeaponId& Damage::GetInstigatorWeaponId() const
 {
-	return _weaponId;
+	return _instigatorWeaponId;
 }
 
 float Damage::GetAmount() const

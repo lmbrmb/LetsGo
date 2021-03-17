@@ -2,6 +2,7 @@
 
 #include "Components/ActorComponent.h"
 #include "LetsGo/Data/PlayerId.h"
+#include "LetsGo/Data/WeaponId.h"
 
 #include "GunShotComponent.generated.h"
 
@@ -20,7 +21,7 @@ public:
 
 	EShotPerformed_GunShot ShotPerformed;
 	
-	void SetWeaponId(const FName& weaponId);
+	void SetWeaponId(const WeaponId& weaponId);
 	
 	void SetPlayerId(const PlayerId& instigatorId);
 	
@@ -29,9 +30,9 @@ public:
 	virtual void OnShotRequested(const USceneComponent* firePivot) {};
 	
 protected:
-	FName WeaponId;
+	WeaponId InstigatorWeaponId;
 
-	PlayerId InstigatorId;
+	PlayerId InstigatorPlayerId;
 
 	USceneComponent* AimProvider = nullptr;
 };

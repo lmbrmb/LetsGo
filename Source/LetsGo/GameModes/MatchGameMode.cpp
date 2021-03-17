@@ -4,7 +4,7 @@
 #include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
-#include "LetsGo/MatchDependencyInjectionContainerFactory.h"
+#include "LetsGo/DiContainers/MatchDiContainerFactory.h"
 #include "LetsGo/Utils/ActorUtils.h"
 #include "LetsGo/Utils/AssertUtils.h"
 
@@ -24,7 +24,7 @@ void AMatchGameMode::InitGame(const FString& MapName, const FString& Options, FS
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
 	
-	MatchDependencyInjectionContainerFactory containerFactory;
+	MatchDiContainerFactory containerFactory;
 	_diContainer = containerFactory.CreateContainer<ESPMode::Fast>();
 
 	auto const avatarDataFactory = GetDiContainer()->GetInstance<AvatarDataFactory>();

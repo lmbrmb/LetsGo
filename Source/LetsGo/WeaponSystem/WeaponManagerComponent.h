@@ -4,6 +4,8 @@
 #include "IGun.h"
 #include "LetsGo/AssetFactories/GunFactory.h"
 #include "AmmoProvider.h"
+#include "LetsGo/Data/PlayerId.h"
+#include "LetsGo/Data/WeaponId.h"
 #include "LetsGo/Items/AmmoItem.h"
 #include "LetsGo/Items/AmmoItemFactory.h"
 #include "LetsGo/Items/GunItem.h"
@@ -13,7 +15,7 @@
 
 #include "WeaponManagerComponent.generated.h"
 
-DECLARE_EVENT_ThreeParams(UWeaponManagerComponent, EShotPerformed_UWeaponManagerComponent, const PlayerId& playerId, const FName& gunId, const bool isAnyBulletDamaged);
+DECLARE_EVENT_ThreeParams(UWeaponManagerComponent, EShotPerformed_UWeaponManagerComponent, const PlayerId& playerId, const WeaponId& gunId, const bool isAnyBulletDamaged);
 
 UCLASS(ClassGroup = (Custom), Blueprintable, meta = (BlueprintSpawnableComponent))
 class LETSGO_API UWeaponManagerComponent final : public UActorComponent, public IItemProcessor

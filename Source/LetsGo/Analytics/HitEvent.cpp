@@ -3,8 +3,8 @@
 HitEvent::HitEvent(
 	const float time,
 	const bool isHittedPlayer,
-	const PlayerId instigatorPlayerId,
-	const FName& instigatorWeaponId
+	const PlayerId& instigatorPlayerId,
+	const WeaponId& instigatorWeaponId
 ) :
 	_time(time),
 	_isHittedPlayer(isHittedPlayer),
@@ -28,7 +28,7 @@ const PlayerId& HitEvent::GetInstigatorPlayerId() const
 	return _instigatorPlayerId;
 }
 
-const FName& HitEvent::GetInstigatorWeaponId() const
+const WeaponId& HitEvent::GetInstigatorWeaponId() const
 {
 	return _instigatorWeaponId;
 };

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "LetsGo/Data/PlayerId.h"
+#include "LetsGo/Data/WeaponId.h"
 
 class IWeapon;
 
@@ -17,14 +18,14 @@ public:
 	
 	bool IsWeaponInitialized() const;
 
-	void InitializeWeapon(const FName& id, const PlayerId& playerId);
+	void InitializeWeapon(const WeaponId& id, const PlayerId& playerId);
 
-	FName GetId() const;
+	const WeaponId& GetWeaponId() const;
 
 	const PlayerId& GetPlayerId() const;
 	
 private:
-	FName _id;
+	WeaponId _id;
 
 	PlayerId _playerId;
 	

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "LetsGo/Data/Damage.h"
-#include "LetsGo/FloatParameterComponent.h"
+#include "LetsGo/Data/FloatParameterComponent.h"
 
 #include "HealthComponent.generated.h"
 

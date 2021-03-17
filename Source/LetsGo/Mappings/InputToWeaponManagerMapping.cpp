@@ -1,5 +1,6 @@
 #include "InputToWeaponManagerMapping.h"
-#include "LetsGo/InputConstant.h"
+
+#include "LetsGo/Input/InputConstant.h"
 #include "LetsGo/Utils/InputUtils.h"
 
 void UInputToWeaponManagerMapping::Map()

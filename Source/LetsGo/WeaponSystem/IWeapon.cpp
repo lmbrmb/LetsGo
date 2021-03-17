@@ -1,6 +1,6 @@
 #include "IWeapon.h"
 
-void IWeapon::InitializeWeapon(const FName& id, const PlayerId& playerId)
+void IWeapon::InitializeWeapon(const WeaponId& id, const PlayerId& playerId)
 {
 	_id = id;
 	_playerId = playerId;
@@ -13,7 +13,7 @@ bool IWeapon::IsWeaponInitialized() const
 	return _isWeaponInitialized;
 }
 
-FName IWeapon::GetId() const
+const WeaponId& IWeapon::GetWeaponId() const
 {
 	return _id;
 }

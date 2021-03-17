@@ -5,14 +5,14 @@ UGunShotComponent::UGunShotComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UGunShotComponent::SetWeaponId(const FName& weaponId)
+void UGunShotComponent::SetWeaponId(const WeaponId& weaponId)
 {
-	WeaponId = weaponId;
+	InstigatorWeaponId = weaponId;
 }
 
 void UGunShotComponent::SetPlayerId(const PlayerId& instigatorId)
 {
-	InstigatorId = instigatorId;
+	InstigatorPlayerId = instigatorId;
 }
 
 void UGunShotComponent::SetAimProvider(USceneComponent* aimProvider)

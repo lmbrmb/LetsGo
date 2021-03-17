@@ -19,12 +19,12 @@
 /// Match dependency injection container factory
 /// Composes DI container for MatchGameMode
 /// </summary>
-class MatchDependencyInjectionContainerFactory final
+class MatchDiContainerFactory final
 {
 public:
-	MatchDependencyInjectionContainerFactory() = default;
+	MatchDiContainerFactory() = default;
 	
-	~MatchDependencyInjectionContainerFactory() = default;
+	~MatchDiContainerFactory() = default;
 
 	template<ESPMode Mode = ESPMode::Fast>
 	TTypeContainer<Mode>* CreateContainer();
@@ -38,7 +38,7 @@ private:
 };
 
 template <ESPMode Mode>
-TTypeContainer<Mode>* MatchDependencyInjectionContainerFactory::CreateContainer()
+TTypeContainer<Mode>* MatchDiContainerFactory::CreateContainer()
 {
 	auto const container = new TTypeContainer<Mode>();
 

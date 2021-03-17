@@ -1,5 +1,6 @@
 #include "InputToFpMovementMapping.h"
-#include "LetsGo/InputConstant.h"
+
+#include "LetsGo/Input/InputConstant.h"
 #include "LetsGo/Movement/FirstPersonMovementComponent.h"
 #include "LetsGo/Utils/AssertUtils.h"
 

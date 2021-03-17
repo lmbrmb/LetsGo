@@ -12,7 +12,7 @@ MatchAnalytics::MatchAnalytics(AMatchGameMode* matchGameMode)
 	matchGameMode->AvatarSpawned.AddRaw(this, &MatchAnalytics::OnAvatarSpawned);
 
 	auto const firstBloodMedalProcessor = new FirstBloodMedalProcessor();
-	auto const impressiveMedalProcessor = new ImpressiveMedalProcessor(2, "Railgun");
+	auto const impressiveMedalProcessor = new ImpressiveMedalProcessor(2, WeaponId("Railgun"));
 	auto const excellentMedalProcessor = new ExcellentMedalProcessor(4);
 	
 	_damageMedalProcessors.Add(firstBloodMedalProcessor);
@@ -45,7 +45,7 @@ void MatchAnalytics::OnAvatarHealthChanged(const UHealthComponent* healthCompone
 	}
 }
 
-void MatchAnalytics::OnShotPerformed(const PlayerId& instigatorId, const FName& instigatorWeaponId, const bool isHittedPlayer)
+void MatchAnalytics::OnShotPerformed(const PlayerId& instigatorId, const WeaponId& instigatorWeaponId, const bool isHittedPlayer)
 {
 	Medal medal;
 	for (auto hitMedalProcessor : _hitMedalProcessors)
@@ -80,8 +80,8 @@ void MatchAnalytics::TryProcessDamage(const UHealthComponent* healthComponent, c
 	auto const time = _world->TimeSeconds;
 	auto const damageEvent = DamageEvent(
 		time,
-		lastDamage.GetInstigatorId(),
-		lastDamage.GetWeaponId(),
+		lastDamage.GetInstigatorPlayerId(),
+		lastDamage.GetInstigatorWeaponId(),
 		damagedPlayerAvatar->GetPlayerId(),
 		healthComponent->GetCurrentValue()
 	);

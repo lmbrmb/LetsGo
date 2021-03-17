@@ -1,7 +1,6 @@
 #include "FloatParameterComponent.h"
 #include "Kismet/KismetStringLibrary.h"
-#include "Logs/DevLogger.h"
-#include "Utils/AssertUtils.h"
+#include "LetsGo/Utils/AssertUtils.h"
 
 UFloatParameterComponent::UFloatParameterComponent()
 {

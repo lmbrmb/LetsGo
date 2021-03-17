@@ -1,6 +1,9 @@
 #include "ImpressiveMedalProcessor.h"
 
-ImpressiveMedalProcessor::ImpressiveMedalProcessor(const int requiredHitCount, const FName& weaponId) :
+ImpressiveMedalProcessor::ImpressiveMedalProcessor(
+	const int requiredHitCount,
+	const WeaponId& weaponId
+) :
 	_requiredHitCount(requiredHitCount),
 	_weaponId(weaponId)
 {

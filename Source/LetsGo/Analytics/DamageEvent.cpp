@@ -3,7 +3,7 @@
 DamageEvent::DamageEvent(
 	const float time,
 	const PlayerId& instigatorPlayerId,
-	const FName& instigatorWeaponId,
+	const WeaponId& instigatorWeaponId,
 	const PlayerId& damagedPlayerId,
 	const float damagedPlayerHealth
 ) :
@@ -25,7 +25,7 @@ const PlayerId& DamageEvent::GetInstigatorPlayerId() const
 	return _instigatorPlayerId;
 }
 
-const FName& DamageEvent::GetInstigatorWeaponId() const
+const WeaponId& DamageEvent::GetInstigatorWeaponId() const
 {
 	return _instigatorWeaponId;
 }
