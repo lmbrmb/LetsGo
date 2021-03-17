@@ -9,6 +9,12 @@ bool FirstBloodMedalProcessor::ProcessDamageEvent(const DamageEvent& damageEvent
 
 	auto const isDead = damageEvent.GetDamagedPlayerHealth() <= 0;
 
+	if (damageEvent.GetInstigatorPlayerId() == damageEvent.GetDamagedPlayerId())
+	{
+		// Suicide
+		return false;
+	}
+	
 	if(!isDead)
 	{
 		return false;

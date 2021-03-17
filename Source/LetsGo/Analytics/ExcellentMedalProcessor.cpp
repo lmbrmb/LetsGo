@@ -26,6 +26,12 @@ bool ExcellentMedalProcessor::ProcessDamageEvent(const DamageEvent& damageEvent,
 	{
 		_playerLastFragTime.Add(fraggedPlayerIdValue, UNDEFINED_TIME);
 	}
+
+	if(damageEvent.GetInstigatorPlayerId() == damageEvent.GetDamagedPlayerId())
+	{
+		// Self harm
+		return false;
+	}
 	
 	auto const instigatorPlayerIdValue = damageEvent.GetInstigatorPlayerId().GetId();
 

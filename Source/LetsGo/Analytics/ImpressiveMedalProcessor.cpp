@@ -35,6 +35,8 @@ bool ImpressiveMedalProcessor::ProcessHitEvent(const HitEvent& hitEvent, Medal& 
 	{
 		return false;
 	}
+
+	//TODO: check self harm
 	
 	auto const instigatorPlayerIdValue = hitEvent.GetInstigatorPlayerId().GetId();
 

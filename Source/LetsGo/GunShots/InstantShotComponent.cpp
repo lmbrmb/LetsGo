@@ -3,12 +3,20 @@
 #include "DrawDebugHelpers.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
 #include "LetsGo/Utils/MathUtils.h"
+#include "LetsGo/Utils/AssertUtils.h"
 
 void UInstantShotComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	auto const gunActor = GetOwner();
+	AssertIsNotNull(gunActor);
 	
-	_collisionQueryParams.AddIgnoredActor(GetOwner());
+	auto const avatarActor = gunActor->GetOwner();
+	AssertIsNotNull(avatarActor);
+	
+	_collisionQueryParams.AddIgnoredActor(gunActor);
+	_collisionQueryParams.AddIgnoredActor(avatarActor);
 }
 
 void UInstantShotComponent::OnShotRequested(const USceneComponent* firePivot)
@@ -125,7 +133,7 @@ void UInstantShotComponent::TraceBullet(
 	}
 
 	auto const lineColor = isBlockingHit ? FColor::Red : FColor::Blue;
-	DrawDebugLine(GetWorld(), rayStartLocation, rayEndLocation, lineColor, false, 1);
+	//DrawDebugLine(GetWorld(), rayStartLocation, rayEndLocation, lineColor, false, 1);
 	BpOnBullet(isDamaged, _hitResult);
 }
 
