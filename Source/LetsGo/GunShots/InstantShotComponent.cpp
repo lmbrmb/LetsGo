@@ -3,20 +3,13 @@
 #include "DrawDebugHelpers.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
 #include "LetsGo/Utils/MathUtils.h"
-#include "LetsGo/Utils/AssertUtils.h"
 
 void UInstantShotComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	auto const gunActor = GetOwner();
-	AssertIsNotNull(gunActor);
-	
-	auto const avatarActor = gunActor->GetOwner();
-	AssertIsNotNull(avatarActor);
-	
-	_collisionQueryParams.AddIgnoredActor(gunActor);
-	_collisionQueryParams.AddIgnoredActor(avatarActor);
+	_collisionQueryParams.AddIgnoredActor(GunActor);
+	_collisionQueryParams.AddIgnoredActor(GunOwner);
 }
 
 void UInstantShotComponent::OnShotRequested(const USceneComponent* firePivot)
