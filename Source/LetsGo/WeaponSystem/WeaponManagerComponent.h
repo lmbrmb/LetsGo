@@ -45,6 +45,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetAimProvider(USceneComponent* aimProvider);
 
+	UFUNCTION(BlueprintCallable)
+	void SetOwnerSkeletalMeshComponent(USkeletalMeshComponent* ownerSkeletalMeshComponent);
+	
 	void SetPlayerId(const PlayerId& playerId);
 	
 	virtual bool TryProcessItem(Item* item) override;
@@ -65,7 +68,10 @@ private:
 	FName _startWeaponId;
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
-	bool _shouldEquipWeaponOnPickup = true;
+	bool _shouldEquipWeaponOnPickup;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
+	FName WeaponSocketName = "RightHandWeaponSocket";
 	
 	const int UNDEFINED_INDEX = -1;
 
@@ -98,6 +104,8 @@ private:
 	/// </summary>
 	TMap<FName, AmmoProvider*> _ammoProviders;
 
+	USkeletalMeshComponent* _ownerSkeletalMeshComponent;
+	
 	AActor* _weaponActor = nullptr;
 
 	IGun* _gun = nullptr;
@@ -120,6 +128,8 @@ private:
 
 	AActor* CreateGun(const GunItem* gunItem);
 
+	void AttachWeapon(AActor* weaponActor) const;
+	
 	void OnPartialInitialization();
 
 	void CreateStartWeapon();

@@ -147,6 +147,11 @@ void UWeaponManagerComponent::SetAimProvider(USceneComponent* aimProvider)
 	OnPartialInitialization();
 }
 
+void UWeaponManagerComponent::SetOwnerSkeletalMeshComponent(USkeletalMeshComponent* ownerSkeletalMeshComponent)
+{
+	_ownerSkeletalMeshComponent = ownerSkeletalMeshComponent;
+}
+
 void UWeaponManagerComponent::SetPlayerId(const PlayerId& playerId)
 {
 	_playerId = playerId;
@@ -177,7 +182,7 @@ void UWeaponManagerComponent::ChangeWeaponPivot()
 	
 	for (auto weaponActor : _weaponActors)
 	{
-		weaponActor->AttachToComponent(_weaponPivot, FAttachmentTransformRules::KeepRelativeTransform);
+		AttachWeapon(weaponActor);
 	}
 }
 
@@ -254,12 +259,13 @@ bool UWeaponManagerComponent::TryProcessItemAsGun(Item* item)
 	}
 
 	// No null check, CreateGun already checked that created gun is IGun
+	auto const noWeapons = _weapons.Num() <= 0;
 	auto const gun = dynamic_cast<IGun*>(gunActor);
 	_weapons.Add(gun);
 	
 	auto const weaponIndex = _weaponActors.Add(gunActor);
 
-	if (_shouldEquipWeaponOnPickup)
+	if (noWeapons || _shouldEquipWeaponOnPickup)
 	{
 		EquipWeapon(weaponIndex);
 	}
@@ -375,12 +381,24 @@ AActor* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 	}
 	else
 	{
-		weaponActor->AttachToComponent(_weaponPivot, FAttachmentTransformRules::KeepRelativeTransform);
+		AttachWeapon(weaponActor);
 	}
 	
 	gun->ShotPerformed.AddUObject(this, &UWeaponManagerComponent::OnGunShotPerformed);
 	
 	return weaponActor;
+}
+
+void UWeaponManagerComponent::AttachWeapon(AActor* weaponActor) const
+{
+	if(_ownerSkeletalMeshComponent)
+	{
+		weaponActor->AttachToComponent(_ownerSkeletalMeshComponent, FAttachmentTransformRules::KeepRelativeTransform, WeaponSocketName);
+	}
+	else
+	{
+		weaponActor->AttachToComponent(_weaponPivot, FAttachmentTransformRules::KeepRelativeTransform);
+	}
 }
 
 void UWeaponManagerComponent::OnPartialInitialization()
