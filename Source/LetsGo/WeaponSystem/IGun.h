@@ -29,7 +29,9 @@ public:
 	
 	void InitializeGun(AmmoProvider* ammoProvider, USceneComponent* aimProvider);
 
-	virtual void OnShotPerformed(const bool isAnyBulletDamaged) = 0;
+	virtual void OnShotPerformed(const USceneComponent* firePivot, const bool isAnyBulletDamaged) = 0;
+
+	virtual void OnBulletTraced(const bool isDamaged, const FHitResult& hitResult) = 0;
 	
 	virtual void StartFire() = 0;
 

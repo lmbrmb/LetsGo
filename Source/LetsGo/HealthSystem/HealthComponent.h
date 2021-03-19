@@ -21,9 +21,9 @@ public:
 	
 	FHealthChanged HealthChanged;
 	
-	void Heal(const float healAmount);
+	bool TryHeal(const float healAmount);
 
-	void Injure(const Damage& damage);
+	bool TryInjure(const Damage& damage);
 	
 	void Kill();
 

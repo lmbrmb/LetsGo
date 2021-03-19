@@ -3,8 +3,6 @@
 #include "LetsGo/GunShots/GunShotComponent.h"
 #include "LetsGo/Utils/AssertUtils.h"
 #include "LetsGo/WeaponSystem/IGun.h"
-#include "LetsGo/WeaponSystem/GunV1.h"
-#include "LetsGo/WeaponSystem/GunV2.h"
 
 void UGunShotToGunMapping::Map()
 {
@@ -16,9 +14,9 @@ void UGunShotToGunMapping::Map()
 	auto const gunShotComponent = owner->FindComponentByClass<UGunShotComponent>();
 	AssertIsNotNull(gunShotComponent);
 
-	_gunShotComponent = gunShotComponent;
-	_gunActor = owner;
-	_gun = gun;
+	GunShotComponent = gunShotComponent;
+	GunActor = owner;
+	Gun = gun;
 	
 	if(gun->IsWeaponInitialized())
 	{
@@ -41,8 +39,8 @@ void UGunShotToGunMapping::Map()
 
 void UGunShotToGunMapping::OnWeaponInitialized(IWeapon* weapon)
 {
-	_gunShotComponent->SetWeaponId(weapon->GetWeaponId());
-	_gunShotComponent->SetPlayerId(weapon->GetPlayerId());
+	GunShotComponent->SetWeaponId(weapon->GetWeaponId());
+	GunShotComponent->SetPlayerId(weapon->GetPlayerId());
 	weapon->WeaponInitialized.RemoveAll(this);
 	_isWeaponDataSet = true;
 	OnPartialInitialization();
@@ -50,7 +48,7 @@ void UGunShotToGunMapping::OnWeaponInitialized(IWeapon* weapon)
 
 void UGunShotToGunMapping::OnGunInitialized(IGun* gun)
 {
-	_gunShotComponent->SetAimProvider(gun->GetAimProvider());
+	GunShotComponent->SetAimProvider(gun->GetAimProvider());
 	gun->GunInitialized.RemoveAll(this);
 	_isGunDataSet = true;
 	OnPartialInitialization();
@@ -62,32 +60,12 @@ void UGunShotToGunMapping::OnPartialInitialization()
 	{
 		return;
 	}
-	_gun->ShotRequested.AddUObject(_gunShotComponent, &UGunShotComponent::OnShotRequested);
-
-	BindOnShotPerformed();
+	Bind();
 	
 	StartDestroyTask();
 }
 
-void UGunShotToGunMapping::BindOnShotPerformed() const
+void UGunShotToGunMapping::Bind() const
 {
-	// Can't bind to interface method:
-	// _gunShotComponent->ShotPerformed.AddUObject(_gun, &IGun::OnShotPerformed);
-	// Error: "You cannot use UObject method delegates with raw pointers"
-	
-	auto const gunV1 = Cast<AGunV1>(_gunActor);
-	if (gunV1)
-	{
-		_gunShotComponent->ShotPerformed.AddUObject(gunV1, &AGunV1::OnShotPerformed);
-		return;
-	}
-	
-	auto const gunV2 = Cast<AGunV2>(_gunActor);
-	if(gunV2)
-	{
-		_gunShotComponent->ShotPerformed.AddUObject(gunV2, &AGunV2::OnShotPerformed);
-		return;
-	}
-
-	DevLogger::GetLoggingChannel()->Log("Can't bind gun to shot. Unknown gun implementation", LogSeverity::Error);
+	//Do nothing
 }

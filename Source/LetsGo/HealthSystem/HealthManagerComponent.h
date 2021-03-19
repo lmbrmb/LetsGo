@@ -2,6 +2,7 @@
 
 #include "HealthComponent.h"
 #include "Components/ActorComponent.h"
+#include "LetsGo/Items/HealthItem.h"
 #include "LetsGo/Items/IItemProcessor.h"
 
 #include "HealthManagerComponent.generated.h"
@@ -12,6 +13,8 @@ class LETSGO_API UHealthManagerComponent : public UActorComponent, public IItemP
 	GENERATED_BODY()
 
 	virtual bool TryProcessItem(Item* item) override;
+
+	bool ProcessHealthItem(HealthItem* healthItem) const;
 	
 public:	
 	UHealthManagerComponent();
@@ -21,4 +24,8 @@ protected:
 
 private:
 	UHealthComponent* _healthComponent;
+	
+	void OnDied(const UHealthComponent*, float delta) const;
+
+	static bool CanItemHealAboveNormal(HealthItem* healthItem);
 };

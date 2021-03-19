@@ -1,49 +1,12 @@
 #include "HealthManagerComponent.h"
 
-#include "LetsGo/Items/HealthItem.h"
+
+#include "Components/ShapeComponent.h"
 #include "LetsGo/Utils/AssertUtils.h"
 
 UHealthManagerComponent::UHealthManagerComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-}
-
-bool UHealthManagerComponent::TryProcessItem(Item* item)
-{
-	if(!_healthComponent)
-	{
-		return false;
-	}
-	
-	auto const healthItem = dynamic_cast<HealthItem*>(item);
-	if (healthItem == nullptr)
-	{
-		return false;
-	}
-
-	if(_healthComponent->IsDead() || _healthComponent->IsFullHealth())
-	{
-		return false;
-	}
-
-	auto healAmount = healthItem->GetHealAmount();
-	
-	auto const canHealAboveNormal = healthItem->GetId() == "MajorHealth";
-	if(!canHealAboveNormal)
-	{
-		auto const normalHealthDelta = _healthComponent->GetMaxNormalHealth() - _healthComponent->GetCurrentValue();
-		healAmount = FMath::Min(healAmount, normalHealthDelta);
-		
-		if(normalHealthDelta < 0)
-		{
-			return false;
-		}
-	}
-	
-	
-	_healthComponent->Heal(healAmount);
-	
-	return true;
 }
 
 void UHealthManagerComponent::BeginPlay()
@@ -53,4 +16,65 @@ void UHealthManagerComponent::BeginPlay()
 	auto const actor = GetOwner();
 	_healthComponent = actor->FindComponentByClass<UHealthComponent>();
 	AssertIsNotNull(_healthComponent);
+
+	_healthComponent->Died.AddUObject(this, &UHealthManagerComponent::OnDied);
+}
+
+bool UHealthManagerComponent::TryProcessItem(Item* item)
+{
+	auto const healthItem = dynamic_cast<HealthItem*>(item);
+	if (healthItem == nullptr)
+	{
+		return false;
+	}
+
+	return ProcessHealthItem(healthItem);
+}
+
+bool UHealthManagerComponent::ProcessHealthItem(HealthItem* healthItem) const
+{
+	if (!_healthComponent)
+	{
+		return false;
+	}
+	
+	if (_healthComponent->IsDead() || _healthComponent->IsFullHealth())
+	{
+		return false;
+	}
+
+	auto healAmount = healthItem->GetHealAmount();
+
+	auto const canItemHealAboveNormal = CanItemHealAboveNormal(healthItem);
+	if (!canItemHealAboveNormal)
+	{
+		auto const normalHealthDelta = _healthComponent->GetMaxNormalHealth() - _healthComponent->GetCurrentValue();
+		healAmount = FMath::Min(healAmount, normalHealthDelta);
+
+		if (normalHealthDelta <= 0)
+		{
+			return false;
+		}
+	}
+
+	return _healthComponent->TryHeal(healAmount);
+}
+
+bool UHealthManagerComponent::CanItemHealAboveNormal(HealthItem* healthItem)
+{
+	return healthItem->GetId() == "MajorHealth";
+}
+
+void UHealthManagerComponent::OnDied(const UHealthComponent*, float delta) const
+{
+	_healthComponent->Died.RemoveAll(this);
+	auto const owner = _healthComponent->GetOwner();
+	AssertIsNotNull(owner);
+
+	TArray<UShapeComponent*> shapeComponents;
+	owner->GetComponents<UShapeComponent>(shapeComponents);
+	for (auto shapeComponent : shapeComponents)
+	{
+		//TODO: disable pawn-pawn collision
+	}
 }

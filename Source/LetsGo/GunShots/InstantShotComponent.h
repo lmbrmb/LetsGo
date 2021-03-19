@@ -4,6 +4,9 @@
 
 #include "InstantShotComponent.generated.h"
 
+DECLARE_EVENT_TwoParams(UGunShotComponent, EShotPerformed_InstantShot, const USceneComponent* firePivot, const bool isAnyBulletDamaged);
+DECLARE_EVENT_TwoParams(UGunShotComponent, EBulletTraced_InstantShot, const bool isDamaged, const FHitResult& hitResult)
+
 ///<summary>
 ///Instant shot component. Line cast. Options: dispersion, damage over distance scaling.
 ///</summary>
@@ -14,15 +17,13 @@ class LETSGO_API UInstantShotComponent : public UGunShotComponent
 
 public:
 	virtual void OnShotRequested(const USceneComponent* firePivot) override;
+
+	EShotPerformed_InstantShot ShotPerformed;
+
+	EBulletTraced_InstantShot BulletTraced;
 	
 protected:
 	virtual void BeginPlay() override;
-	
-	UFUNCTION(BlueprintImplementableEvent)
-	void BpOnShotPerformed(const USceneComponent* firePivot);
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void BpOnBullet(const bool isDamaged, const FHitResult hitResult);
 	
 private:
 	FHitResult _hitResult;

@@ -6,7 +6,7 @@
 
 #include "GunShotToGunMapping.generated.h"
 
-UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent))
+UCLASS(Abstract)
 class LETSGO_API UGunShotToGunMapping : public UMappingComponent
 {
 	GENERATED_BODY()
@@ -14,13 +14,16 @@ class LETSGO_API UGunShotToGunMapping : public UMappingComponent
 protected:
 	virtual void Map() override;
 
+	virtual void Bind() const;
+	
+protected:
+	IGun* Gun;
+
+	AActor* GunActor;
+
+	UGunShotComponent* GunShotComponent;
+
 private:
-	IGun* _gun;
-
-	AActor* _gunActor;
-
-	UGunShotComponent* _gunShotComponent;
-
 	void OnWeaponInitialized(IWeapon* weapon);
 
 	void OnGunInitialized(IGun* gun);
@@ -30,6 +33,4 @@ private:
 	bool _isGunDataSet = false;
 
 	void OnPartialInitialization();
-
-	void BindOnShotPerformed() const;
 };

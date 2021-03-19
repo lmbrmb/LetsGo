@@ -9,26 +9,33 @@ void AGunV2::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	switch (_state)
+	if(_stateProcessor)
 	{
-		case GunState::Idle:
-			ProcessIdleState();
-			break;
-		case GunState::Shooting:
-			ProcessShootingState();
-			break;
-		case  GunState::Reloading:
-			DevLogger::GetLoggingChannel()->Log("Reloading state is not supported.", LogSeverity::Error);
-			break;
-		default:
-			DevLogger::GetLoggingChannel()->Log("Unhandled state", LogSeverity::Error);
-			break;
+		_stateProcessor();
 	}
+}
+
+void AGunV2::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	_stateProcessors.Add(GunState::Idle, [this]() { ProcessIdleState(); });
+	_stateProcessors.Add(GunState::Shooting, [this]() { ProcessShootingState(); });
+	
+	SetState(GunState::Idle);
 }
 
 void AGunV2::SetState(const GunState state)
 {
 	_state = state;
+	
+	if (!_stateProcessors.Contains(_state))
+	{
+		DevLogger::GetLoggingChannel()->LogValue("Unhandled state", static_cast<int>(_state), LogSeverity::Error);
+		return;
+	}
+	
+	_stateProcessor = _stateProcessors[_state];
 }
 
 void AGunV2::ProcessIdleState()
@@ -68,9 +75,15 @@ void AGunV2::Reload()
 	// Do nothing
 }
 
-void AGunV2::OnShotPerformed(const bool isAnyBulletDamaged)
+void AGunV2::OnShotPerformed(const USceneComponent* firePivot, const bool isAnyBulletDamaged)
 {
+	BpOnShotPerformed(firePivot, isAnyBulletDamaged);
 	ShotPerformed.Broadcast(this, isAnyBulletDamaged);
+}
+
+void AGunV2::OnBulletTraced(const bool isDamaged, const FHitResult& hitResult)
+{
+	BpOnBulletTraced(isDamaged, hitResult);
 }
 
 USceneComponent* AGunV2::GetFirePivot()

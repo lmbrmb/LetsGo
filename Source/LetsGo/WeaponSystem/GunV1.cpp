@@ -5,9 +5,15 @@ AGunV1::AGunV1()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void AGunV1::OnShotPerformed(const bool isAnyBulletDamaged)
+void AGunV1::OnShotPerformed(const USceneComponent* firePivot, const bool isAnyBulletDamaged)
 {
+	BpOnShotPerformed(firePivot, isAnyBulletDamaged);
 	ShotPerformed.Broadcast(this, isAnyBulletDamaged);
+}
+
+void AGunV1::OnBulletTraced(const bool isDamaged, const FHitResult& hitResult)
+{
+	BpOnBulletTraced(isDamaged, hitResult);
 }
 
 void AGunV1::BeginPlay()
@@ -15,32 +21,35 @@ void AGunV1::BeginPlay()
 	Super::BeginPlay();
 
 	_clipCurrent = _clipMax;
+	
+	_stateProcessors.Add(GunState::Idle, [this]() { ProcessIdleState(); });
+	_stateProcessors.Add(GunState::Shooting, [this]() { ProcessShootingState(); });
+	_stateProcessors.Add(GunState::Reloading, [this]() { ProcessReloadingState(); });
+	
+	SetState(GunState::Idle);
 }
 
 void AGunV1::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	switch (_state)
+	if (_stateProcessor)
 	{
-		case GunState::Idle:
-			ProcessIdleState();
-			break;
-		case  GunState::Reloading:
-			ProcessReloadingState();
-			break;
-		case GunState::Shooting:
-			ProcessShootingState();
-			break;
-		default:
-			DevLogger::GetLoggingChannel()->Log("Unhandled state", LogSeverity::Error);
-			break;
+		_stateProcessor();
 	}
 }
 
 void AGunV1::SetState(GunState state)
 {
 	_state = state;
+
+	if (!_stateProcessors.Contains(_state))
+	{
+		DevLogger::GetLoggingChannel()->LogValue("Unhandled state", static_cast<int>(_state), LogSeverity::Error);
+		return;
+	}
+
+	_stateProcessor = _stateProcessors[_state];
 }
 
 void AGunV1::ProcessIdleState()

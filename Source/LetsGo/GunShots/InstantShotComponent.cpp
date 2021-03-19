@@ -24,8 +24,7 @@ void UInstantShotComponent::OnShotRequested(const USceneComponent* firePivot)
 		ProcessBullet(firePivot, targetAimLocation, dispersionByDistance, isAnyBulletDamaged);
 	}
 
-	ShotPerformed.Broadcast(isAnyBulletDamaged);
-	BpOnShotPerformed(firePivot);
+	ShotPerformed.Broadcast(firePivot, isAnyBulletDamaged);
 }
 
 void UInstantShotComponent::ProcessAimLocation(
@@ -118,16 +117,15 @@ void UInstantShotComponent::TraceBullet(
 			auto const healthComponent = actorPtr->FindComponentByClass<UHealthComponent>();
 			if (healthComponent)
 			{
-				healthComponent->Injure(Damage(InstigatorPlayerId, InstigatorWeaponId, damageAmount));
-				isDamaged = true;
-				isAnyBulletDamaged = true;
+				isDamaged = healthComponent->TryInjure(Damage(InstigatorPlayerId, InstigatorWeaponId, damageAmount));
+				isAnyBulletDamaged |= isDamaged;
 			}
 		}
 	}
 
 	auto const lineColor = isBlockingHit ? FColor::Red : FColor::Blue;
+	BulletTraced.Broadcast(isDamaged, _hitResult);
 	//DrawDebugLine(GetWorld(), rayStartLocation, rayEndLocation, lineColor, false, 1);
-	BpOnBullet(isDamaged, _hitResult);
 }
 
 float UInstantShotComponent::GetBulletDamage() const

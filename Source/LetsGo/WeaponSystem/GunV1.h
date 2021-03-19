@@ -18,8 +18,6 @@ class LETSGO_API AGunV1 final : public AActor, public IGun
 
 public:
 	AGunV1();
-
-	virtual void OnShotPerformed(const bool isAnyBulletDamaged) override;
 	
 	// IGun implementation
 	virtual void StartFire() override;
@@ -30,12 +28,24 @@ public:
 	// IGun implementation
 	virtual void Reload() override;
 
+	// IGun implementation
+	virtual void OnShotPerformed(const USceneComponent* firePivot, const bool isAnyBulletDamaged) override;
+
+	// IGun implementation
+	virtual void OnBulletTraced(const bool isDamaged, const FHitResult& hitResult) override;
+	
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnFireStarted();
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnFireStopped();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpOnShotPerformed(const USceneComponent* firePivot, const bool isAnyBulletDamaged);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpOnBulletTraced(const bool isDamaged, const FHitResult& hitResult);
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnReloadStarted();
@@ -45,7 +55,7 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnAmmoLoaded();
-
+	
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaSeconds) override;
@@ -66,6 +76,10 @@ private:
 
 	void ProcessShootingState();
 
+	TMap<GunState, TFunction<void()>> _stateProcessors;
+
+	TFunction<void()> _stateProcessor = nullptr;
+	
 	// Fire
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float _shotDuration = 0.5f;

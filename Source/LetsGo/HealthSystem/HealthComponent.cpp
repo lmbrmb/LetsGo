@@ -45,31 +45,33 @@ void UHealthComponent::DecreaseHealthOnTimer()
 		return;
 	}
 
-	Injure(Damage(_decreaseHealthAmount));
+	TryInjure(Damage(_decreaseHealthAmount));
 }
 
-void UHealthComponent::Heal(const float healAmount)
+bool UHealthComponent::TryHeal(const float healAmount)
 {
 	if(IsDead())
 	{
-		return;
+		return false;
 	}
 
 	auto const healValue = FMath::Abs(healAmount);
 	ChangeValue(healValue);
+	return true;
 }
 
-void UHealthComponent::Injure(const Damage& damage)
+bool UHealthComponent::TryInjure(const Damage& damage)
 {
 	if (IsDead())
 	{
-		return;
+		return false;
 	}
 
 	auto const damageAmount = damage.GetAmount();
 	auto const damageValue = -1 * FMath::Abs(damageAmount);
 	_lastDamage = damage;
 	ChangeValue(damageValue);
+	return true;
 }
 
 void UHealthComponent::Kill()

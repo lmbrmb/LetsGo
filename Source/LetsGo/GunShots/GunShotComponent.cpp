@@ -6,8 +6,6 @@
 UGunShotComponent::UGunShotComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-	_audioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
-	_audioComponent->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 void UGunShotComponent::SetWeaponId(const WeaponId& weaponId)
@@ -39,12 +37,4 @@ void UGunShotComponent::BeginPlay()
 
 	GunOwner = GunActor->GetOwner();
 	AssertIsNotNull(GunOwner);
-
-	auto const localPlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	if (localPlayerPawn)
-	{
-		_isLocalPlayer = GunOwner == localPlayerPawn;
-	}
-	
-	BpInit();
 }
