@@ -36,18 +36,14 @@ void AMatchGameMode::InitGame(const FString& MapName, const FString& Options, FS
 	_matchAnalytics = new MatchAnalytics(this);
 }
 
-bool AMatchGameMode::GetIsMatchStarted() const
-{
-	return _IsMatchStarted;
-}
-
 void AMatchGameMode::PopulateAvatarsData()
 {
 	for (auto i = 0; i < BOT_COUNT; i++)
 	{
-		const PlayerId botId(MAX_int32 - i);
+		auto const botIdValue = MAX_int32 - i;
+		const PlayerId botId(botIdValue);
 		auto const avatarData = _avatarDataFactory->GenerateRandom(botId, AvatarType::Bot);
-		_avatarsData.Add(avatarData);
+		_avatarsData.Add(botIdValue, avatarData);
 	}
 	
 	auto const localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
@@ -56,16 +52,41 @@ void AMatchGameMode::PopulateAvatarsData()
 	auto const localPlayerState = localPlayerController->GetPlayerState<APlayerState>();
 	AssertIsNotNull(localPlayerState);
 
-	auto const localPlayerId = PlayerId(localPlayerState->GetPlayerId());
+	auto const localPlayerIdValue = localPlayerState->GetPlayerId();
+	auto const localPlayerId = PlayerId(localPlayerIdValue);
 	
 	auto const avatarData = _avatarDataFactory->Create(localPlayerId, AvatarType::LocalPlayer, LOCAL_PLAYER_SKIN_ID, LOCAL_PLAYER_NAME);
-	_avatarsData.Add(avatarData);
+	_avatarsData.Add(localPlayerIdValue, avatarData);
 }
 
 void AMatchGameMode::TriggerMatchStart()
 {
-	_IsMatchStarted = true;
+	SetMatchState(MatchState::Started);
+
 	MatchStarted.Broadcast();
+	GetWorldTimerManager().SetTimer(_matchTimerHandle, this, &AMatchGameMode::TriggerMatchEnd, _warmupDuration, false);
+}
+
+void AMatchGameMode::TriggerMatchEnd()
+{
+	SetMatchState(MatchState::Ended);
+}
+
+AvatarData* AMatchGameMode::GetAvatarData(const int playerIdValue) const
+{
+	if(_avatarsData.Contains(playerIdValue))
+	{
+		return _avatarsData[playerIdValue];
+	}
+
+	DevLogger::GetLoggingChannel()->LogValue("Can't find avatar data. Player id value:", playerIdValue, LogSeverity::Error);
+	
+	return nullptr;
+}
+
+AvatarData* AMatchGameMode::GetAvatarData(const PlayerId& playerIdValue) const
+{
+	return GetAvatarData(playerIdValue.GetId());
 }
 
 TTypeContainer<ESPMode::Fast>* AMatchGameMode::GetDiContainer() const
@@ -82,20 +103,39 @@ void AMatchGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PopulateAvatarsData();
+	_stateStartTime = GetWorld()->TimeSeconds;
 	
-	for (auto avatarData : _avatarsData)
+	PopulateAvatarsData();
+
+	SetMatchState(MatchState::WarmUp);
+	
+	for (const auto avatarDataEntry : _avatarsData)
 	{
+		auto const avatarData = avatarDataEntry.Value;
 		SpawnAvatar(avatarData);
 	}
 
-	FTimerHandle matchStartTimerHandle;
-	GetWorldTimerManager().SetTimer(matchStartTimerHandle, this, &AMatchGameMode::TriggerMatchStart, _matchStartDelay, false);
+	GetWorldTimerManager().SetTimer(_matchTimerHandle, this, &AMatchGameMode::TriggerMatchStart, _warmupDuration, false);
 }
 
 void AMatchGameMode::RegisterSpawnPoint(FTransform spawnPoint)
 {
 	_spawnPoints.Add(spawnPoint);
+}
+
+float AMatchGameMode::GetMatchTime() const
+{
+	if(_matchState == MatchState::Ended)
+	{
+		return _matchEndTime;
+	}
+	
+	return GetCurrentStateTime();
+}
+
+float AMatchGameMode::GetCurrentStateTime() const
+{
+	return GetWorld()->TimeSeconds - _stateStartTime;
 }
 
 FTransform AMatchGameMode::GetNextSpawnPoint()
@@ -139,8 +179,9 @@ void AMatchGameMode::RespawnAvatarOnTimer()
 	int playerIdValue;
 	_respawnQueue.Dequeue(playerIdValue);
 
-	for (auto avatarData : _avatarsData)
+	for (const auto avatarDataEntry : _avatarsData)
 	{
+		auto const avatarData = avatarDataEntry.Value;
 		if (avatarData->GetPlayerId().GetId() == playerIdValue)
 		{
 			SpawnAvatar(avatarData);
@@ -164,13 +205,69 @@ void AMatchGameMode::OnAvatarDied(const UHealthComponent* healthComponent, const
 	_destroyQueue.Enqueue(avatarActor);
 	FTimerHandle destroyTimerHandle;
 	GetWorldTimerManager().SetTimer(destroyTimerHandle, this, &AMatchGameMode::DestroyAvatarOnTimer, _avatarDestroyTime, false);
+
+	auto const lastDamage = healthComponent->GetLastDamage();
+	auto const instigatorPlayerId = lastDamage.GetInstigatorPlayerId();
+	auto const instigatorPlayerIdValue = instigatorPlayerId.GetId();
 	
-	auto const owner = healthComponent->GetOwner();
-	auto const avatar = Cast<const AAvatar>(owner);
-	AssertIsNotNull(avatar)
+	auto const fraggedPlayerActor = healthComponent->GetOwner();
+	auto const fraggedPlayerAvatar = Cast<AAvatar>(fraggedPlayerActor);
+
+	AssertIsNotNull(fraggedPlayerAvatar);
 	
-	auto const playerIdValue = avatar->GetPlayerId().GetId();
-	_respawnQueue.Enqueue(playerIdValue);
+	auto const fraggedPlayerId = fraggedPlayerAvatar->GetPlayerId();
+	auto const fraggedPlayerIdValue = fraggedPlayerId.GetId();
+
+	auto const instigatorPlayerAvatarData = GetAvatarData(instigatorPlayerIdValue);
+	auto const fraggedPlayerAvatarData = GetAvatarData(fraggedPlayerIdValue);
+
+	if(instigatorPlayerAvatarData && fraggedPlayerAvatarData)
+	{
+		auto const instigatorPlayerNickname = instigatorPlayerAvatarData->GetNickname();
+		auto const fraggedPlayerNickname = fraggedPlayerAvatarData->GetNickname();
+
+		PlayerFragged.Broadcast(instigatorPlayerId, fraggedPlayerId, instigatorPlayerNickname, fraggedPlayerNickname);
+	}
+	
+	_respawnQueue.Enqueue(fraggedPlayerIdValue);
 	FTimerHandle respawnTimerHandle;
 	GetWorldTimerManager().SetTimer(respawnTimerHandle, this, &AMatchGameMode::RespawnAvatarOnTimer, _avatarRespawnTime, false);
+}
+
+void AMatchGameMode::SetMatchState(MatchState matchState)
+{
+	if(!CanEnterState(matchState))
+	{
+		auto const loggingChannel = DevLogger::GetLoggingChannel();
+		loggingChannel->Log("Can't set match state", LogSeverity::Error);
+		loggingChannel->LogValue("Current state:", (int)_matchState, LogSeverity::Error);
+		loggingChannel->LogValue("New match state:", (int)matchState, LogSeverity::Error);
+		return;
+	}
+	
+	if(matchState == MatchState::Ended)
+	{
+		_matchEndTime = GetCurrentStateTime();
+	}
+
+	_matchState = matchState;
+	_stateStartTime = GetWorld()->TimeSeconds;
+}
+
+bool AMatchGameMode::CanEnterState(MatchState matchState) const
+{
+	switch (matchState)
+	{
+		case MatchState::WarmUp:
+			return _matchState == MatchState::None;
+
+		case MatchState::Started:
+			return _matchState == MatchState::None || _matchState == MatchState::WarmUp;
+
+		case MatchState::Ended:
+			return _matchState == MatchState::Started;
+		default:
+			DevLogger::GetLoggingChannel()->LogValue("Unknown match state:", (int)matchState, LogSeverity::Error);
+			return false;
+	};
 }

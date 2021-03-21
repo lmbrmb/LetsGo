@@ -24,8 +24,8 @@ void UWeaponManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	_itemProcessors.Add( [this](auto item) { return TryProcessItemAsGun(item); });
-	_itemProcessors.Add([this](auto item) { return TryProcessItemAsAmmo(item); });
+	_itemProcessors.Add( [this](auto item) { return this->TryProcessItemAsGun(item); });
+	_itemProcessors.Add([this](auto item) { return this->TryProcessItemAsAmmo(item); });
 
 	auto const authGameMode = GetWorld()->GetAuthGameMode();
 	auto const matchGameMode = Cast<AMatchGameMode>(authGameMode);

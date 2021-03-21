@@ -21,7 +21,7 @@ MatchAnalytics::MatchAnalytics(AMatchGameMode* matchGameMode)
 
 	_hitMedalProcessors.Add(impressiveMedalProcessor);
 	
-	_healthProcessors.Add([this](const UHealthComponent* healthComponent, const float delta) { TryProcessDamage(healthComponent, delta); });
+	_healthProcessors.Add([this](const UHealthComponent* healthComponent, const float delta) { this->TryProcessDamage(healthComponent, delta); });
 	_world = matchGameMode->GetWorld();
 }
 

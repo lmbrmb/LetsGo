@@ -16,6 +16,8 @@ void UAnnouncementToAnalyticsMapping::Map()
 	auto const matchGameMode = Cast<AMatchGameMode>(authGameMode);
 	AssertIsNotNull(matchGameMode);
 
+	matchGameMode->PlayerFragged.AddUObject(announcementManagerComponent, &UAnnouncementManagerComponent::OnPlayerFragged);
+
 	auto const matchAnalytics = matchGameMode->GetMatchAnalytics();
 	AssertIsNotNull(matchAnalytics);
 
