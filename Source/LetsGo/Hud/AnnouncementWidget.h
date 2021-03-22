@@ -16,6 +16,12 @@ class LETSGO_API UAnnouncementWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	void OnMatchWarmUpAnnouncementRequest();
+	
+	void OnMatchStartAnnouncementRequest();
+
+	void OnMatchEndAnnouncementRequest();
+	
 	void OnFragAnnouncementRequest(const FragAnnouncement* fragAnnouncement);
 
 	void OnMedalAnnouncementRequest(const MedalAnnouncement* medalAnnouncement);
@@ -23,6 +29,15 @@ public:
 	void OnAllAnnouncementsDone();
 	
 protected:
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpAnnounceMatchWarmUp();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpAnnounceMatchStart();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpAnnounceMatchEnd();
+	
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpAnnounceFrag(
 		const FName& instigatorPlayerNickname,

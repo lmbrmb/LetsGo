@@ -9,6 +9,12 @@
 
 #include "AnnouncementManagerComponent.generated.h"
 
+DECLARE_EVENT(UAnnouncementManagerComponent, EMatchWarmUpAnnouncementRequest);
+
+DECLARE_EVENT(UAnnouncementManagerComponent, EMatchStartAnnouncementRequest);
+
+DECLARE_EVENT(UAnnouncementManagerComponent, EMatchEndAnnouncementRequest);
+
 DECLARE_EVENT_OneParam(UAnnouncementManagerComponent, EFragAnnouncementRequest, const FragAnnouncement* fragAnnouncement);
 
 DECLARE_EVENT_OneParam(UAnnouncementManagerComponent, EMedalAnnouncementRequest, const MedalAnnouncement* medalAnnouncement);
@@ -27,6 +33,12 @@ public:
 	UAnnouncementManagerComponent();
 
 	void SetPlayerId(const PlayerId& playerId);
+
+	void OnMatchWarmUp() const;
+	
+	void OnMatchStart() const;
+
+	void OnMatchEnd() const;
 	
 	void OnMedalAchieved(const Medal& medal);
 
@@ -37,6 +49,12 @@ public:
 		const FName& fraggedPlayerNickname
 	);
 
+	EMatchWarmUpAnnouncementRequest MatchWarmUpAnnouncementRequest;
+	
+	EMatchStartAnnouncementRequest MatchStartAnnouncementRequest;
+
+	EMatchEndAnnouncementRequest MatchEndAnnouncementRequest;
+	
 	EFragAnnouncementRequest FragAnnouncementRequest;
 
 	EMedalAnnouncementRequest MedalAnnouncementRequest;

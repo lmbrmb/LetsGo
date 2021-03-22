@@ -27,6 +27,4 @@ private:
 	TArray<FString> _nicknamePostfixes;
 
 	TArray<FString> _generatedNames;
-
-	FString TakeRandom(TArray<FString>& array) const;
 };

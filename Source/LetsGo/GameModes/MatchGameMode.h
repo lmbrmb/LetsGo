@@ -12,6 +12,12 @@
 
 #include "MatchGameMode.generated.h"
 
+DECLARE_EVENT(AMatchGameMode, EMatchWarmUp);
+
+DECLARE_EVENT(AMatchGameMode, EMatchStart);
+
+DECLARE_EVENT(AMatchGameMode, EMatchEnd);
+
 DECLARE_EVENT_OneParam(AMatchGameMode, EAvatarSpawned, const AAvatar* avatar);
 
 DECLARE_EVENT_FourParams(
@@ -23,8 +29,6 @@ const FName& instigatorPlayerNickname,
 const FName& fraggedPlayerNickname
 );
 
-DECLARE_EVENT(AMatchGameMode, EMatchStarted);
-
 ///<summary>
 ///Base game mode for all matches. Provides Dependency Injection container.
 ///</summary>
@@ -34,12 +38,16 @@ class LETSGO_API AMatchGameMode : public AGameModeBase
 	GENERATED_BODY()
 	
 public:
+	EMatchWarmUp MatchWarmUp;
+
+	EMatchStart MatchStart;
+
+	EMatchEnd MatchEnd;
+	
 	EAvatarSpawned AvatarSpawned;
 
 	EPlayerFragged PlayerFragged;
-
-	EMatchStarted MatchStarted;
-
+	
 	AMatchGameMode() = default;
 	
 	virtual ~AMatchGameMode();
@@ -52,19 +60,25 @@ public:
 
 	float GetMatchTime() const;
 
-	float GetCurrentStateTime() const;
+	bool IsMatchWarmUp() const;
+	
+	bool IsMatchStarted() const;
 
+	bool IsMatchEnded() const;
+	
 protected:
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 
 	virtual void BeginPlay() override;
 
 	virtual void OnAvatarDied(const UHealthComponent* healthComponent, const float delta);
+
+	float GetCurrentStateTime() const;
 	
 private:
-	float _stateStartTime;
+	float _stateStartTime = 0;
 
-	float _matchEndTime;
+	float _matchEndTime = 0;
 	
 	void SetMatchState(MatchState matchState);
 
@@ -83,7 +97,7 @@ private:
 	float _avatarDestroyTime = 2.5f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
-	float _warmupDuration = 5.0f;
+	float _warmUpDuration = 5.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
 	float _matchDuration = 5.0f;

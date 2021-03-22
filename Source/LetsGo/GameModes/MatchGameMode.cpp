@@ -62,9 +62,7 @@ void AMatchGameMode::PopulateAvatarsData()
 void AMatchGameMode::TriggerMatchStart()
 {
 	SetMatchState(MatchState::Started);
-
-	MatchStarted.Broadcast();
-	GetWorldTimerManager().SetTimer(_matchTimerHandle, this, &AMatchGameMode::TriggerMatchEnd, _warmupDuration, false);
+	GetWorldTimerManager().SetTimer(_matchTimerHandle, this, &AMatchGameMode::TriggerMatchEnd, _matchDuration, false);
 }
 
 void AMatchGameMode::TriggerMatchEnd()
@@ -115,7 +113,7 @@ void AMatchGameMode::BeginPlay()
 		SpawnAvatar(avatarData);
 	}
 
-	GetWorldTimerManager().SetTimer(_matchTimerHandle, this, &AMatchGameMode::TriggerMatchStart, _warmupDuration, false);
+	GetWorldTimerManager().SetTimer(_matchTimerHandle, this, &AMatchGameMode::TriggerMatchStart, _warmUpDuration, false);
 }
 
 void AMatchGameMode::RegisterSpawnPoint(FTransform spawnPoint)
@@ -131,6 +129,21 @@ float AMatchGameMode::GetMatchTime() const
 	}
 	
 	return GetCurrentStateTime();
+}
+
+bool AMatchGameMode::IsMatchWarmUp() const
+{
+	return _matchState == MatchState::WarmUp;
+}
+
+bool AMatchGameMode::IsMatchStarted() const
+{
+	return static_cast<int>(_matchState) >= static_cast<int>(MatchState::Started);
+}
+
+bool AMatchGameMode::IsMatchEnded() const
+{
+	return _matchState == MatchState::Ended;
 }
 
 float AMatchGameMode::GetCurrentStateTime() const
@@ -244,13 +257,29 @@ void AMatchGameMode::SetMatchState(MatchState matchState)
 		loggingChannel->LogValue("New match state:", (int)matchState, LogSeverity::Error);
 		return;
 	}
-	
-	if(matchState == MatchState::Ended)
-	{
-		_matchEndTime = GetCurrentStateTime();
-	}
 
 	_matchState = matchState;
+
+	switch (_matchState)
+	{
+		case MatchState::WarmUp:
+			DevLogger::GetLoggingChannel()->Log("Match warm up", LogSeverity::Warning);
+			MatchWarmUp.Broadcast();
+			break;
+		case MatchState::Started:
+			DevLogger::GetLoggingChannel()->Log("Match started", LogSeverity::Warning);
+			MatchStart.Broadcast();
+			break;
+		case MatchState::Ended:
+			DevLogger::GetLoggingChannel()->Log("Match ended", LogSeverity::Warning);
+			_matchEndTime = GetCurrentStateTime();
+			MatchEnd.Broadcast();
+			break;
+		default:
+			//Do nothing
+			break;
+	}
+	
 	_stateStartTime = GetWorld()->TimeSeconds;
 }
 

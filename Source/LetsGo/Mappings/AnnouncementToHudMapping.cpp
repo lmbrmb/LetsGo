@@ -59,6 +59,9 @@ void UAnnouncementToHudMapping::OnPlayerHudInitialized()
 	AssertIsNotNull(theAnnouncementWidget);
 	AssertIsLessOrEqual(announcementWidgetCount, 1);
 
+	_announcementManagerComponent->MatchWarmUpAnnouncementRequest.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnMatchWarmUpAnnouncementRequest);
+	_announcementManagerComponent->MatchStartAnnouncementRequest.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnMatchStartAnnouncementRequest);
+	_announcementManagerComponent->MatchEndAnnouncementRequest.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnMatchEndAnnouncementRequest);
 	_announcementManagerComponent->FragAnnouncementRequest.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnFragAnnouncementRequest);
 	_announcementManagerComponent->MedalAnnouncementRequest.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnMedalAnnouncementRequest);
 	_announcementManagerComponent->AllAnnouncementsDone.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnAllAnnouncementsDone);

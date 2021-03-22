@@ -72,15 +72,3 @@ FName NicknameGenerator::Generate()
 	_generatedNames.Add(name);
 	return FName(name);
 }
-
-FString NicknameGenerator::TakeRandom(TArray<FString>& array) const
-{
-	if (array.Num() == 0)
-	{
-		return "";
-	}
-	auto const index = FMath::RandRange(0, array.Num() - 1);
-	auto const taken = array[index];
-	array.RemoveAt(index);
-	return taken;
-}

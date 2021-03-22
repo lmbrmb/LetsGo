@@ -2,6 +2,21 @@
 
 #include "LetsGo/Utils/AssertUtils.h"
 
+void UAnnouncementWidget::OnMatchWarmUpAnnouncementRequest()
+{
+	BpAnnounceMatchWarmUp();
+}
+
+void UAnnouncementWidget::OnMatchStartAnnouncementRequest()
+{
+	BpAnnounceMatchStart();
+}
+
+void UAnnouncementWidget::OnMatchEndAnnouncementRequest()
+{
+	BpAnnounceMatchEnd();
+}
+
 void UAnnouncementWidget::OnFragAnnouncementRequest(const FragAnnouncement* fragAnnouncement)
 {
 	AssertIsNotNull(fragAnnouncement);

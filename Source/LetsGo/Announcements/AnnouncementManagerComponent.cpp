@@ -21,6 +21,21 @@ void UAnnouncementManagerComponent::SetPlayerId(const PlayerId& playerId)
 	_playerId = playerId;
 }
 
+void UAnnouncementManagerComponent::OnMatchWarmUp() const
+{
+	MatchWarmUpAnnouncementRequest.Broadcast();
+}
+
+void UAnnouncementManagerComponent::OnMatchStart() const
+{
+	MatchStartAnnouncementRequest.Broadcast();
+}
+
+void UAnnouncementManagerComponent::OnMatchEnd() const
+{
+	MatchEndAnnouncementRequest.Broadcast();
+}
+
 void UAnnouncementManagerComponent::OnMedalAchieved(const Medal& medal)
 {
 	if(medal.GetPlayerId() != _playerId)
