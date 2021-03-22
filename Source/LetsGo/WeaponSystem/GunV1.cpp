@@ -147,8 +147,20 @@ void AGunV1::StartShot()
 {
 	_shotStartTime = GetWorld()->TimeSeconds;
 	_clipCurrent -= _consumeAmmoPerShot;
-	auto const firePivot = GetFirePivot();
-	ShotRequested.Broadcast(firePivot);
+
+	if(_firePivotMode == FFirePivotMode::AllSimultaneously)
+	{
+		for (auto firePivot : _firePivots)
+		{
+			ShotRequested.Broadcast(firePivot);
+		}
+	}
+	else
+	{
+		auto const firePivot = GetFirePivot();
+		ShotRequested.Broadcast(firePivot);
+	}
+	
 	SetState(GunState::Shooting);
 }
 

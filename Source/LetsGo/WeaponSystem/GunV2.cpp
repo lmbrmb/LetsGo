@@ -110,8 +110,20 @@ USceneComponent* AGunV2::GetFirePivot()
 void AGunV2::StartShot()
 {
 	_shotStartTime = GetWorld()->TimeSeconds;
-	auto const firePivot = GetFirePivot();
-	ShotRequested.Broadcast(firePivot);
+	
+	if (_firePivotMode == FFirePivotMode::AllSimultaneously)
+	{
+		for (auto firePivot : _firePivots)
+		{
+			ShotRequested.Broadcast(firePivot);
+		}
+	}
+	else
+	{
+		auto const firePivot = GetFirePivot();
+		ShotRequested.Broadcast(firePivot);
+	}
+	
 	SetState(GunState::Shooting);
 }
 
