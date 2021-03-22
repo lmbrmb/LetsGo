@@ -3,6 +3,9 @@
 #include "Announcement.h"
 #include "LetsGo/Analytics/MedalType.h"
 
+/// <summary>
+/// Medal announcement
+/// </summary>
 class MedalAnnouncement final : public Announcement
 {
 public:

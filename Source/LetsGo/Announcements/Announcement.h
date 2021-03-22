@@ -1,5 +1,8 @@
 #pragma once
 
+/// <summary>
+/// Announcement base
+/// </summary>
 class Announcement
 {
 public:

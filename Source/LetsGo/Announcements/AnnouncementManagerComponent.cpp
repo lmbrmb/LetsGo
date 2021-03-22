@@ -1,9 +1,7 @@
 #include "AnnouncementManagerComponent.h"
 
-#include "MedalAnnouncement.h"
-#include "MessageAnnouncement.h"
-#include "GameFramework/GameModeBase.h"
 #include "LetsGo/Logs/DevLogger.h"
+#include "LetsGo/Utils/AssertUtils.h"
 
 UAnnouncementManagerComponent::UAnnouncementManagerComponent()
 {
@@ -12,8 +10,10 @@ UAnnouncementManagerComponent::UAnnouncementManagerComponent()
 
 void UAnnouncementManagerComponent::BeginPlay()
 {
+	Super::BeginPlay();
+
 	_announcementProcessors.Add([this](auto announcement) { return this->TryProcessMedalAnnouncement(announcement); });
-	_announcementProcessors.Add([this](auto announcement) { return this->TryProcessMessageAnnouncement(announcement); });
+	_announcementProcessors.Add([this](auto announcement) { return this->TryProcessFragAnnouncement(announcement); });
 }
 
 void UAnnouncementManagerComponent::SetPlayerId(const PlayerId& playerId)
@@ -28,20 +28,11 @@ void UAnnouncementManagerComponent::OnMedalAchieved(const Medal& medal)
 		return;
 	}
 	
-	auto const queueWasEmpty = _announcements.IsEmpty();
 	auto const medalType = medal.GetMedalType();
 	auto const medalAnnouncement = new MedalAnnouncement(medalType);
-	_announcements.Enqueue(medalAnnouncement);
-	
-	if (!queueWasEmpty)
-	{
-		return;
-	}
-	
-	CreateAnnouncementTask(_announcementDelay);
+	AddAnnouncement(medalAnnouncement);
 }
 
-// ReSharper disable once CppMemberFunctionMayBeConst
 void UAnnouncementManagerComponent::OnPlayerFragged(
 	const PlayerId& instigatorPlayerId,
 	const PlayerId& fraggedPlayerId,
@@ -52,55 +43,54 @@ void UAnnouncementManagerComponent::OnPlayerFragged(
 	auto const isLocalPlayerInstigator = _playerId == instigatorPlayerId;
 	auto const isLocalPlayerFragged = _playerId == fraggedPlayerId;
 	auto const isRelevantToLocalPlayer = isLocalPlayerInstigator || isLocalPlayerFragged;
-	auto const isSuicide = instigatorPlayerId == fraggedPlayerId;
 
-	FString message;
-
-	if (isRelevantToLocalPlayer)
+	if(isRelevantToLocalPlayer)
 	{
-		if (isSuicide)
-		{
-			message = "Suicide";
-		}
-		else if (isLocalPlayerInstigator)
-		{
-			message = "You fragged " + fraggedPlayerNickname.ToString();
-		}
-		else
-		{
-			message = "Fragged by " + instigatorPlayerNickname.ToString();
-		}
+		auto const fragAnnouncement = new FragAnnouncement(instigatorPlayerNickname, fraggedPlayerNickname, isLocalPlayerInstigator, isLocalPlayerFragged);
+		AddAnnouncement(fragAnnouncement);
+	}
+}
+
+void UAnnouncementManagerComponent::AddAnnouncement(Announcement* announcement)
+{
+	_announcements.Enqueue(announcement);
+
+	float delay;
+	auto const now = GetWorld()->TimeSeconds;
+	
+	if (now > _nextAnnouncementTime)
+	{
+		delay = _firstAnnouncementDelay;
 	}
 	else
 	{
-		if (isSuicide)
-		{
-			message = instigatorPlayerNickname.ToString() + " killed himself";
-		}
-		else
-		{
-			message = instigatorPlayerNickname.ToString() + " fragged " + fraggedPlayerNickname.ToString();
-		}
+		delay = _nextAnnouncementTime - now + _announcementDuration;
 	}
 
-	auto const messageAnnouncement = new MessageAnnouncement(message, isRelevantToLocalPlayer);
-	auto const queueWasEmpty = _announcements.IsEmpty();
-	_announcements.Enqueue(messageAnnouncement);
-
-	if(!queueWasEmpty)
-	{
-		return;
-	}
+	_nextAnnouncementTime = now + delay;
 	
-	CreateAnnouncementTask(_announcementDelay);
+	CreateAnnouncementTask(delay);
+
+	if (_announcementDoneTimerHandle.IsValid())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(_announcementDoneTimerHandle);
+		AssertIsFalse(_announcementDoneTimerHandle.IsValid())
+	}
+
+	GetWorld()->GetTimerManager().SetTimer(
+		_announcementDoneTimerHandle,
+		this,
+		&UAnnouncementManagerComponent::AllAnnouncementsDoneOnTimer,
+		delay + _announcementDuration,
+		false
+	);
 }
 
 void UAnnouncementManagerComponent::CreateAnnouncementTask(const float delay)
 {
-	auto const authGameMode = GetWorld()->GetAuthGameMode();
 	FTimerHandle announceTimerHandle;
-	authGameMode->GetWorldTimerManager().SetTimer(
-		announceTimerHandle, 
+	GetWorld()->GetTimerManager().SetTimer(
+		announceTimerHandle,
 		this, 
 		&UAnnouncementManagerComponent::AnnounceOnTimer, 
 		delay, 
@@ -113,20 +103,20 @@ void UAnnouncementManagerComponent::AnnounceOnTimer()
 	Announcement* announcement;
 	_announcements.Dequeue(announcement);
 
+	AssertIsNotNull(announcement);
+	
 	ProcessAnnouncement(announcement);
-
 	delete announcement;
-
-	if (_announcements.IsEmpty())
-	{
-		return;
-	}
-
-	CreateAnnouncementTask(_consequentAnnouncementDelay);
 }
 
-void UAnnouncementManagerComponent::ProcessAnnouncement(Announcement* announcement) const
+void UAnnouncementManagerComponent::AllAnnouncementsDoneOnTimer() const
 {
+	AllAnnouncementsDone.Broadcast();
+}
+
+void UAnnouncementManagerComponent::ProcessAnnouncement(Announcement* announcement)
+{
+	AssertIsNotNull(announcement);
 	for (auto announcementProcessor : _announcementProcessors)
 	{
 		auto const isProcessed(announcementProcessor(announcement));
@@ -148,44 +138,20 @@ bool UAnnouncementManagerComponent::TryProcessMedalAnnouncement(Announcement* an
 		return false;
 	}
 
-	auto const medalType = medalAnnouncement->GetMedalType();
-	MedalAnnouncementRequest.Broadcast(medalType);
-	
-	FString medalMessage;
-	switch (medalType)
-	{
-		case FMedalType::FirstBlood:
-			medalMessage = "FIRST BLOOD";
-			break;
-		case FMedalType::Excellent:
-			medalMessage = "EXCELLENT";
-			break;
-		case FMedalType::Impressive:
-			medalMessage = "IMPRESSIVE";
-			break;
-		default:
-			DevLogger::GetLoggingChannel()->LogValue("Unknown FMedalType", (int)medalType, LogSeverity::Warning);
-			break;
-	}
-
-	if (!medalMessage.IsEmpty())
-	{
-		MessageAnnouncementRequest.Broadcast(medalMessage);
-	}
+	MedalAnnouncementRequest.Broadcast(medalAnnouncement);
 
 	return true;
 }
 
-bool UAnnouncementManagerComponent::TryProcessMessageAnnouncement(Announcement* announcement) const
+bool UAnnouncementManagerComponent::TryProcessFragAnnouncement(Announcement* announcement) const
 {
-	auto const messageAnnouncement = dynamic_cast<MessageAnnouncement*>(announcement);
-	if (!messageAnnouncement)
+	auto const fragAnnouncement = dynamic_cast<FragAnnouncement*>(announcement);
+	if (!fragAnnouncement)
 	{
 		return false;
 	}
-
-	auto const message = messageAnnouncement->GetMessage();
-	MessageAnnouncementRequest.Broadcast(message);
+	
+	FragAnnouncementRequest.Broadcast(fragAnnouncement);
 
 	return true;
 }

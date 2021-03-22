@@ -2,14 +2,18 @@
 
 #include "Components/ActorComponent.h"
 #include "Announcement.h"
+#include "MedalAnnouncement.h"
+#include "FragAnnouncement.h"
 #include "LetsGo/Analytics/Medal.h"
 #include "LetsGo/Data/PlayerId.h"
 
 #include "AnnouncementManagerComponent.generated.h"
 
-DECLARE_EVENT_OneParam(UAnnouncementManagerComponent, EMessageAnnouncementRequest, const FString& message);
+DECLARE_EVENT_OneParam(UAnnouncementManagerComponent, EFragAnnouncementRequest, const FragAnnouncement* fragAnnouncement);
 
-DECLARE_EVENT_OneParam(UAnnouncementManagerComponent, EMedalAnnouncementRequest, const FMedalType message);
+DECLARE_EVENT_OneParam(UAnnouncementManagerComponent, EMedalAnnouncementRequest, const MedalAnnouncement* medalAnnouncement);
+
+DECLARE_EVENT(UAnnouncementManagerComponent, EAllAnnouncementsDone);
 
 ///<summary>
 ///Announcement manager component
@@ -33,9 +37,11 @@ public:
 		const FName& fraggedPlayerNickname
 	);
 
-	EMessageAnnouncementRequest MessageAnnouncementRequest;
+	EFragAnnouncementRequest FragAnnouncementRequest;
 
 	EMedalAnnouncementRequest MedalAnnouncementRequest;
+
+	EAllAnnouncementsDone AllAnnouncementsDone;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -44,22 +50,32 @@ private:
 	PlayerId _playerId;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
-	float _announcementDelay = 0.25f;
+	float _firstAnnouncementDelay = 0.25f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
-	float _consequentAnnouncementDelay = 1.5f;
+	float _announcementDuration = 1.5f;
 
 	TQueue<Announcement*> _announcements;
 
 	TArray<TFunction<bool(Announcement*)>> _announcementProcessors;
 
-	void CreateAnnouncementTask(const float delay);
-
-	void AnnounceOnTimer();
+	const float UNDEFINED_TIME = -1;
 	
-	void ProcessAnnouncement(Announcement* announcement) const;
+	float _nextAnnouncementTime = UNDEFINED_TIME;
+
+	FTimerHandle _announcementDoneTimerHandle;
+	
+	void AddAnnouncement(Announcement* announcement);
+	
+	void CreateAnnouncementTask(const float delay);
+	
+	void AnnounceOnTimer();
+
+	void AllAnnouncementsDoneOnTimer() const;
+	
+	void ProcessAnnouncement(Announcement* announcement);
 	
 	bool TryProcessMedalAnnouncement(Announcement* announcement) const;
 
-	bool TryProcessMessageAnnouncement(Announcement* announcement) const;
+	bool TryProcessFragAnnouncement(Announcement* announcement) const;
 };

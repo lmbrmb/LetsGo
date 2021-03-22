@@ -2,6 +2,8 @@
 
 #include "Blueprint/UserWidget.h"
 #include "LetsGo/Analytics/MedalType.h"
+#include "LetsGo/Announcements/MedalAnnouncement.h"
+#include "LetsGo/Announcements/FragAnnouncement.h"
 
 #include "AnnouncementWidget.generated.h"
 
@@ -14,14 +16,24 @@ class LETSGO_API UAnnouncementWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void OnMessageAnnouncementRequest(const FString& message);
+	void OnFragAnnouncementRequest(const FragAnnouncement* fragAnnouncement);
 
-	void OnMedalAnnouncementRequest(const FMedalType medalType);
+	void OnMedalAnnouncementRequest(const MedalAnnouncement* medalAnnouncement);
+
+	void OnAllAnnouncementsDone();
 	
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
-	void BpAnnounceMessage(const FString& message);
+	void BpAnnounceFrag(
+		const FName& instigatorPlayerNickname,
+		const FName& fraggedPlayerNickname,
+		const bool isLocalPlayerInstigator,
+		const bool isLocalPlayerFragged
+	);
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpAnnounceMedal(const FMedalType medalType);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpAllAnnouncementsDone();
 };

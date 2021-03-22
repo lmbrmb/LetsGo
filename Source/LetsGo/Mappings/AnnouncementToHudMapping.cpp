@@ -59,7 +59,8 @@ void UAnnouncementToHudMapping::OnPlayerHudInitialized()
 	AssertIsNotNull(theAnnouncementWidget);
 	AssertIsLessOrEqual(announcementWidgetCount, 1);
 
-	_announcementManagerComponent->MessageAnnouncementRequest.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnMessageAnnouncementRequest);
+	_announcementManagerComponent->FragAnnouncementRequest.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnFragAnnouncementRequest);
 	_announcementManagerComponent->MedalAnnouncementRequest.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnMedalAnnouncementRequest);
+	_announcementManagerComponent->AllAnnouncementsDone.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnAllAnnouncementsDone);
 	StartDestroyTask();
 }

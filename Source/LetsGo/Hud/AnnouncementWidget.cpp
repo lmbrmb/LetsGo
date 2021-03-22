@@ -1,11 +1,27 @@
 #include "AnnouncementWidget.h"
 
-void UAnnouncementWidget::OnMessageAnnouncementRequest(const FString& message)
+#include "LetsGo/Utils/AssertUtils.h"
+
+void UAnnouncementWidget::OnFragAnnouncementRequest(const FragAnnouncement* fragAnnouncement)
 {
-	BpAnnounceMessage(message);
+	AssertIsNotNull(fragAnnouncement);
+	
+	BpAnnounceFrag(
+		fragAnnouncement->GetInstigatorPlayerNickname(),
+		fragAnnouncement->GetFraggedPlayerNickname(),
+		fragAnnouncement->GetIsLocalPlayerInstigator(),
+		fragAnnouncement->GetIsLocalPlayerFragged()
+	);
 }
 
-void UAnnouncementWidget::OnMedalAnnouncementRequest(const FMedalType medalType)
+void UAnnouncementWidget::OnMedalAnnouncementRequest(const MedalAnnouncement* medalAnnouncement)
 {
-	BpAnnounceMedal(medalType);
+	AssertIsNotNull(medalAnnouncement);
+	
+	BpAnnounceMedal(medalAnnouncement->GetMedalType());
+}
+
+void UAnnouncementWidget::OnAllAnnouncementsDone()
+{
+	BpAllAnnouncementsDone();
 }

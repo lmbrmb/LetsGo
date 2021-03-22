@@ -14,7 +14,7 @@ NicknameGenerator::NicknameGenerator(const float predefinedNicknameProbability):
 
 	_nicknamePrefixes.Add("Mighty");
 	_nicknamePrefixes.Add("Divine");
-	_nicknamePrefixes.Add("Mega");
+	_nicknamePrefixes.Add("Eternal");
 
 	_nicknameNouns.Add("Orb");
 	_nicknameNouns.Add("N00b");
