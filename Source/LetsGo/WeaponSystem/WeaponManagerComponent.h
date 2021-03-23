@@ -129,7 +129,9 @@ private:
 	AActor* CreateGun(const GunItem* gunItem);
 
 	void AttachWeapon(AActor* weaponActor) const;
-	
+
+	bool CanAttachWeapon() const;
+
 	void OnPartialInitialization();
 
 	void CreateStartWeapon();

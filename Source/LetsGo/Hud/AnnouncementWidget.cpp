@@ -42,7 +42,12 @@ void UAnnouncementWidget::OnMedalAnnouncementRequest(const MedalAnnouncement* me
 	BpAnnounceMedal(medalAnnouncement->GetMedalType());
 }
 
-void UAnnouncementWidget::OnAllAnnouncementsDone()
+void UAnnouncementWidget::OnAllPlayerAnnouncementsDone()
 {
-	BpAllAnnouncementsDone();
+	BpAllPlayerAnnouncementsDone();
+}
+
+void UAnnouncementWidget::OnAllMatchAnnouncementsDone()
+{
+	BpAllMatchAnnouncementsDone();
 }

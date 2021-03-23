@@ -375,14 +375,7 @@ AActor* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 
 	gun->InitializeGun(ammoProvider, _aimProvider);
 
-	if (_weaponPivot == nullptr)
-	{
-		DevLogger::GetLoggingChannel()->Log("Weapon pivot is null", LogSeverity::Warning);
-	}
-	else
-	{
-		AttachWeapon(weaponActor);
-	}
+	AttachWeapon(weaponActor);
 	
 	gun->ShotPerformed.AddUObject(this, &UWeaponManagerComponent::OnGunShotPerformed);
 	
@@ -391,6 +384,11 @@ AActor* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 
 void UWeaponManagerComponent::AttachWeapon(AActor* weaponActor) const
 {
+	if(!CanAttachWeapon())
+	{
+		return;
+	}
+	
 	if(_ownerSkeletalMeshComponent)
 	{
 		weaponActor->AttachToComponent(_ownerSkeletalMeshComponent, FAttachmentTransformRules::KeepRelativeTransform, WeaponSocketName);
@@ -401,6 +399,11 @@ void UWeaponManagerComponent::AttachWeapon(AActor* weaponActor) const
 	}
 }
 
+bool UWeaponManagerComponent::CanAttachWeapon() const
+{
+	return _ownerSkeletalMeshComponent || _weaponPivot;
+}
+
 void UWeaponManagerComponent::OnPartialInitialization()
 {
 	if(_isInitialized)
@@ -408,7 +411,7 @@ void UWeaponManagerComponent::OnPartialInitialization()
 		return;
 	}
 	
-	if(_aimProvider == nullptr || _weaponPivot == nullptr || !_playerId.IsValid())
+	if(!CanAttachWeapon() || !_playerId.IsValid())
 	{
 		return;
 	}

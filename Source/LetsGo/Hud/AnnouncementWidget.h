@@ -26,8 +26,10 @@ public:
 
 	void OnMedalAnnouncementRequest(const MedalAnnouncement* medalAnnouncement);
 
-	void OnAllAnnouncementsDone();
-	
+	void OnAllPlayerAnnouncementsDone();
+
+	void OnAllMatchAnnouncementsDone();
+
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpAnnounceMatchWarmUp();
@@ -50,5 +52,8 @@ protected:
 	void BpAnnounceMedal(const FMedalType medalType);
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void BpAllAnnouncementsDone();
+	void BpAllPlayerAnnouncementsDone();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpAllMatchAnnouncementsDone();
 };

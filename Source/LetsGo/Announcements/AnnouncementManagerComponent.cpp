@@ -21,19 +21,22 @@ void UAnnouncementManagerComponent::SetPlayerId(const PlayerId& playerId)
 	_playerId = playerId;
 }
 
-void UAnnouncementManagerComponent::OnMatchWarmUp() const
+void UAnnouncementManagerComponent::OnMatchWarmUp()
 {
 	MatchWarmUpAnnouncementRequest.Broadcast();
+	CreateAllMatchAnnouncementsDoneTask(_matchWarmUpAnnouncementDuration);
 }
 
-void UAnnouncementManagerComponent::OnMatchStart() const
+void UAnnouncementManagerComponent::OnMatchStart()
 {
 	MatchStartAnnouncementRequest.Broadcast();
+	CreateAllMatchAnnouncementsDoneTask(_matchStartAnnouncementDuration);
 }
 
-void UAnnouncementManagerComponent::OnMatchEnd() const
+void UAnnouncementManagerComponent::OnMatchEnd()
 {
 	MatchEndAnnouncementRequest.Broadcast();
+	CreateAllMatchAnnouncementsDoneTask(_matchEndAnnouncementDuration);
 }
 
 void UAnnouncementManagerComponent::OnMedalAchieved(const Medal& medal)
@@ -45,7 +48,7 @@ void UAnnouncementManagerComponent::OnMedalAchieved(const Medal& medal)
 	
 	auto const medalType = medal.GetMedalType();
 	auto const medalAnnouncement = new MedalAnnouncement(medalType);
-	AddAnnouncement(medalAnnouncement);
+	AddPlayerAnnouncement(medalAnnouncement);
 }
 
 void UAnnouncementManagerComponent::OnPlayerFragged(
@@ -62,29 +65,29 @@ void UAnnouncementManagerComponent::OnPlayerFragged(
 	if(isRelevantToLocalPlayer)
 	{
 		auto const fragAnnouncement = new FragAnnouncement(instigatorPlayerNickname, fraggedPlayerNickname, isLocalPlayerInstigator, isLocalPlayerFragged);
-		AddAnnouncement(fragAnnouncement);
+		AddPlayerAnnouncement(fragAnnouncement);
 	}
 }
 
-void UAnnouncementManagerComponent::AddAnnouncement(Announcement* announcement)
+void UAnnouncementManagerComponent::AddPlayerAnnouncement(Announcement* announcement)
 {
-	_announcements.Enqueue(announcement);
+	_playerAnnouncements.Enqueue(announcement);
 
 	float delay;
 	auto const now = GetWorld()->TimeSeconds;
 	
 	if (now > _nextAnnouncementTime)
 	{
-		delay = _firstAnnouncementDelay;
+		delay = _firstPlayerAnnouncementDelay;
 	}
 	else
 	{
-		delay = _nextAnnouncementTime - now + _announcementDuration;
+		delay = _nextAnnouncementTime - now + _playerAnnouncementDuration;
 	}
 
 	_nextAnnouncementTime = now + delay;
 	
-	CreateAnnouncementTask(delay);
+	CreatePlayerAnnouncementTask(delay);
 
 	if (_announcementDoneTimerHandle.IsValid())
 	{
@@ -95,28 +98,40 @@ void UAnnouncementManagerComponent::AddAnnouncement(Announcement* announcement)
 	GetWorld()->GetTimerManager().SetTimer(
 		_announcementDoneTimerHandle,
 		this,
-		&UAnnouncementManagerComponent::AllAnnouncementsDoneOnTimer,
-		delay + _announcementDuration,
+		&UAnnouncementManagerComponent::AllPlayerAnnouncementsDoneOnTimer,
+		delay + _playerAnnouncementDuration,
 		false
 	);
 }
 
-void UAnnouncementManagerComponent::CreateAnnouncementTask(const float delay)
+void UAnnouncementManagerComponent::CreatePlayerAnnouncementTask(const float delay)
 {
-	FTimerHandle announceTimerHandle;
+	FTimerHandle playerAnnounceTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(
-		announceTimerHandle,
+		playerAnnounceTimerHandle,
 		this, 
-		&UAnnouncementManagerComponent::AnnounceOnTimer, 
+		&UAnnouncementManagerComponent::PlayerAnnouncementOnTimer, 
 		delay, 
 		false
 	);
 }
 
-void UAnnouncementManagerComponent::AnnounceOnTimer()
+void UAnnouncementManagerComponent::CreateAllMatchAnnouncementsDoneTask(const float delay)
+{
+	FTimerHandle allMatchAnnouncementsDoneTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(
+		allMatchAnnouncementsDoneTimerHandle,
+		this,
+		&UAnnouncementManagerComponent::AllMatchAnnouncementsDoneOnTimer,
+		delay,
+		false
+	);
+}
+
+void UAnnouncementManagerComponent::PlayerAnnouncementOnTimer()
 {
 	Announcement* announcement;
-	_announcements.Dequeue(announcement);
+	_playerAnnouncements.Dequeue(announcement);
 
 	AssertIsNotNull(announcement);
 	
@@ -124,9 +139,14 @@ void UAnnouncementManagerComponent::AnnounceOnTimer()
 	delete announcement;
 }
 
-void UAnnouncementManagerComponent::AllAnnouncementsDoneOnTimer() const
+void UAnnouncementManagerComponent::AllPlayerAnnouncementsDoneOnTimer() const
 {
-	AllAnnouncementsDone.Broadcast();
+	AllPlayerAnnouncementsDone.Broadcast();
+}
+
+void UAnnouncementManagerComponent::AllMatchAnnouncementsDoneOnTimer() const
+{
+	AllMatchAnnouncementsDone.Broadcast();
 }
 
 void UAnnouncementManagerComponent::ProcessAnnouncement(Announcement* announcement)

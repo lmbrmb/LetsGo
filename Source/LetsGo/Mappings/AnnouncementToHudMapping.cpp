@@ -64,6 +64,7 @@ void UAnnouncementToHudMapping::OnPlayerHudInitialized()
 	_announcementManagerComponent->MatchEndAnnouncementRequest.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnMatchEndAnnouncementRequest);
 	_announcementManagerComponent->FragAnnouncementRequest.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnFragAnnouncementRequest);
 	_announcementManagerComponent->MedalAnnouncementRequest.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnMedalAnnouncementRequest);
-	_announcementManagerComponent->AllAnnouncementsDone.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnAllAnnouncementsDone);
+	_announcementManagerComponent->AllPlayerAnnouncementsDone.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnAllPlayerAnnouncementsDone);
+	_announcementManagerComponent->AllMatchAnnouncementsDone.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnAllMatchAnnouncementsDone);
 	StartDestroyTask();
 }

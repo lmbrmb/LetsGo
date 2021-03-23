@@ -34,11 +34,11 @@ public:
 
 	void SetPlayerId(const PlayerId& playerId);
 
-	void OnMatchWarmUp() const;
+	void OnMatchWarmUp();
 	
-	void OnMatchStart() const;
+	void OnMatchStart();
 
-	void OnMatchEnd() const;
+	void OnMatchEnd();
 	
 	void OnMedalAchieved(const Medal& medal);
 
@@ -59,22 +59,33 @@ public:
 
 	EMedalAnnouncementRequest MedalAnnouncementRequest;
 
-	EAllAnnouncementsDone AllAnnouncementsDone;
+	EAllAnnouncementsDone AllPlayerAnnouncementsDone;
+
+	EAllAnnouncementsDone AllMatchAnnouncementsDone;
 	
 protected:
 	virtual void BeginPlay() override;
 	
 private:
 	PlayerId _playerId;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	float _matchWarmUpAnnouncementDuration = 3.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	float _matchStartAnnouncementDuration = 3.0f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
-	float _firstAnnouncementDelay = 0.25f;
+	float _matchEndAnnouncementDuration = 10.0f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	float _firstPlayerAnnouncementDelay = 0.25f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
-	float _announcementDuration = 1.5f;
+	float _playerAnnouncementDuration = 1.5f;
 
-	TQueue<Announcement*> _announcements;
-
+	TQueue<Announcement*> _playerAnnouncements;
+	
 	TArray<TFunction<bool(Announcement*)>> _announcementProcessors;
 
 	const float UNDEFINED_TIME = -1;
@@ -83,13 +94,17 @@ private:
 
 	FTimerHandle _announcementDoneTimerHandle;
 	
-	void AddAnnouncement(Announcement* announcement);
+	void AddPlayerAnnouncement(Announcement* announcement);
 	
-	void CreateAnnouncementTask(const float delay);
-	
-	void AnnounceOnTimer();
+	void CreatePlayerAnnouncementTask(const float delay);
 
-	void AllAnnouncementsDoneOnTimer() const;
+	void CreateAllMatchAnnouncementsDoneTask(const float delay);
+	
+	void PlayerAnnouncementOnTimer();
+
+	void AllPlayerAnnouncementsDoneOnTimer() const;
+
+	void AllMatchAnnouncementsDoneOnTimer() const;
 	
 	void ProcessAnnouncement(Announcement* announcement);
 	
