@@ -5,7 +5,7 @@
 /// <summary>
 /// Material factory
 /// </summary>
-class MaterialFactory : public CachedAssetFactory<UMaterial>
+class MaterialFactory : public CachedAssetFactory<UMaterialInterface>
 {
 public:
 	explicit MaterialFactory(const bool lazyInitialization);
