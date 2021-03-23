@@ -10,7 +10,8 @@ public:
 		const PlayerId& playerId,
 		const AvatarType avatarType,
 		const FName& skinId, 
-		const FName& nickname
+		const FName& nickname,
+		const int teamId
 	);
 
 	PlayerId GetPlayerId() const;
@@ -21,6 +22,8 @@ public:
 
 	FName GetNickname() const;
 
+	int GetTeamId() const;
+
 private:
 	PlayerId _playerId;
 
@@ -29,4 +32,6 @@ private:
 	FName _skinId;
 
 	const FName _nickname;
+
+	int _teamId;
 };

@@ -70,3 +70,6 @@ if (!BoolUtils::IsEqual(value, false)) \
 	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Value is not false", LogSeverity::Error); \
 	return; \
 };
+
+#define AssertDefaultImplementationIsOverriden() \
+	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Default implementation is not overriden or base class implementation is called in derived class", LogSeverity::Error);

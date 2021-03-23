@@ -1,18 +1,10 @@
 #include "MatchGameMode.h"
 
 #include "GameFramework/GameStateBase.h"
-#include "GameFramework/PlayerState.h"
-#include "Kismet/GameplayStatics.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
 #include "LetsGo/DiContainers/MatchDiContainerFactory.h"
 #include "LetsGo/Utils/ActorUtils.h"
 #include "LetsGo/Utils/AssertUtils.h"
-
-const int BOT_COUNT = 3;
-
-const FName LOCAL_PLAYER_NAME = "%UserName%";
-
-const FName LOCAL_PLAYER_SKIN_ID = "Kachujin";
 
 AMatchGameMode::~AMatchGameMode()
 {
@@ -27,42 +19,22 @@ void AMatchGameMode::InitGame(const FString& MapName, const FString& Options, FS
 	MatchDiContainerFactory containerFactory;
 	_diContainer = containerFactory.CreateContainer<ESPMode::Fast>();
 
-	auto const avatarDataFactory = GetDiContainer()->GetInstance<AvatarDataFactory>();
-	_avatarDataFactory = &avatarDataFactory.Get();
-
 	auto const avatarSpawnFactory = GetDiContainer()->GetInstance<AvatarSpawnFactory>();
 	_avatarSpawnFactory = &avatarSpawnFactory.Get();
 	
 	_matchAnalytics = new MatchAnalytics(this);
 }
 
-void AMatchGameMode::PopulateAvatarsData()
+void AMatchGameMode::TriggerMatchWarmUp()
 {
-	for (auto i = 0; i < BOT_COUNT; i++)
-	{
-		auto const botIdValue = MAX_int32 - i;
-		const PlayerId botId(botIdValue);
-		auto const avatarData = _avatarDataFactory->GenerateRandom(botId, AvatarType::Bot);
-		_avatarsData.Add(botIdValue, avatarData);
-	}
-	
-	auto const localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	AssertIsNotNull(localPlayerController);
-
-	auto const localPlayerState = localPlayerController->GetPlayerState<APlayerState>();
-	AssertIsNotNull(localPlayerState);
-
-	auto const localPlayerIdValue = localPlayerState->GetPlayerId();
-	auto const localPlayerId = PlayerId(localPlayerIdValue);
-	
-	auto const avatarData = _avatarDataFactory->Create(localPlayerId, AvatarType::LocalPlayer, LOCAL_PLAYER_SKIN_ID, LOCAL_PLAYER_NAME);
-	_avatarsData.Add(localPlayerIdValue, avatarData);
+	SetMatchState(MatchState::WarmUp);
+	GetWorldTimerManager().SetTimer(_matchStateTimerHandle, this, &AMatchGameMode::TriggerMatchStart, _warmUpDuration, false);
 }
 
 void AMatchGameMode::TriggerMatchStart()
 {
 	SetMatchState(MatchState::Started);
-	GetWorldTimerManager().SetTimer(_matchTimerHandle, this, &AMatchGameMode::TriggerMatchEnd, _matchDuration, false);
+	GetWorldTimerManager().SetTimer(_matchStateTimerHandle, this, &AMatchGameMode::TriggerMatchEnd, _matchDuration, false);
 }
 
 void AMatchGameMode::TriggerMatchEnd()
@@ -72,9 +44,9 @@ void AMatchGameMode::TriggerMatchEnd()
 
 AvatarData* AMatchGameMode::GetAvatarData(const int playerIdValue) const
 {
-	if(_avatarsData.Contains(playerIdValue))
+	if(AvatarsData.Contains(playerIdValue))
 	{
-		return _avatarsData[playerIdValue];
+		return AvatarsData[playerIdValue];
 	}
 
 	DevLogger::GetLoggingChannel()->LogValue("Can't find avatar data. Player id value:", playerIdValue, LogSeverity::Error);
@@ -104,16 +76,16 @@ void AMatchGameMode::BeginPlay()
 	_stateStartTime = GetWorld()->TimeSeconds;
 	
 	PopulateAvatarsData();
-
-	SetMatchState(MatchState::WarmUp);
 	
-	for (const auto avatarDataEntry : _avatarsData)
+	for (const auto avatarDataEntry : AvatarsData)
 	{
 		auto const avatarData = avatarDataEntry.Value;
+		auto const playerIdValue = avatarData->GetPlayerId().GetId();
+		Frags.Add(playerIdValue, 0);
 		SpawnAvatar(avatarData);
 	}
 
-	GetWorldTimerManager().SetTimer(_matchTimerHandle, this, &AMatchGameMode::TriggerMatchStart, _warmUpDuration, false);
+	GetWorldTimerManager().SetTimer(_matchStateTimerHandle, this, &AMatchGameMode::TriggerMatchWarmUp, _warmUpDelay, false);
 }
 
 void AMatchGameMode::RegisterSpawnPoint(FTransform spawnPoint)
@@ -144,6 +116,11 @@ bool AMatchGameMode::IsMatchStarted() const
 bool AMatchGameMode::IsMatchEnded() const
 {
 	return _matchState == MatchState::Ended;
+}
+
+bool AMatchGameMode::IsMatchInProgress() const
+{
+	return _matchState == MatchState::Started;
 }
 
 float AMatchGameMode::GetCurrentStateTime() const
@@ -192,7 +169,7 @@ void AMatchGameMode::RespawnAvatarOnTimer()
 	int playerIdValue;
 	_respawnQueue.Dequeue(playerIdValue);
 
-	for (const auto avatarDataEntry : _avatarsData)
+	for (const auto avatarDataEntry : AvatarsData)
 	{
 		auto const avatarData = avatarDataEntry.Value;
 		if (avatarData->GetPlayerId().GetId() == playerIdValue)
@@ -240,6 +217,15 @@ void AMatchGameMode::OnAvatarDied(const UHealthComponent* healthComponent, const
 		auto const fraggedPlayerNickname = fraggedPlayerAvatarData->GetNickname();
 
 		PlayerFragged.Broadcast(instigatorPlayerId, fraggedPlayerId, instigatorPlayerNickname, fraggedPlayerNickname);
+
+		if(IsMatchInProgress())
+		{
+			auto const isSuicide = instigatorPlayerIdValue == fraggedPlayerIdValue;
+			auto const fragModifier = isSuicide ? -1 : 1;
+
+			Frags[instigatorPlayerIdValue] = Frags[instigatorPlayerIdValue] + fragModifier;
+			OnFragsCountChanged();
+		}
 	}
 	
 	_respawnQueue.Enqueue(fraggedPlayerIdValue);
@@ -249,6 +235,8 @@ void AMatchGameMode::OnAvatarDied(const UHealthComponent* healthComponent, const
 
 void AMatchGameMode::SetMatchState(MatchState matchState)
 {
+	GetWorldTimerManager().ClearTimer(_matchStateTimerHandle);
+	
 	if(!CanEnterState(matchState))
 	{
 		auto const loggingChannel = DevLogger::GetLoggingChannel();
@@ -263,15 +251,12 @@ void AMatchGameMode::SetMatchState(MatchState matchState)
 	switch (_matchState)
 	{
 		case MatchState::WarmUp:
-			DevLogger::GetLoggingChannel()->Log("Match warm up", LogSeverity::Warning);
 			MatchWarmUp.Broadcast();
 			break;
 		case MatchState::Started:
-			DevLogger::GetLoggingChannel()->Log("Match started", LogSeverity::Warning);
 			MatchStart.Broadcast();
 			break;
 		case MatchState::Ended:
-			DevLogger::GetLoggingChannel()->Log("Match ended", LogSeverity::Warning);
 			_matchEndTime = GetCurrentStateTime();
 			MatchEnd.Broadcast();
 			break;
@@ -299,4 +284,21 @@ bool AMatchGameMode::CanEnterState(MatchState matchState) const
 			DevLogger::GetLoggingChannel()->LogValue("Unknown match state:", (int)matchState, LogSeverity::Error);
 			return false;
 	};
+}
+
+// Template methods below
+void AMatchGameMode::PopulateAvatarsData()
+{
+	AssertDefaultImplementationIsOverriden();
+}
+
+void AMatchGameMode::OnFragsCountChanged()
+{
+	AssertDefaultImplementationIsOverriden();
+}
+
+bool AMatchGameMode::IsLocalPlayerWonMatch()
+{
+	AssertDefaultImplementationIsOverriden();
+	return false;
 }

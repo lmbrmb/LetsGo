@@ -1,5 +1,6 @@
 #include "AnnouncementWidget.h"
 
+#include "LetsGo/GameModes/MatchGameMode.h"
 #include "LetsGo/Utils/AssertUtils.h"
 
 void UAnnouncementWidget::OnMatchWarmUpAnnouncementRequest()
@@ -14,7 +15,12 @@ void UAnnouncementWidget::OnMatchStartAnnouncementRequest()
 
 void UAnnouncementWidget::OnMatchEndAnnouncementRequest()
 {
-	BpAnnounceMatchEnd();
+	auto const authGameMode = GetWorld()->GetAuthGameMode();
+	auto const matchGameMode = Cast<AMatchGameMode>(authGameMode);
+	AssertIsNotNull(matchGameMode);
+
+	auto const isLocalPlayerWonMatch = matchGameMode->IsLocalPlayerWonMatch();
+	BpAnnounceMatchEnd(isLocalPlayerWonMatch);
 }
 
 void UAnnouncementWidget::OnFragAnnouncementRequest(const FragAnnouncement* fragAnnouncement)

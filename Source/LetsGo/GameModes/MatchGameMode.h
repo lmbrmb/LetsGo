@@ -5,7 +5,6 @@
 #include "LetsGo/Avatars/AvatarData.h"
 #include "Misc/TypeContainer.h"
 #include "LetsGo/Analytics/MatchAnalytics.h"
-#include "LetsGo/Avatars/AvatarDataFactory.h"
 #include "LetsGo/Avatars/AvatarSpawnFactory.h"
 #include "LetsGo/GameStates/MatchState.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
@@ -63,30 +62,46 @@ public:
 	bool IsMatchWarmUp() const;
 	
 	bool IsMatchStarted() const;
-
+	
 	bool IsMatchEnded() const;
+
+	bool IsMatchInProgress() const;
+
+	virtual bool IsLocalPlayerWonMatch();
 	
 protected:
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 
-	virtual void BeginPlay() override;
+	virtual void BeginPlay() override final;
 
-	virtual void OnAvatarDied(const UHealthComponent* healthComponent, const float delta);
+	virtual void PopulateAvatarsData();
 
-	float GetCurrentStateTime() const;
+	virtual void OnFragsCountChanged();
+
+	void SetMatchState(MatchState matchState);
+	
+	/// <summary>
+	/// PlayerId value, Avatar data
+	/// </summary>
+	TMap<int, AvatarData*> AvatarsData;
+
+	/// <summary>
+	/// PlayerId value, frag count
+	/// </summary>
+	TMap<int, int> Frags;
 	
 private:
 	float _stateStartTime = 0;
 
 	float _matchEndTime = 0;
-	
-	void SetMatchState(MatchState matchState);
 
 	bool CanEnterState(MatchState matchState) const;
+
+	float GetCurrentStateTime() const;
 	
 	MatchState _matchState = MatchState::None;
 
-	FTimerHandle _matchTimerHandle;
+	FTimerHandle _matchStateTimerHandle;
 	
 	const int UNDEFINED_INDEX = -1;
 
@@ -95,6 +110,9 @@ private:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
 	float _avatarDestroyTime = 2.5f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	float _warmUpDelay = 1.0f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
 	float _warmUpDuration = 5.0f;
@@ -107,12 +125,8 @@ private:
 	TArray<FTransform> _spawnPoints;
 
 	int _spawnPointIndex = UNDEFINED_INDEX;
-	
-	TMap<int, AvatarData*> _avatarsData;
 
 	AvatarSpawnFactory* _avatarSpawnFactory;
-	
-	AvatarDataFactory* _avatarDataFactory;
 
 	// PlayerId value
 	TQueue<int> _respawnQueue;
@@ -121,6 +135,8 @@ private:
 
 	MatchAnalytics* _matchAnalytics;
 
+	void OnAvatarDied(const UHealthComponent* healthComponent, const float delta);
+	
 	FTransform GetNextSpawnPoint();
 
 	void SpawnAvatar(AvatarData* avatarData);
@@ -129,8 +145,8 @@ private:
 
 	void DestroyAvatarOnTimer();
 
-	void PopulateAvatarsData();
-
+	void TriggerMatchWarmUp();
+	
 	void TriggerMatchStart();
 
 	void TriggerMatchEnd();

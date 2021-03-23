@@ -38,5 +38,7 @@ private:
 
 	TArray<IHitMedalProcessor*> _hitMedalProcessors;
 
+	AMatchGameMode* _matchGameMode;
+	
 	UWorld* _world;
 };

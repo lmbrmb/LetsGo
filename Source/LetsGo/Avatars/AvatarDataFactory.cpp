@@ -16,17 +16,22 @@ AvatarData* AvatarDataFactory::Create(
 	const PlayerId& playerId, 
 	const AvatarType avatarType, 
 	const FName& skinId,
-	const FName& nickname
+	const FName& nickname,
+	const int teamId
 )
 {
-	return new AvatarData(playerId, avatarType, skinId, nickname);
+	return new AvatarData(playerId, avatarType, skinId, nickname, teamId);
 }
 
-AvatarData* AvatarDataFactory::GenerateRandom(const PlayerId& playerId, const AvatarType avatarType)
+AvatarData* AvatarDataFactory::GenerateRandom(
+	const PlayerId& playerId,
+	const AvatarType avatarType,
+	const int teamId
+)
 {
 	auto const skinId = GetRandomSkinId();
 	auto const nickname = _nicknameGenerator->Generate();
-	return new AvatarData(playerId, avatarType, skinId, nickname);
+	return new AvatarData(playerId, avatarType, skinId, nickname, teamId);
 }
 
 FName AvatarDataFactory::GetRandomSkinId()

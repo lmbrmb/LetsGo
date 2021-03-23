@@ -7,9 +7,11 @@
 #include "LetsGo/Utils/AssertUtils.h"
 #include "LetsGo/WeaponSystem/WeaponManagerComponent.h"
 
-MatchAnalytics::MatchAnalytics(AMatchGameMode* matchGameMode)
+MatchAnalytics::MatchAnalytics(AMatchGameMode* matchGameMode) :
+	_matchGameMode(matchGameMode)
 {
-	matchGameMode->AvatarSpawned.AddRaw(this, &MatchAnalytics::OnAvatarSpawned);
+	_matchGameMode->AvatarSpawned.AddRaw(this, &MatchAnalytics::OnAvatarSpawned);
+	_world = matchGameMode->GetWorld();
 
 	auto const firstBloodMedalProcessor = new FirstBloodMedalProcessor();
 	auto const impressiveMedalProcessor = new ImpressiveMedalProcessor(2, WeaponId("Railgun"));
@@ -22,7 +24,6 @@ MatchAnalytics::MatchAnalytics(AMatchGameMode* matchGameMode)
 	_hitMedalProcessors.Add(impressiveMedalProcessor);
 	
 	_healthProcessors.Add([this](const UHealthComponent* healthComponent, const float delta) { this->TryProcessDamage(healthComponent, delta); });
-	_world = matchGameMode->GetWorld();
 }
 
 // ReSharper disable once CppMemberFunctionMayBeStatic
@@ -39,6 +40,11 @@ void MatchAnalytics::OnAvatarSpawned(const AAvatar* avatar)
 // ReSharper disable once CppMemberFunctionMayBeStatic
 void MatchAnalytics::OnAvatarHealthChanged(const UHealthComponent* healthComponent, const float delta)
 {
+	if(!_matchGameMode->IsMatchInProgress())
+	{
+		return;
+	}
+	
 	for (auto healthProcessor : _healthProcessors)
 	{
 		healthProcessor(healthComponent, delta);
@@ -47,6 +53,11 @@ void MatchAnalytics::OnAvatarHealthChanged(const UHealthComponent* healthCompone
 
 void MatchAnalytics::OnShotPerformed(const PlayerId& instigatorId, const WeaponId& instigatorWeaponId, const bool isHittedPlayer)
 {
+	if (!_matchGameMode->IsMatchInProgress())
+	{
+		return;
+	}
+	
 	Medal medal;
 	for (auto hitMedalProcessor : _hitMedalProcessors)
 	{
@@ -68,6 +79,11 @@ void MatchAnalytics::OnShotPerformed(const PlayerId& instigatorId, const WeaponI
 
 void MatchAnalytics::TryProcessDamage(const UHealthComponent* healthComponent, const float delta)
 {
+	if (!_matchGameMode->IsMatchInProgress())
+	{
+		return;
+	}
+	
 	if (delta >= 0)
 	{
 		return;

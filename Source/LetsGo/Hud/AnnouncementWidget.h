@@ -36,7 +36,7 @@ protected:
 	void BpAnnounceMatchStart();
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void BpAnnounceMatchEnd();
+	void BpAnnounceMatchEnd(bool isLocalPlayerWonMatch);
 	
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpAnnounceFrag(

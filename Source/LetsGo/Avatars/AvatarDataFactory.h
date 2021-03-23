@@ -15,10 +15,15 @@ public:
 		const PlayerId& playerId,
 		const AvatarType avatarType,
 		const FName& skinId,
-		const FName& nickname
+		const FName& nickname,
+		const int teamId
 	);
 	
-	AvatarData* GenerateRandom(const PlayerId& playerId, AvatarType avatarType);
+	AvatarData* GenerateRandom(
+		const PlayerId& playerId,
+		AvatarType avatarType,
+		const int teamId
+	);
 
 private:
 	TArray<FName> _avatarSkinIds;
