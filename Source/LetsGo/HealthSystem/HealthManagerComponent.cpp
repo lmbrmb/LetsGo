@@ -75,6 +75,7 @@ void UHealthManagerComponent::OnDied(const UHealthComponent*, float delta) const
 	owner->GetComponents<UShapeComponent>(shapeComponents);
 	for (auto shapeComponent : shapeComponents)
 	{
-		//TODO: disable pawn-pawn collision
+		//Disables pawn-pawn collision
+		shapeComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	}
 }

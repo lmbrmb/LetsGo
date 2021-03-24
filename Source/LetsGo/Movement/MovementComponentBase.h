@@ -77,6 +77,9 @@ protected:
 private:
 	bool _isInAir = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TEnumAsByte<ECollisionChannel> _collisionChannel;
+	
 	// Jump
 	
 	UPROPERTY(EditAnywhere, Category = "Jump", meta = (AllowPrivateAccess = "true"))

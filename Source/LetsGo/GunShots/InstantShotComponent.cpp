@@ -9,6 +9,7 @@ void UInstantShotComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	_collisionQueryParams.bIgnoreTouches = true;
 	_collisionQueryParams.AddIgnoredActor(GunActor);
 	_collisionQueryParams.AddIgnoredActor(GunOwner);
 }

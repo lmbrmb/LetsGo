@@ -30,6 +30,7 @@ void UMovementComponentBase::BeginPlay()
 	RootCollider = Cast<UShapeComponent>(rootComponent);
 	AssertIsNotNull(RootCollider);
 	CollisionShape = RootCollider->GetCollisionShape();
+	CollisionQueryParams.bIgnoreTouches = true;
 	CollisionQueryParams.AddIgnoredActor(actor);
 	
 	auto const authGameMode = World->GetAuthGameMode();
@@ -74,7 +75,7 @@ void UMovementComponentBase::CheckGround()
 		location,
 		targetLocation,
 		RootCollider->GetComponentQuat(),
-		ECC_WorldStatic,
+		_collisionChannel,
 		CollisionShape,
 		CollisionQueryParams
 	);
@@ -214,7 +215,7 @@ void UMovementComponentBase::Move(
 		rootColliderLocation,
 		castEndLocation,
 		rootColliderRotation,
-		ECC_WorldStatic,
+		_collisionChannel,
 		CollisionShape,
 		CollisionQueryParams
 	);
