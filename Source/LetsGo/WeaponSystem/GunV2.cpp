@@ -40,13 +40,15 @@ void AGunV2::SetState(const GunState state)
 
 void AGunV2::ProcessIdleState()
 {
-	if (IsEnoughAmmoForShot())
+	if (_isFireTriggered)
 	{
-		// Shot requested
-		if (_isFireTriggered)
+		if(!IsEnoughAmmoForShot())
 		{
-			StartShot();
+			return;
 		}
+		
+		ConsumeAmmo(_consumeAmmoPerShot);
+		StartShot();
 	}
 }
 

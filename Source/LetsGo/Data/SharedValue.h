@@ -27,6 +27,9 @@ public:
 
 	T Remove(const T amount);
 
+	DECLARE_EVENT_OneParam(SharedValue, FChanged, T);
+	FChanged Changed;
+	
 	DECLARE_EVENT_OneParam(SharedValue, FAdded, T);
 	FAdded Added;
 
@@ -95,6 +98,7 @@ T SharedValue<T>::Add(const T amount)
 	
 	_current += amountToAdd;
 	Added.Broadcast(amountToAdd);
+	Changed.Broadcast(_current);
 	
 	return amountToAdd;
 }
@@ -112,6 +116,7 @@ T SharedValue<T>::Remove(const T amount)
 	
 	_current -= amountToRemove;
 	Removed.Broadcast(amountToRemove);
+	Changed.Broadcast(_current);
 	
 	return amountToRemove;
 }

@@ -7,7 +7,7 @@
 #include "HealthWidget.generated.h"
 
 /// <summary>
-/// Health hud widget
+/// Health HUD widget
 /// </summary>
 UCLASS()
 class LETSGO_API UHealthWidget : public UUserWidget

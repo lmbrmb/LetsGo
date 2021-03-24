@@ -18,14 +18,14 @@ public:
 	
 	bool IsWeaponInitialized() const;
 
-	void InitializeWeapon(const WeaponId& id, const PlayerId& playerId);
+	void InitializeWeapon(const WeaponId& weaponId, const PlayerId& playerId);
 
 	const WeaponId& GetWeaponId() const;
 
 	const PlayerId& GetPlayerId() const;
 	
 private:
-	WeaponId _id;
+	WeaponId _weaponId;
 
 	PlayerId _playerId;
 	

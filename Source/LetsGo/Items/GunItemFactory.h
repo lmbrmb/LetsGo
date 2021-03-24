@@ -11,13 +11,13 @@ class LETSGO_API GunItemFactory final : public ItemFactory<GunItem>
 class GunData
 {
 public:
-	explicit GunData(const FName ammoType, const int initialAmmoCount) :
-	AmmoType(ammoType),
+	explicit GunData(const FName& ammoId, const int initialAmmoCount) :
+	AmmoId(ammoId),
 	InitialAmmoCount(initialAmmoCount)
 	{
 	}
 
-	FName AmmoType;
+	FName AmmoId;
 	
 	int InitialAmmoCount;
 };

@@ -1,8 +1,8 @@
 #include "IWeapon.h"
 
-void IWeapon::InitializeWeapon(const WeaponId& id, const PlayerId& playerId)
+void IWeapon::InitializeWeapon(const WeaponId& weaponId, const PlayerId& playerId)
 {
-	_id = id;
+	_weaponId = weaponId;
 	_playerId = playerId;
 	_isWeaponInitialized = true;
 	WeaponInitialized.Broadcast(this);
@@ -15,7 +15,7 @@ bool IWeapon::IsWeaponInitialized() const
 
 const WeaponId& IWeapon::GetWeaponId() const
 {
-	return _id;
+	return _weaponId;
 }
 
 const PlayerId& IWeapon::GetPlayerId() const

@@ -1,11 +1,10 @@
 #include "GunItem.h"
 
 GunItem::GunItem(
-	const FName id,
-	const FName ammoId,
+	const FName& gunId,
+	const FName& ammoId,
 	const int initialAmmoCount
-)
-	: Item(id),
+) :	Item(gunId),
 	_ammoId(ammoId),
 	_initialAmmoCount(initialAmmoCount)
 {
@@ -16,7 +15,7 @@ int GunItem::GetInitialAmmoCount() const
 	return _initialAmmoCount;
 }
 
-FName GunItem::GetAmmoId() const
+const FName& GunItem::GetAmmoId() const
 {
 	return _ammoId;
 }

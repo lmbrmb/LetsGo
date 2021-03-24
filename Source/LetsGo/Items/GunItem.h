@@ -9,14 +9,14 @@ class LETSGO_API GunItem final : public Item
 {
 public:
 	explicit GunItem(
-		const FName id,
-		const FName ammoId,
+		const FName& gunId,
+		const FName& ammoId,
 		const int initialAmmoCount
 	);
 
 	int GetInitialAmmoCount() const;
 
-	FName GetAmmoId() const;
+	const FName& GetAmmoId() const;
 	
 private:
 	FName _ammoId;

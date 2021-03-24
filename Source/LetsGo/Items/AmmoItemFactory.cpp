@@ -5,6 +5,7 @@ AmmoItemFactory::AmmoItemFactory()
 	_ammoData.Add("ShotgunShells", AmmoData(10, 30));
 	_ammoData.Add("RailgunBullets", AmmoData(10, 30));
 	_ammoData.Add("MachinegunBullets", AmmoData(50, 150));
+	_ammoData.Add("Rockets", AmmoData(10, 30));
 }
 
 AmmoItem* AmmoItemFactory::CreateItem(const FName itemId)

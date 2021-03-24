@@ -17,6 +17,8 @@
 
 DECLARE_EVENT_ThreeParams(UWeaponManagerComponent, EShotPerformed_UWeaponManagerComponent, const PlayerId& playerId, const WeaponId& gunId, const bool isAnyBulletDamaged);
 
+DECLARE_EVENT(UWeaponManagerComponent, EWeaponChanged_UWeaponManagerComponent);
+
 UCLASS(ClassGroup = (Custom), Blueprintable, meta = (BlueprintSpawnableComponent))
 class LETSGO_API UWeaponManagerComponent final : public UActorComponent, public IItemProcessor
 {
@@ -52,7 +54,13 @@ public:
 	
 	virtual bool TryProcessItem(Item* item) override;
 
+	IWeapon* GetCurrentWeapon() const;
+
+	IGun* GetCurrentGun() const;
+
 	EShotPerformed_UWeaponManagerComponent ShotPerformed;
+
+	EWeaponChanged_UWeaponManagerComponent WeaponChanged;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -108,6 +116,8 @@ private:
 	
 	AActor* _weaponActor = nullptr;
 
+	IWeapon* _weapon = nullptr;
+
 	IGun* _gun = nullptr;
 
 	int _weaponIndex = UNDEFINED_INDEX;
@@ -117,11 +127,11 @@ private:
 	TArray<TFunction<bool(Item*)>> _itemProcessors;
 
 	bool TryProcessItemAsGun(Item* item);
-	
+
 	bool TryProcessItemAsAmmo(Item* item);
 
 	AmmoProvider* GetAmmoProvider(const FName ammoId);
-	
+
 	AmmoProvider* CreateAmmoProvider(const GunItem* gunItem);
 
 	AmmoProvider* CreateAmmoProvider(const AmmoItem* ammoItem);

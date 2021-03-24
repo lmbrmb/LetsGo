@@ -207,9 +207,12 @@ void UWeaponManagerComponent::EquipWeapon(const int weaponIndex)
 	_weaponActor = _weaponActors[_weaponIndex];
 
 	// Refresh all known weapons
+	_weapon = _weapons[_weaponIndex];
 	_gun = dynamic_cast<IGun*>(_weaponActor);
 	
 	ActorUtils::SetEnabled(_weaponActor, true);
+
+	WeaponChanged.Broadcast();
 
 	if(_isFireStarted)
 	{
@@ -285,7 +288,8 @@ bool UWeaponManagerComponent::TryProcessItemAsAmmo(Item* item)
 		return false;
 	}
 
-	auto ammoProvider = GetAmmoProvider(ammoItem->GetId());
+	auto const ammoItemId = ammoItem->GetId();
+	auto ammoProvider = GetAmmoProvider(ammoItemId);
 
 	if (ammoProvider)
 	{
@@ -315,13 +319,23 @@ AmmoProvider* UWeaponManagerComponent::GetAmmoProvider(const FName ammoId)
 	return nullptr;
 }
 
+IWeapon* UWeaponManagerComponent::GetCurrentWeapon() const
+{
+	return _weapon;
+}
+
+IGun* UWeaponManagerComponent::GetCurrentGun() const
+{
+	return _gun;
+}
+
 AmmoProvider* UWeaponManagerComponent::CreateAmmoProvider(const GunItem* gunItem)
 {
 	auto const ammoId = gunItem->GetAmmoId();
 	auto const ammoItem = _ammoItemFactory->Get(ammoId);
 	auto const maxAmmo = ammoItem->GetMaxQuantity();
 	auto const currentAmmo = gunItem->GetInitialAmmoCount();
-	auto const ammoProvider = new AmmoProvider(0, maxAmmo, currentAmmo);
+	auto const ammoProvider = new AmmoProvider(0, maxAmmo, currentAmmo, ammoId);
 	_ammoProviders.Add(ammoId, ammoProvider);
 	return ammoProvider;
 }
@@ -331,7 +345,7 @@ AmmoProvider* UWeaponManagerComponent::CreateAmmoProvider(const AmmoItem* ammoIt
 	auto const ammoId = ammoItem->GetId();
 	auto const maxAmmo = ammoItem->GetMaxQuantity();
 	auto const currentAmmo = ammoItem->GetQuantity();
-	auto const ammoProvider = new AmmoProvider(0, maxAmmo, currentAmmo);
+	auto const ammoProvider = new AmmoProvider(0, maxAmmo, currentAmmo, ammoId);
 	_ammoProviders.Add(ammoId, ammoProvider);
 	return ammoProvider;
 }

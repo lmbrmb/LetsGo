@@ -15,6 +15,6 @@ GunItem* GunItemFactory::CreateItem(const FName itemId)
 	}
 	
 	auto const gunData = _gunData[itemId];
-	auto const gunItem = new GunItem(itemId, gunData.AmmoType, gunData.InitialAmmoCount);;
+	auto const gunItem = new GunItem(itemId, gunData.AmmoId, gunData.InitialAmmoCount);;
 	return gunItem;
 }
