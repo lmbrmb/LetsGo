@@ -18,7 +18,7 @@ void UGunShotComponent::SetPlayerId(const PlayerId& instigatorId)
 	InstigatorPlayerId = instigatorId;
 }
 
-void UGunShotComponent::SetAimProvider(USceneComponent* aimProvider)
+void UGunShotComponent::SetAimProvider(IAimProvider* aimProvider)
 {
 	AimProvider = aimProvider;
 }

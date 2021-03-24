@@ -141,7 +141,7 @@ void UWeaponManagerComponent::AddWeaponPivot(USceneComponent* weaponPivot)
 	OnPartialInitialization();
 }
 
-void UWeaponManagerComponent::SetAimProvider(USceneComponent* aimProvider)
+void UWeaponManagerComponent::SetAimProvider(IAimProvider* aimProvider)
 {
 	_aimProvider = aimProvider;
 	OnPartialInitialization();
@@ -387,6 +387,11 @@ AActor* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 		ammoProvider = CreateAmmoProvider(gunItem);
 	}
 
+	if(!_aimProvider)
+	{
+		DevLogger::GetLoggingChannel()->Log("No aim provider", LogSeverity::Error);
+	}
+
 	gun->InitializeGun(ammoProvider, _aimProvider);
 
 	AttachWeapon(weaponActor);
@@ -405,7 +410,7 @@ void UWeaponManagerComponent::AttachWeapon(AActor* weaponActor) const
 	
 	if(_ownerSkeletalMeshComponent)
 	{
-		weaponActor->AttachToComponent(_ownerSkeletalMeshComponent, FAttachmentTransformRules::KeepRelativeTransform, WeaponSocketName);
+		weaponActor->AttachToComponent(_ownerSkeletalMeshComponent, FAttachmentTransformRules::KeepRelativeTransform, _weaponSocketName);
 	}
 	else
 	{
@@ -425,7 +430,7 @@ void UWeaponManagerComponent::OnPartialInitialization()
 		return;
 	}
 	
-	if(!CanAttachWeapon() || !_playerId.IsValid())
+	if(!CanAttachWeapon() || !_aimProvider || !_playerId.IsValid())
 	{
 		return;
 	}

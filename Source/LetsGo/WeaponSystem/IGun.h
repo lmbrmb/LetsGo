@@ -2,6 +2,7 @@
 
 #include "IWeapon.h"
 #include "AmmoProvider.h"
+#include "LetsGo/AimProviders/IAimProvider.h"
 
 DECLARE_EVENT_OneParam(IGun, EShotRequested, const USceneComponent* firePivot);
 
@@ -23,11 +24,11 @@ public:
 
 	AmmoProvider* GetAmmoProvider() const;
 
-	USceneComponent* GetAimProvider() const;
+	IAimProvider* GetAimProvider() const;
 	
 	bool IsGunInitialized() const;
 	
-	void InitializeGun(AmmoProvider* ammoProvider, USceneComponent* aimProvider);
+	void InitializeGun(AmmoProvider* ammoProvider, IAimProvider* aimProvider);
 
 	virtual void OnShotPerformed(const USceneComponent* firePivot, const bool isAnyBulletDamaged) = 0;
 
@@ -47,7 +48,7 @@ private:
 
 	AmmoProvider* _ammoProvider = nullptr;
 
-	USceneComponent* _aimProvider = nullptr;
+	IAimProvider* _aimProvider = nullptr;
 
 	bool _isInitialized = false;
 };

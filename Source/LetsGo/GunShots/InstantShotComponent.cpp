@@ -2,6 +2,7 @@
 
 #include "DrawDebugHelpers.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
+#include "LetsGo/Utils/AssertUtils.h"
 #include "LetsGo/Utils/MathUtils.h"
 
 void UInstantShotComponent::BeginPlay()
@@ -14,9 +15,12 @@ void UInstantShotComponent::BeginPlay()
 
 void UInstantShotComponent::OnShotRequested(const USceneComponent* firePivot)
 {
-	FVector targetAimLocation;
+	AssertIsNotNull(AimProvider);
+	auto const startAimLocation = firePivot->GetComponentLocation();
+	auto targetAimLocation = AimProvider->GetTargetAimLocation();
+
 	float dispersionByDistance;
-	ProcessAimLocation( targetAimLocation, dispersionByDistance);
+	ProcessAimLocation( startAimLocation, targetAimLocation, dispersionByDistance);
 
 	auto isAnyBulletDamaged = false;
 	for (auto i = 0; i < _bulletCount; i++)
@@ -28,30 +32,32 @@ void UInstantShotComponent::OnShotRequested(const USceneComponent* firePivot)
 }
 
 void UInstantShotComponent::ProcessAimLocation(
+	const FVector& startAimLocation,
 	FVector& targetAimLocation,
 	float& dispersionByDistance
 )
 {
-	auto const aimStartLocation = AimProvider->GetComponentLocation();
-	auto const aimForward = AimProvider->GetForwardVector();
-	targetAimLocation = aimStartLocation + aimForward * _maxRange;
+	auto const aimDirection = (targetAimLocation - startAimLocation).GetSafeNormal();
+	targetAimLocation = startAimLocation + aimDirection * _maxRange;
 	dispersionByDistance = 1.0f;
-	
+
 	auto const isHitted = GetWorld()->LineTraceSingleByChannel(
 		_hitResult,
-		aimStartLocation,
+		startAimLocation,
 		targetAimLocation,
-		ECC_WorldStatic,
+		_collisionChannel,
 		_collisionQueryParams
 	);
 
-	if (isHitted)
+	if (!isHitted)
 	{
-		auto const impactPoint = _hitResult.ImpactPoint;
-		auto const impactPointDistance = FVector::Distance(targetAimLocation, impactPoint);
-		dispersionByDistance = 1.0f - impactPointDistance / _maxRange;
-		targetAimLocation = impactPoint;
+		return;
 	}
+
+	auto const impactPoint = _hitResult.ImpactPoint;
+	auto const impactPointDistance = FVector::Distance(targetAimLocation, impactPoint);
+	dispersionByDistance = 1.0f - impactPointDistance / _maxRange;
+	targetAimLocation = impactPoint;
 }
 
 void UInstantShotComponent::ProcessBullet(
@@ -61,10 +67,10 @@ void UInstantShotComponent::ProcessBullet(
 	bool& isAnyBulletDamaged
 )
 {
-	auto const rayStartLocation = firePivot->GetComponentLocation();
-	auto const shotDirection = GetBulletDirection(firePivot, rayStartLocation, targetAimLocation, dispersionByDistance);
-	auto rayEndLocation = rayStartLocation + shotDirection * _maxRange;
-	TraceBullet(rayStartLocation, rayEndLocation, isAnyBulletDamaged);
+	auto const bulletStartLocation = firePivot->GetComponentLocation();
+	auto const shotDirection = GetBulletDirection(firePivot, bulletStartLocation, targetAimLocation, dispersionByDistance);
+	auto rayEndLocation = bulletStartLocation + shotDirection * _maxRange;
+	TraceBullet(bulletStartLocation, rayEndLocation, isAnyBulletDamaged);
 }
 
 FVector UInstantShotComponent::GetBulletDirection(
@@ -100,7 +106,7 @@ void UInstantShotComponent::TraceBullet(
 		_hitResult,
 		rayStartLocation,
 		rayEndLocation,
-		ECC_WorldStatic,
+		_collisionChannel,
 		_collisionQueryParams
 	);
 
@@ -123,8 +129,9 @@ void UInstantShotComponent::TraceBullet(
 		}
 	}
 
-	auto const lineColor = isBlockingHit ? FColor::Red : FColor::Blue;
 	BulletTraced.Broadcast(isDamaged, _hitResult);
+
+	//auto const lineColor = isBlockingHit ? FColor::Red : FColor::Blue;
 	//DrawDebugLine(GetWorld(), rayStartLocation, rayEndLocation, lineColor, false, 1);
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Components/ActorComponent.h"
+#include "LetsGo/AimProviders/IAimProvider.h"
 #include "LetsGo/Data/PlayerId.h"
 #include "LetsGo/Data/WeaponId.h"
 
@@ -21,7 +22,7 @@ public:
 	
 	void SetPlayerId(const PlayerId& instigatorId);
 	
-	void SetAimProvider(USceneComponent* aimProvider);
+	void SetAimProvider(IAimProvider* aimProvider);
 
 	virtual void OnShotRequested(const USceneComponent* firePivot) {};
 	
@@ -30,7 +31,7 @@ protected:
 
 	PlayerId InstigatorPlayerId;
 
-	USceneComponent* AimProvider = nullptr;
+	IAimProvider* AimProvider = nullptr;
 	
 	AActor* GunActor;
 

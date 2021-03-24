@@ -48,7 +48,8 @@ void UGunShotToGunMapping::OnWeaponInitialized(IWeapon* weapon)
 
 void UGunShotToGunMapping::OnGunInitialized(IGun* gun)
 {
-	GunShotComponent->SetAimProvider(gun->GetAimProvider());
+	auto const aimProvider = gun->GetAimProvider();
+	GunShotComponent->SetAimProvider(aimProvider);
 	gun->GunInitialized.RemoveAll(this);
 	_isGunDataSet = true;
 	OnPartialInitialization();

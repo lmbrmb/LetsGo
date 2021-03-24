@@ -5,6 +5,7 @@
 #include "InstantShotComponent.generated.h"
 
 DECLARE_EVENT_TwoParams(UGunShotComponent, EShotPerformed_InstantShot, const USceneComponent* firePivot, const bool isAnyBulletDamaged);
+
 DECLARE_EVENT_TwoParams(UGunShotComponent, EBulletTraced_InstantShot, const bool isDamaged, const FHitResult& hitResult)
 
 ///<summary>
@@ -31,6 +32,9 @@ private:
 	FCollisionQueryParams _collisionQueryParams;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TEnumAsByte<ECollisionChannel> _collisionChannel;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int _bulletCount = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
@@ -46,6 +50,7 @@ private:
 	UCurveFloat* _damageOverDistanceCurve;
 
 	void ProcessAimLocation(
+		const FVector& startAimLocation,
 		FVector& targetAimLocation,
 		float& dispersionByDistance
 	);

@@ -4,6 +4,7 @@
 #include "IGun.h"
 #include "LetsGo/AssetFactories/GunFactory.h"
 #include "AmmoProvider.h"
+#include "LetsGo/AimProviders/IAimProvider.h"
 #include "LetsGo/Data/PlayerId.h"
 #include "LetsGo/Data/WeaponId.h"
 #include "LetsGo/Items/AmmoItem.h"
@@ -41,11 +42,10 @@ public:
 
 	void ChangeWeaponPivot();
 
-	UFUNCTION(BlueprintCallable)
-	void AddWeaponPivot(USceneComponent* weaponPivot);
+	void SetAimProvider(IAimProvider* aimProvider);
 
 	UFUNCTION(BlueprintCallable)
-	void SetAimProvider(USceneComponent* aimProvider);
+	void AddWeaponPivot(USceneComponent* weaponPivot);
 
 	UFUNCTION(BlueprintCallable)
 	void SetOwnerSkeletalMeshComponent(USkeletalMeshComponent* ownerSkeletalMeshComponent);
@@ -79,7 +79,7 @@ private:
 	bool _shouldEquipWeaponOnPickup;
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
-	FName WeaponSocketName = "RightHandWeaponSocket";
+	FName _weaponSocketName = "RightHandWeaponSocket";
 	
 	const int UNDEFINED_INDEX = -1;
 
@@ -89,7 +89,7 @@ private:
 	
 	PlayerId _playerId;
 
-	USceneComponent* _aimProvider;
+	IAimProvider* _aimProvider;
 
 	TArray<USceneComponent*> _weaponPivots;
 
