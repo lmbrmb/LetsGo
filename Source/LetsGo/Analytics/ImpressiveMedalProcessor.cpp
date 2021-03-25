@@ -2,10 +2,10 @@
 
 ImpressiveMedalProcessor::ImpressiveMedalProcessor(
 	const int requiredHitCount,
-	const WeaponId& weaponId
+	const WeaponType& weaponType
 ) :
 	_requiredHitCount(requiredHitCount),
-	_weaponId(weaponId)
+	_weaponType(weaponType)
 {
 }
 
@@ -31,7 +31,7 @@ bool ImpressiveMedalProcessor::ProcessDamageEvent(const DamageEvent& damageEvent
 
 bool ImpressiveMedalProcessor::ProcessHitEvent(const HitEvent& hitEvent, Medal& outMedal)
 {
-	if (hitEvent.GetInstigatorWeaponId() != _weaponId)
+	if (hitEvent.GetInstigatorWeaponType() != _weaponType)
 	{
 		return false;
 	}

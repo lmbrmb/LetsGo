@@ -377,8 +377,9 @@ AActor* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 	}
 
 	const WeaponId weaponId(gunItemId);
-	gun->InitializeWeapon(weaponId, _playerId);
-	
+	auto const weaponType = gunItem->GetGunType();
+	gun->InitializeWeapon(weaponId, weaponType, _playerId);
+
 	auto const ammoId = gunItem->GetAmmoId();
 	auto ammoProvider = GetAmmoProvider(ammoId);
 
@@ -450,5 +451,5 @@ void UWeaponManagerComponent::OnGunShotPerformed(const IGun* gun, const bool isA
 {
 	BpOnGunShotPerformed(isAnyBulletDamaged);
 
-	ShotPerformed.Broadcast(gun->GetPlayerId(), gun->GetWeaponId(), isAnyBulletDamaged);
+	ShotPerformed.Broadcast(gun->GetPlayerId(), gun->GetWeaponType(), isAnyBulletDamaged);
 }

@@ -124,7 +124,8 @@ void UInstantShotComponent::TraceBullet(
 			auto const healthComponent = actorPtr->FindComponentByClass<UHealthComponent>();
 			if (healthComponent)
 			{
-				isDamaged = healthComponent->TryInjure(Damage(InstigatorPlayerId, InstigatorWeaponId, damageAmount));
+				const Damage damage(InstigatorPlayerId, InstigatorWeaponType, damageAmount);
+				isDamaged = healthComponent->TryInjure(damage);
 				isAnyBulletDamaged |= isDamaged;
 			}
 		}

@@ -33,7 +33,7 @@ T* CachedAssetFactory<T>::GetOrLoad(const FName id)
 
 	if (!Paths.Contains(id))
 	{
-		DevLogger::GetLoggingChannel()->LogValue("Unknown path. Asset id:", id);
+		DevLogger::GetLoggingChannel()->LogValue("Unknown path. Asset id:", id, LogSeverity::Error);
 		return nullptr;
 	}
 

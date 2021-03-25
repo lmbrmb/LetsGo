@@ -4,12 +4,12 @@ HitEvent::HitEvent(
 	const float time,
 	const bool isHittedPlayer,
 	const PlayerId& instigatorPlayerId,
-	const WeaponId& instigatorWeaponId
+	const WeaponType& instigatorWeaponType
 ) :
 	_time(time),
 	_isHittedPlayer(isHittedPlayer),
 	_instigatorPlayerId(instigatorPlayerId),
-	_instigatorWeaponId(instigatorWeaponId)
+	_instigatorWeaponType(instigatorWeaponType)
 {
 }
 
@@ -28,7 +28,7 @@ const PlayerId& HitEvent::GetInstigatorPlayerId() const
 	return _instigatorPlayerId;
 }
 
-const WeaponId& HitEvent::GetInstigatorWeaponId() const
+const WeaponType& HitEvent::GetInstigatorWeaponType() const
 {
-	return _instigatorWeaponId;
+	return _instigatorWeaponType;
 };

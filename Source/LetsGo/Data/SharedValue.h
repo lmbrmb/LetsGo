@@ -27,13 +27,13 @@ public:
 
 	T Remove(const T amount);
 
-	DECLARE_EVENT_OneParam(SharedValue, FChanged, T);
+	DECLARE_EVENT_OneParam(SharedValue, FChanged, const T);
 	FChanged Changed;
 	
-	DECLARE_EVENT_OneParam(SharedValue, FAdded, T);
+	DECLARE_EVENT_OneParam(SharedValue, FAdded, const T);
 	FAdded Added;
 
-	DECLARE_EVENT_OneParam(SharedValue, FRemoved, T);
+	DECLARE_EVENT_OneParam(SharedValue, FRemoved, const T);
 	FRemoved Removed;
 
 private:

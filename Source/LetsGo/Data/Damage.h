@@ -1,6 +1,6 @@
 #pragma once
 
-#include "WeaponId.h"
+#include "WeaponType.h"
 #include "LetsGo/Data/PlayerId.h"
 
 struct Damage
@@ -13,7 +13,7 @@ public:
 	
 	Damage(
 		const PlayerId& instigatorPlayerId,
-		const WeaponId& instigatorWeaponId,
+		const WeaponType& instigatorWeaponType,
 		const float amount
 	);
 
@@ -21,14 +21,14 @@ public:
 	
 	const PlayerId& GetInstigatorPlayerId() const;
 
-	const WeaponId& GetInstigatorWeaponId() const;
+	const WeaponType& GetInstigatorWeaponType() const;
 	
 	float GetAmount() const;
 
 private:
 	PlayerId _instigatorPlayerId;
 
-	WeaponId _instigatorWeaponId;
+	WeaponType _instigatorWeaponType;
 	
 	float _amount;
 };

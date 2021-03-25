@@ -26,7 +26,7 @@ private:
 
 	void OnAvatarHealthChanged(const UHealthComponent* healthComponent, const float delta);
 
-	void OnShotPerformed(const PlayerId& instigatorId, const WeaponId& instigatorWeaponId, const bool isHittedPlayer);
+	void OnShotPerformed(const PlayerId& instigatorId, const WeaponType& instigatorWeaponType, const bool isHittedPlayer);
 
 	void TryProcessDamage(const UHealthComponent* healthComponent, const float delta);
 	

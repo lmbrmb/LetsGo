@@ -12,11 +12,11 @@ Damage::Damage(const float amount):
 
 Damage::Damage(
 	const PlayerId& instigatorPlayerId,
-	const WeaponId& instigatorWeaponId,
+	const WeaponType& instigatorWeaponType,
 	const float amount
 ) :
 	_instigatorPlayerId(instigatorPlayerId),
-	_instigatorWeaponId(instigatorWeaponId),
+	_instigatorWeaponType(instigatorWeaponType),
 	_amount(amount)
 {
 }
@@ -26,9 +26,9 @@ const PlayerId& Damage::GetInstigatorPlayerId() const
 	return _instigatorPlayerId;
 }
 
-const WeaponId& Damage::GetInstigatorWeaponId() const
+const WeaponType& Damage::GetInstigatorWeaponType() const
 {
-	return _instigatorWeaponId;
+	return _instigatorWeaponType;
 }
 
 float Damage::GetAmount() const

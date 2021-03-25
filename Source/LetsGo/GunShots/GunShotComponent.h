@@ -3,7 +3,8 @@
 #include "Components/ActorComponent.h"
 #include "LetsGo/AimProviders/IAimProvider.h"
 #include "LetsGo/Data/PlayerId.h"
-#include "LetsGo/Data/WeaponId.h"
+#include "LetsGo/Data/WeaponType.h"
+
 
 #include "GunShotComponent.generated.h"
 
@@ -18,7 +19,7 @@ class LETSGO_API UGunShotComponent : public UActorComponent
 public:	
 	UGunShotComponent();
 	
-	void SetWeaponId(const WeaponId& weaponId);
+	void SetWeaponType(const WeaponType& weaponType);
 	
 	void SetPlayerId(const PlayerId& instigatorId);
 	
@@ -27,7 +28,7 @@ public:
 	virtual void OnShotRequested(const USceneComponent* firePivot) {};
 	
 protected:
-	WeaponId InstigatorWeaponId;
+	WeaponType InstigatorWeaponType;
 
 	PlayerId InstigatorPlayerId;
 

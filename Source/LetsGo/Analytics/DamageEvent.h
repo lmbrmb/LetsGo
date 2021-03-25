@@ -1,7 +1,7 @@
 #pragma once
 
 #include "LetsGo/Data/PlayerId.h"
-#include "LetsGo/Data/WeaponId.h"
+#include "LetsGo/Data/WeaponType.h"
 
 /// <summary>
 /// Analytics damage event. Immutable
@@ -12,7 +12,7 @@ public:
 	DamageEvent(
 		const float time,
 		const PlayerId& instigatorPlayerId,
-		const WeaponId& instigatorWeaponId,
+		const WeaponType& instigatorWeaponType,
 		const PlayerId& damagedPlayerId,
 		const float damagedPlayerHealth
 	);
@@ -21,7 +21,7 @@ public:
 
 	const PlayerId& GetInstigatorPlayerId() const;
 
-	const WeaponId& GetInstigatorWeaponId() const;
+	const WeaponType& GetInstigatorWeaponType() const;
 
 	const PlayerId& GetDamagedPlayerId() const;
 
@@ -32,7 +32,7 @@ private:
 	
 	PlayerId _instigatorPlayerId;
 
-	WeaponId _instigatorWeaponId;
+	WeaponType _instigatorWeaponType;
 	
 	PlayerId _damagedPlayerId;
 

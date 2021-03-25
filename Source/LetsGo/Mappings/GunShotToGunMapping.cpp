@@ -39,7 +39,7 @@ void UGunShotToGunMapping::Map()
 
 void UGunShotToGunMapping::OnWeaponInitialized(IWeapon* weapon)
 {
-	GunShotComponent->SetWeaponId(weapon->GetWeaponId());
+	GunShotComponent->SetWeaponType(weapon->GetWeaponType());
 	GunShotComponent->SetPlayerId(weapon->GetPlayerId());
 	weapon->WeaponInitialized.RemoveAll(this);
 	_isWeaponDataSet = true;

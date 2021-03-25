@@ -2,7 +2,7 @@
 
 #include "IDamageMedalProcessor.h"
 #include "IHitMedalProcessor.h"
-#include "LetsGo/Data/WeaponId.h"
+#include "LetsGo/Data/WeaponType.h"
 
 /// <summary>
 /// Impressive medal processor.
@@ -11,7 +11,7 @@
 class ImpressiveMedalProcessor final : public IDamageMedalProcessor, public IHitMedalProcessor
 {
 public:
-	ImpressiveMedalProcessor(const int requiredHitCount, const WeaponId& weaponId);
+	ImpressiveMedalProcessor(const int requiredHitCount, const WeaponType& weaponType);
 	
 	virtual bool ProcessDamageEvent(const DamageEvent& damageEvent, Medal& outMedal) override;
 
@@ -20,7 +20,7 @@ public:
 private:
 	int _requiredHitCount;
 
-	WeaponId _weaponId;
+	WeaponType _weaponType;
 	
 	TMap<int, int> _playerRailgunHitCount;
 };

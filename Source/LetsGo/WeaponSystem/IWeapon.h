@@ -2,6 +2,7 @@
 
 #include "LetsGo/Data/PlayerId.h"
 #include "LetsGo/Data/WeaponId.h"
+#include "LetsGo/Data/WeaponType.h"
 
 class IWeapon;
 
@@ -15,19 +16,23 @@ class IWeapon
 	// Not virtual - default implementation is ok
 public:
 	EWeaponInitialized WeaponInitialized;
-	
+
 	bool IsWeaponInitialized() const;
 
-	void InitializeWeapon(const WeaponId& weaponId, const PlayerId& playerId);
+	void InitializeWeapon(const WeaponId& weaponId, const WeaponType& weaponType, const PlayerId& playerId);
 
 	const WeaponId& GetWeaponId() const;
 
+	const WeaponType& GetWeaponType() const;
+
 	const PlayerId& GetPlayerId() const;
-	
+
 private:
 	WeaponId _weaponId;
 
+	WeaponType _weaponType;
+
 	PlayerId _playerId;
-	
+
 	bool _isWeaponInitialized = false;
 };

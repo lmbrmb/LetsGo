@@ -8,9 +8,9 @@ UGunShotComponent::UGunShotComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UGunShotComponent::SetWeaponId(const WeaponId& weaponId)
+void UGunShotComponent::SetWeaponType(const WeaponType& weaponType)
 {
-	InstigatorWeaponId = weaponId;
+	InstigatorWeaponType = weaponType;
 }
 
 void UGunShotComponent::SetPlayerId(const PlayerId& instigatorId)
