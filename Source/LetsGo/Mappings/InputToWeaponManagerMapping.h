@@ -2,6 +2,7 @@
 
 #include "MappingComponent.h"
 
+#include "LetsGo/HealthSystem/HealthComponent.h"
 #include "LetsGo/WeaponSystem/WeaponManagerComponent.h"
 
 #include "InputToWeaponManagerMapping.generated.h"
@@ -22,5 +23,13 @@ private:
 
 	UWeaponManagerComponent* _weaponManagerComponent = nullptr;
 
+	UInputComponent* _inputComponent = nullptr;
+
 	void ChangeWeaponDpad(const float rawAxisValue);
+
+	void OnOwnerDied(const UHealthComponent*, float delta) const;
+
+	void Bind();
+
+	void Unbind() const;
 };

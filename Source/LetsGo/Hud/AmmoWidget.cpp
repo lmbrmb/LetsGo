@@ -22,7 +22,7 @@ void UAmmoWidget::OnAvatarChanged(const AAvatar* avatar)
 {
 	if (_weaponManagerComponent)
 	{
-		_weaponManagerComponent->WeaponChanged.RemoveAll(this);
+		_weaponManagerComponent->WeaponEquipped.RemoveAll(this);
 	}
 
 	_weaponManagerComponent = nullptr;
@@ -33,13 +33,13 @@ void UAmmoWidget::OnAvatarChanged(const AAvatar* avatar)
 
 		if (_weaponManagerComponent)
 		{
-			_weaponManagerComponent->WeaponChanged.AddUObject(this, &UAmmoWidget::OnWeaponChanged);
-			OnWeaponChanged();
+			_weaponManagerComponent->WeaponEquipped.AddUObject(this, &UAmmoWidget::OnWeaponEquipped);
+			OnWeaponEquipped();
 		}
 	}
 }
 
-void UAmmoWidget::OnWeaponChanged()
+void UAmmoWidget::OnWeaponEquipped()
 {
 	if(_gun)
 	{

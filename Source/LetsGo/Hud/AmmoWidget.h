@@ -26,7 +26,7 @@ protected:
 private:
 	void OnAvatarChanged(const AAvatar* avatar);
 
-	void OnWeaponChanged();
+	void OnWeaponEquipped();
 
 	void OnAmmoCountChanged(const int ammoCount);
 

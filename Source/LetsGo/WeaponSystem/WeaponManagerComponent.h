@@ -17,7 +17,7 @@
 
 DECLARE_EVENT_ThreeParams(UWeaponManagerComponent, EShotPerformed_UWeaponManagerComponent, const PlayerId& playerId, const WeaponType& weaponType, const bool isAnyBulletDamaged);
 
-DECLARE_EVENT(UWeaponManagerComponent, EWeaponChanged_UWeaponManagerComponent);
+DECLARE_EVENT(UWeaponManagerComponent, EWeaponEquipped_UWeaponManagerComponent);
 
 UCLASS(ClassGroup = (Custom), Blueprintable, meta = (BlueprintSpawnableComponent))
 class LETSGO_API UWeaponManagerComponent final : public UActorComponent, public IItemProcessor
@@ -32,6 +32,8 @@ public:
 	void StopFire();
 
 	void Reload();
+
+	void HolsterWeapon();
 
 	void NextWeapon();
 
@@ -59,7 +61,7 @@ public:
 
 	EShotPerformed_UWeaponManagerComponent ShotPerformed;
 
-	EWeaponChanged_UWeaponManagerComponent WeaponChanged;
+	EWeaponEquipped_UWeaponManagerComponent WeaponEquipped;
 	
 protected:
 	virtual void BeginPlay() override;

@@ -1,34 +1,68 @@
 #include "InputToFpMovementMapping.h"
 
 #include "LetsGo/Input/InputConstant.h"
-#include "LetsGo/Movement/FirstPersonMovementComponent.h"
 #include "LetsGo/Utils/AssertUtils.h"
 
 void UInputToFpMovementMapping::Map()
 {
-	auto const actor = GetOwner();
+	auto const owner = GetOwner();
 
-	auto const inputComponent = actor->InputComponent;
+	_inputComponent = owner->InputComponent;
+	AssertIsNotNull(_inputComponent);
 
-	AssertIsNotNull(inputComponent);
+	_firstPersonMovementComponent = owner->FindComponentByClass<UFirstPersonMovementComponent>();
+	AssertIsNotNull(_firstPersonMovementComponent);
 
-	const auto firstPersonMovementComponent = actor->FindComponentByClass<UFirstPersonMovementComponent>();
+	Bind();
+
+	const auto healthComponent = owner->FindComponentByClass<UHealthComponent>();
+	AssertIsNotNull(healthComponent);
 	
-	AssertIsNotNull(firstPersonMovementComponent);
+	healthComponent->Died.AddUObject(this, &UInputToFpMovementMapping::OnOwnerDied);
+}
 
-	inputComponent->BindAxis(InputConstant::AxisMoveHorizontal, firstPersonMovementComponent,
+void UInputToFpMovementMapping::OnOwnerDied(const UHealthComponent*, float delta) const
+{
+	Unbind();
+}
+
+void UInputToFpMovementMapping::Bind() const
+{
+	_inputComponent->BindAxis(InputConstant::AxisMoveHorizontal, _firstPersonMovementComponent,
 		&UFirstPersonMovementComponent::AddActorRightMovementInput);
-	inputComponent->BindAxis(InputConstant::AxisMoveVertical, firstPersonMovementComponent,
+	_inputComponent->BindAxis(InputConstant::AxisMoveVertical, _firstPersonMovementComponent,
 		&UFirstPersonMovementComponent::AddActorForwardMovementInput);
-	inputComponent->BindAxis(InputConstant::AxisLookHorizontal, firstPersonMovementComponent,
+	_inputComponent->BindAxis(InputConstant::AxisLookHorizontal, _firstPersonMovementComponent,
 		&UFirstPersonMovementComponent::AddActorYawInput);
-	inputComponent->BindAxis(InputConstant::AxisLookVertical, firstPersonMovementComponent,
+	_inputComponent->BindAxis(InputConstant::AxisLookVertical, _firstPersonMovementComponent,
 		&UFirstPersonMovementComponent::AddCameraPitchInput);
-	inputComponent->BindAction(InputConstant::ActionJump, EInputEvent::IE_Pressed,
-		firstPersonMovementComponent, &UFirstPersonMovementComponent::Jump);
-	inputComponent->BindAction(InputConstant::ActionSprint, EInputEvent::IE_Pressed,
-		firstPersonMovementComponent, &UFirstPersonMovementComponent::StartSprint);
-	inputComponent->BindAction(InputConstant::ActionSprint, EInputEvent::IE_Released,
-		firstPersonMovementComponent, &UFirstPersonMovementComponent::StopSprint);
-	StartDestroyTask();
+	
+	_inputComponent->BindAction(InputConstant::ActionJump, EInputEvent::IE_Pressed,
+		_firstPersonMovementComponent, &UFirstPersonMovementComponent::Jump);
+	_inputComponent->BindAction(InputConstant::ActionSprint, EInputEvent::IE_Pressed,
+		_firstPersonMovementComponent, &UFirstPersonMovementComponent::StartSprint);
+	_inputComponent->BindAction(InputConstant::ActionSprint, EInputEvent::IE_Released,
+		_firstPersonMovementComponent, &UFirstPersonMovementComponent::StopSprint);
+}
+
+void UInputToFpMovementMapping::Unbind() const
+{
+	TArray<FName> axisNames;
+	axisNames.Add(InputConstant::AxisMoveHorizontal);
+	axisNames.Add(InputConstant::AxisMoveVertical);
+	axisNames.Add(InputConstant::AxisLookHorizontal);
+	axisNames.Add(InputConstant::AxisLookVertical);
+	
+	for (auto i = _inputComponent->AxisBindings.Num() - 1; i >=0 ; i--)
+	{
+		auto axisBinding = _inputComponent->AxisBindings[i];
+		if (axisNames.Contains(axisBinding.AxisName))
+		{
+			_inputComponent->AxisBindings.RemoveAt(i);
+		}
+	}
+	
+	_inputComponent->RemoveActionBinding(InputConstant::ActionJump, EInputEvent::IE_Pressed);
+	_inputComponent->RemoveActionBinding(InputConstant::ActionSprint, EInputEvent::IE_Pressed);
+	_inputComponent->RemoveActionBinding(InputConstant::ActionSprint, EInputEvent::IE_Released);
 }

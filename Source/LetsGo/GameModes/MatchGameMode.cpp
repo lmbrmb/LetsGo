@@ -208,23 +208,28 @@ void AMatchGameMode::OnAvatarDied(const UHealthComponent* healthComponent, const
 	auto const fraggedPlayerId = fraggedPlayerAvatar->GetPlayerId();
 	auto const fraggedPlayerIdValue = fraggedPlayerId.GetId();
 
-	auto const instigatorPlayerAvatarData = GetAvatarData(instigatorPlayerIdValue);
-	auto const fraggedPlayerAvatarData = GetAvatarData(fraggedPlayerIdValue);
-
-	if(instigatorPlayerAvatarData && fraggedPlayerAvatarData)
+	auto const fraggedByPlayer = lastDamage.GetInstigatorPlayerId().IsValid();
+	
+	if(fraggedByPlayer)
 	{
-		auto const instigatorPlayerNickname = instigatorPlayerAvatarData->GetNickname();
-		auto const fraggedPlayerNickname = fraggedPlayerAvatarData->GetNickname();
+		auto const instigatorPlayerAvatarData = GetAvatarData(instigatorPlayerIdValue);
+		auto const fraggedPlayerAvatarData = GetAvatarData(fraggedPlayerIdValue);
 
-		PlayerFragged.Broadcast(instigatorPlayerId, fraggedPlayerId, instigatorPlayerNickname, fraggedPlayerNickname);
-
-		if(IsMatchInProgress())
+		if (instigatorPlayerAvatarData && fraggedPlayerAvatarData)
 		{
-			auto const isSuicide = instigatorPlayerIdValue == fraggedPlayerIdValue;
-			auto const fragModifier = isSuicide ? -1 : 1;
+			auto const instigatorPlayerNickname = instigatorPlayerAvatarData->GetNickname();
+			auto const fraggedPlayerNickname = fraggedPlayerAvatarData->GetNickname();
 
-			Frags[instigatorPlayerIdValue] = Frags[instigatorPlayerIdValue] + fragModifier;
-			OnFragsCountChanged();
+			PlayerFragged.Broadcast(instigatorPlayerId, fraggedPlayerId, instigatorPlayerNickname, fraggedPlayerNickname);
+
+			if (IsMatchInProgress())
+			{
+				auto const isSuicide = instigatorPlayerIdValue == fraggedPlayerIdValue;
+				auto const fragModifier = isSuicide ? -1 : 1;
+
+				Frags[instigatorPlayerIdValue] = Frags[instigatorPlayerIdValue] + fragModifier;
+				OnFragsCountChanged();
+			}
 		}
 	}
 	

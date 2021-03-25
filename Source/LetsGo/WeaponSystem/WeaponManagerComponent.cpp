@@ -78,6 +78,11 @@ void UWeaponManagerComponent::Reload()
 	}
 }
 
+void UWeaponManagerComponent::HolsterWeapon()
+{
+	EquipWeapon(-1);
+}
+
 void UWeaponManagerComponent::NextWeapon()
 {
 	ChangeWeapon(1);
@@ -195,28 +200,29 @@ void UWeaponManagerComponent::EquipWeapon(const int weaponIndex)
 	
 	if (_weaponActor)
 	{
-		if(_gun)
-		{
-			_gun->StopFire();
-		}
-		
+		StopFire();
 		ActorUtils::SetEnabled(_weaponActor, false);
 	}
 	
 	_weaponIndex = weaponIndex;
-	_weaponActor = _weaponActors[_weaponIndex];
+
+	auto const noWeapon = _weaponIndex < 0;
 
 	// Refresh all known weapons
-	_weapon = _weapons[_weaponIndex];
-	_gun = dynamic_cast<IGun*>(_weaponActor);
-	
-	ActorUtils::SetEnabled(_weaponActor, true);
+	_weaponActor = noWeapon ? nullptr : _weaponActors[_weaponIndex];
+	_weapon = noWeapon ? nullptr : _weapons[_weaponIndex];
+	_gun = noWeapon ? nullptr : dynamic_cast<IGun*>(_weaponActor);
 
-	WeaponChanged.Broadcast();
-
-	if(_isFireStarted)
+	if(_weaponActor)
 	{
-		_gun->StartFire();
+		ActorUtils::SetEnabled(_weaponActor, true);
+	}
+	
+	WeaponEquipped.Broadcast();
+	
+	if (_isFireStarted)
+	{
+		StartFire();
 	}
 }
 

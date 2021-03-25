@@ -3,6 +3,7 @@
 
 #include "Components/ShapeComponent.h"
 #include "LetsGo/Utils/AssertUtils.h"
+#include "LetsGo/WeaponSystem/WeaponManagerComponent.h"
 
 UHealthManagerComponent::UHealthManagerComponent()
 {
@@ -68,6 +69,8 @@ bool UHealthManagerComponent::CanItemHealAboveNormal(HealthItem* healthItem)
 void UHealthManagerComponent::OnDied(const UHealthComponent*, float delta) const
 {
 	_healthComponent->Died.RemoveAll(this);
+
+	// Disable pawn-pawn collision
 	auto const owner = _healthComponent->GetOwner();
 	AssertIsNotNull(owner);
 
@@ -75,7 +78,12 @@ void UHealthManagerComponent::OnDied(const UHealthComponent*, float delta) const
 	owner->GetComponents<UShapeComponent>(shapeComponents);
 	for (auto shapeComponent : shapeComponents)
 	{
-		//Disables pawn-pawn collision
 		shapeComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	}
+
+	// Disable weapon
+	auto const weaponManagerComponent = owner->FindComponentByClass<UWeaponManagerComponent>();
+	AssertIsNotNull(weaponManagerComponent);
+
+	weaponManagerComponent->HolsterWeapon();
 }
