@@ -4,9 +4,7 @@
 #include "LetsGo/Data/WeaponId.h"
 #include "LetsGo/Data/WeaponType.h"
 
-class IWeapon;
-
-DECLARE_EVENT_OneParam(IWeapon, EWeaponInitialized, IWeapon*);
+DECLARE_EVENT(IWeapon, EWeaponInitialized);
 
 ///<summary>
 /// [Interface] Weapon contract
@@ -15,6 +13,8 @@ class IWeapon
 {
 	// Not virtual - default implementation is ok
 public:
+	virtual ~IWeapon() = default;
+
 	EWeaponInitialized WeaponInitialized;
 
 	bool IsWeaponInitialized() const;

@@ -8,7 +8,9 @@ DECLARE_EVENT_OneParam(IGun, EShotRequested, const USceneComponent* firePivot);
 
 DECLARE_EVENT_TwoParams(IGun, EShotPerformed, const IGun* gun, const bool isAnyBulletDamaged);
 
-DECLARE_EVENT_OneParam(IGun, EGunInitialized, IGun*);
+DECLARE_EVENT(IGun, EGunInitialized);
+
+DECLARE_EVENT(IGun, EOutOfAmmo);
 
 /// <summary>
 /// [Interface] Gun contract
@@ -19,26 +21,30 @@ public:
 	EShotRequested ShotRequested;
 
 	EShotPerformed ShotPerformed;
-	
+
 	EGunInitialized GunInitialized;
+
+	EOutOfAmmo OutOfAmmo;
 
 	AmmoProvider* GetAmmoProvider() const;
 
 	IAimProvider* GetAimProvider() const;
-	
+
 	bool IsGunInitialized() const;
-	
+
 	void InitializeGun(AmmoProvider* ammoProvider, IAimProvider* aimProvider);
 
 	virtual void OnShotPerformed(const USceneComponent* firePivot, const bool isAnyBulletDamaged) = 0;
 
 	virtual void OnBulletTraced(const bool isDamaged, const FHitResult& hitResult) = 0;
-	
+
 	virtual void StartFire() = 0;
 
 	virtual void StopFire() = 0;
 
 	virtual void Reload() = 0;
+
+	virtual bool IsEnoughAmmoForShot() const = 0;
 
 protected:
 	virtual ~IGun(){};

@@ -54,21 +54,23 @@ void AGunV1::SetState(GunState state)
 
 void AGunV1::ProcessIdleState()
 {
-	if(IsEnoughAmmoForShot())
+	if (_isFireTriggered)
 	{
-		// Shot requested
-		if(_isFireTriggered)
+		if (IsEnoughAmmoForShot())
 		{
+			ConsumeAmmo(_consumeAmmoPerShot);
 			StartShot();
+			return;
 		}
-	}
-	else
-	{
-		// Automatic reload
+		
 		if (HasAmmoToLoad())
 		{
 			StartReload();
+			return;
 		}
+		
+		StopFire();
+		OutOfAmmo.Broadcast();
 	}
 }
 

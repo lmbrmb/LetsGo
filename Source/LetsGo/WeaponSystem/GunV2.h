@@ -29,6 +29,9 @@ public:
 	virtual void Reload() override;
 
 	// IGun implementation
+	virtual bool IsEnoughAmmoForShot() const override;
+	
+	// IGun implementation
 	virtual void OnShotPerformed(const USceneComponent* firePivot, const bool isAnyBulletDamaged) override;
 
 	// IGun implementation
@@ -95,8 +98,6 @@ private:
 	bool IsShooting() const;
 
 	void StartShot();
-
-	bool IsEnoughAmmoForShot() const;
 
 	int GetAmmoCount() const;
 

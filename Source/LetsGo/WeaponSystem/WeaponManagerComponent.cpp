@@ -244,16 +244,36 @@ bool UWeaponManagerComponent::TryProcessItemAsGun(Item* item)
 
 	// Can carry only one gun of type
 	// Add ammo if already have this gun
+	auto const gunId = gunItem->GetId();
+	auto const ammoId = gunItem->GetAmmoId();
+	auto haveThisGun = false;
+	auto haveGunWithSameAmmo = false;
+	
 	for (auto weapon : _weapons)
 	{
-		if(weapon->GetWeaponId().GetId() == gunItem->GetId())
+		if(weapon->GetWeaponId().GetId() == gunId)
 		{
-			auto const ammoId = gunItem->GetAmmoId();
-			auto const ammoItem = _ammoItemFactory->Get(ammoId);
-			return TryProcessItemAsAmmo(ammoItem);
+			haveThisGun = true;
+		}
+		
+		auto const gun = dynamic_cast<const IGun*>(weapon);
+		if(gun && gun->GetAmmoProvider()->GetAmmoId() == ammoId)
+		{
+			haveGunWithSameAmmo = true;
 		}
 	}
 
+	if (haveThisGun || haveGunWithSameAmmo)
+	{
+		auto const ammoItem = _ammoItemFactory->Get(ammoId);
+		TryProcessItemAsAmmo(ammoItem);
+	}
+
+	if(haveThisGun)
+	{
+		return true;
+	}
+	
 	auto const gunActor = CreateGun(gunItem);
 
 	if(!gunActor)
@@ -379,6 +399,7 @@ AActor* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 	const WeaponId weaponId(gunItemId);
 	auto const weaponType = gunItem->GetGunType();
 	gun->InitializeWeapon(weaponId, weaponType, _playerId);
+	gun->OutOfAmmo.AddUObject(this, &UWeaponManagerComponent::OnOutOfAmmo);
 
 	auto const ammoId = gunItem->GetAmmoId();
 	auto ammoProvider = GetAmmoProvider(ammoId);
@@ -452,4 +473,30 @@ void UWeaponManagerComponent::OnGunShotPerformed(const IGun* gun, const bool isA
 	BpOnGunShotPerformed(isAnyBulletDamaged);
 
 	ShotPerformed.Broadcast(gun->GetPlayerId(), gun->GetWeaponType(), isAnyBulletDamaged);
+}
+
+void UWeaponManagerComponent::OnOutOfAmmo()
+{
+	BpOnOutOfAmmo();
+
+	//Try equip other weapon
+	for (auto i = 0; i < _weapons.Num(); i++)
+	{
+		auto const weapon = _weapons[i];
+		auto const gun = dynamic_cast<const IGun*>(weapon);
+
+		if (gun)
+		{
+			if (!gun->IsEnoughAmmoForShot())
+			{
+				continue;
+			}
+		}
+
+		EquipWeapon(i);
+		return;
+	}
+
+	//Could not equip other weapon
+	_isFireStarted = false;
 }

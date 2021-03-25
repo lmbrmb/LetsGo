@@ -20,5 +20,5 @@ void IGun::InitializeGun(AmmoProvider* ammoProvider, IAimProvider* aimProvider)
 	_ammoProvider = ammoProvider;
 	_aimProvider = aimProvider;
 	_isInitialized = true;
-	GunInitialized.Broadcast(this);
+	GunInitialized.Broadcast();
 }

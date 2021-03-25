@@ -20,7 +20,7 @@ void UGunShotToGunMapping::Map()
 	
 	if(gun->IsWeaponInitialized())
 	{
-		OnWeaponInitialized(gun);
+		OnWeaponInitialized();
 	}
 	else
 	{
@@ -29,7 +29,7 @@ void UGunShotToGunMapping::Map()
 
 	if(gun->IsGunInitialized())
 	{
-		OnGunInitialized(gun);
+		OnGunInitialized();
 	}
 	else
 	{
@@ -37,20 +37,20 @@ void UGunShotToGunMapping::Map()
 	}
 }
 
-void UGunShotToGunMapping::OnWeaponInitialized(IWeapon* weapon)
+void UGunShotToGunMapping::OnWeaponInitialized()
 {
-	GunShotComponent->SetWeaponType(weapon->GetWeaponType());
-	GunShotComponent->SetPlayerId(weapon->GetPlayerId());
-	weapon->WeaponInitialized.RemoveAll(this);
+	GunShotComponent->SetWeaponType(Gun->GetWeaponType());
+	GunShotComponent->SetPlayerId(Gun->GetPlayerId());
+	Gun->WeaponInitialized.RemoveAll(this);
 	_isWeaponDataSet = true;
 	OnPartialInitialization();
 }
 
-void UGunShotToGunMapping::OnGunInitialized(IGun* gun)
+void UGunShotToGunMapping::OnGunInitialized()
 {
-	auto const aimProvider = gun->GetAimProvider();
+	auto const aimProvider = Gun->GetAimProvider();
 	GunShotComponent->SetAimProvider(aimProvider);
-	gun->GunInitialized.RemoveAll(this);
+	Gun->GunInitialized.RemoveAll(this);
 	_isGunDataSet = true;
 	OnPartialInitialization();
 }

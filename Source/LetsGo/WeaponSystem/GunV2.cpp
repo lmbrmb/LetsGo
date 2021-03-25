@@ -44,6 +44,8 @@ void AGunV2::ProcessIdleState()
 	{
 		if(!IsEnoughAmmoForShot())
 		{
+			StopFire();
+			OutOfAmmo.Broadcast();
 			return;
 		}
 		

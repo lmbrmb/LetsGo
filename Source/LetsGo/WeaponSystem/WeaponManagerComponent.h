@@ -71,7 +71,7 @@ protected:
 	void BpOnWeaponChanged();
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void BpOnEmptyAmmo();
+	void BpOnOutOfAmmo();
 
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
@@ -82,7 +82,7 @@ private:
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
 	FName _weaponSocketName = "RightHandWeaponSocket";
-	
+
 	const int UNDEFINED_INDEX = -1;
 
 	bool _isInitialized = false;
@@ -110,7 +110,7 @@ private:
 	TArray<AActor*> _weaponActors;
 
 	/// <summary>
-	/// Gun Id / Ammo provider
+	/// Ammo Id / Ammo provider
 	/// </summary>
 	TMap<FName, AmmoProvider*> _ammoProviders;
 
@@ -149,4 +149,6 @@ private:
 	void CreateStartWeapon();
 
 	void OnGunShotPerformed(const IGun* gun, const bool isAnyBulletDamaged);
+
+	void OnOutOfAmmo();
 };

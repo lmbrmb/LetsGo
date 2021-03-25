@@ -6,7 +6,7 @@ void IWeapon::InitializeWeapon(const WeaponId& weaponId, const WeaponType& weapo
 	_weaponType = weaponType;
 	_playerId = playerId;
 	_isWeaponInitialized = true;
-	WeaponInitialized.Broadcast(this);
+	WeaponInitialized.Broadcast();
 }
 
 bool IWeapon::IsWeaponInitialized() const

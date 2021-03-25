@@ -24,9 +24,9 @@ protected:
 	UGunShotComponent* GunShotComponent;
 
 private:
-	void OnWeaponInitialized(IWeapon* weapon);
+	void OnWeaponInitialized();
 
-	void OnGunInitialized(IGun* gun);
+	void OnGunInitialized();
 
 	bool _isWeaponDataSet = false;
 
