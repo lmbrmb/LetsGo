@@ -45,10 +45,14 @@ void UWeaponManagerComponent::BeginPlay()
 void UWeaponManagerComponent::StartFire()
 {
 	_isFireStarted = true;
-	
+	StartWeaponFire();
+}
+
+void UWeaponManagerComponent::StartWeaponFire() const
+{
 	RETURN_IF_NO_WEAPON;
-	
-	if(_gun)
+
+	if (_gun)
 	{
 		_gun->StartFire();
 	}
@@ -57,11 +61,15 @@ void UWeaponManagerComponent::StartFire()
 // ReSharper disable once CppMemberFunctionMayBeConst
 void UWeaponManagerComponent::StopFire()
 {
+	_isFireStarted = false;
+	StopWeaponFire();
+}
+
+void UWeaponManagerComponent::StopWeaponFire() const
+{
 	RETURN_IF_NO_WEAPON;
 
-	_isFireStarted = false;
-	
-	if(_gun)
+	if (_gun)
 	{
 		_gun->StopFire();
 	}
@@ -100,7 +108,7 @@ void UWeaponManagerComponent::ChangeWeapon(const int indexModifier)
 		DevLogger::GetLoggingChannel()->Log("ChangeWeapon: index modifier is 0", LogSeverity::Warning);
 		return;
 	}
-	
+
 	auto const weaponsCount = _weaponActors.Num();
 
 	if (weaponsCount == 0)
@@ -123,8 +131,36 @@ void UWeaponManagerComponent::ChangeWeapon(const int indexModifier)
 	{
 		return;
 	}
+	
+	_nextWeaponIndex = nextIndex;
 
-	EquipWeapon(nextIndex);
+	if(_changeWeaponTimerHandle.IsValid())
+	{
+		return;
+	}
+
+	if(_weapon)
+	{
+		if(!_weapon->IsRequestReady())
+		{
+			_changeWeaponTimerHandle = _weapon->RequestReady.AddUObject(this, &UWeaponManagerComponent::ChangeWeaponOnRequestReady);
+			return;
+		}
+	}
+
+	ChangeWeaponOnRequestReady();
+}
+
+void UWeaponManagerComponent::ChangeWeaponOnRequestReady()
+{
+	if(_changeWeaponTimerHandle.IsValid())
+	{
+		AssertIsNotNull(_weapon);
+		_weapon->RequestReady.Remove(_changeWeaponTimerHandle);
+		_changeWeaponTimerHandle.Reset();
+	}
+
+	EquipWeapon(_nextWeaponIndex);
 	BpOnWeaponChanged();
 }
 
@@ -200,7 +236,7 @@ void UWeaponManagerComponent::EquipWeapon(const int weaponIndex)
 	
 	if (_weaponActor)
 	{
-		StopFire();
+		StopWeaponFire();
 		ActorUtils::SetEnabled(_weaponActor, false);
 	}
 	
@@ -222,7 +258,7 @@ void UWeaponManagerComponent::EquipWeapon(const int weaponIndex)
 	
 	if (_isFireStarted)
 	{
-		StartFire();
+		StartWeaponFire();
 	}
 }
 

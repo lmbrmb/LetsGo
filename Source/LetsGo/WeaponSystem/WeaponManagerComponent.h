@@ -126,6 +126,8 @@ private:
 
 	int _weaponIndex = UNDEFINED_INDEX;
 
+	int _nextWeaponIndex = UNDEFINED_INDEX;
+
 	void EquipWeapon(const int weaponIndex);
 
 	TArray<TFunction<bool(Item*)>> _itemProcessors;
@@ -142,6 +144,10 @@ private:
 
 	AActor* CreateGun(const GunItem* gunItem);
 
+	FDelegateHandle _changeWeaponTimerHandle;
+
+	void ChangeWeaponOnRequestReady();
+
 	void AttachWeapon(AActor* weaponActor) const;
 
 	bool CanAttachWeapon() const;
@@ -153,4 +159,8 @@ private:
 	void OnGunShotPerformed(const IGun* gun, const bool isAnyBulletDamaged);
 
 	void OnOutOfAmmo();
+
+	void StartWeaponFire() const;
+
+	void StopWeaponFire() const;
 };

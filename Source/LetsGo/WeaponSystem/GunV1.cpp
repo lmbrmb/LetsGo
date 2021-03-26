@@ -39,8 +39,14 @@ void AGunV1::Tick(float DeltaSeconds)
 	}
 }
 
-void AGunV1::SetState(GunState state)
+void AGunV1::SetState(const GunState state)
 {
+	if (_state == state)
+	{
+		DevLogger::GetLoggingChannel()->LogValue("Same state transition. State:", (int)state, LogSeverity::Error);
+		return;
+	}
+	
 	_state = state;
 
 	if (!_stateProcessors.Contains(_state))
@@ -50,6 +56,11 @@ void AGunV1::SetState(GunState state)
 	}
 
 	_stateProcessor = _stateProcessors[_state];
+
+	if (_state == GunState::Idle)
+	{
+		RequestReady.Broadcast();
+	}
 }
 
 void AGunV1::ProcessIdleState()
@@ -181,6 +192,11 @@ bool AGunV1::IsEnoughAmmoForShot() const
 {
 	auto const isEnoughAmmoForShot = _clipCurrent >= _consumeAmmoPerShot;
 	return isEnoughAmmoForShot;
+}
+
+bool AGunV1::IsRequestReady() const
+{
+	return _state == GunState::Idle;
 }
 
 bool AGunV1::HasAmmoToLoad() const

@@ -18,7 +18,10 @@ class LETSGO_API AGunV1 final : public AActor, public IGun
 
 public:
 	AGunV1();
-	
+
+	// IWeapon implementation
+	virtual bool IsRequestReady() const override;
+
 	// IGun implementation
 	virtual void StartFire() override;
 
@@ -30,13 +33,13 @@ public:
 
 	// IGun implementation
 	virtual bool IsEnoughAmmoForShot() const override;
-	
+
 	// IGun implementation
 	virtual void OnShotPerformed(const USceneComponent* firePivot, const bool isAnyBulletDamaged) override;
 
 	// IGun implementation
 	virtual void OnBulletTraced(const bool isDamaged, const FHitResult& hitResult) override;
-	
+
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnFireStarted();
@@ -69,7 +72,7 @@ private:
 	const int INITIAL_FIRE_PIVOT_INDEX = -1.0f;
 
 	// State
-	GunState _state = GunState::Idle;
+	GunState _state = GunState::None;
 
 	void SetState(GunState state);
 	

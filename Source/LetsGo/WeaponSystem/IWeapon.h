@@ -6,6 +6,8 @@
 
 DECLARE_EVENT(IWeapon, EWeaponInitialized);
 
+DECLARE_EVENT(IWeapon, ERequestReady);
+
 ///<summary>
 /// [Interface] Weapon contract
 ///</summary>
@@ -17,9 +19,13 @@ public:
 
 	EWeaponInitialized WeaponInitialized;
 
+	ERequestReady RequestReady;
+
 	bool IsWeaponInitialized() const;
 
 	void InitializeWeapon(const WeaponId& weaponId, const WeaponType& weaponType, const PlayerId& playerId);
+
+	virtual bool IsRequestReady() const = 0;
 
 	const WeaponId& GetWeaponId() const;
 
