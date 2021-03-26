@@ -1,17 +1,18 @@
 #pragma once
 
 #include "IAimProvider.h"
+#include "Camera/CameraComponent.h"
 
-class FpAimProvider final : public IAimProvider
+class CameraAimProvider final : public IAimProvider
 {
 public:
-	FpAimProvider(USceneComponent* aimPivot, const float aimRange, ECollisionChannel collisionChannel);
+	CameraAimProvider(UCameraComponent* cameraComponent, const float aimRange, ECollisionChannel collisionChannel);
 
 	// IAimProvider implementation
 	virtual FVector GetTargetAimLocation() override;
 
 private:
-	USceneComponent* _aimPivot;
+	UCameraComponent* _cameraComponent;
 
 	float _aimRange;
 

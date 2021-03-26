@@ -3,6 +3,7 @@
 GunItemFactory::GunItemFactory()
 {
 	_gunData.Add("SawedOffShotgun", GunData(WeaponType("Shotgun"), "ShotgunShells", 10));
+	_gunData.Add("ShotgunQ3", GunData(WeaponType("Shotgun"), "ShotgunShells", 10));
 	_gunData.Add("Minigun", GunData(WeaponType("Machinegun"), "MachinegunBullets", 75));
 	const WeaponType railgunWeaponType("Railgun");
 	_gunData.Add("Railgun", GunData(railgunWeaponType, "RailgunBullets", 10));

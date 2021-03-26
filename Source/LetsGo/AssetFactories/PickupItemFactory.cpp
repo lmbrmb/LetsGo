@@ -6,10 +6,14 @@ const FString PickupItemFactory::_assetPath = "/Game/Assets/Blueprints/PickupIte
 
 PickupItemFactory::PickupItemFactory(const bool lazyInitialization)
 {
+	//Weapons
 	Paths.Add("SawedOffShotgun", AssetUtils::GenerateAssetPath(_assetPath, "BP_SawedOffShotgunPickupItem"));
+	Paths.Add("ShotgunQ3", AssetUtils::GenerateAssetPath(_assetPath, "BP_ShotgunQ3PickupItem"));
 	Paths.Add("Minigun", AssetUtils::GenerateAssetPath(_assetPath, "BP_MinigunPickupItem"));
 	Paths.Add("Railgun", AssetUtils::GenerateAssetPath(_assetPath, "BP_RailgunPickupItem"));
 	Paths.Add("RailgunQ3", AssetUtils::GenerateAssetPath(_assetPath, "BP_RailgunQ3PickupItem"));
+
+	//Health
 	Paths.Add("MajorHealth", AssetUtils::GenerateAssetPath(_assetPath, "BP_MajorHealthPickupItem"));
 	Paths.Add("MinorHealth", AssetUtils::GenerateAssetPath(_assetPath, "BP_MinorHealthPickupItem"));
 

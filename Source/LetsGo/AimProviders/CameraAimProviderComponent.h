@@ -1,20 +1,19 @@
 #pragma once
 
 #include "AimProviderComponent.h"
+#include "Camera/CameraComponent.h"
 
-#include "FpAimProviderComponent.generated.h"
 
-/// <summary>
-/// First person aim provider component
-/// </summary>
-UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent))
-class LETSGO_API UFpAimProviderComponent : public UAimProviderComponent
+#include "CameraAimProviderComponent.generated.h"
+
+UCLASS( ClassGroup=(Custom), Blueprintable, meta=(BlueprintSpawnableComponent) )
+class LETSGO_API UCameraAimProviderComponent : public UAimProviderComponent
 {
 	GENERATED_BODY()
 
-public:
+public:	
 	UFUNCTION(BlueprintCallable)
-	void SetAimPivot(USceneComponent* aimPivot);
+	void SetCamera(UCameraComponent* cameraComponent);
 
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
