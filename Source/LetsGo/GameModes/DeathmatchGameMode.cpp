@@ -31,15 +31,21 @@ void ADeathmatchGameMode::OnFragsCountChanged()
 		}
 	}
 
+	_winnerPlayerId = PlayerId(playerWithMaxFrags);
+
 	if(maxFrags >= _fragLimit)
 	{
-		_winnerPlayerId = PlayerId(playerWithMaxFrags);
 		SetMatchState(MatchState::Ended);
 	}
 }
 
 bool ADeathmatchGameMode::IsLocalPlayerWonMatch()
 {
+	if (IsMatchInProgress())
+	{
+		return false;
+	}
+
 	return _winnerPlayerId == _localPlayerId;
 }
 
