@@ -40,7 +40,12 @@ void APickupSpawnPoint::BeginPlay()
 
 void APickupSpawnPoint::SpawnPickup()
 {
-	auto const pickupItem = AssetUtils::SpawnBlueprint<APickupItem>(GetWorld(), this, _pickupItemBlueprintGeneratedClass);
+	auto const pickupItem = AssetUtils::SpawnBlueprint<APickupItem>(
+		GetWorld(),
+		this,
+		_pickupItemBlueprintGeneratedClass,
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+		);
 	AssertIsNotNull(pickupItem);
 	//Tricky: Subscribe first, then attach to pivot because pickup can be taken on spawn
 	_delegateHandleOnPickupTaken = pickupItem->Taken.AddUObject(this, &APickupSpawnPoint::OnPickupTaken);

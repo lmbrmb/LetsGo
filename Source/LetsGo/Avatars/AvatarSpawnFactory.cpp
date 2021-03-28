@@ -18,7 +18,13 @@ AAvatar* AvatarSpawnFactory::SpawnAvatar(const AvatarData* avatarData, UWorld* w
 	{
 		return nullptr;
 	}
-	auto const avatar = AssetUtils::SpawnBlueprint<AAvatar>(world, nullptr, avatarGeneratedClass, transform);
+	auto const avatar = AssetUtils::SpawnBlueprint<AAvatar>(
+		world,
+		nullptr,
+		avatarGeneratedClass,
+		transform,
+		ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn
+		);
 	if(!avatar)
 	{
 		return nullptr;

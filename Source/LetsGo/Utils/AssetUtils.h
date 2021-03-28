@@ -10,10 +10,11 @@ public:
 		UWorld* world,
 		AActor* owner,
 		UClass* theClass,
-		FTransform transform
+		FTransform transform,
+		ESpawnActorCollisionHandlingMethod spawnActorCollisionHandlingMethod
 	)
 	{
-		auto const spawnParams = GetSpawnParameters(owner);
+		auto const spawnParams = GetSpawnParameters(owner, spawnActorCollisionHandlingMethod);
 
 		auto const spawnedActor = world->SpawnActor<T>(
 			theClass,
@@ -35,12 +36,19 @@ public:
 		UWorld* world,
 		AActor* owner,
 		UClass* theClass,
+		ESpawnActorCollisionHandlingMethod spawnActorCollisionHandlingMethod,
 		FVector location = FVector::ZeroVector,
 		FRotator rotation = FRotator::ZeroRotator,
 		FVector scale = FVector::OneVector
 	)
 	{
-		return SpawnBlueprint<T>(world, owner, theClass, FTransform(rotation, location, scale));
+		return SpawnBlueprint<T>(
+			world,
+			owner,
+			theClass,
+			FTransform(rotation, location, scale),
+			spawnActorCollisionHandlingMethod
+			);
 	}
 
 	static FString GenerateAssetPath(const FString& path, const FString& name)
@@ -51,11 +59,14 @@ public:
 private:
 	AssetUtils() = delete;
 
-	static FActorSpawnParameters GetSpawnParameters(AActor* owner)
+	static FActorSpawnParameters GetSpawnParameters(
+		AActor* owner,
+		ESpawnActorCollisionHandlingMethod spawnActorCollisionHandlingMethod
+	)
 	{
 		FActorSpawnParameters spawnParams;
 		spawnParams.Owner = owner;
-		spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		spawnParams.SpawnCollisionHandlingOverride = spawnActorCollisionHandlingMethod;
 		return spawnParams;
 	}
 };

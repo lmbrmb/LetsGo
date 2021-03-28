@@ -480,7 +480,12 @@ AActor* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 		return nullptr;
 	}
 	
-	auto const gunActor = AssetUtils::SpawnBlueprint<AActor>(GetWorld(), GetOwner(), gunBlueprintGeneratedClass);
+	auto const gunActor = AssetUtils::SpawnBlueprint<AActor>(
+		GetWorld(),
+		GetOwner(),
+		gunBlueprintGeneratedClass,
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+		);
 	if(!gunActor)
 	{
 		DevLogger::GetLoggingChannel()->LogValue("Weapon blueprint is not spawned. Gun item id:", gunItem->GetId());
