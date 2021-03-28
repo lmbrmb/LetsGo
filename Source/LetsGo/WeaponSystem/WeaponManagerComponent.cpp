@@ -88,70 +88,114 @@ void UWeaponManagerComponent::Reload()
 
 void UWeaponManagerComponent::HolsterWeapon()
 {
-	EquipWeapon(-1);
+	EquipWeapon(NO_WEAPON_INDEX);
 }
 
 void UWeaponManagerComponent::NextWeapon()
 {
-	ChangeWeapon(1);
+	TryEquipNextUsableWeapon(1);
 }
 
 void UWeaponManagerComponent::PreviousWeapon()
 {
-	ChangeWeapon(-1);
+	TryEquipNextUsableWeapon(-1);
 }
 
-void UWeaponManagerComponent::ChangeWeapon(const int indexModifier)
+bool UWeaponManagerComponent::ChangeWeapon(const int indexModifier)
+{
+	return TryEquipNextUsableWeapon(indexModifier);
+}
+
+bool UWeaponManagerComponent::TryEquipNextUsableWeapon(const int indexModifier)
+{
+	if (IsChangingWeapon())
+	{
+		return false;
+	}
+	
+	auto const nextUsableWeaponIndex = GetNextUsableWeaponIndex(indexModifier);
+
+	if(nextUsableWeaponIndex == UNDEFINED_INDEX)
+	{
+		return false;
+	}
+	
+	RequestEquipWeapon(nextUsableWeaponIndex);
+	return true;
+}
+
+bool UWeaponManagerComponent::IsChangingWeapon() const
+{
+	return _changeWeaponTimerHandle.IsValid();
+}
+
+
+int UWeaponManagerComponent::GetNextUsableWeaponIndex(const int indexModifier) const
 {
 	if (indexModifier == 0)
 	{
-		DevLogger::GetLoggingChannel()->Log("ChangeWeapon: index modifier is 0", LogSeverity::Warning);
-		return;
+		DevLogger::GetLoggingChannel()->Log(__FUNCTION__ + FString("index modifier is 0"), LogSeverity::Warning);
+		return UNDEFINED_INDEX;
 	}
 
 	auto const weaponsCount = _weaponActors.Num();
 
-	if (weaponsCount == 0)
+	if (weaponsCount < 1)
 	{
-		return;
+		return UNDEFINED_INDEX;
 	}
 
-	auto nextIndex = _weaponIndex + indexModifier;
+	auto canChangeWeapon = false;
+	auto nextWeaponIndex = _weaponIndex + indexModifier;
+	auto const checksCount = weaponsCount;
 
-	if (nextIndex >= weaponsCount)
+	for (auto i = 0; i < checksCount; i++)
 	{
-		nextIndex = 0;
-	}
-	else if (nextIndex < 0)
-	{
-		nextIndex = weaponsCount - 1;
-	}
-
-	if (_weaponIndex == nextIndex)
-	{
-		return;
-	}
-	
-	_nextWeaponIndex = nextIndex;
-
-	if(_changeWeaponTimerHandle.IsValid())
-	{
-		return;
-	}
-
-	if(_weapon)
-	{
-		if(!_weapon->IsRequestReady())
+		if (nextWeaponIndex >= weaponsCount)
 		{
-			_changeWeaponTimerHandle = _weapon->RequestReady.AddUObject(this, &UWeaponManagerComponent::ChangeWeaponOnRequestReady);
+			nextWeaponIndex = 0;
+		}
+		else if (nextWeaponIndex < 0)
+		{
+			nextWeaponIndex = weaponsCount - 1;
+		}
+
+		auto const gun = _guns[nextWeaponIndex];
+
+		if (!gun || gun->IsEnoughAmmoForShot())
+		{
+			canChangeWeapon = true;
+			break;
+		}
+
+		nextWeaponIndex += indexModifier;
+	}
+
+	if (nextWeaponIndex == _weaponIndex)
+	{
+		return UNDEFINED_INDEX;
+	}
+
+	return canChangeWeapon ? nextWeaponIndex : UNDEFINED_INDEX;
+}
+
+void UWeaponManagerComponent::RequestEquipWeapon(const int weaponIndex)
+{
+	_nextWeaponIndex = weaponIndex;
+	
+	if (_weapon)
+	{
+		if (!_weapon->IsRequestReady())
+		{
+			_changeWeaponTimerHandle = _weapon->RequestReady.AddUObject(this, &UWeaponManagerComponent::EquipWeaponOnRequestReady);
 			return;
 		}
 	}
 
-	ChangeWeaponOnRequestReady();
+	EquipWeaponOnRequestReady();
 }
 
-void UWeaponManagerComponent::ChangeWeaponOnRequestReady()
+void UWeaponManagerComponent::EquipWeaponOnRequestReady()
 {
 	if(_changeWeaponTimerHandle.IsValid())
 	{
@@ -161,7 +205,6 @@ void UWeaponManagerComponent::ChangeWeaponOnRequestReady()
 	}
 
 	EquipWeapon(_nextWeaponIndex);
-	BpOnWeaponChanged();
 }
 
 void UWeaponManagerComponent::AddWeaponPivot(USceneComponent* weaponPivot)
@@ -180,6 +223,11 @@ void UWeaponManagerComponent::AddWeaponPivot(USceneComponent* weaponPivot)
 
 	ChangeWeaponPivot();
 	OnPartialInitialization();
+}
+
+int UWeaponManagerComponent::GetWeaponsCount() const
+{
+	return _weapons.Num();
 }
 
 void UWeaponManagerComponent::SetAimProvider(IAimProvider* aimProvider)
@@ -247,19 +295,20 @@ void UWeaponManagerComponent::EquipWeapon(const int weaponIndex)
 	// Refresh all known weapons
 	_weaponActor = noWeapon ? nullptr : _weaponActors[_weaponIndex];
 	_weapon = noWeapon ? nullptr : _weapons[_weaponIndex];
-	_gun = noWeapon ? nullptr : dynamic_cast<IGun*>(_weaponActor);
-
+	_gun = noWeapon ? nullptr : _guns[weaponIndex];
+	
 	if(_weaponActor)
 	{
 		ActorUtils::SetEnabled(_weaponActor, true);
+		
+		if (_isFireStarted)
+		{
+			StartWeaponFire();
+		}
 	}
-	
+
 	WeaponEquipped.Broadcast();
-	
-	if (_isFireStarted)
-	{
-		StartWeaponFire();
-	}
+	BpOnWeaponEquipped();
 }
 
 bool UWeaponManagerComponent::TryProcessItem(Item* item)
@@ -288,30 +337,38 @@ bool UWeaponManagerComponent::TryProcessItemAsGun(Item* item)
 	// Add ammo if already have this gun
 	auto const gunId = gunItem->GetId();
 	auto const ammoId = gunItem->GetAmmoId();
-	auto haveThisGun = false;
+	auto haveThisWeapon = false;
 	auto haveGunWithSameAmmo = false;
-	
-	for (auto weapon : _weapons)
+
+	auto const gunsCount = _guns.Num();
+	for (auto i = 0; i < gunsCount; i++)
 	{
-		if(weapon->GetWeaponId().GetId() == gunId)
+		auto const weapon = _weapons[i];
+		
+		if (weapon->GetWeaponId().GetId() == gunId)
 		{
-			haveThisGun = true;
+			haveThisWeapon = true;
 		}
 		
-		auto const gun = dynamic_cast<const IGun*>(weapon);
-		if(gun && gun->GetAmmoProvider()->GetAmmoId() == ammoId)
+		auto const gun = _guns[i];
+		if(!gun)
+		{
+			continue;
+		}
+
+		if (gun->GetAmmoProvider()->GetAmmoId() == ammoId)
 		{
 			haveGunWithSameAmmo = true;
 		}
 	}
 
-	if (haveThisGun || haveGunWithSameAmmo)
+	if (haveThisWeapon || haveGunWithSameAmmo)
 	{
 		auto const ammoItem = _ammoItemFactory->Get(ammoId);
 		TryProcessItemAsAmmo(ammoItem);
 	}
 
-	if(haveThisGun)
+	if(haveThisWeapon)
 	{
 		return true;
 	}
@@ -327,12 +384,13 @@ bool UWeaponManagerComponent::TryProcessItemAsGun(Item* item)
 	auto const noWeapons = _weapons.Num() <= 0;
 	auto const gun = dynamic_cast<IGun*>(gunActor);
 	_weapons.Add(gun);
+	_guns.Add(gun);
 	
 	auto const weaponIndex = _weaponActors.Add(gunActor);
 
 	if (noWeapons || _shouldEquipWeaponOnPickup)
 	{
-		EquipWeapon(weaponIndex);
+		RequestEquipWeapon(weaponIndex);
 	}
 	else
 	{
@@ -422,19 +480,19 @@ AActor* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 		return nullptr;
 	}
 	
-	auto const weaponActor = AssetUtils::SpawnBlueprint<AActor>(GetWorld(), GetOwner(), gunBlueprintGeneratedClass);
-	if(!weaponActor)
+	auto const gunActor = AssetUtils::SpawnBlueprint<AActor>(GetWorld(), GetOwner(), gunBlueprintGeneratedClass);
+	if(!gunActor)
 	{
 		DevLogger::GetLoggingChannel()->LogValue("Weapon blueprint is not spawned. Gun item id:", gunItem->GetId());
 		return nullptr;
 	}
 	
-	auto const gun = dynamic_cast<IGun*>(weaponActor);
+	auto const gun = dynamic_cast<IGun*>(gunActor);
 
 	if (!gun)
 	{
 		DevLogger::GetLoggingChannel()->LogValue("IGun is null. Gun item id:", gunItem->GetId());
-		weaponActor->Destroy();
+		gunActor->Destroy();
 		return nullptr;
 	}
 
@@ -458,11 +516,11 @@ AActor* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 
 	gun->InitializeGun(ammoProvider, _aimProvider);
 
-	AttachWeapon(weaponActor);
+	AttachWeapon(gunActor);
 	
 	gun->ShotPerformed.AddUObject(this, &UWeaponManagerComponent::OnGunShotPerformed);
 	
-	return weaponActor;
+	return gunActor;
 }
 
 void UWeaponManagerComponent::AttachWeapon(AActor* weaponActor) const
@@ -521,24 +579,10 @@ void UWeaponManagerComponent::OnOutOfAmmo()
 {
 	BpOnOutOfAmmo();
 
-	//Try equip other weapon
-	for (auto i = 0; i < _weapons.Num(); i++)
+	auto const isWeaponChanged = TryEquipNextUsableWeapon(1);
+
+	if(!isWeaponChanged)
 	{
-		auto const weapon = _weapons[i];
-		auto const gun = dynamic_cast<const IGun*>(weapon);
-
-		if (gun)
-		{
-			if (!gun->IsEnoughAmmoForShot())
-			{
-				continue;
-			}
-		}
-
-		EquipWeapon(i);
-		return;
+		_isFireStarted = false;
 	}
-
-	//Could not equip other weapon
-	_isFireStarted = false;
 }

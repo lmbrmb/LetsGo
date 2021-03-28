@@ -39,7 +39,7 @@ public:
 
 	void PreviousWeapon();
 
-	void ChangeWeapon(const int indexModifier);
+	bool ChangeWeapon(const int indexModifier);
 
 	void ChangeWeaponPivot();
 
@@ -48,6 +48,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AddWeaponPivot(USceneComponent* weaponPivot);
 
+	UFUNCTION(BlueprintCallable)
+	int GetWeaponsCount() const;
+	
 	UFUNCTION(BlueprintCallable)
 	void SetOwnerSkeletalMeshComponent(USkeletalMeshComponent* ownerSkeletalMeshComponent);
 	
@@ -68,9 +71,9 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnGunShotPerformed(const bool isAnyBulletDamaged);
-	
+
 	UFUNCTION(BlueprintImplementableEvent)
-	void BpOnWeaponChanged();
+	void BpOnWeaponEquipped();
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnOutOfAmmo();
@@ -86,6 +89,8 @@ private:
 	FName _weaponSocketName = "RightHandWeaponSocket";
 
 	const int UNDEFINED_INDEX = -1;
+
+	const int NO_WEAPON_INDEX = UNDEFINED_INDEX;
 
 	bool _isInitialized = false;
 
@@ -107,28 +112,28 @@ private:
 
 	AmmoItemFactory* _ammoItemFactory;
 
-	TArray<IWeapon*> _weapons;
-	
 	TArray<AActor*> _weaponActors;
 
-	/// <summary>
-	/// Ammo Id / Ammo provider
-	/// </summary>
-	TMap<FName, AmmoProvider*> _ammoProviders;
+	TArray<IWeapon*> _weapons;
 
-	USkeletalMeshComponent* _ownerSkeletalMeshComponent;
+	TArray<IGun*> _guns;
 	
 	AActor* _weaponActor = nullptr;
 
 	IWeapon* _weapon = nullptr;
 
 	IGun* _gun = nullptr;
+	
+	/// <summary>
+	/// Ammo Id / Ammo provider
+	/// </summary>
+	TMap<FName, AmmoProvider*> _ammoProviders;
+
+	USkeletalMeshComponent* _ownerSkeletalMeshComponent = nullptr;
 
 	int _weaponIndex = UNDEFINED_INDEX;
 
 	int _nextWeaponIndex = UNDEFINED_INDEX;
-
-	void EquipWeapon(const int weaponIndex);
 
 	TArray<TFunction<bool(Item*)>> _itemProcessors;
 
@@ -145,9 +150,19 @@ private:
 	AActor* CreateGun(const GunItem* gunItem);
 
 	FDelegateHandle _changeWeaponTimerHandle;
+	
+	bool TryEquipNextUsableWeapon(const int indexModifier);
 
-	void ChangeWeaponOnRequestReady();
+	bool IsChangingWeapon() const;
+	
+	int GetNextUsableWeaponIndex(const int indexModifier) const;
+	
+	void RequestEquipWeapon(const int weaponIndex);
+	
+	void EquipWeaponOnRequestReady();
 
+	void EquipWeapon(const int weaponIndex);
+	
 	void AttachWeapon(AActor* weaponActor) const;
 
 	bool CanAttachWeapon() const;
