@@ -7,8 +7,8 @@ GunItemFactory::GunItemFactory()
 	_gunData.Add("ShotgunQ3", GunData(shotgunWeaponType, "ShotgunShells", 10));
 
 	const WeaponType machinegunWeaponType("Machinegun");
-	_gunData.Add("Minigun", GunData(machinegunWeaponType, "MachinegunBullets", 75));
-	_gunData.Add("MachinegunQ3", GunData(machinegunWeaponType, "MachinegunBullets", 75));
+	_gunData.Add("Minigun", GunData(machinegunWeaponType, "MinigunBullets", 75));
+	_gunData.Add("MachinegunQ3", GunData(machinegunWeaponType, "MachinegunBullets", 999));
 	
 	const WeaponType railgunWeaponType("Railgun");
 	_gunData.Add("Railgun", GunData(railgunWeaponType, "RailgunBullets", 10));
