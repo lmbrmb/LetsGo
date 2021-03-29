@@ -39,7 +39,7 @@ bool UPickupManagerComponent::TryPickUpItem(FName itemId)
 
 	if (item == nullptr)
 	{
-		DevLogger::GetLoggingChannel()->Log("Item is not created", LogSeverity::Error);
+		DevLogger::GetLoggingChannel()->LogValue("Item is not created. Item ID:", itemId, LogSeverity::Error);
 		return false;
 	}
 

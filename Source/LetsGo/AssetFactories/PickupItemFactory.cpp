@@ -10,6 +10,7 @@ PickupItemFactory::PickupItemFactory(const bool lazyInitialization)
 	Paths.Add("SawedOffShotgun", AssetUtils::GenerateAssetPath(_assetPath, "BP_SawedOffShotgunPickupItem"));
 	Paths.Add("ShotgunQ3", AssetUtils::GenerateAssetPath(_assetPath, "BP_ShotgunQ3PickupItem"));
 	Paths.Add("Minigun", AssetUtils::GenerateAssetPath(_assetPath, "BP_MinigunPickupItem"));
+	Paths.Add("MachinegunQ3", AssetUtils::GenerateAssetPath(_assetPath, "BP_MachinegunQ3PickupItem"));
 	Paths.Add("Railgun", AssetUtils::GenerateAssetPath(_assetPath, "BP_RailgunPickupItem"));
 	Paths.Add("RailgunQ3", AssetUtils::GenerateAssetPath(_assetPath, "BP_RailgunQ3PickupItem"));
 
