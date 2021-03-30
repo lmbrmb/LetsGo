@@ -3,8 +3,6 @@
 #include "GameFramework/PlayerState.h"
 #include "LetsGo/Utils/AssertUtils.h"
 
-const int BOT_COUNT = 3;
-
 const FName LOCAL_PLAYER_NAME = "%UserName%";
 
 const FName LOCAL_PLAYER_SKIN_ID = "Kachujin";
@@ -13,8 +11,41 @@ void ADeathmatchGameMode::InitGame(const FString& MapName, const FString& Option
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
 
+	ParseMatchOptions(Options);
+
 	auto const avatarDataFactory = GetDiContainer()->GetInstance<AvatarDataFactory>();
 	_avatarDataFactory = &avatarDataFactory.Get();
+}
+
+void ADeathmatchGameMode::ParseMatchOptions(const FString& options)
+{
+	auto stringToSplit = options;
+	FString option, remainder;
+	while (stringToSplit.Split(TEXT(";"), &option, &remainder))
+	{
+		stringToSplit = remainder;
+		
+		if(TryParseBotCount(option))
+		{
+			continue;
+		}
+		
+		//Parse other options
+	}
+}
+
+bool ADeathmatchGameMode::TryParseBotCount(const FString& option)
+{
+	if (!option.Find("BotCount="))
+	{
+		return false;
+	}
+	
+	FString botCountKey, botCountValue;
+	option.Split(TEXT("="), &botCountKey, &botCountValue);
+	auto const botCount = FCString::Atoi(*botCountValue);
+	_botCount = botCount;
+	return true;
 }
 
 void ADeathmatchGameMode::OnFragsCountChanged()
@@ -52,7 +83,7 @@ bool ADeathmatchGameMode::IsLocalPlayerWonMatch()
 void ADeathmatchGameMode::PopulateAvatarsData()
 {
 	auto teamIndex = 0;
-	for (auto i = 0; i < BOT_COUNT; i++)
+	for (auto i = 0; i < _botCount; i++)
 	{
 		auto const botIdValue = MAX_int32 - i;
 		const PlayerId botId(botIdValue);

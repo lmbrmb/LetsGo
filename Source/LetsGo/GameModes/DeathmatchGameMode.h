@@ -34,8 +34,14 @@ private:
 	int _fragLimit = 1;
 
 	PlayerId _localPlayerId;
-	
+
 	PlayerId _winnerPlayerId;
-	
+
 	AvatarDataFactory* _avatarDataFactory;
+
+	int _botCount = 1;
+
+	void ParseMatchOptions(const FString& options);
+
+	bool TryParseBotCount(const FString& option);
 };

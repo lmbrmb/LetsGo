@@ -1,17 +1,18 @@
 #include "PlayerHud.h"
 
+#include "LetsGo/Utils/AssertUtils.h"
+
 void APlayerHud::BeginPlay()
 {
 	Super::BeginPlay();
+
+	AssertIsNotNull(_hudWidgetBlueprint);
 	
-	if(_hudBlueprint)
-	{
-		auto const world = GetWorld();
-		_hudWidget = CreateWidget(world, _hudBlueprint);
-		_hudWidget->AddToViewport(INT_MIN);
-		
-		Initialized.Broadcast();
-	}
+	auto const world = GetWorld();
+	_hudWidget = CreateWidget(world, _hudWidgetBlueprint);
+	_hudWidget->AddToViewport(INT_MIN);
+	
+	Initialized.Broadcast();
 }
 
 UUserWidget* APlayerHud::GetHudWidget() const

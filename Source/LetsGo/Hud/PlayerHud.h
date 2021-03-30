@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameFramework/HUD.h"
+
 #include "Blueprint/UserWidget.h"
 
 #include "PlayerHud.generated.h"
@@ -25,7 +26,7 @@ protected:
 	
 private:
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = "true"))
-	TSubclassOf<UUserWidget> _hudBlueprint;
+	TSubclassOf<UUserWidget> _hudWidgetBlueprint;
 
 	UUserWidget* _hudWidget = nullptr;
 };
