@@ -17,7 +17,7 @@
 
 DECLARE_EVENT_ThreeParams(UWeaponManagerComponent, EShotPerformed_UWeaponManagerComponent, const PlayerId& playerId, const WeaponType& weaponType, const bool isAnyBulletDamaged);
 
-DECLARE_EVENT(UWeaponManagerComponent, EWeaponEquipped_UWeaponManagerComponent);
+DECLARE_EVENT(UWeaponManagerComponent, EWeaponChanged_UWeaponManagerComponent);
 
 UCLASS(ClassGroup = (Custom), Blueprintable, meta = (BlueprintSpawnableComponent))
 class LETSGO_API UWeaponManagerComponent final : public UActorComponent, public IItemProcessor
@@ -64,8 +64,10 @@ public:
 
 	EShotPerformed_UWeaponManagerComponent ShotPerformed;
 
-	EWeaponEquipped_UWeaponManagerComponent WeaponEquipped;
-	
+	EWeaponChanged_UWeaponManagerComponent WeaponEquipped;
+
+	EWeaponChanged_UWeaponManagerComponent WeaponHolstered;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -74,6 +76,9 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnWeaponEquipped();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpOnWeaponHolstered();
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnOutOfAmmo();
@@ -87,6 +92,9 @@ private:
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
 	FName _weaponSocketName = "RightHandWeaponSocket";
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
+	float _weaponEquipDuration = 0;
 
 	const int UNDEFINED_INDEX = -1;
 
@@ -149,7 +157,9 @@ private:
 
 	AActor* CreateGun(const GunItem* gunItem);
 
-	FDelegateHandle _changeWeaponTimerHandle;
+	FDelegateHandle _equipWeaponRequestReadyHandle;
+
+	FTimerHandle _equipWeaponTimerHandle;
 	
 	bool TryEquipNextUsableWeapon(const int indexModifier);
 
@@ -161,7 +171,9 @@ private:
 	
 	void EquipWeaponOnRequestReady();
 
-	void EquipWeapon(const int weaponIndex);
+	void EquipWeaponOnTimer();
+	
+	void EquipWeaponImmediate(const int weaponIndex);
 	
 	void AttachWeapon(AActor* weaponActor) const;
 

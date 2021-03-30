@@ -39,10 +39,28 @@ if (BoolUtils::IsEqual(leftHandValue, rightHandValue)) \
 	return; \
 };
 
+#define AssertIsGreater(leftHandValue, rightHandValue) \
+if (!BoolUtils::IsGreater(leftHandValue, rightHandValue)) \
+{ \
+	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Value is not greater", LogSeverity::Error); \
+	DevLogger::GetLoggingChannel()->LogValue("Left hand value: ", leftHandValue, LogSeverity::Error); \
+	DevLogger::GetLoggingChannel()->LogValue("Right hand value: ", rightHandValue, LogSeverity::Error); \
+	return; \
+};
+
 #define AssertIsGreaterOrEqual(leftHandValue, rightHandValue) \
 if (!BoolUtils::IsGreaterOrEqual(leftHandValue, rightHandValue)) \
 { \
 	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Value is not greater or equal", LogSeverity::Error); \
+	DevLogger::GetLoggingChannel()->LogValue("Left hand value: ", leftHandValue, LogSeverity::Error); \
+	DevLogger::GetLoggingChannel()->LogValue("Right hand value: ", rightHandValue, LogSeverity::Error); \
+	return; \
+};
+
+#define AssertIsLess(leftHandValue, rightHandValue) \
+if (!BoolUtils::IsLess(leftHandValue, rightHandValue)) \
+{ \
+	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Value is not less", LogSeverity::Error); \
 	DevLogger::GetLoggingChannel()->LogValue("Left hand value: ", leftHandValue, LogSeverity::Error); \
 	DevLogger::GetLoggingChannel()->LogValue("Right hand value: ", rightHandValue, LogSeverity::Error); \
 	return; \

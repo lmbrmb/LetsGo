@@ -35,9 +35,15 @@ public:
 
 	template<class T>
 	static bool IsEqual(const T value, const T testValue);
-	
+
+	template<class T>
+	static bool IsGreater(const T value, const T testValue);
+
 	template<class T>
 	static bool IsGreaterOrEqual(const T value, const T testValue);
+
+	template<class T>
+	static bool IsLess(const T value, const T testValue);
 
 	template<class T>
 	static bool IsLessOrEqual(const T value, const T testValue);
@@ -83,9 +89,21 @@ bool BoolUtils::IsEqual(const T value, const T testValue)
 }
 
 template <class T>
+bool BoolUtils::IsGreater(const T value, const T testValue)
+{
+	return value > testValue;
+}
+
+template <class T>
 bool BoolUtils::IsGreaterOrEqual(const T value, const T testValue)
 {
 	return value >= testValue;
+}
+
+template <class T>
+bool BoolUtils::IsLess(const T value, const T testValue)
+{
+	return value < testValue;
 }
 
 template <class T>

@@ -16,7 +16,13 @@ class LETSGO_API UAmmoWidget : public UUserWidget
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
-	void BpOnGunChanged(const FName& ammoId);
+	void BpOnWeaponEquipped();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpOnWeaponHolstered();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpOnGunEquipped(const FName& ammoId);
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnAmmoCountChanged(const int ammoCount);
@@ -27,6 +33,8 @@ private:
 	void OnAvatarChanged(const AAvatar* avatar);
 
 	void OnWeaponEquipped();
+
+	void OnWeaponHolstered();
 
 	void OnAmmoCountChanged(const int ammoCount);
 

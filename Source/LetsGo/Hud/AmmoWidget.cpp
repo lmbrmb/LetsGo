@@ -23,6 +23,7 @@ void UAmmoWidget::OnAvatarChanged(const AAvatar* avatar)
 	if (_weaponManagerComponent)
 	{
 		_weaponManagerComponent->WeaponEquipped.RemoveAll(this);
+		_weaponManagerComponent->WeaponHolstered.RemoveAll(this);
 	}
 
 	_weaponManagerComponent = nullptr;
@@ -34,6 +35,7 @@ void UAmmoWidget::OnAvatarChanged(const AAvatar* avatar)
 		if (_weaponManagerComponent)
 		{
 			_weaponManagerComponent->WeaponEquipped.AddUObject(this, &UAmmoWidget::OnWeaponEquipped);
+			_weaponManagerComponent->WeaponHolstered.AddUObject(this, &UAmmoWidget::OnWeaponHolstered);
 			OnWeaponEquipped();
 		}
 	}
@@ -41,6 +43,8 @@ void UAmmoWidget::OnAvatarChanged(const AAvatar* avatar)
 
 void UAmmoWidget::OnWeaponEquipped()
 {
+	BpOnWeaponEquipped();
+
 	if(_gun)
 	{
 		auto const ammoProvider = _gun->GetAmmoProvider();
@@ -59,11 +63,16 @@ void UAmmoWidget::OnWeaponEquipped()
 	AssertIsNotNull(ammoProvider);
 	
 	auto const ammoId = ammoProvider->GetAmmoId();
-	BpOnGunChanged(ammoId);
-	
+	BpOnGunEquipped(ammoId);
+
 	ammoProvider->Changed.AddUObject(this, &UAmmoWidget::OnAmmoCountChanged);
 	auto const ammoCount = ammoProvider->GetCurrent();
 	OnAmmoCountChanged(ammoCount);
+}
+
+void UAmmoWidget::OnWeaponHolstered()
+{
+	BpOnWeaponHolstered();
 }
 
 void UAmmoWidget::OnAmmoCountChanged(const int ammoCount)

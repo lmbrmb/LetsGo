@@ -39,6 +39,8 @@ void UWeaponManagerComponent::BeginPlay()
 
 	auto const gunItemFactory = diContainer->GetInstance<GunItemFactory>();
 	_gunItemFactory = &gunItemFactory.Get();
+
+	AssertIsGreaterOrEqual(_weaponEquipDuration, 0.0f);
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
@@ -88,7 +90,7 @@ void UWeaponManagerComponent::Reload()
 
 void UWeaponManagerComponent::HolsterWeapon()
 {
-	EquipWeapon(NO_WEAPON_INDEX);
+	EquipWeaponImmediate(NO_WEAPON_INDEX);
 }
 
 void UWeaponManagerComponent::NextWeapon()
@@ -108,11 +110,6 @@ bool UWeaponManagerComponent::ChangeWeapon(const int indexModifier)
 
 bool UWeaponManagerComponent::TryEquipNextUsableWeapon(const int indexModifier)
 {
-	if (IsChangingWeapon())
-	{
-		return false;
-	}
-	
 	auto const nextUsableWeaponIndex = GetNextUsableWeaponIndex(indexModifier);
 
 	if(nextUsableWeaponIndex == UNDEFINED_INDEX)
@@ -126,9 +123,8 @@ bool UWeaponManagerComponent::TryEquipNextUsableWeapon(const int indexModifier)
 
 bool UWeaponManagerComponent::IsChangingWeapon() const
 {
-	return _changeWeaponTimerHandle.IsValid();
+	return _equipWeaponRequestReadyHandle.IsValid() || _equipWeaponTimerHandle.IsValid();
 }
-
 
 int UWeaponManagerComponent::GetNextUsableWeaponIndex(const int indexModifier) const
 {
@@ -181,13 +177,18 @@ int UWeaponManagerComponent::GetNextUsableWeaponIndex(const int indexModifier) c
 
 void UWeaponManagerComponent::RequestEquipWeapon(const int weaponIndex)
 {
+	if(IsChangingWeapon())
+	{
+		return;
+	}
+	
 	_nextWeaponIndex = weaponIndex;
 	
 	if (_weapon)
 	{
 		if (!_weapon->IsRequestReady())
 		{
-			_changeWeaponTimerHandle = _weapon->RequestReady.AddUObject(this, &UWeaponManagerComponent::EquipWeaponOnRequestReady);
+			_equipWeaponRequestReadyHandle = _weapon->RequestReady.AddUObject(this, &UWeaponManagerComponent::EquipWeaponOnRequestReady);
 			return;
 		}
 	}
@@ -197,14 +198,34 @@ void UWeaponManagerComponent::RequestEquipWeapon(const int weaponIndex)
 
 void UWeaponManagerComponent::EquipWeaponOnRequestReady()
 {
-	if(_changeWeaponTimerHandle.IsValid())
+	if (_equipWeaponRequestReadyHandle.IsValid())
 	{
 		AssertIsNotNull(_weapon);
-		_weapon->RequestReady.Remove(_changeWeaponTimerHandle);
-		_changeWeaponTimerHandle.Reset();
+		_weapon->RequestReady.Remove(_equipWeaponRequestReadyHandle);
+		_equipWeaponRequestReadyHandle.Reset();
 	}
 
-	EquipWeapon(_nextWeaponIndex);
+	HolsterWeapon();
+
+	if(_weaponEquipDuration > 0)
+	{
+		GetWorld()->GetTimerManager().SetTimer(
+			_equipWeaponTimerHandle,
+			this,
+			&UWeaponManagerComponent::EquipWeaponOnTimer,
+			_weaponEquipDuration,
+			false
+		);
+		return;
+	}
+
+	EquipWeaponOnTimer();
+}
+
+void UWeaponManagerComponent::EquipWeaponOnTimer()
+{
+	_equipWeaponTimerHandle.Invalidate();
+	EquipWeaponImmediate(_nextWeaponIndex);
 }
 
 void UWeaponManagerComponent::AddWeaponPivot(USceneComponent* weaponPivot)
@@ -275,7 +296,7 @@ void UWeaponManagerComponent::ChangeWeaponPivot()
 	}
 }
 
-void UWeaponManagerComponent::EquipWeapon(const int weaponIndex)
+void UWeaponManagerComponent::EquipWeaponImmediate(const int weaponIndex)
 {
 	if(_weaponIndex == weaponIndex)
 	{
@@ -296,7 +317,7 @@ void UWeaponManagerComponent::EquipWeapon(const int weaponIndex)
 	_weaponActor = noWeapon ? nullptr : _weaponActors[_weaponIndex];
 	_weapon = noWeapon ? nullptr : _weapons[_weaponIndex];
 	_gun = noWeapon ? nullptr : _guns[weaponIndex];
-	
+
 	if(_weaponActor)
 	{
 		ActorUtils::SetEnabled(_weaponActor, true);
@@ -305,10 +326,13 @@ void UWeaponManagerComponent::EquipWeapon(const int weaponIndex)
 		{
 			StartWeaponFire();
 		}
+		WeaponEquipped.Broadcast();
+		BpOnWeaponEquipped();
+		return;
 	}
 
-	WeaponEquipped.Broadcast();
-	BpOnWeaponEquipped();
+	WeaponHolstered.Broadcast();
+	BpOnWeaponHolstered();
 }
 
 bool UWeaponManagerComponent::TryProcessItem(Item* item)
