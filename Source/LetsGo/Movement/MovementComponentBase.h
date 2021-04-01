@@ -9,7 +9,7 @@
 //<summary>
 /// [Abstract] Movement component
 ///</summary>
-UCLASS( ClassGroup=(Custom))
+UCLASS( ClassGroup=(Custom) )
 class LETSGO_API UMovementComponentBase : public UActorComponent
 {
 	GENERATED_BODY()
@@ -22,6 +22,8 @@ public:
 	virtual bool GetIsInAir() const;
 
 	void Jump();
+
+	FVector GetRootColliderLocation() const;
 
 protected:
 	static const FName GRAVITY_FORCE_ID;
@@ -54,7 +56,7 @@ protected:
 	/// <summary>
 	/// [Template method] Returns input movement direction
 	/// </summary>
-	virtual FVector GetInputMovementDirection();
+	virtual FVector GetMovementDirection();
 
 	/// <summary>
 	/// [Template method] Returns movement speed

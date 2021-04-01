@@ -117,7 +117,7 @@ void UMovementComponentBase::ProcessForces(const float& deltaTime)
 
 inline void UMovementComponentBase::ProcessMovement(const float& deltaTime)
 {
-	auto const direction = GetInputMovementDirection();
+	auto const direction = GetMovementDirection();
 	if (direction.IsNearlyZero())
 	{
 		return;
@@ -180,6 +180,11 @@ void UMovementComponentBase::Jump()
 		_jumpForceCurveTimeMultiplier
 	);
 	_forces.Add(jumpVelocityForce);
+}
+
+FVector UMovementComponentBase::GetRootColliderLocation() const
+{
+	return RootCollider->GetComponentLocation();
 }
 
 bool UMovementComponentBase::GetIsInAir() const
@@ -281,7 +286,7 @@ float UMovementComponentBase::GetAbsoluteMovementAmount() const
 	return 0;
 }
 
-FVector UMovementComponentBase::GetInputMovementDirection()
+FVector UMovementComponentBase::GetMovementDirection()
 {
 	AssertDefaultImplementationIsOverriden();
 	return FVector::ZeroVector;

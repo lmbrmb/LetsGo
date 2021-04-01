@@ -24,4 +24,9 @@ private:
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
 	FName _isTargetLocationValidKeyName = "IsTargetLocationValid";
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
+	float _targetLocationTolerance = 10;
+
+	float _targetLocationToleranceSquared = _targetLocationTolerance * _targetLocationTolerance;
 };

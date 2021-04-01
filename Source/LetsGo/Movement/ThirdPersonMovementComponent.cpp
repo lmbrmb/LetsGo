@@ -11,7 +11,7 @@ float UThirdPersonMovementComponent::GetAbsoluteMovementAmount() const
 	return _absoluteMovementAmount;
 }
 
-FVector UThirdPersonMovementComponent::GetInputMovementDirection()
+FVector UThirdPersonMovementComponent::GetMovementDirection()
 {
 	return _inputMovementDirection;
 }
@@ -52,8 +52,7 @@ void UThirdPersonMovementComponent::ProcessInput()
 	}
 
 	direction = FVector::VectorPlaneProject(direction, FVector::UpVector);
-	direction.Normalize();
-	_inputMovementDirection = direction;
+	_inputMovementDirection = direction.GetSafeNormal();
 }
 
 void UThirdPersonMovementComponent::CustomTick(float deltaTime)
