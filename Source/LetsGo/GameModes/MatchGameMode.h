@@ -8,6 +8,7 @@
 #include "LetsGo/Avatars/AvatarSpawnFactory.h"
 #include "LetsGo/GameStates/MatchState.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
+#include "LetsGo/SpawnPoints/SpawnPointType.h"
 
 #include "MatchGameMode.generated.h"
 
@@ -55,7 +56,7 @@ public:
 
 	MatchAnalytics* GetMatchAnalytics() const;
 	
-	void RegisterSpawnPoint(FTransform spawnPoint);
+	void RegisterSpawnPoint(const FSpawnPointType type, const FTransform& transform);
 
 	float GetMatchTime() const;
 
@@ -122,9 +123,13 @@ private:
 
 	TTypeContainer<ESPMode::Fast>* _diContainer = nullptr;
 
-	TArray<FTransform> _spawnPoints;
+	int _playerSpawnPointIndex = UNDEFINED_INDEX;
 
-	int _spawnPointIndex = UNDEFINED_INDEX;
+	TArray<FTransform> _playerSpawnPoints;
+
+	TArray<FTransform> _weaponSpawnPoints;
+
+	TArray<FTransform> _healthSpawnPoints;
 
 	AvatarSpawnFactory* _avatarSpawnFactory;
 

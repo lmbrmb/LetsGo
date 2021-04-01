@@ -88,9 +88,25 @@ void AMatchGameMode::BeginPlay()
 	GetWorldTimerManager().SetTimer(_matchStateTimerHandle, this, &AMatchGameMode::TriggerMatchWarmUp, _warmUpDelay, false);
 }
 
-void AMatchGameMode::RegisterSpawnPoint(FTransform spawnPoint)
+void AMatchGameMode::RegisterSpawnPoint(const FSpawnPointType type,  const FTransform& transform)
 {
-	_spawnPoints.Add(spawnPoint);
+	AssertIsGreater((int)type, 0);
+
+	switch (type)
+	{
+		case FSpawnPointType::Player:
+			_playerSpawnPoints.Add(transform);
+			break;
+		case FSpawnPointType::Health:
+			_healthSpawnPoints.Add(transform);
+			break;
+		case FSpawnPointType::Weapon:
+			_weaponSpawnPoints.Add(transform);
+			break;
+		default:
+			DevLogger::GetLoggingChannel()->LogValue("Unhandled spawn point type:", (int)type, LogSeverity::Error);
+			break;
+	}
 }
 
 float AMatchGameMode::GetMatchTime() const
@@ -130,7 +146,7 @@ float AMatchGameMode::GetCurrentStateTime() const
 
 FTransform AMatchGameMode::GetNextSpawnPoint()
 {
-	auto const spawnPointCount = _spawnPoints.Num();
+	auto const spawnPointCount = _playerSpawnPoints.Num();
 	
 	if(spawnPointCount <= 0)
 	{
@@ -138,15 +154,15 @@ FTransform AMatchGameMode::GetNextSpawnPoint()
 		return FTransform();
 	}
 	
-	auto nextIndex = _spawnPointIndex + 1;
+	auto nextIndex = _playerSpawnPointIndex + 1;
 
 	if (nextIndex >= spawnPointCount)
 	{
 		nextIndex = 0;
 	}
 
-	_spawnPointIndex = nextIndex;
-	return _spawnPoints[_spawnPointIndex];
+	_playerSpawnPointIndex = nextIndex;
+	return _playerSpawnPoints[_playerSpawnPointIndex];
 }
 
 void AMatchGameMode::SpawnAvatar(AvatarData* avatarData)

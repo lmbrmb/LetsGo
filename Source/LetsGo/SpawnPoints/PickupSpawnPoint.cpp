@@ -35,6 +35,8 @@ void APickupSpawnPoint::BeginPlay()
 	_pickupItemBlueprintGeneratedClass = pickupItemFactory->GetOrLoad(_id);
 	AssertIsNotNull(_pickupItemBlueprintGeneratedClass);
 
+	matchGameMode->RegisterSpawnPoint(_spawnPointType, GetTransform());
+
 	SpawnPickup();
 }
 

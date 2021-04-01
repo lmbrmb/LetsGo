@@ -1,5 +1,7 @@
 #pragma once
 
+#include "SpawnPointType.h"
+
 #include "GameFramework/Actor.h"
 
 #include "PlayerSpawnPoint.generated.h"
@@ -14,4 +16,8 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+private:
+	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	FSpawnPointType _spawnPointType;
 };

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SpawnPointType.h"
 #include "LetsGo/Pickups/PickupItem.h"
 
 #include "PickupSpawnPoint.generated.h"
@@ -22,6 +23,21 @@ protected:
 	
 private:
 	const float UNDEFINED_TIME = -1;
+
+	UPROPERTY(BlueprintReadOnly, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	USceneComponent* _root = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	USceneComponent* _spawnPivot = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	float _pickupRespawnInterval = 10;
+
+	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	FName _id = "";
+
+	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	FSpawnPointType _spawnPointType;
 	
 	UBlueprintGeneratedClass* _pickupItemBlueprintGeneratedClass = nullptr;
 
@@ -31,21 +47,10 @@ private:
 
 	void OnPickupTaken(APickupItem* pickupItem);
 
-	UFUNCTION()
 	void RespawnPickupOnTimer();
 	
-	UPROPERTY(BlueprintReadOnly, Category = Custom, meta = (AllowPrivateAccess = "true"))
-	USceneComponent* _root = nullptr;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
-	USceneComponent* _spawnPivot = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
-	float _pickupRespawnInterval = 10;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
-	FName _id = "";
-
 	FDelegateHandle _delegateHandleOnPickupTaken;
 	
 	FTimerHandle _timerHandle;
