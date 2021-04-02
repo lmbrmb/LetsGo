@@ -21,30 +21,66 @@ void ADeathmatchGameMode::ParseMatchOptions(const FString& options)
 {
 	auto stringToSplit = options;
 	FString option, remainder;
+
+	TArray<TFunction<bool(const FString&)>> optionParsers;
+	optionParsers.Add([this](auto option) { return this->TryParseBotCountOption(option); });
+	optionParsers.Add([this](auto option) { return this->TryParseFragLimitOption(option); });
+	
 	while (stringToSplit.Split(TEXT(";"), &option, &remainder))
 	{
 		stringToSplit = remainder;
-		
-		if(TryParseBotCount(option))
+
+		for (auto optionParser : optionParsers)
 		{
-			continue;
+			auto const isParsed = optionParser(option);
+			if(isParsed)
+			{
+				break;
+			}
 		}
-		
-		//Parse other options
 	}
 }
 
-bool ADeathmatchGameMode::TryParseBotCount(const FString& option)
+bool ADeathmatchGameMode::TryParseBotCountOption(const FString& option)
 {
-	if (!option.Find("BotCount="))
+	FString optionValue;
+	if (!TryGetOptionValue(option, "BotCount", optionValue))
 	{
 		return false;
 	}
-	
-	FString botCountKey, botCountValue;
-	option.Split(TEXT("="), &botCountKey, &botCountValue);
-	auto const botCount = FCString::Atoi(*botCountValue);
+
+	auto const botCount = FCString::Atoi(*optionValue);
 	_botCount = botCount;
+	return true;
+}
+
+bool ADeathmatchGameMode::TryParseFragLimitOption(const FString& option)
+{
+	FString optionValue;
+	if(!TryGetOptionValue(option, "FragLimit", optionValue))
+	{
+		return false;
+	}
+
+	auto const fragLimit = FCString::Atoi(*optionValue);
+	_fragLimit = fragLimit;
+	return true;
+}
+
+bool ADeathmatchGameMode::TryGetOptionValue(
+	const FString& option,
+	const FString& optionName,
+	FString& outOptionValue
+)
+{
+	auto const optionKey = optionName + "=";
+	if (option.Find( optionKey) == -1)
+	{
+		return false;
+	}
+
+	FString left, right;
+	option.Split(TEXT("="), &left, &outOptionValue);
 	return true;
 }
 

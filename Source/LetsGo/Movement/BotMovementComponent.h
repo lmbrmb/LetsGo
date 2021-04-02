@@ -36,6 +36,8 @@ protected:
 	virtual void CustomTick(float deltaTime) override;
 	
 private:
+	const float MIN_DOT_FORWARD = -0.01f;
+
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
 	float _actorMoveForwardSpeed = 500.0f;
 

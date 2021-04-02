@@ -1,7 +1,5 @@
 #include "BotMovementComponent.h"
 
-const float MIN_DOT_FORWARD = -0.01f;
-
 bool UBotMovementComponent::IsTargetLocationValid() const
 {
 	return _isTargetLocationValid;

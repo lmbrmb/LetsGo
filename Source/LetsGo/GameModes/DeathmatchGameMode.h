@@ -43,5 +43,9 @@ private:
 
 	void ParseMatchOptions(const FString& options);
 
-	bool TryParseBotCount(const FString& option);
+	bool TryParseBotCountOption(const FString& option);
+
+	bool TryParseFragLimitOption(const FString& option);
+
+	static bool TryGetOptionValue(const FString& option, const FString& optionName, FString& outOptionValue);
 };

@@ -1,9 +1,5 @@
 #include "FirstPersonMovementComponent.h"
 
-const float MIN_MOVEMENT_INPUT = 0.1f;
-const float MIN_ROTATION_INPUT_AMOUNT = 0.05f;
-const float MIN_DOT_FORWARD = -0.01f;
-
 FVector UFirstPersonMovementComponent::GetMovementDirection()
 {
 	return _inputMovementDirection;
