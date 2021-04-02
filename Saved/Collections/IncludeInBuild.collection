@@ -6,11 +6,13 @@ ParentGuid:00000000-0000-0000-0000-000000000000
 /Game/Assets/Blueprints/Avatars/BP_Avatar_Bot.BP_Avatar_Bot
 /Game/Assets/Blueprints/Avatars/BP_Avatar_LocalPlayer_FirstPerson.BP_Avatar_LocalPlayer_FirstPerson
 /Game/Assets/Blueprints/Avatars/BP_Avatar_LocalPlayer_ThirdPerson.BP_Avatar_LocalPlayer_ThirdPerson
+/Game/Assets/Blueprints/Guns/BP_MachinegunQ3.BP_MachinegunQ3
 /Game/Assets/Blueprints/Guns/BP_Minigun.BP_Minigun
 /Game/Assets/Blueprints/Guns/BP_Railgun.BP_Railgun
 /Game/Assets/Blueprints/Guns/BP_RailgunQ3.BP_RailgunQ3
 /Game/Assets/Blueprints/Guns/BP_SawedOffShotgun.BP_SawedOffShotgun
 /Game/Assets/Blueprints/Guns/BP_ShotgunQ3.BP_ShotgunQ3
+/Game/Assets/Blueprints/PickupItems/BP_MachinegunQ3PickupItem.BP_MachinegunQ3PickupItem
 /Game/Assets/Blueprints/PickupItems/BP_MajorHealthPickupItem.BP_MajorHealthPickupItem
 /Game/Assets/Blueprints/PickupItems/BP_MinigunPickupItem.BP_MinigunPickupItem
 /Game/Assets/Blueprints/PickupItems/BP_MinorHealthPickupItem.BP_MinorHealthPickupItem
@@ -21,3 +23,6 @@ ParentGuid:00000000-0000-0000-0000-000000000000
 /Game/Assets/Blueprints/Weapons/BP_Minigun.BP_Minigun
 /Game/Assets/Blueprints/Weapons/BP_Railgun.BP_Railgun
 /Game/Assets/Blueprints/Weapons/BP_SawedOffShotgun.BP_SawedOffShotgun
+/Game/Assets/Mixamo/Kachujin/Kachujin_SkeletalMesh.Kachujin_SkeletalMesh
+/Game/Assets/Mixamo/Maria/Maria_SkeletalMesh.Maria_SkeletalMesh
+/Game/Assets/Mixamo/Vampire/Vampire_SkeletalMesh.Vampire_SkeletalMesh
