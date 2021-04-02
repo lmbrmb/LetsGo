@@ -1,23 +1,18 @@
 #pragma once
 
-#include "EntityId.h"
+#include "NameEntityId.h"
 
 /// <summary>
 /// Weapon type
 /// </summary>
-struct WeaponType final : public EntityId<FName>
+struct WeaponType final : public NameEntityId
 {
 public:
-	WeaponType() : EntityId<FName>(FName())
+	WeaponType() : NameEntityId()
 	{
 	};
 
-	explicit WeaponType(const FName& id) : EntityId<FName>(id)
+	WeaponType(const FName& weaponType) : NameEntityId(weaponType)
 	{
 	};
-
-	virtual bool IsValid() const override
-	{
-		return !GetId().IsNone();
-	}
 };

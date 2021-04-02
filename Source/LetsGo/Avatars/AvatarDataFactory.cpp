@@ -17,7 +17,7 @@ AvatarData* AvatarDataFactory::Create(
 	const AvatarType avatarType, 
 	const FName& skinId,
 	const FName& nickname,
-	const int teamId
+	const TeamId& teamId
 )
 {
 	return new AvatarData(playerId, avatarType, skinId, nickname, teamId);
@@ -26,7 +26,7 @@ AvatarData* AvatarDataFactory::Create(
 AvatarData* AvatarDataFactory::GenerateRandom(
 	const PlayerId& playerId,
 	const AvatarType avatarType,
-	const int teamId
+	const TeamId& teamId
 )
 {
 	auto const skinId = GetRandomSkinId();

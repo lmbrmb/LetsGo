@@ -6,6 +6,7 @@
 #include "Misc/TypeContainer.h"
 #include "LetsGo/Analytics/MatchAnalytics.h"
 #include "LetsGo/Avatars/AvatarSpawnFactory.h"
+#include "LetsGo/Data/TeamId.h"
 #include "LetsGo/GameStates/MatchState.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
 #include "LetsGo/SpawnPoints/SpawnPointType.h"
@@ -69,8 +70,22 @@ public:
 	bool IsMatchInProgress() const;
 
 	virtual bool IsLocalPlayerWonMatch();
+
+	int GetFragLimit() const;
+
+	int GetPlayerFragCount(const PlayerId& playerId) const;
+
+	int GetTeamFragCount(const TeamId& teamId) const;
+
+	TeamId GetPlayerTeamId(const PlayerId& playerId) const;
 	
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int FragLimit = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int BotCount = 1;
+
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 
 	virtual void BeginPlay() override final;
@@ -89,7 +104,12 @@ protected:
 	/// <summary>
 	/// PlayerId value, frag count
 	/// </summary>
-	TMap<int, int> Frags;
+	TMap<int, int> PlayerFrags;
+
+	/// <summary>
+	/// TeamId value, frag count
+	/// </summary>
+	TMap<int, int> TeamFrags;
 	
 private:
 	float _stateStartTime = 0;
@@ -143,6 +163,14 @@ private:
 	void OnAvatarDied(const UHealthComponent* healthComponent, const float delta);
 	
 	FTransform GetNextSpawnPoint();
+
+	void ParseMatchOptions(const FString& options);
+
+	bool TryParseFragLimitOption(const FString& option);
+
+	bool TryParseBotCountOption(const FString& option);
+
+	static bool TryGetOptionValue(const FString& option, const FString& optionName, FString& outOptionValue);
 
 	void SpawnAvatar(AvatarData* avatarData);
 	

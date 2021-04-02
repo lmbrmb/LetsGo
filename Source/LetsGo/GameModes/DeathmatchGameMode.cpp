@@ -11,77 +11,8 @@ void ADeathmatchGameMode::InitGame(const FString& MapName, const FString& Option
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
 
-	ParseMatchOptions(Options);
-
 	auto const avatarDataFactory = GetDiContainer()->GetInstance<AvatarDataFactory>();
 	_avatarDataFactory = &avatarDataFactory.Get();
-}
-
-void ADeathmatchGameMode::ParseMatchOptions(const FString& options)
-{
-	auto stringToSplit = options;
-	FString option, remainder;
-
-	TArray<TFunction<bool(const FString&)>> optionParsers;
-	optionParsers.Add([this](auto option) { return this->TryParseBotCountOption(option); });
-	optionParsers.Add([this](auto option) { return this->TryParseFragLimitOption(option); });
-	
-	while (stringToSplit.Split(TEXT(";"), &option, &remainder))
-	{
-		stringToSplit = remainder;
-
-		for (auto optionParser : optionParsers)
-		{
-			auto const isParsed = optionParser(option);
-			if(isParsed)
-			{
-				break;
-			}
-		}
-	}
-}
-
-bool ADeathmatchGameMode::TryParseBotCountOption(const FString& option)
-{
-	FString optionValue;
-	if (!TryGetOptionValue(option, "BotCount", optionValue))
-	{
-		return false;
-	}
-
-	auto const botCount = FCString::Atoi(*optionValue);
-	_botCount = botCount;
-	return true;
-}
-
-bool ADeathmatchGameMode::TryParseFragLimitOption(const FString& option)
-{
-	FString optionValue;
-	if(!TryGetOptionValue(option, "FragLimit", optionValue))
-	{
-		return false;
-	}
-
-	auto const fragLimit = FCString::Atoi(*optionValue);
-	_fragLimit = fragLimit;
-	return true;
-}
-
-bool ADeathmatchGameMode::TryGetOptionValue(
-	const FString& option,
-	const FString& optionName,
-	FString& outOptionValue
-)
-{
-	auto const optionKey = optionName + "=";
-	if (option.Find( optionKey) == -1)
-	{
-		return false;
-	}
-
-	FString left, right;
-	option.Split(TEXT("="), &left, &outOptionValue);
-	return true;
 }
 
 void ADeathmatchGameMode::OnFragsCountChanged()
@@ -89,7 +20,7 @@ void ADeathmatchGameMode::OnFragsCountChanged()
 	auto maxFrags = MIN_int32;
 	auto playerWithMaxFrags = -1;
 	
-	for (auto const frag : Frags)
+	for (auto const frag : PlayerFrags)
 	{
 		if(maxFrags < frag.Value)
 		{
@@ -100,7 +31,7 @@ void ADeathmatchGameMode::OnFragsCountChanged()
 
 	_winnerPlayerId = PlayerId(playerWithMaxFrags);
 
-	if(maxFrags >= _fragLimit)
+	if(maxFrags >= FragLimit)
 	{
 		SetMatchState(MatchState::Ended);
 	}
@@ -119,11 +50,12 @@ bool ADeathmatchGameMode::IsLocalPlayerWonMatch()
 void ADeathmatchGameMode::PopulateAvatarsData()
 {
 	auto teamIndex = 0;
-	for (auto i = 0; i < _botCount; i++)
+	for (auto i = 0; i < BotCount; i++)
 	{
 		auto const botIdValue = MAX_int32 - i;
 		const PlayerId botId(botIdValue);
-		auto const avatarData = _avatarDataFactory->GenerateRandom(botId, AvatarType::Bot, teamIndex++);
+		const TeamId teamId(teamIndex++);
+		auto const avatarData = _avatarDataFactory->GenerateRandom(botId, AvatarType::Bot, teamId);
 		AvatarsData.Add(botIdValue, avatarData);
 	}
 
@@ -135,12 +67,13 @@ void ADeathmatchGameMode::PopulateAvatarsData()
 
 	auto const localPlayerIdValue = localPlayerState->GetPlayerId();
 	_localPlayerId = PlayerId(localPlayerIdValue);
+	const TeamId teamId(teamIndex++);
 	auto const avatarData = _avatarDataFactory->Create(
 		_localPlayerId,
 		AvatarType::LocalPlayer,
 		LOCAL_PLAYER_SKIN_ID,
 		LOCAL_PLAYER_NAME,
-		teamIndex++
+		teamId
 	);
 	AvatarsData.Add(localPlayerIdValue, avatarData);
 }

@@ -1,23 +1,18 @@
 #pragma once
 
-#include "EntityId.h"
+#include "IntEntityId.h"
 
 /// <summary>
 /// Player Id
 /// </summary>
-struct PlayerId final : public EntityId<int>
+struct PlayerId final : public IntEntityId
 {
 public:
-	PlayerId() : EntityId<int>(MIN_int32)
+	PlayerId() : IntEntityId()
 	{
 	};
 
-	explicit PlayerId(const int id) : EntityId<int>(id)
+	explicit PlayerId(const int id) : IntEntityId(id)
 	{
 	};
-
-	virtual bool IsValid() const override
-	{
-		return GetId() != MIN_int32;
-	}
 };

@@ -10,7 +10,7 @@ template<class T>
 struct EntityId
 {
 protected:
-	~EntityId() = default;
+	virtual ~EntityId() = default;
 
 public:
 	explicit EntityId(const T id);

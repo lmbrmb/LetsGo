@@ -2,6 +2,7 @@
 
 #include "AvatarType.h"
 #include "LetsGo/Data/PlayerId.h"
+#include "LetsGo/Data/TeamId.h"
 
 class AvatarData
 {
@@ -11,7 +12,7 @@ public:
 		const AvatarType avatarType,
 		const FName& skinId, 
 		const FName& nickname,
-		const int teamId
+		const TeamId& teamId
 	);
 
 	PlayerId GetPlayerId() const;
@@ -22,7 +23,7 @@ public:
 
 	FName GetNickname() const;
 
-	int GetTeamId() const;
+	TeamId GetTeamId() const;
 
 private:
 	PlayerId _playerId;
@@ -33,5 +34,5 @@ private:
 
 	const FName _nickname;
 
-	int _teamId;
+	TeamId _teamId;
 };

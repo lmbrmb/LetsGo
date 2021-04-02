@@ -16,13 +16,13 @@ public:
 		const AvatarType avatarType,
 		const FName& skinId,
 		const FName& nickname,
-		const int teamId
+		const TeamId& teamId
 	);
 	
 	AvatarData* GenerateRandom(
 		const PlayerId& playerId,
-		AvatarType avatarType,
-		const int teamId
+		const AvatarType avatarType,
+		const TeamId& teamId
 	);
 
 private:

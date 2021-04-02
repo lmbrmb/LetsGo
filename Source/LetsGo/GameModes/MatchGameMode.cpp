@@ -23,6 +23,75 @@ void AMatchGameMode::InitGame(const FString& MapName, const FString& Options, FS
 	_avatarSpawnFactory = &avatarSpawnFactory.Get();
 	
 	_matchAnalytics = new MatchAnalytics(this);
+
+	ParseMatchOptions(Options);
+}
+
+void AMatchGameMode::ParseMatchOptions(const FString& options)
+{
+	auto stringToSplit = options;
+	FString option, remainder;
+
+	TArray<TFunction<bool(const FString&)>> optionParsers;
+	optionParsers.Add([this](auto option) { return this->TryParseBotCountOption(option); });
+	optionParsers.Add([this](auto option) { return this->TryParseFragLimitOption(option); });
+
+	while (stringToSplit.Split(TEXT(";"), &option, &remainder))
+	{
+		stringToSplit = remainder;
+
+		for (auto optionParser : optionParsers)
+		{
+			auto const isParsed = optionParser(option);
+			if (isParsed)
+			{
+				break;
+			}
+		}
+	}
+}
+
+bool AMatchGameMode::TryParseBotCountOption(const FString& option)
+{
+	FString optionValue;
+	if (!TryGetOptionValue(option, "BotCount", optionValue))
+	{
+		return false;
+	}
+
+	auto const botCount = FCString::Atoi(*optionValue);
+	BotCount = botCount;
+	return true;
+}
+
+bool AMatchGameMode::TryParseFragLimitOption(const FString& option)
+{
+	FString optionValue;
+	if (!TryGetOptionValue(option, "FragLimit", optionValue))
+	{
+		return false;
+	}
+
+	auto const fragLimit = FCString::Atoi(*optionValue);
+	FragLimit = fragLimit;
+	return true;
+}
+
+bool AMatchGameMode::TryGetOptionValue(
+	const FString& option,
+	const FString& optionName,
+	FString& outOptionValue
+)
+{
+	auto const optionKey = optionName + "=";
+	if (option.Find(optionKey) == -1)
+	{
+		return false;
+	}
+
+	FString left, right;
+	option.Split(TEXT("="), &left, &outOptionValue);
+	return true;
 }
 
 void AMatchGameMode::TriggerMatchWarmUp()
@@ -81,7 +150,14 @@ void AMatchGameMode::BeginPlay()
 	{
 		auto const avatarData = avatarDataEntry.Value;
 		auto const playerIdValue = avatarData->GetPlayerId().GetId();
-		Frags.Add(playerIdValue, 0);
+		PlayerFrags.Add(playerIdValue, 0);
+
+		auto const teamIdValue = avatarData->GetTeamId().GetId();
+		if(!TeamFrags.Contains(teamIdValue))
+		{
+			TeamFrags.Add(teamIdValue, 0);
+		}
+
 		SpawnAvatar(avatarData);
 	}
 
@@ -236,16 +312,18 @@ void AMatchGameMode::OnAvatarDied(const UHealthComponent* healthComponent, const
 			auto const instigatorPlayerNickname = instigatorPlayerAvatarData->GetNickname();
 			auto const fraggedPlayerNickname = fraggedPlayerAvatarData->GetNickname();
 
-			PlayerFragged.Broadcast(instigatorPlayerId, fraggedPlayerId, instigatorPlayerNickname, fraggedPlayerNickname);
-
 			if (IsMatchInProgress())
 			{
 				auto const isSuicide = instigatorPlayerIdValue == fraggedPlayerIdValue;
 				auto const fragModifier = isSuicide ? -1 : 1;
 
-				Frags[instigatorPlayerIdValue] = Frags[instigatorPlayerIdValue] + fragModifier;
+				PlayerFrags[instigatorPlayerIdValue] = PlayerFrags[instigatorPlayerIdValue] + fragModifier;
+				auto const instigatorPlayerTeamIdValue = instigatorPlayerAvatarData->GetTeamId().GetId();
+				TeamFrags[instigatorPlayerTeamIdValue] = TeamFrags[instigatorPlayerTeamIdValue] + fragModifier;
 				OnFragsCountChanged();
 			}
+
+			PlayerFragged.Broadcast(instigatorPlayerId, fraggedPlayerId, instigatorPlayerNickname, fraggedPlayerNickname);
 		}
 	}
 	
@@ -322,4 +400,44 @@ bool AMatchGameMode::IsLocalPlayerWonMatch()
 {
 	AssertDefaultImplementationIsOverriden();
 	return false;
+}
+
+int AMatchGameMode::GetFragLimit() const
+{
+	return FragLimit;
+}
+
+int AMatchGameMode::GetPlayerFragCount(const PlayerId& playerId) const
+{
+	auto const playerIdValue = playerId.GetId();
+	
+	if(!PlayerFrags.Contains(playerIdValue))
+	{
+		return 0;
+	}
+
+	return PlayerFrags[playerIdValue];
+}
+
+int AMatchGameMode::GetTeamFragCount(const TeamId& teamId) const
+{
+	auto const teamIdValue = teamId.GetId();
+
+	if (!TeamFrags.Contains(teamIdValue))
+	{
+		return 0;
+	}
+
+	return TeamFrags[teamIdValue];
+}
+
+TeamId AMatchGameMode::GetPlayerTeamId(const PlayerId& playerId) const
+{
+	auto const avatarData = GetAvatarData(playerId);
+	if(avatarData)
+	{
+		return avatarData->GetTeamId();
+	}
+
+	return TeamId();
 }
