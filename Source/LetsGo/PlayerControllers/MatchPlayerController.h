@@ -16,12 +16,15 @@ class LETSGO_API AMatchPlayerController final : public APlayerController
 	GENERATED_BODY()
 
 public:
-	virtual void SetPawn(APawn* InPawn) override;
-
 	AAvatar* GetAvatar() const;
 
 	EAvatarChanged AvatarChanged;
-	
+
+protected:
+	virtual void OnPossess(APawn* InPawn) override;
+
+	virtual void OnUnPossess() override;
+
 private:
 	AAvatar* _avatar = nullptr;
 };

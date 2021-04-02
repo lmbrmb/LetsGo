@@ -1,10 +1,24 @@
 #include "MatchPlayerController.h"
 
-void AMatchPlayerController::SetPawn(APawn* InPawn)
+#include "LetsGo/Input/InputConstant.h"
+#include "LetsGo/Logs/DevLogger.h"
+#include "LetsGo/Utils/AssertUtils.h"
+
+void AMatchPlayerController::OnPossess(APawn* InPawn)
 {
-	Super::SetPawn(InPawn);
+	Super::OnPossess(InPawn);
+
 	_avatar = static_cast<AAvatar*>(InPawn);
 	AvatarChanged.Broadcast(_avatar);
+	AssertIsNotNull(_avatar);
+}
+
+void AMatchPlayerController::OnUnPossess()
+{
+	Super::OnUnPossess();
+
+	_avatar = nullptr;
+	AvatarChanged.Broadcast(nullptr);
 }
 
 AAvatar* AMatchPlayerController::GetAvatar() const

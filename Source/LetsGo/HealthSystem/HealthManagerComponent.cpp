@@ -86,4 +86,10 @@ void UHealthManagerComponent::OnDied(const UHealthComponent*, float delta) const
 	AssertIsNotNull(weaponManagerComponent);
 
 	weaponManagerComponent->HolsterWeapon();
+
+	// UnPossess
+	auto const controller = owner->GetInstigatorController();
+	AssertIsNotNull(controller);
+	
+	controller->UnPossess();
 }
