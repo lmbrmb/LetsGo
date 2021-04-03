@@ -14,7 +14,7 @@ void UHealthComponent::OnChanged(const float delta)
 
 void UHealthComponent::Init()
 {
-	AssertIsGreaterOrEqual(_decreaseHealthInterval, 0.0f)
+	AssertIsGreaterOrEqual(_decreaseHealthInterval, 0.0f);
 	AssertIsGreaterOrEqual(_decreaseHealthAmount, 0.0f);
 	AssertIsGreaterOrEqual(_maxNormalHealth, 0.0f);
 	

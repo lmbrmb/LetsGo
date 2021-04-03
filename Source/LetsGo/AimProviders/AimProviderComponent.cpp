@@ -27,7 +27,7 @@ void UAimProviderComponent::SetAimProvider(IAimProvider* aimProvider)
 		delete _aimProvider;
 	}
 	
-	AssertIsNotNull(aimProvider)
+	AssertIsNotNull(aimProvider);
 	
 	_aimProvider = aimProvider;
 	Changed.Broadcast();

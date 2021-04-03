@@ -498,12 +498,8 @@ AActor* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 {
 	auto const gunItemId = gunItem->GetId();
 	auto const gunBlueprintGeneratedClass = _gunFactory->GetOrLoad(gunItemId);
-	
-	if(!gunBlueprintGeneratedClass)
-	{
-		return nullptr;
-	}
-	
+	AssertIsNotNull(gunBlueprintGeneratedClass, nullptr);
+
 	auto const gunActor = AssetUtils::SpawnBlueprint<AActor>(
 		GetWorld(),
 		GetOwner(),
@@ -600,7 +596,6 @@ void UWeaponManagerComponent::CreateStartWeapon()
 void UWeaponManagerComponent::OnGunShotPerformed(const IGun* gun, const bool isAnyBulletDamaged)
 {
 	BpOnGunShotPerformed(isAnyBulletDamaged);
-
 	ShotPerformed.Broadcast(gun->GetPlayerId(), gun->GetWeaponType(), isAnyBulletDamaged);
 }
 

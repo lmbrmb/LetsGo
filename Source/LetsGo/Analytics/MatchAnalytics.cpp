@@ -30,7 +30,7 @@ MatchAnalytics::MatchAnalytics(AMatchGameMode* matchGameMode) :
 void MatchAnalytics::OnAvatarSpawned(const AAvatar* avatar)
 {
 	auto const healthComponent = avatar->FindComponentByClass<UHealthComponent>();
-	AssertIsNotNull(healthComponent)
+	AssertIsNotNull(healthComponent);
 	healthComponent->HealthChanged.AddRaw(this, &MatchAnalytics::OnAvatarHealthChanged);
 
 	auto const weaponManagerComponent = avatar->FindComponentByClass<UWeaponManagerComponent>();

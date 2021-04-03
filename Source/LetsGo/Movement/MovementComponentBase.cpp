@@ -266,8 +266,7 @@ void UMovementComponentBase::Init(AActor* actor)
 
 float UMovementComponentBase::GetMovementSpeed()
 {
-	AssertDefaultImplementationIsOverriden();
-	return 0;
+	AssertDefaultImplementationIsOverriden(0);
 }
 
 void UMovementComponentBase::CustomTick(float deltaTime)
@@ -282,14 +281,12 @@ void UMovementComponentBase::ProcessInput()
 
 float UMovementComponentBase::GetAbsoluteMovementAmount() const
 {
-	AssertDefaultImplementationIsOverriden();
-	return 0;
+	AssertDefaultImplementationIsOverriden(0);
 }
 
 FVector UMovementComponentBase::GetMovementDirection()
 {
-	AssertDefaultImplementationIsOverriden();
-	return FVector::ZeroVector;
+	AssertDefaultImplementationIsOverriden(FVector::ZeroVector);
 }
 
 void UMovementComponentBase::ResetInput()

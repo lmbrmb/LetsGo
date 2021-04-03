@@ -398,8 +398,7 @@ void AMatchGameMode::OnFragsCountChanged()
 
 bool AMatchGameMode::IsLocalPlayerWonMatch()
 {
-	AssertDefaultImplementationIsOverriden();
-	return false;
+	AssertDefaultImplementationIsOverriden(false);
 }
 
 int AMatchGameMode::GetFragLimit() const

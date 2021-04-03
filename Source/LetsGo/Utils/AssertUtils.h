@@ -7,87 +7,88 @@
 
 #define ASSERTION_FAILED __FUNCTION__ + FString(" | Line: ") + FStringUtils::ToString(__LINE__) + FString(" | Assertion failed | ")
 
-#define AssertIsNotNull(value) \
+#define AssertIsNotNull(value, ...) \
 if (BoolUtils::IsNull(value)) \
 {\
 	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Value is null.", LogSeverity::Error); \
-	return; \
+	return __VA_ARGS__; \
 };
 
-#define AssertStringIsNotEmpty(value) \
+#define AssertStringIsNotEmpty(value, ...) \
 if (BoolUtils::IsStringEmpty(value)) \
 { \
 	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Value is empty", LogSeverity::Error); \
-	return; \
+	return __VA_ARGS__; \
 };
 
-#define AssertIsEqual(leftHandValue, rightHandValue) \
+#define AssertIsEqual(leftHandValue, rightHandValue, ...) \
 if (!BoolUtils::IsEqual(leftHandValue, rightHandValue)) \
 { \
 	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Values are not equal", LogSeverity::Error); \
 	DevLogger::GetLoggingChannel()->LogValue("Left hand value: ", leftHandValue, LogSeverity::Error); \
 	DevLogger::GetLoggingChannel()->LogValue("Right hand value: ", rightHandValue, LogSeverity::Error); \
-	return; \
+	return __VA_ARGS__; \
 };
 
-#define AssertIsNotEqual(leftHandValue, rightHandValue) \
+#define AssertIsNotEqual(leftHandValue, rightHandValue, ...) \
 if (BoolUtils::IsEqual(leftHandValue, rightHandValue)) \
 { \
 	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Values are equal", LogSeverity::Error); \
 	DevLogger::GetLoggingChannel()->LogValue("Left hand value: ", leftHandValue, LogSeverity::Error); \
 	DevLogger::GetLoggingChannel()->LogValue("Right hand value: ", rightHandValue, LogSeverity::Error); \
-	return; \
+	return __VA_ARGS__; \
 };
 
-#define AssertIsGreater(leftHandValue, rightHandValue) \
+#define AssertIsGreater(leftHandValue, rightHandValue, ...) \
 if (!BoolUtils::IsGreater(leftHandValue, rightHandValue)) \
 { \
 	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Value is not greater", LogSeverity::Error); \
 	DevLogger::GetLoggingChannel()->LogValue("Left hand value: ", leftHandValue, LogSeverity::Error); \
 	DevLogger::GetLoggingChannel()->LogValue("Right hand value: ", rightHandValue, LogSeverity::Error); \
-	return; \
+	return __VA_ARGS__; \
 };
 
-#define AssertIsGreaterOrEqual(leftHandValue, rightHandValue) \
+#define AssertIsGreaterOrEqual(leftHandValue, rightHandValue, ...) \
 if (!BoolUtils::IsGreaterOrEqual(leftHandValue, rightHandValue)) \
 { \
 	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Value is not greater or equal", LogSeverity::Error); \
 	DevLogger::GetLoggingChannel()->LogValue("Left hand value: ", leftHandValue, LogSeverity::Error); \
 	DevLogger::GetLoggingChannel()->LogValue("Right hand value: ", rightHandValue, LogSeverity::Error); \
-	return; \
+	return __VA_ARGS__; \
 };
 
-#define AssertIsLess(leftHandValue, rightHandValue) \
+#define AssertIsLess(leftHandValue, rightHandValue, ...) \
 if (!BoolUtils::IsLess(leftHandValue, rightHandValue)) \
 { \
 	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Value is not less", LogSeverity::Error); \
 	DevLogger::GetLoggingChannel()->LogValue("Left hand value: ", leftHandValue, LogSeverity::Error); \
 	DevLogger::GetLoggingChannel()->LogValue("Right hand value: ", rightHandValue, LogSeverity::Error); \
-	return; \
+	return __VA_ARGS__; \
 };
 
-#define AssertIsLessOrEqual(leftHandValue, rightHandValue) \
+#define AssertIsLessOrEqual(leftHandValue, rightHandValue, ...) \
 if (!BoolUtils::IsLessOrEqual(leftHandValue, rightHandValue)) \
 { \
 	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Value is not less or equal", LogSeverity::Error); \
 	DevLogger::GetLoggingChannel()->LogValue("Left hand value: ", leftHandValue, LogSeverity::Error); \
 	DevLogger::GetLoggingChannel()->LogValue("Right hand value: ", rightHandValue, LogSeverity::Error); \
-	return; \
+	return __VA_ARGS__; \
 };
 
-#define AssertIsTrue(value) \
+#define AssertIsTrue(value, ...) \
 if (!BoolUtils::IsEqual(value, true)) \
 { \
 	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Value is not true", LogSeverity::Error); \
-	return; \
+	return __VA_ARGS__; \
 };
 
-#define AssertIsFalse(value) \
+#define AssertIsFalse(value, ...) \
 if (!BoolUtils::IsEqual(value, false)) \
 { \
 	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Value is not false", LogSeverity::Error); \
-	return; \
+	return __VA_ARGS__; \
 };
 
-#define AssertDefaultImplementationIsOverriden() \
-	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Default implementation is not overriden or base class implementation is called in derived class", LogSeverity::Error);
+#define AssertDefaultImplementationIsOverriden(...) \
+DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Default implementation is not overriden or base class implementation is called in derived class", LogSeverity::Error); \
+return __VA_ARGS__; \
