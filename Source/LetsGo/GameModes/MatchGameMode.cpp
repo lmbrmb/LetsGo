@@ -254,6 +254,7 @@ void AMatchGameMode::SpawnAvatar(AvatarData* avatarData)
 	healthComponent->Died.AddUObject(this, &AMatchGameMode::OnAvatarDied);
 
 	AvatarSpawned.Broadcast(avatar);
+	_avatars.Add(avatar);
 }
 
 void AMatchGameMode::RespawnAvatarOnTimer()
@@ -274,17 +275,17 @@ void AMatchGameMode::RespawnAvatarOnTimer()
 
 void AMatchGameMode::DestroyAvatarOnTimer()
 {
-	AActor* actor;
-	_destroyQueue.Dequeue(actor);
+	AAvatar* actor;
+	_avatarDestroyQueue.Dequeue(actor);
 	ActorUtils::DestroyActorRecursively(actor);
+	_avatars.Remove(actor);
 }
 
 void AMatchGameMode::OnAvatarDied(const UHealthComponent* healthComponent, const float delta)
 {
 	// Timers are in fire-and-forget mode
 	
-	auto const avatarActor = healthComponent->GetOwner();
-	_destroyQueue.Enqueue(avatarActor);
+	auto const fraggedPlayerAvatarActor = healthComponent->GetOwner();
 	FTimerHandle destroyTimerHandle;
 	GetWorldTimerManager().SetTimer(destroyTimerHandle, this, &AMatchGameMode::DestroyAvatarOnTimer, _avatarDestroyTime, false);
 
@@ -296,6 +297,8 @@ void AMatchGameMode::OnAvatarDied(const UHealthComponent* healthComponent, const
 	auto const fraggedPlayerAvatar = Cast<AAvatar>(fraggedPlayerActor);
 
 	AssertIsNotNull(fraggedPlayerAvatar);
+
+	_avatarDestroyQueue.Enqueue(fraggedPlayerAvatar);
 	
 	auto const fraggedPlayerId = fraggedPlayerAvatar->GetPlayerId();
 	auto const fraggedPlayerIdValue = fraggedPlayerId.GetId();
@@ -439,4 +442,9 @@ TeamId AMatchGameMode::GetPlayerTeamId(const PlayerId& playerId) const
 	}
 
 	return TeamId();
+}
+
+const TArray<AAvatar*>& AMatchGameMode::GetAvatars() const
+{
+	return _avatars;
 }

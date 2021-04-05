@@ -78,6 +78,8 @@ public:
 	int GetTeamFragCount(const TeamId& teamId) const;
 
 	TeamId GetPlayerTeamId(const PlayerId& playerId) const;
+
+	const TArray<AAvatar*>& GetAvatars() const;
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -156,7 +158,9 @@ private:
 	// PlayerId value
 	TQueue<int> _respawnQueue;
 
-	TQueue<AActor*> _destroyQueue;
+	TQueue<AAvatar*> _avatarDestroyQueue;
+
+	TArray<AAvatar*> _avatars;
 
 	MatchAnalytics* _matchAnalytics;
 

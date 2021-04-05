@@ -47,6 +47,12 @@ void UMovementComponentBase::BeginPlay()
 	}
 	
 	Init(actor);
+
+	if(_stepInterval > 0.05f)
+	{
+		FTimerHandle stepTimerHandle;
+		World->GetTimerManager().SetTimer(stepTimerHandle, this, &UMovementComponentBase::StepOnTimer, _stepInterval, true);	
+	}
 }
 
 void UMovementComponentBase::TickComponent(
@@ -80,18 +86,7 @@ void UMovementComponentBase::CheckGround()
 		CollisionQueryParams
 	);
 
-	auto const wasInAir = _isInAir;
-	
-	_isInAir = !isOnGround;
-
-	if(wasInAir != _isInAir)
-	{
-		if(isOnGround)
-		{
-			_jumpIndex = 0;
-			_forces.RemoveAll([](IForce* f) {return f->GetId() == JUMP_FORCE_ID; });
-		}
-	}
+	SetIsInAir(!isOnGround);
 }
 
 void UMovementComponentBase::ProcessForces(const float& deltaTime)
@@ -149,6 +144,8 @@ void UMovementComponentBase::Jump()
 	}
 
 	_jumpIndex++;
+
+	BpOnJump();
 	
 	// Current jump force will be replaced with new one
 	_forces.RemoveAll([](IForce* f) {return f->GetId() == JUMP_FORCE_ID; });
@@ -257,6 +254,23 @@ void UMovementComponentBase::UpdateVelocity()
 	_previousLocation = location;
 }
 
+void UMovementComponentBase::SetIsInAir(const bool isInAir)
+{
+	auto const wasInAir = _isInAir;
+
+	_isInAir = isInAir;
+
+	if (wasInAir != _isInAir)
+	{
+		if (!isInAir)
+		{
+			_jumpIndex = 0;
+			_forces.RemoveAll([](IForce* f) {return f->GetId() == JUMP_FORCE_ID; });
+			BpOnLand();
+		}
+	}
+}
+
 // Template methods below
 
 void UMovementComponentBase::Init(AActor* actor)
@@ -292,4 +306,14 @@ FVector UMovementComponentBase::GetMovementDirection()
 void UMovementComponentBase::ResetInput()
 {
 	AssertDefaultImplementationIsOverriden();
+}
+
+void UMovementComponentBase::StepOnTimer()
+{
+	if(_isInAir || GetAbsoluteMovementAmount() <= 0)
+	{
+		return;
+	}
+
+	BpOnStep();
 }

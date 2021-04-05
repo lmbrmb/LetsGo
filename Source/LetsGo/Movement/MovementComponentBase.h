@@ -75,10 +75,17 @@ protected:
 	FCollisionShape CollisionShape;
 	
 	FCollisionQueryParams CollisionQueryParams;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpOnJump();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpOnStep();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpOnLand();
 	
 private:
-	bool _isInAir = false;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TEnumAsByte<ECollisionChannel> _collisionChannel;
 	
@@ -152,4 +159,13 @@ private:
 	ForceFactory* _forceFactory;
 	
 	void UpdateVelocity();
+
+	bool _isInAir = false;
+
+	void SetIsInAir(const bool isInAir);
+	
+	void StepOnTimer();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float _stepInterval;
 };
