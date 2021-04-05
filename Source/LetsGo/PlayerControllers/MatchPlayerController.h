@@ -21,10 +21,17 @@ public:
 	EAvatarChanged AvatarChanged;
 
 protected:
+	virtual void BeginPlay() override;
+
 	virtual void OnPossess(APawn* InPawn) override;
 
 	virtual void OnUnPossess() override;
-
+	
 private:
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
+	FName _mainMenuLevelName = "MainMenu";
+
 	AAvatar* _avatar = nullptr;
+
+	void OnEscape();
 };

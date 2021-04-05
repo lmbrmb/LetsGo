@@ -18,6 +18,8 @@ const FName InputConstant::ActionPreviousWeapon = FName("PreviousWeapon");
 
 const FName InputConstant::ActionChangeWeaponPivot = FName("ChangeWeaponPivot");
 
+const FName InputConstant::ActionEscape = FName("Escape");
+
 // Axis
 
 const FName InputConstant::AxisMoveHorizontal = FName("MoveHorizontal");

@@ -1,8 +1,17 @@
 #include "MatchPlayerController.h"
 
+#include "Kismet/GameplayStatics.h"
 #include "LetsGo/Input/InputConstant.h"
 #include "LetsGo/Logs/DevLogger.h"
 #include "LetsGo/Utils/AssertUtils.h"
+
+void AMatchPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	AssertIsNotNull(InputComponent);
+	InputComponent->BindAction(InputConstant::ActionEscape, IE_Pressed, this, &AMatchPlayerController::OnEscape);
+}
 
 void AMatchPlayerController::OnPossess(APawn* InPawn)
 {
@@ -19,6 +28,12 @@ void AMatchPlayerController::OnUnPossess()
 
 	_avatar = nullptr;
 	AvatarChanged.Broadcast(nullptr);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+void AMatchPlayerController::OnEscape()
+{
+	UGameplayStatics::OpenLevel(this, _mainMenuLevelName, true);
 }
 
 AAvatar* AMatchPlayerController::GetAvatar() const
