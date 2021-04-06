@@ -3,6 +3,7 @@
 #include "BehaviorTree/BTTaskNode.h"
 
 #include "LetsGo/GameModes/MatchGameMode.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 #include "FindEnemyBTTaskNode.generated.h"
 
@@ -22,8 +23,7 @@ private:
 	FName _selfActorKeyName = "SelfActor";
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
-	FName _targetLocationKeyName = "TargetLocation";
+	FName _enemyAvatarKeyName = "EnemyAvatar";
 
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
-	FName _isTargetLocationValidKeyName = "IsTargetLocationValid";
+	EBTNodeResult::Type TaskFailed(UBlackboardComponent* blackboardComponent);
 };

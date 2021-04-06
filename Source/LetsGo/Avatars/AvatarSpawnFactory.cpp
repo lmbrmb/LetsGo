@@ -30,7 +30,7 @@ AAvatar* AvatarSpawnFactory::SpawnAvatar(const AvatarData* avatarData, UWorld* w
 		return nullptr;
 	}
 
-	avatar->Init(avatarData->GetPlayerId(), avatarData->GetAvatarType());
+	avatar->Init(avatarData->GetPlayerId(), avatarData->GetTeamId(), avatarData->GetAvatarType());
 	
 	auto const skinId = avatarData->GetSkinId();
 	_skinFactory->SetSkin(avatar, skinId);

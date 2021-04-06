@@ -42,7 +42,7 @@ protected:
 
 	virtual float GetMovementSpeed() override;
 	
-	virtual void CustomTick(float deltaTime) override;
+	virtual void CustomTick(const float deltaTime) override;
 
 private:
 	const float MIN_DOT_FORWARD = -0.01f;

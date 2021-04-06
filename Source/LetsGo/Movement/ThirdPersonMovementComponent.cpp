@@ -55,7 +55,7 @@ void UThirdPersonMovementComponent::ProcessInput()
 	_inputMovementDirection = direction.GetSafeNormal();
 }
 
-void UThirdPersonMovementComponent::CustomTick(float deltaTime)
+void UThirdPersonMovementComponent::CustomTick(const float deltaTime)
 {
 	ProcessSpringArmRotation(deltaTime);
 	ProcessActorRotation(deltaTime);

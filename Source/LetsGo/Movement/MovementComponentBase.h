@@ -66,7 +66,7 @@ protected:
 	/// <summary>
 	/// [Template method] Performs custom actions in Tick function
 	/// </summary>
-	virtual void CustomTick(float deltaTime);
+	virtual void CustomTick(const float deltaTime);
 	
 	UWorld* World = nullptr;
 

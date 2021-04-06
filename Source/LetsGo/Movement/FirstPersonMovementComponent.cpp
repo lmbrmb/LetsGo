@@ -18,7 +18,7 @@ float UFirstPersonMovementComponent::GetMovementSpeed()
 	return movementSpeed;
 }
 
-void UFirstPersonMovementComponent::CustomTick(float deltaTime)
+void UFirstPersonMovementComponent::CustomTick(const float deltaTime)
 {
 	ProcessCameraPitch(deltaTime);
 	ProcessActorYaw(deltaTime);

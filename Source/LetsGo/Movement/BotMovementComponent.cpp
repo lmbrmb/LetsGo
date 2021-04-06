@@ -1,37 +1,29 @@
 #include "BotMovementComponent.h"
 
-bool UBotMovementComponent::IsTargetLocationValid() const
+bool UBotMovementComponent::IsTargetMovementLocationValid() const
 {
-	return _isTargetLocationValid;
+	return _isTargetMovementLocationValid;
 }
 
 const FVector& UBotMovementComponent::GetTargetLocation() const
 {
-	return _targetLocation;
+	return _targetMovementLocation;
 }
 
-void UBotMovementComponent::SetTargetLocation(const FVector& targetLocation)
+void UBotMovementComponent::SetTargetMovementLocation(const FVector& targetMovementLocation)
 {
-	_targetLocation = targetLocation;
-	_isTargetLocationValid = true;
+	_targetMovementLocation = targetMovementLocation;
+	_isTargetMovementLocationValid = true;
 }
 
-void UBotMovementComponent::ClearTargetLocation()
+void UBotMovementComponent::ClearTargetMovementLocation()
 {
-	_isTargetLocationValid = false;
+	_isTargetMovementLocationValid = false;
 }
 
 FVector UBotMovementComponent::GetMovementDirection()
 {
-	if (!_isTargetLocationValid)
-	{
-		return FVector::ZeroVector;
-	}
-	auto const delta = _targetLocation - RootCollider->GetComponentLocation();
-	auto direction = delta.GetSafeNormal();
-	direction = FVector::VectorPlaneProject(direction, FVector::UpVector);
-
-	return direction.GetSafeNormal();
+	return _inputMovementDirection;
 }
 
 float UBotMovementComponent::GetMovementSpeed()
@@ -47,7 +39,32 @@ float UBotMovementComponent::GetMovementSpeed()
 
 float UBotMovementComponent::GetAbsoluteMovementAmount() const
 {
-	return _isTargetLocationValid ? 1 : 0;
+	return _isTargetMovementLocationValid ? 1 : 0;
+}
+
+
+void UBotMovementComponent::ProcessInput()
+{
+	if (!_isTargetMovementLocationValid)
+	{
+		_inputMovementDirection = FVector::ZeroVector;
+		return;
+	}
+	
+	auto const delta = _targetMovementLocation - RootCollider->GetComponentLocation();
+	auto direction = delta.GetSafeNormal();
+	direction = FVector::VectorPlaneProject(direction, FVector::UpVector);
+
+	_inputMovementDirection = direction.GetSafeNormal();
+}
+
+void UBotMovementComponent::CustomTick(const float deltaTime)
+{
+	ProcessRotation();
+}
+
+void UBotMovementComponent::ProcessRotation()
+{
 }
 
 void UBotMovementComponent::Init(AActor* actor)
@@ -55,17 +72,7 @@ void UBotMovementComponent::Init(AActor* actor)
 	//Do nothing
 }
 
-void UBotMovementComponent::ProcessInput()
-{
-	//Do nothing
-}
-
 void UBotMovementComponent::ResetInput()
-{
-	//Do nothing
-}
-
-void UBotMovementComponent::CustomTick(float deltaTime)
 {
 	//Do nothing
 }

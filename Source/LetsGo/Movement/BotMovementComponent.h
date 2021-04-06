@@ -12,13 +12,13 @@ class LETSGO_API UBotMovementComponent final : public UMovementComponentBase
 	GENERATED_BODY()
 
 public:
-	bool IsTargetLocationValid() const;
+	bool IsTargetMovementLocationValid() const;
 
 	const FVector& GetTargetLocation() const;
 	
-	void SetTargetLocation(const FVector& targetLocation);
+	void SetTargetMovementLocation(const FVector& targetMovementLocation);
 
-	void ClearTargetLocation();
+	void ClearTargetMovementLocation();
 	
 protected:
 	virtual FVector GetMovementDirection() override;
@@ -33,7 +33,7 @@ protected:
 
 	virtual void ResetInput() override;
 
-	virtual void CustomTick(float deltaTime) override;
+	virtual void CustomTick(const float deltaTime) override;
 	
 private:
 	const float MIN_DOT_FORWARD = -0.01f;
@@ -47,9 +47,11 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
 	float _airMultiplier = 0.25f;
 
-	bool _isTargetLocationValid = false;
+	bool _isTargetMovementLocationValid = false;
 
-	FVector _targetLocation = FVector::ZeroVector;
+	FVector _targetMovementLocation = FVector::ZeroVector;
 	
 	FVector _inputMovementDirection = FVector::ZeroVector;
+
+	void ProcessRotation();
 };

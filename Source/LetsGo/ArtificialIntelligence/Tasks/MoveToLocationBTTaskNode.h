@@ -1,14 +1,16 @@
 #pragma once
 
 #include "BehaviorTree/BTTaskNode.h"
+#include "LetsGo/Movement/BotMovementComponent.h"
 
-#include "MoveToBTTaskNode.generated.h"
+
+#include "MoveToLocationBTTaskNode.generated.h"
 
 /// <summary>
 /// AI - "Move to" task node
 /// </summary>
 UCLASS(Blueprintable)
-class LETSGO_API UMoveToBTTaskNode : public UBTTaskNode
+class LETSGO_API UMoveToLocationBTTaskNode : public UBTTaskNode
 {
 	GENERATED_BODY()
 
@@ -24,9 +26,11 @@ private:
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
 	FName _isTargetLocationValidKeyName = "IsTargetLocationValid";
-
+	
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
-	float _targetLocationTolerance = 10;
+	float _locationTolerance = 10;
 
-	float _targetLocationToleranceSquared = _targetLocationTolerance * _targetLocationTolerance;
+	float _locationToleranceSquared = _locationTolerance * _locationTolerance;
+
+	EBTNodeResult::Type TaskFailed(UBotMovementComponent* botMovementComponent);
 };

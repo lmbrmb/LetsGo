@@ -283,7 +283,7 @@ float UMovementComponentBase::GetMovementSpeed()
 	AssertDefaultImplementationIsOverriden(0);
 }
 
-void UMovementComponentBase::CustomTick(float deltaTime)
+void UMovementComponentBase::CustomTick(const float deltaTime)
 {
 	AssertDefaultImplementationIsOverriden();
 }

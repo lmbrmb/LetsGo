@@ -5,7 +5,7 @@
 class FVectorUtils
 {
 public:
-	static float GetUnsignedAngleDegrees(const FVector v1, const FVector v2)
+	static float GetUnsignedAngleDegrees(const FVector& v1, const FVector& v2)
 	{
 		auto const dot = FVector::DotProduct(v1, v2);
 		return GetUnsignedAngleDegrees(dot);
@@ -18,7 +18,7 @@ public:
 		return degrees;
 	}
 	
-	static float GetSignOfAngle(const FVector v1, const FVector v2, const FVector planeNormal = FVector::UpVector)
+	static float GetSignOfAngle(const FVector& v1, const FVector& v2, const FVector& planeNormal = FVector::UpVector)
 	{
 		const auto cross = FVector::CrossProduct(v1, v2);
 		auto const dot = FVector::DotProduct(planeNormal, cross);
@@ -26,7 +26,7 @@ public:
 		return sign;
 	}
 	
-	static float GetSignedAngleDegrees(const FVector v1, const FVector v2, const FVector planeNormal = FVector::UpVector)
+	static float GetSignedAngleDegrees(const FVector& v1, const FVector& v2, const FVector& planeNormal = FVector::UpVector)
 	{
 		return GetSignOfAngle(v1, v2, planeNormal) * GetUnsignedAngleDegrees(v1, v2);
 	}
@@ -35,7 +35,7 @@ public:
 	/// For testing other normalization functions.
 	/// Reminder: FVector::Normalize() can lead to weird results - use FVector::GetSafeNormal instead.
 	/// </summary>
-	static FVector NormalizeSlow(FVector v)
+	static FVector NormalizeSlow(const FVector& v)
 	{
 		auto const size = v.Size();
 		return v / size;

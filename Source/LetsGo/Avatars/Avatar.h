@@ -4,6 +4,7 @@
 
 #include "AvatarType.h"
 #include "LetsGo/Data/PlayerId.h"
+#include "LetsGo/Data/TeamId.h"
 
 #include "Avatar.generated.h"
 
@@ -24,9 +25,11 @@ public:
 
 	bool IsInitialized() const;
 	
-	void Init(const PlayerId& playerId, const AvatarType avatarType);
+	void Init(const PlayerId& playerId, const TeamId& teamId, const AvatarType avatarType);
 
 	const PlayerId& GetPlayerId() const;
+
+	const TeamId& GetTeamId() const;
 
 	AvatarType GetAvatarType() const;
 
@@ -34,6 +37,8 @@ public:
 	
 private:
 	PlayerId _playerId;
+
+	TeamId _teamId;
 
 	AvatarType _avatarType;
 };
