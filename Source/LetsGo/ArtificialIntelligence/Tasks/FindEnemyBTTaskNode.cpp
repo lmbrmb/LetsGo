@@ -15,9 +15,26 @@ EBTNodeResult::Type UFindEnemyBTTaskNode::ExecuteTask(UBehaviorTreeComponent& Ow
 	auto const authGameMode = GetWorld()->GetAuthGameMode();
 	auto const matchGameMode = Cast<AMatchGameMode>(authGameMode);
 
+	AAvatar* enemyAvatar = nullptr;
+	
+	if(_lockOnSingleEnemy)
+	{
+		auto const enemyAvatarObject = blackboardComponent->GetValueAsObject(_enemyAvatarKeyName);
+		enemyAvatar = Cast<AAvatar>(enemyAvatarObject);
+		if (enemyAvatar)
+		{
+			auto const healthComponent = enemyAvatar->FindComponentByClass<UHealthComponent>();
+			AssertIsNotNull(healthComponent, EBTNodeResult::Failed);
+
+			if (healthComponent->IsAlive())
+			{
+				return EBTNodeResult::Succeeded;
+			}
+		}
+	}
+	
 	float closestDistance = MAX_int32;
 	auto const selfLocation = selfAvatar->GetActorLocation();
-	AAvatar* closestEnemyAvatar = nullptr;
 	
 	for (auto avatar : matchGameMode->GetAvatars())
 	{
@@ -32,20 +49,28 @@ EBTNodeResult::Type UFindEnemyBTTaskNode::ExecuteTask(UBehaviorTreeComponent& Ow
 		}
 		
 		auto const squaredDistance = (avatar->GetActorLocation() - selfLocation).SizeSquared();
+
+		auto const healthComponent = avatar->FindComponentByClass<UHealthComponent>();
+		AssertIsNotNull(healthComponent, EBTNodeResult::Failed);
+		
+		if (healthComponent->IsDead())
+		{
+			continue;
+		}
 		
 		if(closestDistance > squaredDistance)
 		{
 			closestDistance = squaredDistance;
-			closestEnemyAvatar = avatar;
+			enemyAvatar = avatar;
 		}
 	}
 
-	if(closestEnemyAvatar == nullptr)
+	if(enemyAvatar == nullptr)
 	{
 		return TaskFailed(blackboardComponent);
 	}
 
-	blackboardComponent->SetValueAsObject(_enemyAvatarKeyName, closestEnemyAvatar);
+	blackboardComponent->SetValueAsObject(_enemyAvatarKeyName, enemyAvatar);
 	return EBTNodeResult::Succeeded;
 }
 

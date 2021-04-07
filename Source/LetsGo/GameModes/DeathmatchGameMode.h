@@ -30,6 +30,8 @@ protected:
 	virtual bool IsLocalPlayerWonMatch() override;
 	
 private:
+	const FName LOCAL_PLAYER_NAME = "%UserName%";
+
 	PlayerId _localPlayerId;
 
 	PlayerId _winnerPlayerId;

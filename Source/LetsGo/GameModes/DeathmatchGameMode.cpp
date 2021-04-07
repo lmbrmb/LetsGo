@@ -3,10 +3,6 @@
 #include "GameFramework/PlayerState.h"
 #include "LetsGo/Utils/AssertUtils.h"
 
-const FName LOCAL_PLAYER_NAME = "%UserName%";
-
-const FName LOCAL_PLAYER_SKIN_ID = "Kachujin";
-
 void ADeathmatchGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
@@ -31,7 +27,8 @@ void ADeathmatchGameMode::OnFragsCountChanged()
 
 	_winnerPlayerId = PlayerId(playerWithMaxFrags);
 
-	if(maxFrags >= FragLimit)
+	auto const fragLimit = GetFragLimit();
+	if(maxFrags >= fragLimit)
 	{
 		SetMatchState(MatchState::Ended);
 	}
@@ -50,7 +47,8 @@ bool ADeathmatchGameMode::IsLocalPlayerWonMatch()
 void ADeathmatchGameMode::PopulateAvatarsData()
 {
 	auto teamIndex = 0;
-	for (auto i = 0; i < BotCount; i++)
+	auto const botCount = GetBotCount();
+	for (auto i = 0; i < botCount; i++)
 	{
 		auto const botIdValue = MAX_int32 - i;
 		const PlayerId botId(botIdValue);
@@ -68,10 +66,11 @@ void ADeathmatchGameMode::PopulateAvatarsData()
 	auto const localPlayerIdValue = localPlayerState->GetPlayerId();
 	_localPlayerId = PlayerId(localPlayerIdValue);
 	const TeamId teamId(teamIndex++);
+	auto const localPlayerSkinId = GetLocalPlayerSkinId();
 	auto const avatarData = _avatarDataFactory->Create(
 		_localPlayerId,
 		AvatarType::LocalPlayer,
-		LOCAL_PLAYER_SKIN_ID,
+		localPlayerSkinId,
 		LOCAL_PLAYER_NAME,
 		teamId
 	);

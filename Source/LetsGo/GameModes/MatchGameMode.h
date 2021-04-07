@@ -73,6 +73,20 @@ public:
 
 	int GetFragLimit() const;
 
+	void SetFragLimit(const int fragLimit);
+
+	int GetBotCount() const;
+
+	void SetBotCount(const int botCount);
+
+	const FName& GetLocalPlayerSkinId() const;
+
+	void SetLocalPlayerSkinId(const FName& localPlayerSkinId);
+
+	float GetMatchDuration() const;
+
+	void SetMatchDuration(const float matchDuration);
+
 	int GetPlayerFragCount(const PlayerId& playerId) const;
 
 	int GetTeamFragCount(const TeamId& teamId) const;
@@ -80,14 +94,8 @@ public:
 	TeamId GetPlayerTeamId(const PlayerId& playerId) const;
 
 	const TArray<AAvatar*>& GetAvatars() const;
-	
+
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int FragLimit = 1;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int BotCount = 1;
-
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 
 	virtual void BeginPlay() override final;
@@ -129,6 +137,15 @@ private:
 	const int UNDEFINED_INDEX = -1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	int _fragLimit = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	int _botCount = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	FName _localPlayerSkinId = "Kachujin";
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
 	float _avatarRespawnTime = 3.0f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
@@ -169,12 +186,6 @@ private:
 	FTransform GetNextSpawnPoint();
 
 	void ParseMatchOptions(const FString& options);
-
-	bool TryParseFragLimitOption(const FString& option);
-
-	bool TryParseBotCountOption(const FString& option);
-
-	static bool TryGetOptionValue(const FString& option, const FString& optionName, FString& outOptionValue);
 
 	void SpawnAvatar(AvatarData* avatarData);
 	

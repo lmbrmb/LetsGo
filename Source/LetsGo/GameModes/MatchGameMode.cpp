@@ -32,66 +32,16 @@ void AMatchGameMode::ParseMatchOptions(const FString& options)
 	auto stringToSplit = options;
 	FString option, remainder;
 
-	TArray<TFunction<bool(const FString&)>> optionParsers;
-	optionParsers.Add([this](auto option) { return this->TryParseBotCountOption(option); });
-	optionParsers.Add([this](auto option) { return this->TryParseFragLimitOption(option); });
+	auto const gameModeOptionParserFactoryRef = GetDiContainer()->GetInstance<GameModeOptionParserFactory>();
+	auto const gameModeOptionParserFactory = &gameModeOptionParserFactoryRef.Get();
+	AssertIsNotNull(gameModeOptionParserFactory);
 
 	while (stringToSplit.Split(TEXT(";"), &option, &remainder))
 	{
 		stringToSplit = remainder;
 
-		for (auto optionParser : optionParsers)
-		{
-			auto const isParsed = optionParser(option);
-			if (isParsed)
-			{
-				break;
-			}
-		}
+		gameModeOptionParserFactory->TryParseOption(option, this);
 	}
-}
-
-bool AMatchGameMode::TryParseBotCountOption(const FString& option)
-{
-	FString optionValue;
-	if (!TryGetOptionValue(option, "BotCount", optionValue))
-	{
-		return false;
-	}
-
-	auto const botCount = FCString::Atoi(*optionValue);
-	BotCount = botCount;
-	return true;
-}
-
-bool AMatchGameMode::TryParseFragLimitOption(const FString& option)
-{
-	FString optionValue;
-	if (!TryGetOptionValue(option, "FragLimit", optionValue))
-	{
-		return false;
-	}
-
-	auto const fragLimit = FCString::Atoi(*optionValue);
-	FragLimit = fragLimit;
-	return true;
-}
-
-bool AMatchGameMode::TryGetOptionValue(
-	const FString& option,
-	const FString& optionName,
-	FString& outOptionValue
-)
-{
-	auto const optionKey = optionName + "=";
-	if (option.Find(optionKey) == -1)
-	{
-		return false;
-	}
-
-	FString left, right;
-	option.Split(TEXT("="), &left, &outOptionValue);
-	return true;
 }
 
 void AMatchGameMode::TriggerMatchWarmUp()
@@ -406,7 +356,42 @@ bool AMatchGameMode::IsLocalPlayerWonMatch()
 
 int AMatchGameMode::GetFragLimit() const
 {
-	return FragLimit;
+	return _fragLimit;
+}
+
+void AMatchGameMode::SetFragLimit(const int fragLimit)
+{
+	_fragLimit = fragLimit;
+}
+
+int AMatchGameMode::GetBotCount() const
+{
+	return _botCount;
+}
+
+void AMatchGameMode::SetBotCount(const int botCount)
+{
+	_botCount = botCount;
+}
+
+const FName& AMatchGameMode::GetLocalPlayerSkinId() const
+{
+	return _localPlayerSkinId;
+}
+
+void AMatchGameMode::SetLocalPlayerSkinId(const FName& localPlayerSkinId)
+{
+	_localPlayerSkinId = localPlayerSkinId;
+}
+
+float AMatchGameMode::GetMatchDuration() const
+{
+	return _matchDuration;
+}
+
+void AMatchGameMode::SetMatchDuration(const float matchDuration)
+{
+	_matchDuration = matchDuration;
 }
 
 int AMatchGameMode::GetPlayerFragCount(const PlayerId& playerId) const
