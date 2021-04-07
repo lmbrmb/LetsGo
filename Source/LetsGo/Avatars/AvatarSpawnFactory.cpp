@@ -18,6 +18,7 @@ AAvatar* AvatarSpawnFactory::SpawnAvatar(const AvatarData* avatarData, UWorld* w
 	{
 		return nullptr;
 	}
+
 	auto const avatar = AssetUtils::SpawnBlueprint<AAvatar>(
 		world,
 		nullptr,
@@ -25,16 +26,21 @@ AAvatar* AvatarSpawnFactory::SpawnAvatar(const AvatarData* avatarData, UWorld* w
 		transform,
 		ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn
 		);
+
 	if(!avatar)
 	{
 		return nullptr;
 	}
 
-	avatar->Init(avatarData->GetPlayerId(), avatarData->GetTeamId(), avatarData->GetAvatarType());
-	
 	auto const skinId = avatarData->GetSkinId();
-	_skinFactory->SetSkin(avatar, skinId);
-	
+	avatar->Init(
+		avatarData->GetPlayerId(),
+		avatarData->GetTeamId(),
+		skinId,
+		avatarData->GetAvatarType()
+	);
+	auto const skinIdValue = skinId.GetId();
+	_skinFactory->SetSkin(avatar, skinIdValue);
 	return avatar;
 }
 

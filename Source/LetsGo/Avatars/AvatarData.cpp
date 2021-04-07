@@ -3,7 +3,7 @@
 AvatarData::AvatarData(
 	const PlayerId& playerId,
 	const AvatarType avatarType,
-	const FName& skinId,
+	const SkinId& skinId,
 	const FName& nickname,
 	const TeamId& teamId
 ) :
@@ -15,7 +15,7 @@ AvatarData::AvatarData(
 {
 }
 
-PlayerId AvatarData::GetPlayerId() const
+const PlayerId& AvatarData::GetPlayerId() const
 {
 	return _playerId;
 }
@@ -25,17 +25,17 @@ AvatarType AvatarData::GetAvatarType() const
 	return _avatarType;
 }
 
-FName AvatarData::GetSkinId() const
+const SkinId& AvatarData::GetSkinId() const
 {
 	return _skinId;
 }
 
-FName AvatarData::GetNickname() const
+const FName& AvatarData::GetNickname() const
 {
 	return _nickname;
 }
 
-TeamId AvatarData::GetTeamId() const
+const TeamId& AvatarData::GetTeamId() const
 {
 	return _teamId;
 }

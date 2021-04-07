@@ -15,6 +15,8 @@
 #include "LetsGo/NicknameGenerators/NicknameGeneratorFactory.h"
 #include "LetsGo/Forces/ForceFactory.h"
 #include "LetsGo/GameModes/GameModeOptionParsers/GameModeOptionParserFactory.h"
+#include "LetsGo/Sfx/SfxFactory.h"
+#include "LetsGo/Sfx/AvatarSfxFactory.h"
 
 /// <summary>
 /// Match dependency injection container factory
@@ -70,6 +72,10 @@ TTypeContainer<Mode>* MatchDiContainerFactory::CreateContainer()
 	
 	const TSharedRef<AvatarSpawnFactory> avatarSpawnFactory = MakeShareable(new AvatarSpawnFactory(avatarFactoryInstance, skinFactoryInstance)) ;
 	const TSharedRef<GameModeOptionParserFactory> gameModeOptionParserFactory = MakeShareable(new GameModeOptionParserFactory());
+
+	auto const sfxFactoryInstance = new SfxFactory();
+	const TSharedRef<SfxFactory> sfxFactory = MakeShareable(sfxFactoryInstance);
+	const TSharedRef<AvatarSfxFactory> avatarSfxFactory = MakeShareable(new AvatarSfxFactory(sfxFactoryInstance));
 	
 	container->template RegisterInstance<PickupItemFactory>(pickupItemFactory);
 	container->template RegisterInstance<GunItemFactory>(gunItemFactory);
@@ -85,6 +91,8 @@ TTypeContainer<Mode>* MatchDiContainerFactory::CreateContainer()
 	container->template RegisterInstance<AvatarFactory>(avatarFactory);
 	container->template RegisterInstance<AvatarSpawnFactory>(avatarSpawnFactory);
 	container->template RegisterInstance<GameModeOptionParserFactory>(gameModeOptionParserFactory);
+	container->template RegisterInstance<SfxFactory>(sfxFactory);
+	container->template RegisterInstance<AvatarSfxFactory>(avatarSfxFactory);
 	
 	return container;
 }

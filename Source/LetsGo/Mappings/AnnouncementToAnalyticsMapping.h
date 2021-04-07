@@ -1,6 +1,5 @@
 #pragma once
 
-#include "CoreMinimal.h"
 #include "MappingComponent.h"
 #include "AnnouncementToAnalyticsMapping.generated.h"
 

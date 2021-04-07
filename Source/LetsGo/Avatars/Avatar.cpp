@@ -12,10 +12,16 @@ bool AAvatar::IsInitialized() const
 	return _playerId.IsValid();
 }
 
-void AAvatar::Init(const PlayerId& playerId, const TeamId& teamId, const AvatarType avatarType)
+void AAvatar::Init(
+	const PlayerId& playerId,
+	const TeamId& teamId,
+	const SkinId& skinId,
+	const AvatarType avatarType
+)
 {
 	_playerId = playerId;
 	_teamId = teamId;
+	_skinId = skinId;
 	_avatarType = avatarType;
 	Initialized.Broadcast(this);
 }
@@ -28,6 +34,11 @@ const PlayerId& AAvatar::GetPlayerId() const
 const TeamId& AAvatar::GetTeamId() const
 {
 	return _teamId;
+}
+
+const SkinId& AAvatar::GetSkinId() const
+{
+	return _skinId;
 }
 
 AvatarType AAvatar::GetAvatarType() const

@@ -164,7 +164,7 @@ inline void UMovementComponentBase::ProcessMovement(const float& deltaTime)
 	);
 }
 
-void UMovementComponentBase::Jump()
+void UMovementComponentBase::PerformJump()
 {
 	if (_jumpIndex >= _jumpCount)
 	{
@@ -173,7 +173,7 @@ void UMovementComponentBase::Jump()
 
 	_jumpIndex++;
 
-	BpOnJump();
+	Jump.Broadcast();
 	
 	// Current jump force will be replaced with new one
 	_forces.RemoveAll([](IForce* f) {return f->GetId() == JUMP_FORCE_ID; });
@@ -294,7 +294,7 @@ void UMovementComponentBase::SetIsInAir(const bool isInAir)
 		{
 			_jumpIndex = 0;
 			_forces.RemoveAll([](IForce* f) {return f->GetId() == JUMP_FORCE_ID; });
-			BpOnLand();
+			Land.Broadcast();
 		}
 	}
 }
@@ -336,12 +336,12 @@ void UMovementComponentBase::ResetInput()
 	AssertDefaultImplementationIsOverriden();
 }
 
-void UMovementComponentBase::StepOnTimer()
+void UMovementComponentBase::StepOnTimer() const
 {
 	if(_isInAir || GetAbsoluteMovementAmount() <= 0)
 	{
 		return;
 	}
 
-	BpOnStep();
+	Step.Broadcast();
 }

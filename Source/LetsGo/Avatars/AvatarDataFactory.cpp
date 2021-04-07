@@ -15,7 +15,7 @@ AvatarDataFactory::AvatarDataFactory(INicknameGenerator* nicknameGenerator) :
 AvatarData* AvatarDataFactory::Create(
 	const PlayerId& playerId, 
 	const AvatarType avatarType, 
-	const FName& skinId,
+	const SkinId& skinId,
 	const FName& nickname,
 	const TeamId& teamId
 )
@@ -34,7 +34,7 @@ AvatarData* AvatarDataFactory::GenerateRandom(
 	return new AvatarData(playerId, avatarType, skinId, nickname, teamId);
 }
 
-FName AvatarDataFactory::GetRandomSkinId()
+SkinId AvatarDataFactory::GetRandomSkinId()
 {
 	//Cycle skin index
 	auto const skinCount = _avatarSkinIds.Num();
@@ -46,5 +46,6 @@ FName AvatarDataFactory::GetRandomSkinId()
 	}
 
 	_skinIndex = nextIndex;
-	return _avatarSkinIds[_skinIndex];
+	auto const skinIdValue = _avatarSkinIds[_skinIndex];
+	return SkinId(skinIdValue);
 }

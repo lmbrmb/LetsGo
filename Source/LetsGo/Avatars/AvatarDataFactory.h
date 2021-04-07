@@ -14,7 +14,7 @@ public:
 	AvatarData* Create(
 		const PlayerId& playerId,
 		const AvatarType avatarType,
-		const FName& skinId,
+		const SkinId& skinId,
 		const FName& nickname,
 		const TeamId& teamId
 	);
@@ -28,7 +28,7 @@ public:
 private:
 	TArray<FName> _avatarSkinIds;
 	
-	FName GetRandomSkinId();
+	SkinId GetRandomSkinId();
 
 	int _skinIndex;
 

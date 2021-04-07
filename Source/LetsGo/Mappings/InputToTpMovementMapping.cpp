@@ -24,6 +24,6 @@ void UInputToTpMovementMapping::Map()
 	inputComponent->BindAxis(InputConstant::AxisLookVertical, thirdPersonMovementComponent,
 		&UThirdPersonMovementComponent::AddSpringArmPitchInput);
 	inputComponent->BindAction(InputConstant::ActionJump, EInputEvent::IE_Pressed, thirdPersonMovementComponent,
-		&UThirdPersonMovementComponent::Jump);
+		&UThirdPersonMovementComponent::PerformJump);
 	StartDestroyTask();
 }

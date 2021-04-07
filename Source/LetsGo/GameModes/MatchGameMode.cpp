@@ -374,12 +374,12 @@ void AMatchGameMode::SetBotCount(const int botCount)
 	_botCount = botCount;
 }
 
-const FName& AMatchGameMode::GetLocalPlayerSkinId() const
+const SkinId& AMatchGameMode::GetLocalPlayerSkinId() const
 {
 	return _localPlayerSkinId;
 }
 
-void AMatchGameMode::SetLocalPlayerSkinId(const FName& localPlayerSkinId)
+void AMatchGameMode::SetLocalPlayerSkinId(const SkinId& localPlayerSkinId)
 {
 	_localPlayerSkinId = localPlayerSkinId;
 }

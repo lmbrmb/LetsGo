@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Components/ActorComponent.h"
+
 #include "MappingComponent.generated.h"
 
 UCLASS(Abstract, ClassGroup=(Custom) )

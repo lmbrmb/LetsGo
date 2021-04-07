@@ -38,7 +38,7 @@ void UInputToFpMovementMapping::Bind() const
 		&UFirstPersonMovementComponent::AddCameraPitchInput);
 	
 	_inputComponent->BindAction(InputConstant::ActionJump, EInputEvent::IE_Pressed,
-		_firstPersonMovementComponent, &UFirstPersonMovementComponent::Jump);
+		_firstPersonMovementComponent, &UFirstPersonMovementComponent::PerformJump);
 	_inputComponent->BindAction(InputConstant::ActionSprint, EInputEvent::IE_Pressed,
 		_firstPersonMovementComponent, &UFirstPersonMovementComponent::StartSprint);
 	_inputComponent->BindAction(InputConstant::ActionSprint, EInputEvent::IE_Released,

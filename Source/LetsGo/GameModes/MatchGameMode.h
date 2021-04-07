@@ -79,9 +79,9 @@ public:
 
 	void SetBotCount(const int botCount);
 
-	const FName& GetLocalPlayerSkinId() const;
+	const SkinId& GetLocalPlayerSkinId() const;
 
-	void SetLocalPlayerSkinId(const FName& localPlayerSkinId);
+	void SetLocalPlayerSkinId(const SkinId& localPlayerSkinId);
 
 	float GetMatchDuration() const;
 
@@ -143,8 +143,10 @@ private:
 	int _botCount = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
-	FName _localPlayerSkinId = "Kachujin";
-	
+	FName _localPlayerSkinIdValue = "Kachujin";
+
+	SkinId _localPlayerSkinId = SkinId(_localPlayerSkinIdValue);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
 	float _avatarRespawnTime = 3.0f;
 	

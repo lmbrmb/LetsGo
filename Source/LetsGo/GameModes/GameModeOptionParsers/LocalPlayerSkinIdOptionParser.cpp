@@ -1,4 +1,5 @@
 #include "LocalPlayerSkinIdOptionParser.h"
+#include "LetsGo/Data/SkinId.h"
 
 LocalPlayerSkinIdOptionParser::LocalPlayerSkinIdOptionParser()
 {
@@ -12,7 +13,8 @@ bool LocalPlayerSkinIdOptionParser::TryParseOption(const FString& option, AMatch
 		return false;
 	}
 
-	auto const localPlayerSkinId = FName(optionValue);
+	const FName localPlayerSkinIdValue(optionValue);
+	const SkinId localPlayerSkinId(localPlayerSkinIdValue);
 	matchGameMode->SetLocalPlayerSkinId(localPlayerSkinId);
 	return true;
 }

@@ -6,6 +6,12 @@
 
 #include "MovementComponentBase.generated.h"
 
+DECLARE_EVENT(UMovementComponentBase, EStep)
+
+DECLARE_EVENT(UMovementComponentBase, EJump)
+
+DECLARE_EVENT(UMovementComponentBase, ELand)
+
 //<summary>
 /// [Abstract] Movement component
 ///</summary>
@@ -21,9 +27,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual bool GetIsInAir() const;
 
-	void Jump();
+	void PerformJump();
 
 	FVector GetRootColliderLocation() const;
+
+	EStep Step;
+
+	EJump Jump;
+
+	ELand Land;
 
 protected:
 	static const FName GRAVITY_FORCE_ID;
@@ -77,15 +89,6 @@ protected:
 	FCollisionShape CollisionShape;
 	
 	FCollisionQueryParams CollisionQueryParams;
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void BpOnJump();
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void BpOnStep();
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void BpOnLand();
 	
 private:
 	const float SKIP_ROTATION_DOT = 0.99f;
@@ -174,7 +177,7 @@ private:
 
 	void SetIsInAir(const bool isInAir);
 	
-	void StepOnTimer();
+	void StepOnTimer() const;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float _stepInterval;
