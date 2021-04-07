@@ -1,24 +1,45 @@
 #include "BotMovementComponent.h"
 
-bool UBotMovementComponent::IsTargetMovementLocationValid() const
-{
-	return _isTargetMovementLocationValid;
-}
-
 const FVector& UBotMovementComponent::GetTargetLocation() const
 {
-	return _targetMovementLocation;
+	return _targetLocation;
 }
 
-void UBotMovementComponent::SetTargetMovementLocation(const FVector& targetMovementLocation)
+bool UBotMovementComponent::IsTargetLocationValid() const
 {
-	_targetMovementLocation = targetMovementLocation;
-	_isTargetMovementLocationValid = true;
+	return _isTargetLocationValid;
 }
 
-void UBotMovementComponent::ClearTargetMovementLocation()
+void UBotMovementComponent::SetTargetLocation(const FVector& targetLocation)
 {
-	_isTargetMovementLocationValid = false;
+	_targetLocation = targetLocation;
+	_isTargetLocationValid = true;
+}
+
+void UBotMovementComponent::ClearTargetLocation()
+{
+	_isTargetLocationValid = false;
+}
+
+const FVector& UBotMovementComponent::GetTargetRotation() const
+{
+	return _targetRotationLocation;
+}
+
+bool UBotMovementComponent::IsTargetRotationValid() const
+{
+	return _isTargetRotationLocationValid;
+}
+
+void UBotMovementComponent::SetTargetRotation(const FVector& targetRotationLocation)
+{
+	_targetRotationLocation = targetRotationLocation;
+	_isTargetRotationLocationValid = true;
+}
+
+void UBotMovementComponent::ClearTargetRotation()
+{
+	_isTargetRotationLocationValid = false;
 }
 
 FVector UBotMovementComponent::GetMovementDirection()
@@ -39,19 +60,18 @@ float UBotMovementComponent::GetMovementSpeed()
 
 float UBotMovementComponent::GetAbsoluteMovementAmount() const
 {
-	return _isTargetMovementLocationValid ? 1 : 0;
+	return _isTargetLocationValid ? 1 : 0;
 }
-
 
 void UBotMovementComponent::ProcessInput()
 {
-	if (!_isTargetMovementLocationValid)
+	if (!_isTargetLocationValid)
 	{
 		_inputMovementDirection = FVector::ZeroVector;
 		return;
 	}
 	
-	auto const delta = _targetMovementLocation - RootCollider->GetComponentLocation();
+	auto const delta = _targetLocation - RootCollider->GetComponentLocation();
 	auto direction = delta.GetSafeNormal();
 	direction = FVector::VectorPlaneProject(direction, FVector::UpVector);
 
@@ -60,11 +80,19 @@ void UBotMovementComponent::ProcessInput()
 
 void UBotMovementComponent::CustomTick(const float deltaTime)
 {
-	ProcessRotation();
+	ProcessTargetRotation(deltaTime);
 }
 
-void UBotMovementComponent::ProcessRotation()
+void UBotMovementComponent::ProcessTargetRotation(const float deltaTime) const
 {
+	if (!_isTargetRotationLocationValid)
+	{
+		return;
+	}
+
+	auto rotationDirection = (_targetRotationLocation - GetRootColliderLocation()).GetSafeNormal();
+	rotationDirection = FVector::VectorPlaneProject(rotationDirection, FVector::UpVector).GetSafeNormal();;
+	ProcessActorRotation(deltaTime, rotationDirection);
 }
 
 void UBotMovementComponent::Init(AActor* actor)

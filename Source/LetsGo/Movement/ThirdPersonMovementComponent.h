@@ -23,8 +23,6 @@ public:
 	void AddSpringArmPitchInput(const float amount);
 
 	void ProcessSpringArmRotation(const float deltaTime) const;
-
-	void ProcessActorRotation(const float deltaTime) const;
 	
 protected:
 	virtual void Init(AActor* actor) override;
@@ -40,6 +38,12 @@ protected:
 	virtual void CustomTick(float deltaTime) override;
 	
 private:
+	const float MIN_MOVEMENT_INPUT_AMOUNT = 0.15f;
+
+	const float MIN_ROTATION_INPUT = 0.05f;
+
+	const float MIN_MOVEMENT_DOT = 0.25f;
+
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
 	float _movementSpeed = 500.0f;
 
@@ -54,13 +58,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
 	float _springArmPitchMax = 50.0f;
-	
-	/// <summary>
-	/// Rotation speed in degrees per second
-	/// </summary>
-	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
-	float _rotationSpeedDegrees = 540.0f;
-	
+
 	USpringArmComponent* _springArmComponent = nullptr;
 
 	UCameraComponent* _cameraComponent = nullptr;

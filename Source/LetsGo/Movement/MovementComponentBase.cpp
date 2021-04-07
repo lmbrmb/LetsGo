@@ -5,7 +5,6 @@
 #include "LetsGo/Utils/AssertUtils.h"
 
 #include "DrawDebugHelpers.h"
-#include "LetsGo/Logs/DevLogger.h"
 
 const FName UMovementComponentBase:: GRAVITY_FORCE_ID = "Gravity";
 
@@ -53,6 +52,35 @@ void UMovementComponentBase::BeginPlay()
 		FTimerHandle stepTimerHandle;
 		World->GetTimerManager().SetTimer(stepTimerHandle, this, &UMovementComponentBase::StepOnTimer, _stepInterval, true);	
 	}
+}
+
+void UMovementComponentBase::ProcessActorRotation(const float deltaTime, const FVector& direction) const
+{
+	const auto actorForwardDirection = RootCollider->GetForwardVector();
+	const auto targetDirectionDot = FVector::DotProduct(actorForwardDirection, direction);
+
+	if (targetDirectionDot >= SKIP_ROTATION_DOT)
+	{
+		return;
+	}
+
+	auto const targetAngleDegrees = FVectorUtils::GetUnsignedAngleDegrees(targetDirectionDot);
+	auto const targetAngleSign = FVectorUtils::GetSignOfAngle(actorForwardDirection, direction);
+	auto rotationDeltaDegrees = deltaTime * _rotationSpeedDegrees;
+
+	if (rotationDeltaDegrees > targetAngleDegrees)
+	{
+		rotationDeltaDegrees = targetAngleDegrees;
+	}
+
+	auto const rotationSignedAngleDegrees = targetAngleSign * rotationDeltaDegrees;
+	auto const rotationVector = actorForwardDirection.RotateAngleAxis(rotationSignedAngleDegrees, FVector::UpVector);
+	auto const actorRotation = FRotationMatrix::MakeFromX(rotationVector).Rotator();
+
+	//auto const actorLocation = Root->GetComponentLocation();
+	//DrawDebugLine(GetWorld(), actorLocation, actorLocation + rotationVector * 100, FColor::Yellow);
+	
+	RootCollider->SetWorldRotation(actorRotation);
 }
 
 void UMovementComponentBase::TickComponent(

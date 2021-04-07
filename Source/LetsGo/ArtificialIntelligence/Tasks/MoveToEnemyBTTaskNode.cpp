@@ -23,25 +23,12 @@ EBTNodeResult::Type UMoveToEnemyBTTaskNode::ExecuteTask(UBehaviorTreeComponent& 
 
 	auto const enemyActor = Cast<AActor>(enemyActorObject);
 	AssertIsNotNull(enemyActor, EBTNodeResult::Failed);
-	
-	FCollisionQueryParams collisionQueryParams;
-	collisionQueryParams.AddIgnoredActor(selfActor);
-
-	auto const isHitted = GetWorld()->LineTraceSingleByChannel(
-		_hitResult,
-		selfActor->GetActorLocation() + _avatarRayCastLocationOffset,
-		enemyActor->GetActorLocation() + _avatarRayCastLocationOffset,
-		_collisionChannel,
-		collisionQueryParams
-	);
-
-	auto const isEnemyInLineOfSight = isHitted && enemyActor == _hitResult.GetActor();
-	
-	auto const navigationSystemV1 = UNavigationSystemV1::GetCurrent(GetWorld());
-	auto const rootColliderLocation = botMovementComponent->GetRootColliderLocation();
 
 	auto const enemyLocation = enemyActor->GetActorLocation();
-	auto const navigationPath = navigationSystemV1->FindPathToLocationSynchronously(GetWorld(), rootColliderLocation, enemyLocation);
+	auto const selfActorLocation	= botMovementComponent->GetRootColliderLocation();
+	
+	auto const navigationSystemV1 = UNavigationSystemV1::GetCurrent(GetWorld());
+	auto const navigationPath = navigationSystemV1->FindPathToLocationSynchronously(GetWorld(), selfActorLocation, enemyLocation);
 
 	if (!navigationPath)
 	{
@@ -50,14 +37,13 @@ EBTNodeResult::Type UMoveToEnemyBTTaskNode::ExecuteTask(UBehaviorTreeComponent& 
 	}
 	
 	auto const navigationPathPointsCount = navigationPath->PathPoints.Num();
-	
 	int nearestPointIndex = -1;
 	
 	for (auto i = 0; i < navigationPathPointsCount; i++)
 	{
 		auto pathPoint = navigationPath->PathPoints[i];
 		//DrawDebugSphere(GetWorld(), pathPoint, 10.0f, 12, FColor::Green, false, -1, 0, 5);
-		auto const distanceSquared = FVector::DistSquared2D(pathPoint, rootColliderLocation);
+		auto const distanceSquared = FVector::DistSquared2D(pathPoint, selfActorLocation);
 		
 		if (distanceSquared > _locationToleranceSquared)
 		{
@@ -66,40 +52,63 @@ EBTNodeResult::Type UMoveToEnemyBTTaskNode::ExecuteTask(UBehaviorTreeComponent& 
 		}
 	}
 
+	FCollisionQueryParams collisionQueryParams;
+	collisionQueryParams.AddIgnoredActor(selfActor);
+	auto const isHitted = GetWorld()->LineTraceSingleByChannel(
+		_hitResult,
+		selfActorLocation + _avatarRayCastLocationOffset,
+		enemyLocation + _avatarRayCastLocationOffset,
+		_collisionChannel,
+		collisionQueryParams
+	);
+	auto const isEnemyInLineOfSight = isHitted && enemyActor == _hitResult.GetActor();
+	
 	if (nearestPointIndex == -1)
 	{
-		// Already at location
-		botMovementComponent->ClearTargetMovementLocation();
-		return EBTNodeResult::Succeeded;
-	}
+		botMovementComponent->ClearTargetLocation();
 
-	auto const enemyDistanceSquared = FVector::DistSquared2D(rootColliderLocation, enemyLocation);
-	
-	auto const nearestPoint = navigationPath->PathPoints[nearestPointIndex];
-	botMovementComponent->SetTargetMovementLocation(nearestPoint);
-	
-	if (isEnemyInLineOfSight)
-	{
-		if(enemyDistanceSquared < _enemyDistanceSquared)
+		if (isEnemyInLineOfSight)
 		{
-			botMovementComponent->ClearTargetMovementLocation();
+			botMovementComponent->SetTargetRotation(enemyLocation);
 		}
 		else
 		{
-			botMovementComponent->SetTargetMovementLocation(nearestPoint);
+			botMovementComponent->ClearTargetRotation();
+		}
+		
+		return EBTNodeResult::Succeeded;
+	}
+	
+	auto const enemyDistanceSquared = FVector::DistSquared2D(selfActorLocation, enemyLocation);
+	
+	if (isEnemyInLineOfSight)
+	{
+		botMovementComponent->SetTargetRotation(enemyLocation);
+		
+		if( enemyDistanceSquared < _enemyDistanceSquared)
+		{
+			botMovementComponent->ClearTargetLocation();
+		}
+		else
+		{
+			auto const nearestPoint = navigationPath->PathPoints[nearestPointIndex];
+			botMovementComponent->SetTargetLocation(nearestPoint);
 		}
 	}
 	else
 	{
-		botMovementComponent->SetTargetMovementLocation(nearestPoint);
+		auto const nearestPoint = navigationPath->PathPoints[nearestPointIndex];
+		botMovementComponent->SetTargetRotation(nearestPoint);
+		botMovementComponent->SetTargetLocation(nearestPoint);
 	}
-
+	
 	return EBTNodeResult::Succeeded;
 }
 
 // ReSharper disable once CppMemberFunctionMayBeStatic
 EBTNodeResult::Type UMoveToEnemyBTTaskNode::TaskFailed(UBotMovementComponent* botMovementComponent)
 {
-	botMovementComponent->ClearTargetMovementLocation();
+	botMovementComponent->ClearTargetLocation();
+	botMovementComponent->ClearTargetRotation();
 	return EBTNodeResult::Failed;
 }

@@ -1,11 +1,6 @@
 #include "ThirdPersonMovementComponent.h"
 #include "LetsGo/Utils/FVectorUtils.h"
 
-const float MIN_MOVEMENT_INPUT_AMOUNT = 0.15f;
-const float MIN_ROTATION_INPUT = 0.05f;
-const float MIN_MOVEMENT_DOT = 0.25f;
-const float SKIP_ROTATION_DOT = 0.99f;
-
 float UThirdPersonMovementComponent::GetAbsoluteMovementAmount() const
 {
 	return _absoluteMovementAmount;
@@ -58,7 +53,7 @@ void UThirdPersonMovementComponent::ProcessInput()
 void UThirdPersonMovementComponent::CustomTick(const float deltaTime)
 {
 	ProcessSpringArmRotation(deltaTime);
-	ProcessActorRotation(deltaTime);
+	ProcessActorRotation(deltaTime, _inputMovementDirection);
 }
 
 void UThirdPersonMovementComponent::Init(AActor* actor)
@@ -110,35 +105,6 @@ void UThirdPersonMovementComponent::ProcessSpringArmRotation(const float deltaTi
 	}
 	
 	_springArmComponent->SetRelativeRotation(rotation);
-}
-
-void UThirdPersonMovementComponent::ProcessActorRotation(const float deltaTime) const
-{
-	const auto actorForwardDirection = RootCollider->GetForwardVector();
-	const auto targetDirectionDot = FVector::DotProduct(actorForwardDirection, _inputMovementDirection);
-	
-	if (targetDirectionDot >= SKIP_ROTATION_DOT)
-	{
-		return;
-	}
-
-	auto const targetAngleDegrees = FVectorUtils::GetUnsignedAngleDegrees(targetDirectionDot);
-	auto const targetAngleSign = FVectorUtils::GetSignOfAngle(actorForwardDirection, _inputMovementDirection);
-	auto rotationDeltaDegrees = deltaTime * _rotationSpeedDegrees;
-
-	if (rotationDeltaDegrees > targetAngleDegrees)
-	{
-		rotationDeltaDegrees = targetAngleDegrees;
-	}
-
-	auto const rotationSignedAngleDegrees = targetAngleSign * rotationDeltaDegrees;
-	auto const rotationVector = actorForwardDirection.RotateAngleAxis(rotationSignedAngleDegrees, FVector::UpVector);
-	auto const actorRotation = FRotationMatrix::MakeFromX(rotationVector).Rotator();
-	
-	//auto const actorLocation = Root->GetComponentLocation();
-	//DrawDebugLine(GetWorld(), actorLocation, actorLocation + rotationVector * 100, FColor::Yellow);
-	
-	RootCollider->SetWorldRotation(actorRotation);
 }
 
 float UThirdPersonMovementComponent::ClampSpringArmPitch(float pitch) const

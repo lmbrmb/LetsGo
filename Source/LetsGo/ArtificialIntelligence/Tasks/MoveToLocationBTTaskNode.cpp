@@ -66,7 +66,7 @@ EBTNodeResult::Type UMoveToLocationBTTaskNode::ExecuteTask(UBehaviorTreeComponen
 	}
 	
 	auto const nearestPoint = navigationPath->PathPoints[nearestPointIndex];
-	botMovementComponent->SetTargetMovementLocation(nearestPoint);
+	botMovementComponent->SetTargetLocation(nearestPoint);
 
 	return EBTNodeResult::Succeeded;
 }
@@ -74,6 +74,6 @@ EBTNodeResult::Type UMoveToLocationBTTaskNode::ExecuteTask(UBehaviorTreeComponen
 // ReSharper disable once CppMemberFunctionMayBeStatic
 EBTNodeResult::Type UMoveToLocationBTTaskNode::TaskFailed(UBotMovementComponent* botMovementComponent)
 {
-	botMovementComponent->ClearTargetMovementLocation();
+	botMovementComponent->ClearTargetLocation();
 	return EBTNodeResult::Failed;
 }

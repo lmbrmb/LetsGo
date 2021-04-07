@@ -36,6 +36,8 @@ protected:
 
 	virtual void BeginPlay() override final;
 
+	void ProcessActorRotation(const float deltaTime, const FVector& direction) const;
+
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override final;
 
 	/// <summary>
@@ -86,6 +88,14 @@ protected:
 	void BpOnLand();
 	
 private:
+	const float SKIP_ROTATION_DOT = 0.99f;
+
+	/// <summary>
+	/// Rotation speed in degrees per second
+	/// </summary>
+	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
+	float _rotationSpeedDegrees = 540.0f;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TEnumAsByte<ECollisionChannel> _collisionChannel;
 	
