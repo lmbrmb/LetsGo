@@ -51,9 +51,14 @@ public:
 			);
 	}
 
-	static FString GenerateAssetPath(const FString& path, const FString& name)
+	static FString GenerateBlueprintAssetPath(const FString& path, const FString& name)
 	{
 		return path + name + "." + name + "_C";
+	}
+
+	static FString GenerateAssetPath(const FString& path, const FString& name)
+	{
+		return path + name + "." + name;
 	}
 
 private:

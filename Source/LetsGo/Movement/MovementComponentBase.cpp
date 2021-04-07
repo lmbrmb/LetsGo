@@ -34,6 +34,7 @@ void UMovementComponentBase::BeginPlay()
 	
 	auto const authGameMode = World->GetAuthGameMode();
 	auto const matchGameMode = Cast<AMatchGameMode>(authGameMode);
+	AssertIsNotNull(matchGameMode);
 	auto const diContainer = matchGameMode->GetDiContainer();
 
 	auto const forceFactory = diContainer->GetInstance<ForceFactory>();

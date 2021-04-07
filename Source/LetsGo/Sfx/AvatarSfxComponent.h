@@ -26,6 +26,15 @@ public:
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
+	void BpSetJumpSound(const USoundBase* jumpSound);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpSetLandSound(const USoundBase* jumpSound);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpAddStepSound(const USoundBase* jumpSound);
+
+	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnStep();
 
 	UFUNCTION(BlueprintImplementableEvent)
@@ -33,7 +42,4 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnLand();
-
-private:
-	SkinId _skinId;
 };

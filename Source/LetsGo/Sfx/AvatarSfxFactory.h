@@ -1,23 +1,35 @@
 #pragma once
 
 #include "SfxFactory.h"
+#include "LetsGo/Data/SkinId.h"
 
 class AvatarSfxFactory final
 {
 public:
-	AvatarSfxFactory(SfxFactory* sfxFactory);
+	explicit AvatarSfxFactory(SfxFactory* sfxFactory);
+
+	USoundBase* GetJumpSound(SkinId skinId) const;
+
+	USoundBase* GetLandSound(SkinId skinId) const;
+
+	TArray<USoundBase*> GetStepSounds(SkinId skinId) const;
 
 private:
-	static const FString KachujinSkinId;
+	static const FName KachujinSkinId;
 
-	static const FString VampireSkinId;
+	static const FName VampireSkinId;
 
-	static const FString MariaSkinId;
+	static const FName MariaSkinId;
 
-	USoundBase* GetJumpSfx();
+	static const FName LandSoundId;
 
-	// Skin Id, Sound
-	TMap<FName, USoundBase*> _jumpSounds;
+	SfxFactory* _sfxFactory;
+
+	// Skin Id, Sound Id
+	TMap<FName, FName> _jumpSounds;
+
+	// Skin Id, Base part of sound Id
+	TMap<FName, FName> _stepSounds;
 };
 
 Expose_TNameOf(AvatarSfxFactory)
