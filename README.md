@@ -13,6 +13,7 @@ W - Move forward
 S - Move backward
 A - Strafe left
 D - Strafe right
+Space - Jump
 Left mouse button - fire
 Middle mouse button - change weapon pivot (right <-> center)
 Mouse Vertical Axis - look up/down
@@ -24,11 +25,14 @@ Left stick Vertical Axis - move forward / backward
 Left stick Horizontal Axis - strafe left / right
 Right stick Vertical Axis - look up/down
 Right stick Horizontal Axis - turn left / right
+X - Jump
 Right trigger - fire
+Right stick button - change weapon pivot (right <-> center)
 D-Pad left - previous weapon
 D-Pad right - next weapon
+Options - Quit to main menu
 
-##Assets
+## Assets
 1. Quake 3 Arena assets
 https://store.steampowered.com/app/2200/Quake_III_Arena/?l=english
 Own original game on Steam.
@@ -41,7 +45,7 @@ https://www.mixamo.com
 FreeSound.org
 https://freesound.org/
 
-##Tools and utilities
+## Tools and utilities
 1. Game engine
 Unreal Engine 4
 https://www.unrealengine.com
