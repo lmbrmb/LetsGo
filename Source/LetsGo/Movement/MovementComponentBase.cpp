@@ -1,10 +1,9 @@
 #include "MovementComponentBase.h"
 
 #include "LetsGo/Utils/FVectorUtils.h"
-#include "LetsGo/GameModes/MatchGameMode.h"
 #include "LetsGo/Utils/AssertUtils.h"
-
 #include "DrawDebugHelpers.h"
+#include "LetsGo/GameModes/MatchGameMode.h"
 
 const FName UMovementComponentBase:: GRAVITY_FORCE_ID = "Gravity";
 
@@ -33,9 +32,9 @@ void UMovementComponentBase::BeginPlay()
 	CollisionQueryParams.AddIgnoredActor(actor);
 	
 	auto const authGameMode = World->GetAuthGameMode();
-	auto const matchGameMode = Cast<AMatchGameMode>(authGameMode);
-	AssertIsNotNull(matchGameMode);
-	auto const diContainer = matchGameMode->GetDiContainer();
+	auto const projectGameModeBase = Cast<AProjectGameModeBase>(authGameMode);
+	AssertIsNotNull(projectGameModeBase);
+	auto const diContainer = projectGameModeBase->GetDiContainer();
 
 	auto const forceFactory = diContainer->GetInstance<ForceFactory>();
 	_forceFactory = &forceFactory.Get();

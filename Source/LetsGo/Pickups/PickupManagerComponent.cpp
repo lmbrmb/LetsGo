@@ -1,11 +1,12 @@
 #include "PickupManagerComponent.h"
 
+#include "LetsGo/GameModes/ProjectGameModeBase.h"
 #include "LetsGo/Items/Item.h"
 #include "LetsGo/Items/AmmoItemFactory.h"
 #include "LetsGo/Items/HealthItemFactory.h"
 #include "LetsGo/Items/GunItemFactory.h"
-#include "LetsGo/GameModes/MatchGameMode.h"
 #include "LetsGo/Logs/DevLogger.h"
+#include "LetsGo/Utils/AssertUtils.h"
 #include "LetsGo/Utils/FactoryUtils.h"
 
 UPickupManagerComponent::UPickupManagerComponent()
@@ -18,8 +19,9 @@ void UPickupManagerComponent::BeginPlay()
 	Super::BeginPlay();
 	
 	auto const authGameMode = GetWorld()->GetAuthGameMode();
-	auto const matchGameMode = Cast<AMatchGameMode>(authGameMode);
-	auto const diContainer = matchGameMode->GetDiContainer();
+	auto const projectGameModeBase = Cast<AProjectGameModeBase>(authGameMode);
+	AssertIsNotNull(projectGameModeBase);
+	auto const diContainer = projectGameModeBase->GetDiContainer();
 	
 	auto const gunItemFactory = diContainer->GetInstance<GunItemFactory>();
 	_itemFactories.Add(&gunItemFactory.Get());

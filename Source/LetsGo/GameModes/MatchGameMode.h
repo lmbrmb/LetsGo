@@ -1,6 +1,6 @@
 #pragma once
 
-#include "GameFramework/GameModeBase.h"
+#include "ProjectGameModeBase.h"
 
 #include "LetsGo/Avatars/AvatarData.h"
 #include "Misc/TypeContainer.h"
@@ -31,13 +31,12 @@ const FName& fraggedPlayerNickname
 );
 
 ///<summary>
-///Base game mode for all matches. Provides Dependency Injection container.
+///Base game mode for all matches.
 ///</summary>
 UCLASS()
-class LETSGO_API AMatchGameMode : public AGameModeBase
+class LETSGO_API AMatchGameMode : public AProjectGameModeBase
 {
 	GENERATED_BODY()
-	
 public:
 	EMatchWarmUp MatchWarmUp;
 
@@ -53,7 +52,8 @@ public:
 	
 	virtual ~AMatchGameMode();
 
-	TTypeContainer<ESPMode::Fast>* GetDiContainer() const;
+	// IDiContainerProvider implementation
+	virtual TTypeContainer<ESPMode::Fast>* GetDiContainer() const override;
 
 	MatchAnalytics* GetMatchAnalytics() const;
 	

@@ -1,7 +1,7 @@
 #include "AvatarSfxComponent.h"
 
 #include "AvatarSfxFactory.h"
-#include "LetsGo/GameModes/MatchGameMode.h"
+#include "LetsGo/GameModes/ProjectGameModeBase.h"
 #include "LetsGo/Utils/AssertUtils.h"
 
 UAvatarSfxComponent::UAvatarSfxComponent()
@@ -12,9 +12,9 @@ UAvatarSfxComponent::UAvatarSfxComponent()
 void UAvatarSfxComponent::SetSkinId(const SkinId& skinId)
 {
 	auto const authGameMode = GetWorld()->GetAuthGameMode();
-	auto const matchGameMode = Cast<AMatchGameMode>(authGameMode);
-	AssertIsNotNull(matchGameMode);
-	auto const diContainer = matchGameMode->GetDiContainer();
+	auto const projectGameModeBase = Cast<AProjectGameModeBase>(authGameMode);
+	AssertIsNotNull(projectGameModeBase);
+	auto const diContainer = projectGameModeBase->GetDiContainer();
 
 	auto const avatarSfxFactoryRef = diContainer->GetInstance<AvatarSfxFactory>();
 	auto const avatarSfxFactory = &avatarSfxFactoryRef.Get();
@@ -72,7 +72,7 @@ void UAvatarSfxComponent::OnHealthChanged(const UHealthComponent* healthComponen
 	{
 		auto const targetHealth = painSoundRecord.Key;
 		
-		if (currentHealth <= targetHealth && previousHealth > targetHealth)
+		if (currentHealth < targetHealth && previousHealth >= targetHealth)
 		{
 			auto const painSound = painSoundRecord.Value;
 			BpPlaySound(painSound);

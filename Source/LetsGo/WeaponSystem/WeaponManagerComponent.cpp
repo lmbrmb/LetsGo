@@ -1,7 +1,7 @@
 #include "WeaponManagerComponent.h"
 
 #include "IWeapon.h"
-#include "LetsGo/GameModes/MatchGameMode.h"
+#include "LetsGo/GameModes/ProjectGameModeBase.h"
 #include "LetsGo/Items/Item.h"
 #include "LetsGo/Items/AmmoItem.h"
 #include "LetsGo/Items/GunItem.h"
@@ -28,8 +28,9 @@ void UWeaponManagerComponent::BeginPlay()
 	_itemProcessors.Add([this](auto item) { return this->TryProcessItemAsAmmo(item); });
 
 	auto const authGameMode = GetWorld()->GetAuthGameMode();
-	auto const matchGameMode = Cast<AMatchGameMode>(authGameMode);
-	auto const diContainer = matchGameMode->GetDiContainer();
+	auto const projectGameModeBase = Cast<AProjectGameModeBase>(authGameMode);
+	AssertIsNotNull(projectGameModeBase);
+	auto const diContainer = projectGameModeBase->GetDiContainer();
 	
 	auto const gunFactory = diContainer->GetInstance<GunFactory>();
 	_gunFactory = &gunFactory.Get();

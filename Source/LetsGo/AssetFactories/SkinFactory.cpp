@@ -23,10 +23,18 @@ _skeletalMeshFactory(skeletalMeshFactory)
 	);
 }
 
-void SkinFactory::SetSkin(AActor* actor, const FName skinId)
+void SkinFactory::SetSkin(AActor* actor, const FName& skinId)
 {
+	AssertIsNotNull(actor);
+	auto const skeletalMeshComponent = actor->FindComponentByClass<USkeletalMeshComponent>();
+	SetSkin(skeletalMeshComponent, skinId);
+}
+
+void SkinFactory::SetSkin(USkeletalMeshComponent* skeletalMeshComponent, const FName& skinId)
+{
+	AssertIsNotNull(skeletalMeshComponent);
 	AssertIsTrue(_skins.Contains(skinId));
-	
+
 	auto const skinData = _skins[skinId];
 	auto const skeletalMeshId = skinData->SkeletalMeshId;
 	auto const skeletalMesh = _skeletalMeshFactory->GetOrLoad(skeletalMeshId);
@@ -35,10 +43,7 @@ void SkinFactory::SetSkin(AActor* actor, const FName skinId)
 	auto const materialId = skinData->MaterialId;
 	auto const material = _materialFactory->GetOrLoad(materialId);
 	RETURN_IF_NULL(material);
-	
-	auto skeletalMeshComponent = actor->FindComponentByClass<USkeletalMeshComponent>();
-	AssertIsNotNull(skeletalMeshComponent);
-	
+
 	skeletalMeshComponent->SetSkeletalMesh(skeletalMesh);
 	skeletalMeshComponent->SetMaterial(0, material);
 }
