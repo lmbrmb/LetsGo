@@ -17,9 +17,9 @@ public:
 
 	void AddActorRightMovementInput(float amount);
 
-	void ProcessActorYaw(float deltaTime) const;
+	void ProcessActorYaw(const float deltaTime) const;
 
-	void ProcessCameraPitch(float deltaTime) const;
+	void ProcessCameraPitch(const float deltaTime) const;
 
 	float ClampCameraPitch(float pitch) const;
 

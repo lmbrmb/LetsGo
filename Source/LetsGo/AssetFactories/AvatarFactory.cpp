@@ -2,16 +2,17 @@
 
 #include "LetsGo/Utils/AssetUtils.h"
 
-const FName LOCAL_PLAYER_ID = "LocalPlayer";
-const FName BOT_ID = "Bot";
+FName AvatarFactory::LocalPlayerId = "LocalPlayer";
 
-const FString AvatarFactory::_assetPath = "/Game/Assets/Blueprints/Avatars/";
+FName AvatarFactory::BotId = "Bot";
+
+FString AvatarFactory::AssetPath = "/Game/Assets/Blueprints/Avatars/";
 
 AvatarFactory::AvatarFactory(const bool lazyInitialization)
 {
-	Paths.Add(LOCAL_PLAYER_ID, AssetUtils::GenerateBlueprintAssetPath(_assetPath, "BP_Avatar_LocalPlayer_FirstPerson"));
-	Paths.Add(BOT_ID, AssetUtils::GenerateBlueprintAssetPath(_assetPath, "BP_Avatar_Bot"));
-	
+	Paths.Add(LocalPlayerId, AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_Avatar_LocalPlayer_FirstPerson"));
+	Paths.Add(BotId, AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_Avatar_Bot"));
+
 	if (!lazyInitialization)
 	{
 		LoadAllAssets();
@@ -20,10 +21,10 @@ AvatarFactory::AvatarFactory(const bool lazyInitialization)
 
 UBlueprintGeneratedClass* AvatarFactory::GetLocalPlayerBlueprint()
 {
-	return GetOrLoad(LOCAL_PLAYER_ID);
+	return GetOrLoad(LocalPlayerId);
 }
 
 UBlueprintGeneratedClass* AvatarFactory::GetBotBlueprint()
 {
-	return GetOrLoad(BOT_ID);
+	return GetOrLoad(BotId);
 }

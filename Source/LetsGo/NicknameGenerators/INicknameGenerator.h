@@ -11,17 +11,17 @@ public:
 	virtual FName Generate() = 0;
 
 protected:
-	FString TakeRandom(TArray<FString>& array) const;
+	FString TakeRandom(TArray<FString>& arr) const;
 };
 
-inline FString INicknameGenerator::TakeRandom(TArray<FString>& array) const
+inline FString INicknameGenerator::TakeRandom(TArray<FString>& arr) const
 {
-	if (array.Num() == 0)
+	if (arr.Num() == 0)
 	{
 		return "";
 	}
-	auto const index = FMath::RandRange(0, array.Num() - 1);
-	auto const taken = array[index];
-	array.RemoveAt(index);
+	auto const index = FMath::RandRange(0, arr.Num() - 1);
+	auto const taken = arr[index];
+	arr.RemoveAt(index);
 	return taken;
 }

@@ -28,7 +28,7 @@ void UAvatarAnimInstance::NativeBeginPlay()
 	AssertIsNotNull(_movementComponentBase);
 }
 
-void UAvatarAnimInstance::OnDied(const UHealthComponent*, float delta)
+void UAvatarAnimInstance::OnDied(const UHealthComponent*, const float delta)
 {
 	BpOnAvatarDied();
 }

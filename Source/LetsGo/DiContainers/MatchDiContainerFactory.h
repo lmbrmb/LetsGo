@@ -73,7 +73,7 @@ TTypeContainer<Mode>* MatchDiContainerFactory::CreateContainer()
 	const TSharedRef<AvatarSpawnFactory> avatarSpawnFactory = MakeShareable(new AvatarSpawnFactory(avatarFactoryInstance, skinFactoryInstance)) ;
 	const TSharedRef<GameModeOptionParserFactory> gameModeOptionParserFactory = MakeShareable(new GameModeOptionParserFactory());
 
-	auto const sfxFactoryInstance = new SfxFactory();
+	auto const sfxFactoryInstance = new SfxFactory(LAZY_INITIALIZATION);
 	const TSharedRef<SfxFactory> sfxFactory = MakeShareable(sfxFactoryInstance);
 	const TSharedRef<AvatarSfxFactory> avatarSfxFactory = MakeShareable(new AvatarSfxFactory(sfxFactoryInstance));
 	

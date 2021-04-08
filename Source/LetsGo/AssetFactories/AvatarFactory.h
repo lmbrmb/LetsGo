@@ -15,7 +15,11 @@ public:
 	UBlueprintGeneratedClass* GetBotBlueprint();
 
 private:
-	static const FString _assetPath;
+	static FName LocalPlayerId;
+
+	static FName BotId;
+
+	static FString AssetPath;
 };
 
 Expose_TNameOf(AvatarFactory)

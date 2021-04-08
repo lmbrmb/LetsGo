@@ -2,6 +2,7 @@
 
 #include "Components/ActorComponent.h"
 #include "LetsGo/Data/SkinId.h"
+#include "LetsGo/HealthSystem/HealthComponent.h"
 
 #include "AvatarSfxComponent.generated.h"
 
@@ -24,22 +25,22 @@ public:
 
 	void OnLand();
 
+	void OnHealthChanged(const UHealthComponent* healthComponent, const float delta);
+
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
-	void BpSetJumpSound(const USoundBase* jumpSound);
+	void BpPlaySound(const USoundBase* sound);
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void BpSetLandSound(const USoundBase* jumpSound);
+private:
+	TMap<float, USoundBase*> _painSounds;
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void BpAddStepSound(const USoundBase* jumpSound);
+	TArray<USoundBase*> _deathSounds;
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void BpOnStep();
+	USoundBase* _jumpSound;
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void BpOnJump();
+	USoundBase* _landSound;
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void BpOnLand();
+	TArray<USoundBase*> _stepSounds;
+
+	int _stepSoundIndex = -1;
 };

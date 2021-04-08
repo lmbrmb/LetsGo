@@ -41,5 +41,5 @@ private:
 	
 	UMovementComponentBase* _movementComponentBase = nullptr;
 
-	void OnDied(const UHealthComponent*, float delta);
+	void OnDied(const UHealthComponent*, const float delta);
 };

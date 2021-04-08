@@ -14,45 +14,94 @@ AvatarSfxFactory::AvatarSfxFactory(SfxFactory* sfxFactory)
 {
 	_sfxFactory = sfxFactory;
 
-	_jumpSounds.Add(KachujinSkinId, "Jump1");
-	_jumpSounds.Add(VampireSkinId, "Jump1");
-	_jumpSounds.Add(MariaSkinId, "Jump1");
+	_jumpSounds.Add(VampireSkinId, "UrielJump1");
+	_jumpSounds.Add(KachujinSkinId, "HunterJump1");
+	_jumpSounds.Add(MariaSkinId, "MinxJump1");
 
-	_stepSounds.Add(KachujinSkinId, "StepNormal");
 	_stepSounds.Add(VampireSkinId, "StepFlesh");
+	_stepSounds.Add(KachujinSkinId, "StepNormal");
 	_stepSounds.Add(MariaSkinId, "StepBoot");
+
+	_deathSounds.Add(VampireSkinId, "UrielDeath");
+	_deathSounds.Add(KachujinSkinId, "HunterDeath");
+	_deathSounds.Add(MariaSkinId, "MinxDeath");
+
+	_painSounds.Add(VampireSkinId, "UrielPain");
+	_painSounds.Add(KachujinSkinId, "HunterPain");
+	_painSounds.Add(MariaSkinId, "MinxPain");
+
+	_painIds.Add(25);
+	_painIds.Add(50);
+	_painIds.Add(75);
+	_painIds.Add(100);
 }
 
-USoundBase* AvatarSfxFactory::GetJumpSound(SkinId skinId) const
+USoundBase* AvatarSfxFactory::GetJumpSound(const SkinId& skinId) const
 {
 	auto const skinIdValue = skinId.GetId();
-	AssertIsTrue(_stepSounds.Contains(skinIdValue), nullptr);
+	AssertIsTrue(_jumpSounds.Contains(skinIdValue), nullptr);
 	auto const jumpSoundId = _jumpSounds[skinIdValue];
 	return _sfxFactory->GetOrLoad(jumpSoundId);
 }
 
-USoundBase* AvatarSfxFactory::GetLandSound(SkinId skinId) const
+USoundBase* AvatarSfxFactory::GetLandSound(const SkinId& skinId) const
 {
 	return _sfxFactory->GetOrLoad(LandSoundId);
 }
 
-TArray<USoundBase*> AvatarSfxFactory::GetStepSounds(SkinId skinId) const
+TArray<USoundBase*> AvatarSfxFactory::GetStepSounds(const SkinId& skinId) const
 {
-	TArray<USoundBase*> stepSounds;
+	return GetSounds(skinId, _stepSounds, 4);
+}
+
+TArray<USoundBase*> AvatarSfxFactory::GetDeathSounds(const SkinId& skinId) const
+{
+	return GetSounds(skinId, _deathSounds, 3);
+}
+
+TMap<float, USoundBase*> AvatarSfxFactory::GetPainSounds(const SkinId& skinId) const
+{
+	TMap<float, USoundBase*> painSounds;
 
 	auto const skinIdValue = skinId.GetId();
-	AssertIsTrue(_stepSounds.Contains(skinIdValue), stepSounds);
-	auto const stepSoundIdBase = _stepSounds[skinIdValue];
-	
-	for(auto i = 1; i <= 4; i++)
+	AssertIsTrue(_painSounds.Contains(skinIdValue), painSounds);
+	auto const soundIdBase = _painSounds[skinIdValue];
+
+	for (auto painId : _painIds)
 	{
-		auto const stepSoundId = FName(stepSoundIdBase.ToString() + UKismetStringLibrary::Conv_IntToString(i));
-		auto const stepSound = _sfxFactory->GetOrLoad(stepSoundId);
-		if(stepSound)
+		auto const soundId = FName(soundIdBase + UKismetStringLibrary::Conv_IntToString(painId));
+		auto const sound = _sfxFactory->GetOrLoad(soundId);
+		if (sound)
 		{
-			stepSounds.Add(stepSound);
+			painSounds.Add(painId, sound);
 		}
 	}
 	
-	return stepSounds;
+	return painSounds;
+}
+
+TArray<USoundBase*> AvatarSfxFactory::GetSounds(
+	const SkinId& skinId,
+	const TMap<FName, FString>& source,
+	const int count
+) const
+{
+	TArray<USoundBase*> sounds;
+
+	auto const skinIdValue = skinId.GetId();
+	AssertIsTrue(source.Contains(skinIdValue), sounds);
+	auto const soundIdBase = source[skinIdValue];
+
+	const int firstSoundIndex = 1;
+	for (auto i = firstSoundIndex; i <= count; i++)
+	{
+		auto const soundId = FName(soundIdBase + UKismetStringLibrary::Conv_IntToString(i));
+		auto const sound = _sfxFactory->GetOrLoad(soundId);
+		if (sound)
+		{
+			sounds.Add(sound);
+		}
+	}
+
+	return sounds;
 }

@@ -2,21 +2,18 @@
 
 #include "LetsGo/Utils/AssetUtils.h"
 
-FString SfxFactory::StepsAssetPath = "/Game/Assets/SoundEffects/Q3/Steps/";
+FString SfxFactory::Q3AssetPath = "/Game/Assets/SoundEffects/Q3/";
 
-FString SfxFactory::JumpsAssetPath = "/Game/Assets/SoundEffects/Q3/Jumps/";
+FString SfxFactory::StepsAssetPath = Q3AssetPath + "Steps/";
+
+FString SfxFactory::CharactersAssetPath = Q3AssetPath + "Characters/";
 
 int SfxFactory::FirstStepIndex = 1;
 
 int SfxFactory::StepsInGroup = 4;
 
-SfxFactory::SfxFactory()
+SfxFactory::SfxFactory(const bool lazyInitialization)
 {
-	// Jump
-	Paths.Add("Jump1", AssetUtils::GenerateAssetPath(JumpsAssetPath, "Sfx_q3_jump1"));
-	Paths.Add("Jump2", AssetUtils::GenerateAssetPath(JumpsAssetPath, "Sfx_q3_jump1"));
-	Paths.Add("Jump3", AssetUtils::GenerateAssetPath(JumpsAssetPath, "Sfx_q3_jump1"));
-
 	// Land
 	Paths.Add("Land", AssetUtils::GenerateAssetPath(StepsAssetPath, "Sfx_q3_land1"));
 
@@ -49,5 +46,33 @@ SfxFactory::SfxFactory()
 		}
 	}
 
-	LoadAllAssets();
+	TArray<FString> characterIds;
+	characterIds.Add("Uriel");
+	characterIds.Add("Hunter");
+	characterIds.Add("Minx");
+
+	TArray<FString> characterSoundIds;
+	characterSoundIds.Add("Jump1");
+	characterSoundIds.Add("Death1");
+	characterSoundIds.Add("Death2");
+	characterSoundIds.Add("Death3");
+	characterSoundIds.Add("Pain25");
+	characterSoundIds.Add("Pain50");
+	characterSoundIds.Add("Pain75");
+	characterSoundIds.Add("Pain100");
+	
+	for (auto character : characterIds)
+	{
+		auto const characterAssetPath = CharactersAssetPath + character + "/";
+		for(auto characterSoundId : characterSoundIds)
+		{
+			auto const assetPath = AssetUtils::GenerateAssetPath(characterAssetPath, "Sfx_q3_" + character + "_" + characterSoundId);
+			Paths.Add(FName(character + characterSoundId), assetPath);
+		}
+	}
+	
+	if(!lazyInitialization)
+	{
+		LoadAllAssets();
+	}
 }

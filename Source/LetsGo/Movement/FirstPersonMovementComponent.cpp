@@ -24,7 +24,7 @@ void UFirstPersonMovementComponent::CustomTick(const float deltaTime)
 	ProcessActorYaw(deltaTime);
 }
 
-void UFirstPersonMovementComponent::ProcessCameraPitch(float deltaTime) const
+void UFirstPersonMovementComponent::ProcessCameraPitch(const float deltaTime) const
 {
 	auto const hasPitchInput = FMath::Abs(_cameraPitchInputAmount) > MIN_ROTATION_INPUT_AMOUNT;
 
@@ -38,7 +38,7 @@ void UFirstPersonMovementComponent::ProcessCameraPitch(float deltaTime) const
 	_cameraComponent->SetRelativeRotation(rotation);
 }
 
-void UFirstPersonMovementComponent::ProcessActorYaw(float deltaTime) const
+void UFirstPersonMovementComponent::ProcessActorYaw(float const deltaTime) const
 {
 	auto const hasYawInput = FMath::Abs(_actorYawInputAmount) > MIN_ROTATION_INPUT_AMOUNT;
 

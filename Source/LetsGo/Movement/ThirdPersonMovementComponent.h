@@ -35,7 +35,7 @@ protected:
 
 	virtual float GetMovementSpeed() override;
 	
-	virtual void CustomTick(float deltaTime) override;
+	virtual void CustomTick(const float deltaTime) override;
 	
 private:
 	const float MIN_MOVEMENT_INPUT_AMOUNT = 0.15f;

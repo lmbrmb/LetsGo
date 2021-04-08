@@ -13,16 +13,16 @@ public:
 		const FVector direction,
 		UCurveFloat* magnitudeCurve
 	);
-	
+
 	virtual FName GetId() const override;
-	
-	virtual FVector GetVector(const float currentTime) override;
+
+	virtual FVector GetVector(const float deltaTime) override;
 
 private:
 	FName _id;
-	
+
 	FVector _direction;
-	
+
 	UCurveFloat* _magnitudeCurve;
 
 	float _lifeTime = 0;
