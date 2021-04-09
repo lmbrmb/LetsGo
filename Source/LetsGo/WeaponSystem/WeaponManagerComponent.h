@@ -43,6 +43,8 @@ public:
 
 	void ChangeWeaponPivot();
 
+	IAimProvider* GetAimProvider() const;
+
 	void SetAimProvider(IAimProvider* aimProvider);
 
 	UFUNCTION(BlueprintCallable)

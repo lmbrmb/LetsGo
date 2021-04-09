@@ -2,9 +2,9 @@
 
 #include "DrawDebugHelpers.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "LetsGo/Movement/BotMovementComponent.h"
 #include "NavigationSystem.h"
 #include "NavigationPath.h"
-#include "LetsGo/Movement/BotMovementComponent.h"
 #include "LetsGo/Logs/DevLogger.h"
 #include "LetsGo/Utils/AssertUtils.h"
 
@@ -52,17 +52,8 @@ EBTNodeResult::Type UMoveToEnemyBTTaskNode::ExecuteTask(UBehaviorTreeComponent& 
 		}
 	}
 
-	FCollisionQueryParams collisionQueryParams;
-	collisionQueryParams.AddIgnoredActor(selfActor);
-	auto const isHitted = GetWorld()->LineTraceSingleByChannel(
-		_hitResult,
-		selfActorLocation + _avatarRayCastLocationOffset,
-		enemyLocation + _avatarRayCastLocationOffset,
-		_collisionChannel,
-		collisionQueryParams
-	);
-	auto const isEnemyInLineOfSight = isHitted && enemyActor == _hitResult.GetActor();
-	
+	auto const isEnemyInLineOfSight = blackboardComponent->GetValueAsBool(_isEnemyInLineOfSightKeyName);
+
 	if (nearestPointIndex == -1)
 	{
 		botMovementComponent->ClearTargetLocation();

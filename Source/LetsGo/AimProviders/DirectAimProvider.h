@@ -10,7 +10,7 @@ public:
 	// IAimProvider implementation
 	virtual FVector GetTargetAimLocation() override;
 
-	void SetTargetAimLocation(FVector aimLocation);
+	void SetTargetAimLocation(const FVector& aimLocation);
 
 private:
 	FVector _aimLocation;

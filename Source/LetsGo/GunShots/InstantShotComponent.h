@@ -77,5 +77,5 @@ private:
 	
 	float GetBulletDamage() const;
 
-	FVector GetDispersionOffset(const float dispersion, const FVector offsetVector) const;
+	float GetDispersionCoefficient(const float dispersion) const;
 };

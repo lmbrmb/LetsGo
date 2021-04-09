@@ -88,8 +88,8 @@ FVector UInstantShotComponent::GetBulletDirection(
 	}
 
 	auto const randomPoint = MathUtils::GetRandomPointOnUnitCircle();
-	auto const randomRightOffset = GetDispersionOffset(randomPoint.X * dispersionByDistance, firePivot->GetRightVector());
-	auto const randomUpOffset = GetDispersionOffset(randomPoint.Y * dispersionByDistance, firePivot->GetUpVector());
+	auto const randomRightOffset = firePivot->GetRightVector() * GetDispersionCoefficient(randomPoint.X * dispersionByDistance);
+	auto const randomUpOffset = firePivot->GetUpVector() * GetDispersionCoefficient(randomPoint.Y * dispersionByDistance);
 	
 	auto const aimLocationWithOffset = targetAimLocation + randomRightOffset + randomUpOffset;
 	auto const direction = (aimLocationWithOffset - bulletStartLocation).GetSafeNormal();
@@ -150,10 +150,9 @@ float UInstantShotComponent::GetBulletDamage() const
 	return resultingDamage;
 }
 
-FVector UInstantShotComponent::GetDispersionOffset(const float dispersion, const FVector offsetVector) const
+float UInstantShotComponent::GetDispersionCoefficient(const float dispersion) const
 {
 	auto const maxRandomDistance = dispersion * _aimOffsetRadius;
 	auto const randomDistance = FMath::RandRange(0.0f, maxRandomDistance);
-	auto const randomOffset = randomDistance * offsetVector;
-	return randomOffset;
+	return randomDistance;
 }

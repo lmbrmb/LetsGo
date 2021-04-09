@@ -41,6 +41,11 @@ public:
 		return v / size;
 	}
 
+	static FVector2D ToFVector2D(const FVector& v)
+	{
+		return FVector2D(v.X, v.Y);
+	}
+
 private:
 	FVectorUtils() = delete;
 };

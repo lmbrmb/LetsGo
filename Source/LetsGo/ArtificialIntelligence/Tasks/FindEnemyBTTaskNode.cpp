@@ -1,5 +1,7 @@
 #include "FindEnemyBTTaskNode.h"
 
+#include "BehaviorTree/BlackboardComponent.h"
+
 #include "LetsGo/Utils/AssertUtils.h"
 
 EBTNodeResult::Type UFindEnemyBTTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -67,17 +69,25 @@ EBTNodeResult::Type UFindEnemyBTTaskNode::ExecuteTask(UBehaviorTreeComponent& Ow
 
 	if(enemyAvatar == nullptr)
 	{
-		return TaskFailed(blackboardComponent);
+		blackboardComponent->SetValueAsObject(_enemyAvatarKeyName, nullptr);
+		return EBTNodeResult::Succeeded;
 	}
 
 	blackboardComponent->SetValueAsObject(_enemyAvatarKeyName, enemyAvatar);
-	return EBTNodeResult::Succeeded;
-}
 
-EBTNodeResult::Type UFindEnemyBTTaskNode::TaskFailed(UBlackboardComponent* blackboardComponent)
-{
-	AssertIsNotNull(blackboardComponent, EBTNodeResult::Failed);
+	auto const enemyLocation = enemyAvatar->GetActorLocation();
+
+	FCollisionQueryParams collisionQueryParams;
+	collisionQueryParams.AddIgnoredActor(selfAvatar);
+	auto const isHitted = GetWorld()->LineTraceSingleByChannel(
+		_hitResult,
+		selfLocation + _avatarRayCastLocationOffset,
+		enemyLocation + _avatarRayCastLocationOffset,
+		_avatarRayCastCollisionChannel,
+		collisionQueryParams
+	);
+	auto const isEnemyInLineOfSight = isHitted && enemyAvatar == _hitResult.GetActor();
+	blackboardComponent->SetValueAsBool(_isEnemyInLineOfSightKeyName, isEnemyInLineOfSight);
 	
-	blackboardComponent->SetValueAsObject(_enemyAvatarKeyName, nullptr);
-	return EBTNodeResult::Failed;
+	return EBTNodeResult::Succeeded;
 }

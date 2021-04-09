@@ -12,21 +12,21 @@ class LETSGO_API UBotMovementComponent final : public UMovementComponentBase
 	GENERATED_BODY()
 
 public:
-	inline const FVector& GetTargetLocation() const;
+	const FVector& GetTargetLocation() const;
 
-	inline bool IsTargetLocationValid() const;
+	bool IsTargetLocationValid() const;
 
-	inline void SetTargetLocation(const FVector& targetLocation);
+	void SetTargetLocation(const FVector& targetLocation);
 
-	inline void ClearTargetLocation();
+	void ClearTargetLocation();
 
-	inline const FVector& GetTargetRotation() const;
+	const FVector& GetTargetRotation() const;
 
-	inline bool IsTargetRotationValid() const;
+	bool IsTargetRotationValid() const;
 	
-	inline void SetTargetRotation(const FVector& targetRotationLocation);
+	void SetTargetRotation(const FVector& targetRotationLocation);
 
-	inline void ClearTargetRotation();
+	void ClearTargetRotation();
 	
 protected:
 	virtual FVector GetMovementDirection() override;

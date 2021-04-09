@@ -297,6 +297,11 @@ void UWeaponManagerComponent::ChangeWeaponPivot()
 	}
 }
 
+IAimProvider* UWeaponManagerComponent::GetAimProvider() const
+{
+	return _aimProvider;
+}
+
 void UWeaponManagerComponent::EquipWeaponImmediate(const int weaponIndex)
 {
 	if(_weaponIndex == weaponIndex)

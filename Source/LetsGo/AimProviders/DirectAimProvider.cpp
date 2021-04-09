@@ -12,7 +12,7 @@ FVector DirectAimProvider::GetTargetAimLocation()
 	return _aimLocation;
 }
 
-void DirectAimProvider::SetTargetAimLocation(const FVector aimLocation)
+void DirectAimProvider::SetTargetAimLocation(const FVector& aimLocation)
 {
 	_aimLocation = aimLocation;
 }
