@@ -19,7 +19,11 @@ EBTNodeResult::Type UMoveToEnemyBTTaskNode::ExecuteTask(UBehaviorTreeComponent& 
 	
 	auto const botMovementComponent = selfActor->FindComponentByClass<UBotMovementComponent>();
 	auto const enemyActorObject = blackboardComponent->GetValueAsObject(_enemyAvatarKeyName);
-	AssertIsNotNull(enemyActorObject, EBTNodeResult::Failed);
+
+	if(!enemyActorObject)
+	{
+		return TaskFailed(botMovementComponent);
+	}
 
 	auto const enemyActor = Cast<AActor>(enemyActorObject);
 	AssertIsNotNull(enemyActor, EBTNodeResult::Failed);
