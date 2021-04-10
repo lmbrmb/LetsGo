@@ -1,5 +1,6 @@
 #pragma once
 
+#include "LetsGo/AmmoProviders/AmmoProviderFactory.h"
 #include "Misc/TypeContainer.h"
 #include "LetsGo/Items/HealthItemFactory.h"
 #include "LetsGo/Items/GunItemFactory.h"
@@ -51,6 +52,7 @@ TTypeContainer<Mode>* MatchDiContainerFactory::CreateContainer()
 	const TSharedRef<AmmoItemFactory> ammoItemFactory = MakeShareable(new AmmoItemFactory());
 	const TSharedRef<GunFactory> gunFactory = MakeShareable(new GunFactory(LAZY_INITIALIZATION));
 	const TSharedRef<ForceFactory> forceFactory = MakeShareable(new ForceFactory());
+	const TSharedRef<AmmoProviderFactory> ammoProviderFactory = MakeShareable(new AmmoProviderFactory());
 
 	auto const nicknameGeneratorFactoryInstance = new NicknameGeneratorFactory();
 	const TSharedRef<NicknameGeneratorFactory> nicknameGeneratorFactory = MakeShareable(nicknameGeneratorFactoryInstance);;
@@ -69,20 +71,21 @@ TTypeContainer<Mode>* MatchDiContainerFactory::CreateContainer()
 
 	auto const skinFactoryInstance = new SkinFactory(materialFactoryInstance, skeletalMeshFactoryInstance);
 	const TSharedRef<SkinFactory> skinFactory = MakeShareable(skinFactoryInstance);
-	
+
 	const TSharedRef<AvatarSpawnFactory> avatarSpawnFactory = MakeShareable(new AvatarSpawnFactory(avatarFactoryInstance, skinFactoryInstance)) ;
 	const TSharedRef<GameModeOptionParserFactory> gameModeOptionParserFactory = MakeShareable(new GameModeOptionParserFactory());
 
 	auto const sfxFactoryInstance = new SfxFactory(LAZY_INITIALIZATION);
 	const TSharedRef<SfxFactory> sfxFactory = MakeShareable(sfxFactoryInstance);
 	const TSharedRef<AvatarSfxFactory> avatarSfxFactory = MakeShareable(new AvatarSfxFactory(sfxFactoryInstance));
-	
+
 	container->template RegisterInstance<PickupItemFactory>(pickupItemFactory);
 	container->template RegisterInstance<GunItemFactory>(gunItemFactory);
 	container->template RegisterInstance<AmmoItemFactory>(ammoItemFactory);
 	container->template RegisterInstance<HealthItemFactory>(healthItemFactory);
 	container->template RegisterInstance<GunFactory>(gunFactory);
 	container->template RegisterInstance<ForceFactory>(forceFactory);
+	container->template RegisterInstance<AmmoProviderFactory>(ammoProviderFactory);
 	container->template RegisterInstance<AvatarDataFactory>(avatarDataFactory);
 	container->template RegisterInstance<NicknameGeneratorFactory>(nicknameGeneratorFactory);
 	container->template RegisterInstance<MaterialFactory>(materialFactory);
@@ -93,6 +96,6 @@ TTypeContainer<Mode>* MatchDiContainerFactory::CreateContainer()
 	container->template RegisterInstance<GameModeOptionParserFactory>(gameModeOptionParserFactory);
 	container->template RegisterInstance<SfxFactory>(sfxFactory);
 	container->template RegisterInstance<AvatarSfxFactory>(avatarSfxFactory);
-	
+
 	return container;
 }

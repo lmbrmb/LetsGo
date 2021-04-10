@@ -5,7 +5,7 @@ AmmoItemFactory::AmmoItemFactory()
 	_ammoData.Add("ShotgunShells", AmmoData(10, 30));
 	_ammoData.Add("RailgunBullets", AmmoData(10, 30));
 	_ammoData.Add("MinigunBullets", AmmoData(50, 150));
-	_ammoData.Add("MachinegunBullets", AmmoData(100, 999));
+	_ammoData.Add("MachinegunBullets", AmmoData(100, INT_MAX));
 	_ammoData.Add("Rockets", AmmoData(10, 30));
 }
 

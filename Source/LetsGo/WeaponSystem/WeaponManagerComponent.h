@@ -3,8 +3,9 @@
 #include "Components/ActorComponent.h"
 #include "IGun.h"
 #include "LetsGo/AssetFactories/GunFactory.h"
-#include "AmmoProvider.h"
 #include "LetsGo/AimProviders/IAimProvider.h"
+#include "LetsGo/AmmoProviders/IAmmoProvider.h"
+#include "LetsGo/AmmoProviders/AmmoProviderFactory.h"
 #include "LetsGo/Data/PlayerId.h"
 #include "LetsGo/Items/AmmoItem.h"
 #include "LetsGo/Items/AmmoItemFactory.h"
@@ -137,7 +138,7 @@ private:
 	/// <summary>
 	/// Ammo Id / Ammo provider
 	/// </summary>
-	TMap<FName, AmmoProvider*> _ammoProviders;
+	TMap<FName, IAmmoProvider*> _ammoProviders;
 
 	USkeletalMeshComponent* _ownerSkeletalMeshComponent = nullptr;
 
@@ -151,32 +152,34 @@ private:
 
 	bool TryProcessItemAsAmmo(Item* item);
 
-	AmmoProvider* GetAmmoProvider(const FName ammoId);
+	IAmmoProvider* GetAmmoProvider(const FName ammoId);
 
-	AmmoProvider* CreateAmmoProvider(const GunItem* gunItem);
+	IAmmoProvider* CreateAmmoProvider(const GunItem* gunItem);
 
-	AmmoProvider* CreateAmmoProvider(const AmmoItem* ammoItem);
+	IAmmoProvider* CreateAmmoProvider(const AmmoItem* ammoItem);
 
 	AActor* CreateGun(const GunItem* gunItem);
 
 	FDelegateHandle _equipWeaponRequestReadyHandle;
 
 	FTimerHandle _equipWeaponTimerHandle;
-	
+
+	AmmoProviderFactory* _ammoProviderFactory;
+
 	bool TryEquipNextUsableWeapon(const int indexModifier);
 
 	bool IsChangingWeapon() const;
-	
+
 	int GetNextUsableWeaponIndex(const int indexModifier) const;
-	
+
 	void RequestEquipWeapon(const int weaponIndex);
-	
+
 	void EquipWeaponOnRequestReady();
 
 	void EquipWeaponOnTimer();
-	
+
 	void EquipWeaponImmediate(const int weaponIndex);
-	
+
 	void AttachWeapon(AActor* weaponActor) const;
 
 	bool CanAttachWeapon() const;

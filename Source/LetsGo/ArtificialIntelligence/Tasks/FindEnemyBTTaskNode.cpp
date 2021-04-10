@@ -35,7 +35,7 @@ EBTNodeResult::Type UFindEnemyBTTaskNode::ExecuteTask(UBehaviorTreeComponent& Ow
 		}
 	}
 	
-	float closestDistance = MAX_int32;
+	float closestDistance = INT_MAX;
 	auto const selfLocation = selfAvatar->GetActorLocation();
 	
 	for (auto avatar : matchGameMode->GetAvatars())

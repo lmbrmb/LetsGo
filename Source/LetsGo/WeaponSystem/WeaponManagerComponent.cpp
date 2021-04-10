@@ -41,6 +41,9 @@ void UWeaponManagerComponent::BeginPlay()
 	auto const gunItemFactory = diContainer->GetInstance<GunItemFactory>();
 	_gunItemFactory = &gunItemFactory.Get();
 
+	auto const ammoProviderFactory = diContainer->GetInstance<AmmoProviderFactory>();
+	_ammoProviderFactory = &ammoProviderFactory.Get();
+
 	AssertIsGreaterOrEqual(_weaponEquipDuration, 0.0f);
 }
 
@@ -459,7 +462,7 @@ bool UWeaponManagerComponent::TryProcessItemAsAmmo(Item* item)
 	return true;
 }
 
-AmmoProvider* UWeaponManagerComponent::GetAmmoProvider(const FName ammoId)
+IAmmoProvider* UWeaponManagerComponent::GetAmmoProvider(const FName ammoId)
 {
 	if (_ammoProviders.Contains(ammoId))
 	{
@@ -479,23 +482,28 @@ IGun* UWeaponManagerComponent::GetCurrentGun() const
 	return _gun;
 }
 
-AmmoProvider* UWeaponManagerComponent::CreateAmmoProvider(const GunItem* gunItem)
+IAmmoProvider* UWeaponManagerComponent::CreateAmmoProvider(const GunItem* gunItem)
 {
 	auto const ammoId = gunItem->GetAmmoId();
 	auto const ammoItem = _ammoItemFactory->Get(ammoId);
 	auto const maxAmmo = ammoItem->GetMaxQuantity();
+	auto const isInfiniteAmmo = maxAmmo == INT_MAX;
 	auto const currentAmmo = gunItem->GetInitialAmmoCount();
-	auto const ammoProvider = new AmmoProvider(0, maxAmmo, currentAmmo, ammoId);
+	
+	auto const ammoProvider =
+		isInfiniteAmmo ?
+		_ammoProviderFactory->CreateInfiniteAmmoProvider(ammoId) :
+		_ammoProviderFactory->CreateAmmoProvider(ammoId, maxAmmo, currentAmmo);
 	_ammoProviders.Add(ammoId, ammoProvider);
 	return ammoProvider;
 }
 
-AmmoProvider* UWeaponManagerComponent::CreateAmmoProvider(const AmmoItem* ammoItem)
+IAmmoProvider* UWeaponManagerComponent::CreateAmmoProvider(const AmmoItem* ammoItem)
 {
 	auto const ammoId = ammoItem->GetId();
 	auto const maxAmmo = ammoItem->GetMaxQuantity();
 	auto const currentAmmo = ammoItem->GetQuantity();
-	auto const ammoProvider = new AmmoProvider(0, maxAmmo, currentAmmo, ammoId);
+	auto const ammoProvider = _ammoProviderFactory->CreateAmmoProvider(ammoId, maxAmmo, currentAmmo);
 	_ammoProviders.Add(ammoId, ammoProvider);
 	return ammoProvider;
 }

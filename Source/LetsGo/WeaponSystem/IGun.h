@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IWeapon.h"
-#include "AmmoProvider.h"
+#include "LetsGo/AmmoProviders/IAmmoProvider.h"
 #include "LetsGo/AimProviders/IAimProvider.h"
 
 DECLARE_EVENT_OneParam(IGun, EShotRequested, const USceneComponent* firePivot);
@@ -26,13 +26,13 @@ public:
 
 	EOutOfAmmo OutOfAmmo;
 
-	AmmoProvider* GetAmmoProvider() const;
+	IAmmoProvider* GetAmmoProvider() const;
 
 	IAimProvider* GetAimProvider() const;
 
 	bool IsGunInitialized() const;
 
-	void InitializeGun(AmmoProvider* ammoProvider, IAimProvider* aimProvider);
+	void InitializeGun(IAmmoProvider* ammoProvider, IAimProvider* aimProvider);
 
 	virtual void OnShotPerformed(const USceneComponent* firePivot, const bool isAnyBulletDamaged) = 0;
 
@@ -52,7 +52,7 @@ protected:
 private:
 	int32 _instigatorId = MIN_int32;
 
-	AmmoProvider* _ammoProvider = nullptr;
+	IAmmoProvider* _ammoProvider = nullptr;
 
 	IAimProvider* _aimProvider = nullptr;
 

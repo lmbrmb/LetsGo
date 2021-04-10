@@ -1,5 +1,7 @@
 #include "GunV2.h"
 
+#include "LetsGo/Logs/DevLogger.h"
+
 AGunV2::AGunV2()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -51,18 +53,20 @@ void AGunV2::SetState(const GunState state)
 
 void AGunV2::ProcessIdleState()
 {
-	if (_isFireTriggered)
+	if (!_isFireTriggered)
 	{
-		if(!IsEnoughAmmoForShot())
-		{
-			StopFire();
-			OutOfAmmo.Broadcast();
-			return;
-		}
-		
-		ConsumeAmmo(_consumeAmmoPerShot);
-		StartShot();
+		return;
 	}
+
+	if(!IsEnoughAmmoForShot())
+	{
+		StopFire();
+		OutOfAmmo.Broadcast();
+		return;
+	}
+
+	ConsumeAmmo(_consumeAmmoPerShot);
+	StartShot();
 }
 
 void AGunV2::ProcessShootingState()

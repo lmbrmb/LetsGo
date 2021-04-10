@@ -2,6 +2,7 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "LetsGo/PlayerControllers/MatchPlayerController.h"
+#include "LetsGo/Utils/AssertUtils.h"
 
 void UAmmoWidget::NativeConstruct()
 {
@@ -49,7 +50,7 @@ void UAmmoWidget::OnWeaponEquipped()
 	{
 		auto const ammoProvider = _gun->GetAmmoProvider();
 		AssertIsNotNull(ammoProvider);
-		ammoProvider->Changed.RemoveAll(this);
+		ammoProvider->AmmoCountChanged.RemoveAll(this);
 	}
 	
 	_gun = _weaponManagerComponent->GetCurrentGun();
@@ -65,7 +66,7 @@ void UAmmoWidget::OnWeaponEquipped()
 	auto const ammoId = ammoProvider->GetAmmoId();
 	BpOnGunEquipped(ammoId);
 
-	ammoProvider->Changed.AddUObject(this, &UAmmoWidget::OnAmmoCountChanged);
+	ammoProvider->AmmoCountChanged.AddUObject(this, &UAmmoWidget::OnAmmoCountChanged);
 	auto const ammoCount = ammoProvider->GetCurrent();
 	OnAmmoCountChanged(ammoCount);
 }

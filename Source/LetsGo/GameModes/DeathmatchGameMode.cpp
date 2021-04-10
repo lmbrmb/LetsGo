@@ -50,7 +50,7 @@ void ADeathmatchGameMode::PopulateAvatarsData()
 	auto const botCount = GetBotCount();
 	for (auto i = 0; i < botCount; i++)
 	{
-		auto const botIdValue = MAX_int32 - i;
+		auto const botIdValue = INT_MAX - i;
 		const PlayerId botId(botIdValue);
 		const TeamId teamId(teamIndex++);
 		auto const avatarData = _avatarDataFactory->GenerateRandom(botId, AvatarType::Bot, teamId);
