@@ -6,7 +6,7 @@ float UThirdPersonMovementComponent::GetAbsoluteMovementAmount() const
 	return _absoluteMovementAmount;
 }
 
-FVector UThirdPersonMovementComponent::GetMovementDirection()
+const FVector& UThirdPersonMovementComponent::GetMovementDirection() const
 {
 	return _inputMovementDirection;
 }

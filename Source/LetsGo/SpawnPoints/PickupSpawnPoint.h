@@ -2,6 +2,7 @@
 
 #include "SpawnPointType.h"
 #include "LetsGo/Pickups/PickupItem.h"
+#include "LetsGo/AssetFactories/PickupItemFactory.h"
 
 #include "PickupSpawnPoint.generated.h"
 
@@ -20,7 +21,9 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
-	
+
+	virtual void BeginDestroy() override;
+
 private:
 	const float UNDEFINED_TIME = -1;
 
@@ -38,20 +41,22 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
 	FSpawnPointType _spawnPointType;
+
+	APickupItem* _pickupItem;
 	
-	UBlueprintGeneratedClass* _pickupItemBlueprintGeneratedClass = nullptr;
+	PickupItemFactory* _pickupItemFactory;
 
 	float _pickupSpawnTime = 0;
-	
+
+	FDelegateHandle _delegateHandleOnPickupTaken;
+
+	FTimerHandle _pickupRespawnTimerHandle;
+
+	void CreatePickup();
+
 	void SpawnPickup();
 
 	void OnPickupTaken(APickupItem* pickupItem);
 
 	void RespawnPickupOnTimer();
-	
-	
-	
-	FDelegateHandle _delegateHandleOnPickupTaken;
-	
-	FTimerHandle _timerHandle;
 };

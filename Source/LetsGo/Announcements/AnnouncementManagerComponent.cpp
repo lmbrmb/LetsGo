@@ -92,7 +92,6 @@ void UAnnouncementManagerComponent::AddPlayerAnnouncement(Announcement* announce
 	if (_announcementDoneTimerHandle.IsValid())
 	{
 		GetWorld()->GetTimerManager().ClearTimer(_announcementDoneTimerHandle);
-		AssertIsFalse(_announcementDoneTimerHandle.IsValid());
 	}
 
 	GetWorld()->GetTimerManager().SetTimer(

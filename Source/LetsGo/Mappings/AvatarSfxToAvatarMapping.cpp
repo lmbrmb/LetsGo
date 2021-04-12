@@ -29,5 +29,10 @@ void UAvatarSfxToAvatarMapping::OnAvatarInitialized(const AAvatar* avatar)
 	auto const skinId = avatar->GetSkinId();
 	_avatarSfxComponent->SetSkinId(skinId);
 
+	auto const audioComponent = avatar->FindComponentByClass<UAudioComponent>();
+	AssertIsNotNull(audioComponent);
+
+	_avatarSfxComponent->SetAudioComponent(audioComponent);
+
 	StartDestroyTask();
 }

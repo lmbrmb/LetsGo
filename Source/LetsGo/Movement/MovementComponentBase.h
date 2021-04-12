@@ -27,6 +27,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual bool GetIsInAir() const;
 
+	/// <summary>
+	/// [Template method] Returns input movement direction
+	/// </summary>
+	UFUNCTION(BlueprintCallable)
+	virtual const FVector& GetMovementDirection() const;
+	
 	void PerformJump();
 
 	FVector GetRootColliderLocation() const;
@@ -43,10 +49,9 @@ protected:
 	static const FName JUMP_FORCE_ID;
 
 	UMovementComponentBase();
-
-	virtual ~UMovementComponentBase();
-
 	virtual void BeginPlay() override final;
+
+	virtual void BeginDestroy() override;
 
 	void ProcessActorRotation(const float deltaTime, const FVector& direction) const;
 
@@ -68,11 +73,6 @@ protected:
 	virtual void ResetInput();
 
 	/// <summary>
-	/// [Template method] Returns input movement direction
-	/// </summary>
-	virtual FVector GetMovementDirection();
-
-	/// <summary>
 	/// [Template method] Returns movement speed
 	/// </summary>
 	virtual float GetMovementSpeed();
@@ -81,8 +81,6 @@ protected:
 	/// [Template method] Performs custom actions in Tick function
 	/// </summary>
 	virtual void CustomTick(const float deltaTime);
-	
-	UWorld* World = nullptr;
 
 	UShapeComponent* RootCollider = nullptr;
 
@@ -181,4 +179,6 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float _stepInterval;
+
+	FTimerHandle _stepTimerHandle;
 };

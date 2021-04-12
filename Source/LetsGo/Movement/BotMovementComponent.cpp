@@ -42,7 +42,7 @@ void UBotMovementComponent::ClearTargetRotation()
 	_isTargetRotationLocationValid = false;
 }
 
-FVector UBotMovementComponent::GetMovementDirection()
+const FVector& UBotMovementComponent::GetMovementDirection() const
 {
 	return _inputMovementDirection;
 }

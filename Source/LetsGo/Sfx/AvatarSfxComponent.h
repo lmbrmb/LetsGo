@@ -1,9 +1,10 @@
 #pragma once
 
+#include "Components/AudioComponent.h"
 #include "Components/ActorComponent.h"
 #include "LetsGo/Data/SkinId.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
-
+#include "Sound/SoundBase.h"
 #include "AvatarSfxComponent.generated.h"
 
 /// <summary>
@@ -19,28 +20,36 @@ public:
 
 	void SetSkinId(const SkinId& skinId);
 
+	void SetAudioComponent(UAudioComponent* audioComponent);
+
 	void OnStep();
 
-	void OnJump();
+	void OnJump() const;
 
-	void OnLand();
+	void OnLand() const;
 
 	void OnHealthChanged(const UHealthComponent* healthComponent, const float delta);
 
-protected:
-	UFUNCTION(BlueprintImplementableEvent)
-	void BpPlaySound(const USoundBase* sound);
-
 private:
+	UPROPERTY()
 	TMap<float, USoundBase*> _painSounds;
 
+	UPROPERTY()
 	TArray<USoundBase*> _deathSounds;
 
+	UPROPERTY()
 	USoundBase* _jumpSound;
 
+	UPROPERTY()
 	USoundBase* _landSound;
 
+	UPROPERTY()
 	TArray<USoundBase*> _stepSounds;
 
+	UPROPERTY()
+	UAudioComponent* _audioComponent;
+
 	int _stepSoundIndex = -1;
+
+	void PlaySound(USoundBase* sound) const;
 };

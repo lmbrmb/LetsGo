@@ -10,7 +10,7 @@ template <class T>
 class CachedAssetFactory
 {
 public:
-	T* GetOrLoad(const FName id);
+	T* GetOrLoad(const FName& id);
 
 protected:
 	CachedAssetFactory() = default;
@@ -24,7 +24,7 @@ private:
 };
 
 template <class T>
-T* CachedAssetFactory<T>::GetOrLoad(const FName id)
+T* CachedAssetFactory<T>::GetOrLoad(const FName& id)
 {
 	if (Loaded.Contains(id))
 	{

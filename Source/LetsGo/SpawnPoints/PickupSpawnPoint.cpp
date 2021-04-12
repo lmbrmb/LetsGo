@@ -1,7 +1,7 @@
 #include "PickupSpawnPoint.h"
 #include "LetsGo/GameModes/MatchGameMode.h"
 #include "LetsGo/Pickups/PickupItem.h"
-#include "LetsGo/AssetFactories/PickupItemFactory.h"
+#include "LetsGo/Utils/ActorUtils.h"
 #include "LetsGo/Utils/AssertUtils.h"
 #include "LetsGo/Utils/AssetUtils.h"
 
@@ -32,35 +32,55 @@ void APickupSpawnPoint::BeginPlay()
 	auto const diContainer = matchGameMode->GetDiContainer();
 	
 	auto const pickupItemFactory = diContainer->GetInstance<PickupItemFactory>();
-	_pickupItemBlueprintGeneratedClass = pickupItemFactory->GetOrLoad(_id);
-	AssertIsNotNull(_pickupItemBlueprintGeneratedClass);
+	_pickupItemFactory = &pickupItemFactory.Get();
+	AssertIsNotNull(_pickupItemFactory);
 
 	matchGameMode->RegisterSpawnPoint(_spawnPointType, GetTransform());
 
+	CreatePickup();
 	SpawnPickup();
+}
+
+void APickupSpawnPoint::BeginDestroy()
+{
+	Super::BeginDestroy();
+
+	if(_pickupRespawnTimerHandle.IsValid())
+	{
+		auto const world = GetWorld();
+		if (world)
+		{
+			world->GetTimerManager().ClearTimer(_pickupRespawnTimerHandle);
+		}
+	}
+}
+
+void APickupSpawnPoint::CreatePickup()
+{
+	auto const pickupItemBlueprintGeneratedClass = _pickupItemFactory->GetOrLoad(_id);
+	_pickupItem = AssetUtils::SpawnBlueprint<APickupItem>(
+		GetWorld(),
+		this,
+		pickupItemBlueprintGeneratedClass,
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+		);
+	AssertIsNotNull(_pickupItem);
+	_delegateHandleOnPickupTaken = _pickupItem->Taken.AddUObject(this, &APickupSpawnPoint::OnPickupTaken);
+	_pickupItem->AttachToComponent(_spawnPivot, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 void APickupSpawnPoint::SpawnPickup()
 {
-	auto const pickupItem = AssetUtils::SpawnBlueprint<APickupItem>(
-		GetWorld(),
-		this,
-		_pickupItemBlueprintGeneratedClass,
-		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
-		);
-	AssertIsNotNull(pickupItem);
-	//Tricky: Subscribe first, then attach to pivot because pickup can be taken on spawn
-	_delegateHandleOnPickupTaken = pickupItem->Taken.AddUObject(this, &APickupSpawnPoint::OnPickupTaken);
-	pickupItem->AttachToComponent(_spawnPivot, FAttachmentTransformRules::KeepRelativeTransform);
+	ActorUtils::SetEnabled(_pickupItem, true);
+	// Actual spawn time
 	_pickupSpawnTime = GetWorld()->TimeSeconds;
 }
 
 void APickupSpawnPoint::OnPickupTaken(APickupItem* pickupItem)
 {
-	pickupItem->Taken.Remove(_delegateHandleOnPickupTaken);
-	_delegateHandleOnPickupTaken.Reset();
-
-	GetWorldTimerManager().SetTimer(_timerHandle, this, &APickupSpawnPoint::RespawnPickupOnTimer, _pickupRespawnInterval, false);
+	ActorUtils::SetEnabled(_pickupItem, false);
+	GetWorld()->GetTimerManager().SetTimer(_pickupRespawnTimerHandle, this, &APickupSpawnPoint::RespawnPickupOnTimer, _pickupRespawnInterval, false);
+	// Approximate spawn time
 	_pickupSpawnTime = GetWorld()->TimeSeconds + _pickupRespawnInterval;
 }
 

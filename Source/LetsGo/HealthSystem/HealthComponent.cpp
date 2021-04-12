@@ -26,6 +26,8 @@ void UHealthComponent::Init()
 
 void UHealthComponent::BeginDestroy()
 {
+	Super::BeginDestroy();
+
 	if(_decreaseHealthTimerHandle.IsValid())
 	{
 		auto const world = GetWorld();
@@ -34,8 +36,6 @@ void UHealthComponent::BeginDestroy()
 			world->GetTimerManager().ClearTimer(_decreaseHealthTimerHandle);
 		}
 	}
-	
-	Super::BeginDestroy();
 }
 
 void UHealthComponent::DecreaseHealthOnTimer()

@@ -31,7 +31,7 @@ protected:
 	
 	virtual void ResetInput() override;
 
-	virtual FVector GetMovementDirection() override;
+	virtual const FVector& GetMovementDirection() const override;
 
 	virtual float GetMovementSpeed() override;
 	

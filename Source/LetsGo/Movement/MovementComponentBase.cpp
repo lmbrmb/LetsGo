@@ -14,16 +14,11 @@ UMovementComponentBase::UMovementComponentBase()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-UMovementComponentBase::~UMovementComponentBase()
-{
-}
-
 void UMovementComponentBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
 	auto const actor = GetOwner();
-	World = GetWorld();
 	auto const rootComponent = actor->GetRootComponent();
 	RootCollider = Cast<UShapeComponent>(rootComponent);
 	AssertIsNotNull(RootCollider);
@@ -31,7 +26,7 @@ void UMovementComponentBase::BeginPlay()
 	CollisionQueryParams.bIgnoreTouches = true;
 	CollisionQueryParams.AddIgnoredActor(actor);
 	
-	auto const authGameMode = World->GetAuthGameMode();
+	auto const authGameMode = GetWorld()->GetAuthGameMode();
 	auto const projectGameModeBase = Cast<AProjectGameModeBase>(authGameMode);
 	AssertIsNotNull(projectGameModeBase);
 	auto const diContainer = projectGameModeBase->GetDiContainer();
@@ -49,8 +44,21 @@ void UMovementComponentBase::BeginPlay()
 
 	if(_stepInterval > 0.05f)
 	{
-		FTimerHandle stepTimerHandle;
-		World->GetTimerManager().SetTimer(stepTimerHandle, this, &UMovementComponentBase::StepOnTimer, _stepInterval, true);	
+		GetWorld()->GetTimerManager().SetTimer(_stepTimerHandle, this, &UMovementComponentBase::StepOnTimer, _stepInterval, true);
+	}
+}
+
+void UMovementComponentBase::BeginDestroy()
+{
+	Super::BeginDestroy();
+
+	if (_stepTimerHandle.IsValid())
+	{
+		auto const world = GetWorld();
+		if (world)
+		{
+			world->GetTimerManager().ClearTimer(_stepTimerHandle);
+		}
 	}
 }
 
@@ -104,7 +112,7 @@ void UMovementComponentBase::CheckGround()
 {
 	auto const location = RootCollider->GetComponentLocation();
 	auto const targetLocation = location + FVector::DownVector * 10;
-	auto const isOnGround = World->SweepSingleByChannel(
+	auto const isOnGround = GetWorld()->SweepSingleByChannel(
 		_groundHitResult,
 		location,
 		targetLocation,
@@ -240,7 +248,7 @@ void UMovementComponentBase::Move(
 	translation = projectedDirection * translationAmount;
 	auto const castEndLocation = rootColliderLocation + translation;
 	
-	auto const isBlocked = World->SweepSingleByChannel(
+	auto const isBlocked = GetWorld()->SweepSingleByChannel(
 		_bufferHitResult,
 		rootColliderLocation,
 		castEndLocation,
@@ -326,7 +334,7 @@ float UMovementComponentBase::GetAbsoluteMovementAmount() const
 	AssertDefaultImplementationIsOverriden(0);
 }
 
-FVector UMovementComponentBase::GetMovementDirection()
+const FVector& UMovementComponentBase::GetMovementDirection() const
 {
 	AssertDefaultImplementationIsOverriden(FVector::ZeroVector);
 }

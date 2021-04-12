@@ -1,6 +1,6 @@
 #include "FirstPersonMovementComponent.h"
 
-FVector UFirstPersonMovementComponent::GetMovementDirection()
+const FVector& UFirstPersonMovementComponent::GetMovementDirection() const
 {
 	return _inputMovementDirection;
 }

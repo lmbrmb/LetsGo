@@ -20,7 +20,7 @@ public:
 	APickupItem();
 	
 	UFUNCTION(BlueprintCallable)
-	FName GetId();
+	FName GetId() const;
 
 	UFUNCTION(BlueprintCallable)
 	void Take();

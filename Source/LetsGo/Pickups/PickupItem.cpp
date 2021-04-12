@@ -7,7 +7,7 @@ APickupItem::APickupItem()
 	SetRootComponent(_root);
 }
 
-FName APickupItem::GetId()
+FName APickupItem::GetId() const
 {
 	return _id;
 }
@@ -16,5 +16,4 @@ void APickupItem::Take()
 {
 	Taken.Broadcast(this);
 	BpOnTaken();
-	Destroy();
 }
