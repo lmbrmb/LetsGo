@@ -2,21 +2,24 @@
 
 #include "LetsGo/Utils/AssetUtils.h"
 
-const FString PickupItemFactory::_assetPath = "/Game/Assets/Blueprints/PickupItems/";
+const FString PickupItemFactory::AssetPath = "/Game/Assets/Blueprints/PickupItems/";
 
-PickupItemFactory::PickupItemFactory(const bool lazyInitialization)
+PickupItemFactory::PickupItemFactory(
+	IUObjectRegistry* uObjectRegistry,
+	const bool lazyInitialization
+) : CachedAssetFactory<UBlueprintGeneratedClass>(uObjectRegistry)
 {
 	//Weapons
-	Paths.Add("SawedOffShotgun", AssetUtils::GenerateBlueprintAssetPath(_assetPath, "BP_SawedOffShotgunPickupItem"));
-	Paths.Add("ShotgunQ3", AssetUtils::GenerateBlueprintAssetPath(_assetPath, "BP_ShotgunQ3PickupItem"));
-	Paths.Add("Minigun", AssetUtils::GenerateBlueprintAssetPath(_assetPath, "BP_MinigunPickupItem"));
-	Paths.Add("MachinegunQ3", AssetUtils::GenerateBlueprintAssetPath(_assetPath, "BP_MachinegunQ3PickupItem"));
-	Paths.Add("Railgun", AssetUtils::GenerateBlueprintAssetPath(_assetPath, "BP_RailgunPickupItem"));
-	Paths.Add("RailgunQ3", AssetUtils::GenerateBlueprintAssetPath(_assetPath, "BP_RailgunQ3PickupItem"));
+	Paths.Add("SawedOffShotgun", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_SawedOffShotgunPickupItem"));
+	Paths.Add("ShotgunQ3", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_ShotgunQ3PickupItem"));
+	Paths.Add("Minigun", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_MinigunPickupItem"));
+	Paths.Add("MachinegunQ3", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_MachinegunQ3PickupItem"));
+	Paths.Add("Railgun", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_RailgunPickupItem"));
+	Paths.Add("RailgunQ3", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_RailgunQ3PickupItem"));
 
 	//Health
-	Paths.Add("MajorHealth", AssetUtils::GenerateBlueprintAssetPath(_assetPath, "BP_MajorHealthPickupItem"));
-	Paths.Add("MinorHealth", AssetUtils::GenerateBlueprintAssetPath(_assetPath, "BP_MinorHealthPickupItem"));
+	Paths.Add("MajorHealth", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_MajorHealthPickupItem"));
+	Paths.Add("MinorHealth", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_MinorHealthPickupItem"));
 
 	if (!lazyInitialization)
 	{

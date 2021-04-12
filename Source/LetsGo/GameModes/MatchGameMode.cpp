@@ -1,6 +1,7 @@
 #include "MatchGameMode.h"
 
 #include "GameFramework/GameStateBase.h"
+#include "GameModeOptionParsers/GameModeOptionParserFactory.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
 #include "LetsGo/DiContainers/MatchDiContainerFactory.h"
 #include "LetsGo/Utils/ActorUtils.h"
@@ -16,8 +17,8 @@ void AMatchGameMode::InitGame(const FString& MapName, const FString& Options, FS
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
 	
-	MatchDiContainerFactory containerFactory;
-	_diContainer = containerFactory.CreateContainer<ESPMode::Fast>();
+	MatchDiContainerFactory<ESPMode::Fast> containerFactory;
+	_diContainer = containerFactory.CreateContainer(this);
 
 	auto const avatarSpawnFactory = GetDiContainer()->GetInstance<AvatarSpawnFactory>();
 	_avatarSpawnFactory = &avatarSpawnFactory.Get();

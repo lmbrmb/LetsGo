@@ -8,7 +8,10 @@
 class MaterialFactory : public CachedAssetFactory<UMaterialInterface>
 {
 public:
-	explicit MaterialFactory(const bool lazyInitialization);
+	explicit MaterialFactory(
+		IUObjectRegistry* uObjectRegistry,
+		const bool lazyInitialization
+	);
 
 private:
 	static const FString MIXAMO_PATH_PREFIX;

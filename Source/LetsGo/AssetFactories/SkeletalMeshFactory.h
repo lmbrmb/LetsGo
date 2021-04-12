@@ -8,7 +8,10 @@
 class SkeletalMeshFactory : public CachedAssetFactory<USkeletalMesh>
 {
 public:
-	explicit SkeletalMeshFactory(const bool lazyInitialization);
+	explicit SkeletalMeshFactory(
+		IUObjectRegistry* uObjectRegistry,
+		const bool lazyInitialization
+	);
 
 private:
 	static const FString MIXAMO_PATH_PREFIX;

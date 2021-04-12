@@ -21,6 +21,6 @@ void AMainMenuGameMode::InitGame(const FString& MapName, const FString& Options,
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
 
-	MainMenuDiContainerFactory mainMenuDiContainerFactory;
-	_diContainer = mainMenuDiContainerFactory.CreateContainer();
+	MainMenuDiContainerFactory<ESPMode::Fast> mainMenuDiContainerFactory;
+	_diContainer = mainMenuDiContainerFactory.CreateContainer(this);
 }

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "LetsGo/AmmoProviders/AmmoProviderFactory.h"
-#include "Misc/TypeContainer.h"
+#include "IDiContainerFactory.h"
 #include "LetsGo/Items/HealthItemFactory.h"
 #include "LetsGo/Items/GunItemFactory.h"
 #include "LetsGo/Items/AmmoItemFactory.h"
@@ -18,20 +17,21 @@
 #include "LetsGo/GameModes/GameModeOptionParsers/GameModeOptionParserFactory.h"
 #include "LetsGo/Sfx/SfxFactory.h"
 #include "LetsGo/Sfx/AvatarSfxFactory.h"
+#include "LetsGo/AmmoProviders/AmmoProviderFactory.h"
 
 /// <summary>
 /// Match dependency injection container factory
 /// Composes DI container for MatchGameMode
 /// </summary>
-class MatchDiContainerFactory final
+template <ESPMode Mode>
+class MatchDiContainerFactory final : IDiContainerFactory<Mode>
 {
 public:
 	MatchDiContainerFactory() = default;
-	
+
 	~MatchDiContainerFactory() = default;
 
-	template<ESPMode Mode = ESPMode::Fast>
-	TTypeContainer<Mode>* CreateContainer();
+	virtual TTypeContainer<Mode>* CreateContainer(IUObjectRegistry* uObjectRegistry) override;
 
 private:
 	/// <summary>
@@ -42,15 +42,15 @@ private:
 };
 
 template <ESPMode Mode>
-TTypeContainer<Mode>* MatchDiContainerFactory::CreateContainer()
+TTypeContainer<Mode>* MatchDiContainerFactory<Mode>::CreateContainer(IUObjectRegistry* uObjectRegistry)
 {
 	auto const container = new TTypeContainer<Mode>();
 
-	const TSharedRef<PickupItemFactory> pickupItemFactory = MakeShareable(new PickupItemFactory(LAZY_INITIALIZATION));
+	const TSharedRef<PickupItemFactory> pickupItemFactory = MakeShareable(new PickupItemFactory(uObjectRegistry, LAZY_INITIALIZATION));
 	const TSharedRef<GunItemFactory> gunItemFactory = MakeShareable(new GunItemFactory());
 	const TSharedRef<HealthItemFactory> healthItemFactory = MakeShareable(new HealthItemFactory());
 	const TSharedRef<AmmoItemFactory> ammoItemFactory = MakeShareable(new AmmoItemFactory());
-	const TSharedRef<GunFactory> gunFactory = MakeShareable(new GunFactory(LAZY_INITIALIZATION));
+	const TSharedRef<GunFactory> gunFactory = MakeShareable(new GunFactory(uObjectRegistry, LAZY_INITIALIZATION));
 	const TSharedRef<ForceFactory> forceFactory = MakeShareable(new ForceFactory());
 	const TSharedRef<AmmoProviderFactory> ammoProviderFactory = MakeShareable(new AmmoProviderFactory());
 
@@ -60,22 +60,22 @@ TTypeContainer<Mode>* MatchDiContainerFactory::CreateContainer()
 	const auto nicknameGenerator = nicknameGeneratorFactoryInstance->Create();
 	const TSharedRef<AvatarDataFactory> avatarDataFactory = MakeShareable(new AvatarDataFactory(nicknameGenerator));
 
-	auto const avatarFactoryInstance = new AvatarFactory(LAZY_INITIALIZATION);
+	auto const avatarFactoryInstance = new AvatarFactory(uObjectRegistry, LAZY_INITIALIZATION);
 	const TSharedRef<AvatarFactory> avatarFactory = MakeShareable(avatarFactoryInstance);
 
-	auto const materialFactoryInstance = new MaterialFactory(LAZY_INITIALIZATION);
+	auto const materialFactoryInstance = new MaterialFactory(uObjectRegistry, LAZY_INITIALIZATION);
 	const TSharedRef<MaterialFactory> materialFactory = MakeShareable(materialFactoryInstance);
 
-	auto const skeletalMeshFactoryInstance = new SkeletalMeshFactory(LAZY_INITIALIZATION);
+	auto const skeletalMeshFactoryInstance = new SkeletalMeshFactory(uObjectRegistry, LAZY_INITIALIZATION);
 	const TSharedRef<SkeletalMeshFactory> skeletalMeshFactory = MakeShareable(skeletalMeshFactoryInstance);
 
 	auto const skinFactoryInstance = new SkinFactory(materialFactoryInstance, skeletalMeshFactoryInstance);
 	const TSharedRef<SkinFactory> skinFactory = MakeShareable(skinFactoryInstance);
 
-	const TSharedRef<AvatarSpawnFactory> avatarSpawnFactory = MakeShareable(new AvatarSpawnFactory(avatarFactoryInstance, skinFactoryInstance)) ;
+	const TSharedRef<AvatarSpawnFactory> avatarSpawnFactory = MakeShareable(new AvatarSpawnFactory(avatarFactoryInstance, skinFactoryInstance));
 	const TSharedRef<GameModeOptionParserFactory> gameModeOptionParserFactory = MakeShareable(new GameModeOptionParserFactory());
 
-	auto const sfxFactoryInstance = new SfxFactory(LAZY_INITIALIZATION);
+	auto const sfxFactoryInstance = new SfxFactory(uObjectRegistry, LAZY_INITIALIZATION);
 	const TSharedRef<SfxFactory> sfxFactory = MakeShareable(sfxFactoryInstance);
 	const TSharedRef<AvatarSfxFactory> avatarSfxFactory = MakeShareable(new AvatarSfxFactory(sfxFactoryInstance));
 

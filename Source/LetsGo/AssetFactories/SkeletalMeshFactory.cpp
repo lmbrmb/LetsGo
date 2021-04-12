@@ -2,7 +2,10 @@
 
 const FString SkeletalMeshFactory::MIXAMO_PATH_PREFIX = "/Game/Assets/Mixamo/";
 
-SkeletalMeshFactory::SkeletalMeshFactory(const bool lazyInitialization)
+SkeletalMeshFactory::SkeletalMeshFactory(
+	IUObjectRegistry* uObjectRegistry,
+	const bool lazyInitialization
+) : CachedAssetFactory<USkeletalMesh>(uObjectRegistry)
 {
 	Paths.Add("Kachujin", MIXAMO_PATH_PREFIX + "Kachujin/Kachujin_SkeletalMesh");
 	Paths.Add("Maria", MIXAMO_PATH_PREFIX + "Maria/Maria_SkeletalMesh");

@@ -5,7 +5,10 @@
 class SfxFactory final : public CachedAssetFactory<USoundBase>
 {
 public:
-	explicit SfxFactory(const bool lazyInitialization);
+	explicit SfxFactory(
+		IUObjectRegistry* uObjectRegistry,
+		const bool lazyInitialization
+	);
 
 private:
 	static int FirstStepIndex;

@@ -2,16 +2,20 @@
 
 #include "LetsGo/Utils/AssetUtils.h"
 
-const FString GunFactory::_assetPath = "/Game/Assets/Blueprints/Guns/";
+const FString GunFactory::AssetPath = "/Game/Assets/Blueprints/Guns/";
 
-GunFactory::GunFactory(const bool lazyInitialization)
+GunFactory::GunFactory(
+	IUObjectRegistry* uObjectRegistry,
+	const bool lazyInitialization
+	
+) : CachedAssetFactory<UBlueprintGeneratedClass>(uObjectRegistry)
 {
-	Paths.Add("SawedOffShotgun", AssetUtils::GenerateBlueprintAssetPath(_assetPath, "BP_SawedOffShotgun"));
-	Paths.Add("ShotgunQ3", AssetUtils::GenerateBlueprintAssetPath(_assetPath, "BP_ShotgunQ3"));
-	Paths.Add("Minigun", AssetUtils::GenerateBlueprintAssetPath(_assetPath, "BP_Minigun"));
-	Paths.Add("MachinegunQ3", AssetUtils::GenerateBlueprintAssetPath(_assetPath, "BP_MachinegunQ3"));
-	Paths.Add("Railgun", AssetUtils::GenerateBlueprintAssetPath(_assetPath, "BP_Railgun"));
-	Paths.Add("RailgunQ3", AssetUtils::GenerateBlueprintAssetPath(_assetPath, "BP_RailgunQ3"));
+	Paths.Add("SawedOffShotgun", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_SawedOffShotgun"));
+	Paths.Add("ShotgunQ3", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_ShotgunQ3"));
+	Paths.Add("Minigun", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_Minigun"));
+	Paths.Add("MachinegunQ3", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_MachinegunQ3"));
+	Paths.Add("Railgun", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_Railgun"));
+	Paths.Add("RailgunQ3", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_RailgunQ3"));
 
 	if (!lazyInitialization)
 	{

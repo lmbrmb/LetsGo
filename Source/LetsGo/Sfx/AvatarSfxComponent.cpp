@@ -26,11 +26,6 @@ void UAvatarSfxComponent::SetSkinId(const SkinId& skinId)
 	_painSounds = avatarSfxFactory->GetPainSounds(skinId);
 }
 
-void UAvatarSfxComponent::SetAudioComponent(UAudioComponent* audioComponent)
-{
-	_audioComponent = audioComponent;
-}
-
 void UAvatarSfxComponent::OnStep()
 {
 	auto const stepSoundsCount = _stepSounds.Num();
@@ -46,17 +41,17 @@ void UAvatarSfxComponent::OnStep()
 	_stepSoundIndex = nextStepSoundIndex;
 	auto const stepSound = _stepSounds[_stepSoundIndex];
 
-	PlaySound(stepSound);
+	BpPlaySound(stepSound);
 }
 
-void UAvatarSfxComponent::OnJump() const
+void UAvatarSfxComponent::OnJump()
 {
-	PlaySound(_jumpSound);
+	BpPlaySound(_jumpSound);
 }
 
-void UAvatarSfxComponent::OnLand() const
+void UAvatarSfxComponent::OnLand()
 {
-	PlaySound(_landSound);
+	BpPlaySound(_landSound);
 }
 
 void UAvatarSfxComponent::OnHealthChanged(const UHealthComponent* healthComponent, const float delta)
@@ -70,7 +65,7 @@ void UAvatarSfxComponent::OnHealthChanged(const UHealthComponent* healthComponen
 		AssertIsGreaterOrEqual(deathSoundsCount, 1);
 		auto const randomDeathSoundIndex = FMath::RandRange(0, deathSoundsCount - 1);
 		auto const randomDeathSound = _deathSounds[randomDeathSoundIndex];
-		PlaySound(randomDeathSound);
+		BpPlaySound(randomDeathSound);
 		return;
 	}
 
@@ -81,19 +76,8 @@ void UAvatarSfxComponent::OnHealthChanged(const UHealthComponent* healthComponen
 		if (currentHealth < targetHealth && previousHealth >= targetHealth)
 		{
 			auto const painSound = painSoundRecord.Value;
-			PlaySound(painSound);
+			BpPlaySound(painSound);
 			return;
 		}
 	}
-}
-
-void UAvatarSfxComponent::PlaySound(USoundBase* sound) const
-{
-	if(!_audioComponent)
-	{
-		return;
-	}
-
-	_audioComponent->SetSound(sound);
-	_audioComponent->Play();
 }

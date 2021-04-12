@@ -8,7 +8,10 @@
 class AvatarFactory final : private CachedAssetFactory<UBlueprintGeneratedClass>
 {
 public:
-	explicit AvatarFactory(const bool lazyInitialization);
+	explicit AvatarFactory(
+		IUObjectRegistry* uObjectRegistry,
+		const bool lazyInitialization
+	);
 
 	UBlueprintGeneratedClass* GetLocalPlayerBlueprint();
 	

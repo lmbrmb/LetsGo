@@ -1,6 +1,7 @@
 #pragma once
 
 #include "LetsGo/Logs/DevLogger.h"
+#include "LetsGo/Data/IUObjectRegistry.h"
 
 /// <summary>
 /// [Abstract] Loads assets, returns asset by id 
@@ -13,13 +14,15 @@ public:
 	T* GetOrLoad(const FName& id);
 
 protected:
-	CachedAssetFactory() = default;
+	explicit CachedAssetFactory(IUObjectRegistry* uObjectRegistry);
 
 	TMap<const FName, FString> Paths;
 
 	void LoadAllAssets();
 
 private:
+	IUObjectRegistry* _uObjectRegistry;
+
 	TMap<const FName, T*> Loaded;
 };
 
@@ -56,8 +59,15 @@ T* CachedAssetFactory<T>::GetOrLoad(const FName& id)
 		return nullptr;
 	}
 
+	_uObjectRegistry->RegisterUObject(tObject);
 	Loaded.Add(id, tObject);
 	return tObject;
+}
+
+template <class T>
+CachedAssetFactory<T>::CachedAssetFactory(IUObjectRegistry* uObjectRegistry)
+{
+	_uObjectRegistry = uObjectRegistry;
 }
 
 template <class T>

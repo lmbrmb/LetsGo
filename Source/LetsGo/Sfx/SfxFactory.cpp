@@ -12,7 +12,10 @@ int SfxFactory::FirstStepIndex = 1;
 
 int SfxFactory::StepsInGroup = 4;
 
-SfxFactory::SfxFactory(const bool lazyInitialization)
+SfxFactory::SfxFactory(
+	IUObjectRegistry* uObjectRegistry,
+	const bool lazyInitialization
+) :	CachedAssetFactory<USoundBase>(uObjectRegistry)
 {
 	// Land
 	Paths.Add("Land", AssetUtils::GenerateAssetPath(StepsAssetPath, "Sfx_q3_land1"));
