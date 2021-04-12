@@ -11,7 +11,7 @@ const FVector& UThirdPersonMovementComponent::GetMovementDirection() const
 	return _inputMovementDirection;
 }
 
-float UThirdPersonMovementComponent::GetMovementSpeed()
+float UThirdPersonMovementComponent::GetBaseMovementSpeed()
 {
 	return _movementSpeed;
 }

@@ -8,6 +8,8 @@ const FName InputConstant::ActionJump = FName("Jump");
 
 const FName InputConstant::ActionSprint = FName("Sprint");
 
+const FName InputConstant::ActionWalk = FName("Walk");
+
 const FName InputConstant::ActionPrimaryFire = FName("PrimaryFire");
 
 const FName InputConstant::ActionReload = FName("Reload");

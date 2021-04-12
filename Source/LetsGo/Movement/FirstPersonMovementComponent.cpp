@@ -5,16 +5,13 @@ const FVector& UFirstPersonMovementComponent::GetMovementDirection() const
 	return _inputMovementDirection;
 }
 
-float UFirstPersonMovementComponent::GetMovementSpeed()
+float UFirstPersonMovementComponent::GetBaseMovementSpeed()
 {
 	auto const forwardVector = RootCollider->GetForwardVector();
 	auto const dotForward = FVector::DotProduct(forwardVector, _inputMovementDirection);
 	auto const isMovingForward = dotForward >= MIN_DOT_FORWARD;
-	auto const speed = isMovingForward
-		? _actorMoveForwardSpeed * (_isSprinting ? _sprintMultiplier : 1.0f)
-		: _actorMoveBackwardSpeed;
-	auto const environmentMultiplier = GetIsInAir() ? _airMultiplier : 1.0f;
-	auto const movementSpeed = speed * environmentMultiplier * _absoluteMovementAmount;
+	auto const speed = isMovingForward ? _actorMoveForwardSpeed : _actorMoveBackwardSpeed;
+	auto const movementSpeed = speed * _absoluteMovementAmount;
 	return movementSpeed;
 }
 
@@ -123,16 +120,6 @@ void UFirstPersonMovementComponent::AddActorYawInput(const float amount)
 void UFirstPersonMovementComponent::AddCameraPitchInput(const float amount)
 {
 	_cameraPitchInputAmount += amount;
-}
-
-void UFirstPersonMovementComponent::StartSprint()
-{
-	_isSprinting = true;
-}
-
-void UFirstPersonMovementComponent::StopSprint()
-{
-	_isSprinting = false;
 }
 
 float UFirstPersonMovementComponent::ClampCameraPitch(float pitch) const

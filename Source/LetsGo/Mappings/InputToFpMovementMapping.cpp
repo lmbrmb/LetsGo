@@ -26,7 +26,7 @@ void UInputToFpMovementMapping::OnOwnerDied(const UHealthComponent*, float delta
 	Unbind();
 }
 
-void UInputToFpMovementMapping::Bind() const
+void UInputToFpMovementMapping::Bind()
 {
 	_inputComponent->BindAxis(InputConstant::AxisMoveHorizontal, _firstPersonMovementComponent,
 		&UFirstPersonMovementComponent::AddActorRightMovementInput);
@@ -40,9 +40,13 @@ void UInputToFpMovementMapping::Bind() const
 	_inputComponent->BindAction(InputConstant::ActionJump, EInputEvent::IE_Pressed,
 		_firstPersonMovementComponent, &UFirstPersonMovementComponent::PerformJump);
 	_inputComponent->BindAction(InputConstant::ActionSprint, EInputEvent::IE_Pressed,
-		_firstPersonMovementComponent, &UFirstPersonMovementComponent::StartSprint);
+		this, &UInputToFpMovementMapping::OnSprintPressed);
 	_inputComponent->BindAction(InputConstant::ActionSprint, EInputEvent::IE_Released,
-		_firstPersonMovementComponent, &UFirstPersonMovementComponent::StopSprint);
+		this, &UInputToFpMovementMapping::OnSprintReleased);
+	_inputComponent->BindAction(InputConstant::ActionWalk, EInputEvent::IE_Pressed,
+		this, &UInputToFpMovementMapping::OnWalkPressed);
+	_inputComponent->BindAction(InputConstant::ActionWalk, EInputEvent::IE_Released,
+		this, &UInputToFpMovementMapping::OnWalkReleased);
 }
 
 void UInputToFpMovementMapping::Unbind() const
@@ -65,4 +69,30 @@ void UInputToFpMovementMapping::Unbind() const
 	_inputComponent->RemoveActionBinding(InputConstant::ActionJump, EInputEvent::IE_Pressed);
 	_inputComponent->RemoveActionBinding(InputConstant::ActionSprint, EInputEvent::IE_Pressed);
 	_inputComponent->RemoveActionBinding(InputConstant::ActionSprint, EInputEvent::IE_Released);
+	_inputComponent->RemoveActionBinding(InputConstant::ActionWalk, EInputEvent::IE_Pressed);
+	_inputComponent->RemoveActionBinding(InputConstant::ActionWalk, EInputEvent::IE_Released);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+void UInputToFpMovementMapping::OnSprintPressed()
+{
+	_firstPersonMovementComponent->ActivateMovementSpeedState(MovementSpeedState::Sprint);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+void UInputToFpMovementMapping::OnSprintReleased()
+{
+	_firstPersonMovementComponent->DeactivateMovementSpeedState(MovementSpeedState::Sprint);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+void UInputToFpMovementMapping::OnWalkPressed()
+{
+	_firstPersonMovementComponent->ActivateMovementSpeedState(MovementSpeedState::Walk);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+void UInputToFpMovementMapping::OnWalkReleased()
+{
+	_firstPersonMovementComponent->DeactivateMovementSpeedState(MovementSpeedState::Walk);
 }

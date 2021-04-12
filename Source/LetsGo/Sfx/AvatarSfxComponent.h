@@ -4,6 +4,8 @@
 #include "LetsGo/Data/SkinId.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
 #include "Sound/SoundBase.h"
+#include "LetsGo/Movement/MovementSpeedState.h"
+
 #include "AvatarSfxComponent.generated.h"
 
 /// <summary>
@@ -19,7 +21,7 @@ public:
 
 	void SetSkinId(const SkinId& skinId);
 
-	void OnStep();
+	void OnStep(const MovementSpeedState movementSpeedState);
 
 	void OnJump();
 
@@ -36,9 +38,9 @@ private:
 
 	TArray<USoundBase*> _deathSounds;
 
-	USoundBase* _jumpSound;
+	USoundBase* _jumpSound = nullptr;
 
-	USoundBase* _landSound;
+	USoundBase* _landSound = nullptr;
 
 	TArray<USoundBase*> _stepSounds;
 

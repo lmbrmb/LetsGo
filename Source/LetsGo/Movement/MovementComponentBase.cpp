@@ -9,6 +9,8 @@ const FName UMovementComponentBase:: GRAVITY_FORCE_ID = "Gravity";
 
 const FName UMovementComponentBase::JUMP_FORCE_ID = "Jump";
 
+MovementSpeedState UMovementComponentBase::_defaultMovementSpeedState = MovementSpeedState::Run;
+
 UMovementComponentBase::UMovementComponentBase()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -153,13 +155,16 @@ inline void UMovementComponentBase::ProcessMovement(const float& deltaTime)
 	{
 		return;
 	}
-	auto const speed = GetMovementSpeed();
 
-	if (FMath::IsNearlyZero(speed))
+	auto const baseMovementSpeed = GetBaseMovementSpeed();
+	if (FMath::IsNearlyZero(baseMovementSpeed))
 	{
 		return;
 	}
 
+	auto const environmentMultiplier = GetEnvironmentSpeedMultiplier();
+	auto const speedStateMultiplier = GetIsInAir() ? 1.0f : GetSpeedStateMultiplier();
+	auto const speed = baseMovementSpeed * environmentMultiplier * speedStateMultiplier;
 	auto const translationAmount = speed * deltaTime;
 	auto const rootColliderLocation = RootCollider->GetComponentLocation();
 	auto const rootColliderRotation = RootCollider->GetComponentQuat();
@@ -170,6 +175,21 @@ inline void UMovementComponentBase::ProcessMovement(const float& deltaTime)
 		_groundHitResult,
 		translationAmount
 	);
+}
+
+float UMovementComponentBase::GetEnvironmentSpeedMultiplier() const
+{
+	auto const environmentMultiplier = GetIsInAir() ? _airMultiplier : 1.0f;
+	return environmentMultiplier;
+}
+
+float UMovementComponentBase::GetSpeedStateMultiplier() const
+{
+	auto const speedStateMultiplier =
+		_movementSpeedState == MovementSpeedState::Sprint ? _sprintMultiplier :
+		_movementSpeedState == MovementSpeedState::Walk ? _walkMultiplier :
+		1.0f;
+	return speedStateMultiplier;
 }
 
 void UMovementComponentBase::PerformJump()
@@ -218,6 +238,21 @@ void UMovementComponentBase::PerformJump()
 FVector UMovementComponentBase::GetRootColliderLocation() const
 {
 	return RootCollider->GetComponentLocation();
+}
+
+void UMovementComponentBase::ActivateMovementSpeedState(MovementSpeedState movementSpeedState)
+{
+	_movementSpeedState = movementSpeedState;
+}
+
+void UMovementComponentBase::DeactivateMovementSpeedState(MovementSpeedState movementSpeedState)
+{
+	if(_movementSpeedState != movementSpeedState)
+	{
+		return;
+	}
+
+	_movementSpeedState = _defaultMovementSpeedState;
 }
 
 bool UMovementComponentBase::GetIsInAir() const
@@ -314,7 +349,7 @@ void UMovementComponentBase::Init(AActor* actor)
 	AssertDefaultImplementationIsOverriden();
 }
 
-float UMovementComponentBase::GetMovementSpeed()
+float UMovementComponentBase::GetBaseMovementSpeed()
 {
 	AssertDefaultImplementationIsOverriden(0);
 }
@@ -351,5 +386,5 @@ void UMovementComponentBase::StepOnTimer() const
 		return;
 	}
 
-	Step.Broadcast();
+	Step.Broadcast(_movementSpeedState);
 }

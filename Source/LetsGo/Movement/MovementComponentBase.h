@@ -1,12 +1,13 @@
 #pragma once
 
+#include "MovementSpeedState.h"
 #include "Components/ShapeComponent.h"
 #include "LetsGo/Forces/IForce.h"
 #include "LetsGo/Forces/ForceFactory.h"
 
 #include "MovementComponentBase.generated.h"
 
-DECLARE_EVENT(UMovementComponentBase, EStep)
+DECLARE_EVENT_OneParam(UMovementComponentBase, EStep, MovementSpeedState)
 
 DECLARE_EVENT(UMovementComponentBase, EJump)
 
@@ -23,7 +24,7 @@ class LETSGO_API UMovementComponentBase : public UActorComponent
 public:
 	UFUNCTION(BlueprintCallable)
 	virtual float GetAbsoluteMovementAmount() const;
-	
+
 	UFUNCTION(BlueprintCallable)
 	virtual bool GetIsInAir() const;
 
@@ -32,7 +33,11 @@ public:
 	/// </summary>
 	UFUNCTION(BlueprintCallable)
 	virtual const FVector& GetMovementDirection() const;
-	
+
+	void ActivateMovementSpeedState(MovementSpeedState movementSpeedState);
+
+	void DeactivateMovementSpeedState(MovementSpeedState movementSpeedState);
+
 	void PerformJump();
 
 	FVector GetRootColliderLocation() const;
@@ -75,7 +80,7 @@ protected:
 	/// <summary>
 	/// [Template method] Returns movement speed
 	/// </summary>
-	virtual float GetMovementSpeed();
+	virtual float GetBaseMovementSpeed();
 	
 	/// <summary>
 	/// [Template method] Performs custom actions in Tick function
@@ -90,6 +95,8 @@ protected:
 	
 private:
 	const float SKIP_ROTATION_DOT = 0.99f;
+
+	static MovementSpeedState _defaultMovementSpeedState;
 
 	/// <summary>
 	/// Rotation speed in degrees per second
@@ -127,9 +134,24 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float _maxStepHeight = 50;
 
+	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
+	float _walkMultiplier = 0.5f;
+
+	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
+	float _sprintMultiplier = 1.5f;
+
+	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
+	float _airMultiplier = 0.25f;
+
 	FVector _previousLocation = FVector::ZeroVector;
 
 	FVector _velocity = FVector::ZeroVector;
+
+	MovementSpeedState _movementSpeedState;
+
+	float GetEnvironmentSpeedMultiplier() const;
+
+	float GetSpeedStateMultiplier() const;
 
 	/// <summary>
 	/// Cached ground hit result. Updated every frame

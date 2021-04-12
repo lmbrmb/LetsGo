@@ -26,8 +26,14 @@ void UAvatarSfxComponent::SetSkinId(const SkinId& skinId)
 	_painSounds = avatarSfxFactory->GetPainSounds(skinId);
 }
 
-void UAvatarSfxComponent::OnStep()
+void UAvatarSfxComponent::OnStep(const MovementSpeedState movementSpeedState)
 {
+	// Walk is silent
+	if(movementSpeedState == MovementSpeedState::Walk)
+	{
+		return;
+	}
+	
 	auto const stepSoundsCount = _stepSounds.Num();
 	AssertIsGreaterOrEqual(stepSoundsCount, 1);
 	

@@ -12,6 +12,8 @@ public:
 
 	static const FName ActionSprint;
 
+	static const FName ActionWalk;
+
 	static const FName ActionPrimaryFire;
 
 	static const FName ActionReload;

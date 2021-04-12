@@ -24,7 +24,15 @@ private:
 
 	void OnOwnerDied(const UHealthComponent*, float delta) const;
 	
-	void Bind() const;
+	void Bind();
 
 	void Unbind() const;
+
+	void OnSprintPressed();
+
+	void OnSprintReleased();
+
+	void OnWalkPressed();
+
+	void OnWalkReleased();
 };

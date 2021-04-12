@@ -47,15 +47,13 @@ const FVector& UBotMovementComponent::GetMovementDirection() const
 	return _inputMovementDirection;
 }
 
-float UBotMovementComponent::GetMovementSpeed()
+float UBotMovementComponent::GetBaseMovementSpeed()
 {
 	auto const forwardVector = RootCollider->GetForwardVector();
 	auto const dotForward = FVector::DotProduct(forwardVector, _inputMovementDirection);
 	auto const isMovingForward = dotForward >= MIN_DOT_FORWARD;
 	auto const speed = isMovingForward ? _actorMoveForwardSpeed : _actorMoveBackwardSpeed;
-	auto const environmentMultiplier = GetIsInAir() ? _airMultiplier : 1.0f;
-	auto const movementSpeed = speed * environmentMultiplier;
-	return movementSpeed;
+	return speed;
 }
 
 float UBotMovementComponent::GetAbsoluteMovementAmount() const

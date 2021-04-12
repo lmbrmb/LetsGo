@@ -31,7 +31,7 @@ public:
 protected:
 	virtual const FVector& GetMovementDirection() const override;
 
-	virtual float GetMovementSpeed() override;
+	virtual float GetBaseMovementSpeed() override;
 
 	virtual float GetAbsoluteMovementAmount() const override;
 	
@@ -51,9 +51,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
 	float _actorMoveBackwardSpeed = 350.0f;
-
-	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
-	float _airMultiplier = 0.25f;
 
 	bool _isTargetLocationValid = false;
 	

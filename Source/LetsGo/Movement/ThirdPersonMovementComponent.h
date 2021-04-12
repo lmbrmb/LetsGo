@@ -33,7 +33,7 @@ protected:
 
 	virtual const FVector& GetMovementDirection() const override;
 
-	virtual float GetMovementSpeed() override;
+	virtual float GetBaseMovementSpeed() override;
 	
 	virtual void CustomTick(const float deltaTime) override;
 	

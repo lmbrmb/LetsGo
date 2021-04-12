@@ -27,10 +27,6 @@ public:
 
 	void AddCameraPitchInput(float amount);
 
-	void StartSprint();
-
-	void StopSprint();
-
 protected:
 	virtual void Init(AActor* actor) override;
 
@@ -40,7 +36,7 @@ protected:
 
 	virtual const FVector& GetMovementDirection() const override;
 
-	virtual float GetMovementSpeed() override;
+	virtual float GetBaseMovementSpeed() override;
 	
 	virtual void CustomTick(const float deltaTime) override;
 
@@ -56,12 +52,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
 	float _actorMoveBackwardSpeed = 350.0f;
-
-	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
-	float _sprintMultiplier = 1.5f;
-
-	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
-	float _airMultiplier = 0.25f;
 	
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
 	float _actorYawSpeed = 180.0f;
@@ -86,8 +76,6 @@ private:
 	FVector _inputMovementDirection = FVector::ZeroVector;
 	
 	float _absoluteMovementAmount = 0;
-
-	bool _isSprinting = false;
 
 	UCameraComponent* _cameraComponent = nullptr;
 
