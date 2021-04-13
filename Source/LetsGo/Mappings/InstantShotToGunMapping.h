@@ -7,7 +7,7 @@
 /// <summary>
 /// Instant shot to gun mapping
 /// </summary>
-UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent))
+UCLASS()
 class LETSGO_API UInstantShotToGunMapping : public UGunShotToGunMapping
 {
 	GENERATED_BODY()

@@ -1,12 +1,14 @@
 #include "AvatarToWeaponManagerMapping.h"
 
+#include "LetsGo/Utils/AssertUtils.h"
+
 void UAvatarToWeaponManagerMapping::Map()
 {
-	auto const actor = GetOwner();
-	auto const avatar = Cast<AAvatar>(actor);
+	auto const owner = GetOwner();
+	auto const avatar = Cast<AAvatar>(owner);
 	AssertIsNotNull(avatar);
 	
-	const auto weaponManagerComponent = actor->FindComponentByClass<UWeaponManagerComponent>();
+	const auto weaponManagerComponent = owner->FindComponentByClass<UWeaponManagerComponent>();
 	AssertIsNotNull(weaponManagerComponent);
 
 	_weaponManagerComponent = weaponManagerComponent;

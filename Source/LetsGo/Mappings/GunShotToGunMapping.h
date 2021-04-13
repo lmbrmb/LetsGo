@@ -6,7 +6,7 @@
 
 #include "GunShotToGunMapping.generated.h"
 
-UCLASS(Abstract)
+UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent))
 class LETSGO_API UGunShotToGunMapping : public UMappingComponent
 {
 	GENERATED_BODY()

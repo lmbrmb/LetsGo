@@ -32,7 +32,8 @@ void UGunShotComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GunActor = GetOwner();
+	auto const componentOwner = GetOwner();
+	GunActor = componentOwner;
 	AssertIsNotNull(GunActor);
 
 	GunOwner = GunActor->GetOwner();

@@ -20,13 +20,13 @@ void UMovementComponentBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	auto const actor = GetOwner();
-	auto const rootComponent = actor->GetRootComponent();
+	auto const owner = GetOwner();
+	auto const rootComponent = owner->GetRootComponent();
 	RootCollider = Cast<UShapeComponent>(rootComponent);
 	AssertIsNotNull(RootCollider);
 	CollisionShape = RootCollider->GetCollisionShape();
 	CollisionQueryParams.bIgnoreTouches = true;
-	CollisionQueryParams.AddIgnoredActor(actor);
+	CollisionQueryParams.AddIgnoredActor(owner);
 	
 	auto const authGameMode = GetWorld()->GetAuthGameMode();
 	auto const projectGameModeBase = Cast<AProjectGameModeBase>(authGameMode);
@@ -42,7 +42,7 @@ void UMovementComponentBase::BeginPlay()
 		_forces.Add(gravityForce);
 	}
 	
-	Init(actor);
+	Init(owner);
 
 	if(_stepInterval > 0.05f)
 	{

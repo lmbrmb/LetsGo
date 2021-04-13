@@ -6,12 +6,12 @@
 
 void UAvatarSfxToHealthMapping::Map()
 {
-	auto const actor = GetOwner();
+	auto const owner = GetOwner();
 
-	auto const avatarSfxComponent = actor->FindComponentByClass<UAvatarSfxComponent>();
+	auto const avatarSfxComponent = owner->FindComponentByClass<UAvatarSfxComponent>();
 	AssertIsNotNull(avatarSfxComponent);
 
-	auto const healthComponent = actor->FindComponentByClass<UHealthComponent>();
+	auto const healthComponent = owner->FindComponentByClass<UHealthComponent>();
 	AssertIsNotNull(healthComponent);
 
 	healthComponent->HealthChanged.AddUObject(avatarSfxComponent, &UAvatarSfxComponent::OnHealthChanged);

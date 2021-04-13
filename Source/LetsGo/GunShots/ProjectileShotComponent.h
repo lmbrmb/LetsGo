@@ -2,11 +2,11 @@
 
 #include "GunShotComponent.h"
 
+#include "LetsGo/Projectiles/Projectile.h"
+
 #include "ProjectileShotComponent.generated.h"
 
 DECLARE_EVENT_OneParam(UProjectileShotComponent, EShotPerformed_ProjectileShot, const USceneComponent* firePivot);
-
-DECLARE_EVENT_OneParam(UProjectileShotComponent, EProjectileHit_ProjectileShot, FHitResult hitResult)
 
 ///<summary>
 ///Projectile shot component.
@@ -19,7 +19,15 @@ class LETSGO_API UProjectileShotComponent : public UGunShotComponent
 public:
 	virtual void OnShotRequested(const USceneComponent* firePivot) override;
 
-	EShotPerformed_ProjectileShot ShotPerformed;
+private:
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
+	TSubclassOf<AProjectile> _projectileBlueprint;
 
-	EProjectileHit_ProjectileShot ProjectileHit;
+	void OnProjectileHit(AProjectile* projectile, const FHitResult& hitResult) const;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float _projectileDamage = 50;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UCurveFloat* _damageOverDistanceCurve;
 };

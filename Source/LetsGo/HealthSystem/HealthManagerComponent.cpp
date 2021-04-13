@@ -14,8 +14,8 @@ void UHealthManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	auto const actor = GetOwner();
-	_healthComponent = actor->FindComponentByClass<UHealthComponent>();
+	auto const owner = GetOwner();
+	_healthComponent = owner->FindComponentByClass<UHealthComponent>();
 	AssertIsNotNull(_healthComponent);
 
 	_healthComponent->Died.AddUObject(this, &UHealthManagerComponent::OnDied);

@@ -5,12 +5,12 @@
 
 void UAvatarSfxToAvatarMapping::Map()
 {
-	auto const actor = GetOwner();
+	auto const owner = GetOwner();
 
-	_avatarSfxComponent = actor->FindComponentByClass<UAvatarSfxComponent>();
+	_avatarSfxComponent = owner->FindComponentByClass<UAvatarSfxComponent>();
 	AssertIsNotNull(_avatarSfxComponent);
 
-	auto const avatar = Cast<AAvatar>(actor);
+	auto const avatar = Cast<AAvatar>(owner);
 	AssertIsNotNull(avatar);
 
 	auto const isInitialized = avatar->IsInitialized();

@@ -16,7 +16,9 @@ void UInstantShotComponent::BeginPlay()
 
 void UInstantShotComponent::OnShotRequested(const USceneComponent* firePivot)
 {
+	AssertIsNotNull(firePivot);
 	AssertIsNotNull(AimProvider);
+
 	auto const startAimLocation = firePivot->GetComponentLocation();
 	auto targetAimLocation = AimProvider->GetTargetAimLocation();
 

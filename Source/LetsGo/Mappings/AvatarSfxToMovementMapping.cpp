@@ -6,12 +6,12 @@
 
 void UAvatarSfxToMovementMapping::Map()
 {
-	auto const actor = GetOwner();
+	auto const owner = GetOwner();
 
-	auto const avatarSfxComponent = actor->FindComponentByClass<UAvatarSfxComponent>();
+	auto const avatarSfxComponent = owner->FindComponentByClass<UAvatarSfxComponent>();
 	AssertIsNotNull(avatarSfxComponent);
 
-	auto const movementComponentBase = actor->FindComponentByClass<UMovementComponentBase>();
+	auto const movementComponentBase = owner->FindComponentByClass<UMovementComponentBase>();
 	AssertIsNotNull(movementComponentBase);
 
 	movementComponentBase->Step.AddUObject(avatarSfxComponent, &UAvatarSfxComponent::OnStep);

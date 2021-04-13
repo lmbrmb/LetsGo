@@ -24,8 +24,12 @@ public:
 
 		if(!spawnedActor)
 		{
-			auto const className = T::StaticClass()->GetName();
-			DevLogger::GetLoggingChannel()->LogValue("Actor is not spawned. Blueprint class name:", className, LogSeverity::Error);
+			auto const className = theClass->GetName();
+			auto const castName = T::StaticClass()->GetName();
+
+			DevLogger::GetLoggingChannel()->Log("Actor is not spawned.", LogSeverity::Error);
+			DevLogger::GetLoggingChannel()->LogValue("Class:", className, LogSeverity::Error);
+			DevLogger::GetLoggingChannel()->LogValue("Cast:", castName, LogSeverity::Error);
 		}
 		
 		return spawnedActor;
