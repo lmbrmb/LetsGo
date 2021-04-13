@@ -7,9 +7,8 @@ AGunV1::AGunV1()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void AGunV1::OnShotPerformed(const USceneComponent* firePivot, const bool isAnyBulletDamaged)
+void AGunV1::OnShotPerformed(const bool isAnyBulletDamaged)
 {
-	BpOnShotPerformed(firePivot, isAnyBulletDamaged);
 	ShotPerformed.Broadcast(this, isAnyBulletDamaged);
 }
 
@@ -170,12 +169,14 @@ void AGunV1::StartShot()
 		for (auto firePivot : _firePivots)
 		{
 			ShotRequested.Broadcast(firePivot);
+			BpOnShotRequest(firePivot);
 		}
 	}
 	else
 	{
 		auto const firePivot = GetFirePivot();
 		ShotRequested.Broadcast(firePivot);
+		BpOnShotRequest(firePivot);
 	}
 	
 	SetState(GunState::Shooting);

@@ -94,9 +94,8 @@ void AGunV2::Reload()
 	// Do nothing
 }
 
-void AGunV2::OnShotPerformed(const USceneComponent* firePivot, const bool isAnyBulletDamaged)
+void AGunV2::OnShotPerformed(const bool isAnyBulletDamaged)
 {
-	BpOnShotPerformed(firePivot, isAnyBulletDamaged);
 	ShotPerformed.Broadcast(this, isAnyBulletDamaged);
 }
 
@@ -135,12 +134,14 @@ void AGunV2::StartShot()
 		for (auto firePivot : _firePivots)
 		{
 			ShotRequested.Broadcast(firePivot);
+			BpOnShotRequest(firePivot);
 		}
 	}
 	else
 	{
 		auto const firePivot = GetFirePivot();
 		ShotRequested.Broadcast(firePivot);
+		BpOnShotRequest(firePivot);
 	}
 	
 	SetState(GunState::Shooting);

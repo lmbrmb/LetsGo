@@ -29,7 +29,7 @@ void UInstantShotComponent::OnShotRequested(const USceneComponent* firePivot)
 		ProcessBullet(firePivot, targetAimLocation, dispersionByDistance, isAnyBulletDamaged);
 	}
 
-	ShotPerformed.Broadcast(firePivot, isAnyBulletDamaged);
+	ShotPerformed.Broadcast(isAnyBulletDamaged);
 }
 
 void UInstantShotComponent::ProcessAimLocation(

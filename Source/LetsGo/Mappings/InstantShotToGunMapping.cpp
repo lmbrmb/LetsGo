@@ -7,20 +7,14 @@
 
 void UInstantShotToGunMapping::Bind() const
 {
+	Super::Bind();
+
 	auto const instantShotComponent = Cast<UInstantShotComponent>(GunShotComponent);
-
 	AssertIsNotNull(instantShotComponent);
-	
-	Gun->ShotRequested.AddUObject(instantShotComponent, &UGunShotComponent::OnShotRequested);
-
-	// Can't bind to interface method:
-	// instantShotComponent->ShotPerformed.AddUObject(_gun, &IGun::OnShotPerformed);
-	// Error: "You cannot use UObject method delegates with raw pointers"
 
 	auto const gunV1 = Cast<AGunV1>(GunActor);
 	if (gunV1)
 	{
-		instantShotComponent->ShotPerformed.AddUObject(gunV1, &AGunV1::OnShotPerformed);
 		instantShotComponent->BulletTraced.AddUObject(gunV1, &AGunV1::OnBulletTraced);
 		return;
 	}
@@ -28,7 +22,6 @@ void UInstantShotToGunMapping::Bind() const
 	auto const gunV2 = Cast<AGunV2>(GunActor);
 	if (gunV2)
 	{
-		instantShotComponent->ShotPerformed.AddUObject(gunV2, &AGunV2::OnShotPerformed);
 		instantShotComponent->BulletTraced.AddUObject(gunV2, &AGunV2::OnBulletTraced);
 		return;
 	}

@@ -68,5 +68,6 @@ void UGunShotToGunMapping::OnPartialInitialization()
 
 void UGunShotToGunMapping::Bind() const
 {
-	//Do nothing
+	Gun->ShotRequested.AddUObject(GunShotComponent, &UGunShotComponent::OnShotRequested);
+	GunShotComponent->ShotPerformed.AddRaw(Gun, &IGun::OnShotPerformed);
 }

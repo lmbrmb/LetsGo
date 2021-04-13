@@ -35,7 +35,7 @@ public:
 	virtual bool IsEnoughAmmoForShot() const override;
 
 	// IGun implementation
-	virtual void OnShotPerformed(const USceneComponent* firePivot, const bool isAnyBulletDamaged) override;
+	virtual void OnShotPerformed(const bool isAnyBulletDamaged) override;
 
 	// IGun implementation
 	virtual void OnBulletTraced(const bool isDamaged, const FHitResult& hitResult) override;
@@ -52,7 +52,7 @@ protected:
 	void BpOnFireStopped();
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void BpOnShotPerformed(const USceneComponent* firePivot, const bool isAnyBulletDamaged);
+	void BpOnShotRequest(const USceneComponent* firePivot);
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnBulletTraced(const bool isDamaged, const FHitResult& hitResult);

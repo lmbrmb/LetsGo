@@ -4,8 +4,6 @@
 
 #include "InstantShotComponent.generated.h"
 
-DECLARE_EVENT_TwoParams(UInstantShotComponent, EShotPerformed_InstantShot, const USceneComponent* firePivot, const bool isAnyBulletDamaged);
-
 DECLARE_EVENT_TwoParams(UInstantShotComponent, EBulletTraced_InstantShot, const bool isDamaged, const FHitResult& hitResult)
 
 ///<summary>
@@ -18,8 +16,6 @@ class LETSGO_API UInstantShotComponent : public UGunShotComponent
 
 public:
 	virtual void OnShotRequested(const USceneComponent* firePivot) override;
-
-	EShotPerformed_InstantShot ShotPerformed;
 
 	EBulletTraced_InstantShot BulletTraced;
 	
