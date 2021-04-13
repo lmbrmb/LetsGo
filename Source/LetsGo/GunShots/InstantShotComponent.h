@@ -4,9 +4,9 @@
 
 #include "InstantShotComponent.generated.h"
 
-DECLARE_EVENT_TwoParams(UGunShotComponent, EShotPerformed_InstantShot, const USceneComponent* firePivot, const bool isAnyBulletDamaged);
+DECLARE_EVENT_TwoParams(UInstantShotComponent, EShotPerformed_InstantShot, const USceneComponent* firePivot, const bool isAnyBulletDamaged);
 
-DECLARE_EVENT_TwoParams(UGunShotComponent, EBulletTraced_InstantShot, const bool isDamaged, const FHitResult& hitResult)
+DECLARE_EVENT_TwoParams(UInstantShotComponent, EBulletTraced_InstantShot, const bool isDamaged, const FHitResult& hitResult)
 
 ///<summary>
 ///Instant shot component. Line cast. Options: dispersion, damage over distance scaling.

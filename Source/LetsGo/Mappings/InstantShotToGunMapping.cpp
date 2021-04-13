@@ -3,6 +3,7 @@
 #include "LetsGo/GunShots/InstantShotComponent.h"
 #include "LetsGo/WeaponSystem/GunV1.h"
 #include "LetsGo/WeaponSystem/GunV2.h"
+#include "LetsGo/Utils/AssertUtils.h"
 
 void UInstantShotToGunMapping::Bind() const
 {

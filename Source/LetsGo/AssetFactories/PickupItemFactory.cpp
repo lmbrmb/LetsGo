@@ -16,6 +16,7 @@ PickupItemFactory::PickupItemFactory(
 	Paths.Add("MachinegunQ3", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_MachinegunQ3PickupItem"));
 	Paths.Add("Railgun", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_RailgunPickupItem"));
 	Paths.Add("RailgunQ3", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_RailgunQ3PickupItem"));
+	Paths.Add("RocketLauncherQ3", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_RocketLauncherQ3PickupItem"));
 
 	//Health
 	Paths.Add("MajorHealth", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_MajorHealthPickupItem"));

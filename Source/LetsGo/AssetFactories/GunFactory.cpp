@@ -16,6 +16,7 @@ GunFactory::GunFactory(
 	Paths.Add("MachinegunQ3", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_MachinegunQ3"));
 	Paths.Add("Railgun", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_Railgun"));
 	Paths.Add("RailgunQ3", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_RailgunQ3"));
+	Paths.Add("RocketLauncherQ3", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_RocketLauncherQ3"));
 
 	if (!lazyInitialization)
 	{

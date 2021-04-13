@@ -13,6 +13,9 @@ GunItemFactory::GunItemFactory()
 	const WeaponType railgunWeaponType("Railgun");
 	_gunData.Add("Railgun", GunData(railgunWeaponType, "RailgunBullets", 10));
 	_gunData.Add("RailgunQ3", GunData(railgunWeaponType, "RailgunBullets", 10));
+
+	const WeaponType rocketLauncherWeaponType("RocketLauncher");
+	_gunData.Add("RocketLauncherQ3", GunData(rocketLauncherWeaponType, "Rockets", 10));
 }
 
 GunItem* GunItemFactory::CreateItem(const FName itemId)

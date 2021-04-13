@@ -2,5 +2,5 @@
 
 void UProjectileShotComponent::OnShotRequested(const USceneComponent* firePivot)
 {
-	// TODO: spawn projectile	
+	ShotPerformed.Broadcast(firePivot);
 }
