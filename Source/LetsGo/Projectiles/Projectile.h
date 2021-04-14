@@ -31,7 +31,7 @@ protected:
 	virtual void BeginDestroy() override;
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void BpHit(const FVector& hitLocation);
+	void BpHit(const FHitResult& hitResult);
 
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)

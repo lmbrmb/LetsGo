@@ -10,7 +10,7 @@ AProjectile::AProjectile()
 void AProjectile::OnCollision(const FHitResult& hitResult)
 {
 	Hit.Broadcast(this, hitResult);
-	BpHit(hitResult.ImpactPoint);
+	BpHit(hitResult);
 	Destroy();
 }
 
