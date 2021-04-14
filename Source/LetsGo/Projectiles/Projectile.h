@@ -6,6 +6,7 @@
 class AProjectile;
 
 DECLARE_EVENT_TwoParams(AProjectile, EHit_Projectile, AProjectile* projectile, const FHitResult& hitResult);
+DECLARE_EVENT_OneParam(AProjectile, ELifeTimeExpired_Projectile, AProjectile* projectile);
 
 /// <summary>
 /// Projectile
@@ -22,10 +23,15 @@ public:
 
 	EHit_Projectile Hit;
 
+	ELifeTimeExpired_Projectile LifeTimeExpired;
+
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void BeginDestroy() override;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpHit(const FVector& hitLocation);
 
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
@@ -33,7 +39,7 @@ private:
 
 	FTimerHandle _lifeTimeTimerHandle;
 
-	void DestroyOnTimer();
+	void LifeTimeExpireOnTimer();
 
 	void SubscribeTimeManager();
 

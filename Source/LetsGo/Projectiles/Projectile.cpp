@@ -10,6 +10,8 @@ AProjectile::AProjectile()
 void AProjectile::OnCollision(const FHitResult& hitResult)
 {
 	Hit.Broadcast(this, hitResult);
+	BpHit(hitResult.ImpactPoint);
+	Destroy();
 }
 
 void AProjectile::BeginPlay()
@@ -26,9 +28,9 @@ void AProjectile::BeginDestroy()
 	UnsubscribeTimeManager();
 }
 
-void AProjectile::DestroyOnTimer()
+void AProjectile::LifeTimeExpireOnTimer()
 {
-	UnsubscribeTimeManager();
+	LifeTimeExpired.Broadcast(this);
 	Destroy();
 }
 
@@ -38,7 +40,7 @@ void AProjectile::SubscribeTimeManager()
 	auto const world = GetWorld();
 	AssertIsNotNull(world);
 	AssertIsGreater(_lifeTimeSeconds, 0.0f);
-	world->GetTimerManager().SetTimer(_lifeTimeTimerHandle, this, &AProjectile::DestroyOnTimer, _lifeTimeSeconds);
+	world->GetTimerManager().SetTimer(_lifeTimeTimerHandle, this, &AProjectile::LifeTimeExpireOnTimer, _lifeTimeSeconds);
 }
 
 void AProjectile::UnsubscribeTimeManager()
