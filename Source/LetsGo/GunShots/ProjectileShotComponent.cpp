@@ -1,6 +1,5 @@
 #include "ProjectileShotComponent.h"
 
-#include "DrawDebugHelpers.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
 #include "LetsGo/Utils/AssertUtils.h"
 #include "LetsGo/Utils/AssetUtils.h"
@@ -29,14 +28,27 @@ void UProjectileShotComponent::BeginPlay()
 	_collisionShape.SetSphere(_explosionRadius);
 }
 
-void UProjectileShotComponent::OnProjectileHit(AProjectile* projectile, const FHitResult& hitResult) const
+void UProjectileShotComponent::OnProjectileHit(AProjectile* projectile, const FHitResult& hitResult)
 {
-	AssertIsTrue(hitResult.bBlockingHit > 0);
-	auto const isAnyBulletDamaged = false;
-	auto const explosionEpicenterLocation = hitResult.ImpactPoint;
+	auto const isExplosionDamaged = SimulateExplosion(hitResult);
+	ShotPerformed.Broadcast(isExplosionDamaged);
+}
+
+void UProjectileShotComponent::OnProjectileLifeTimeExpired(AProjectile* projectile) const
+{
+	ShotPerformed.Broadcast(false);
+}
+
+bool UProjectileShotComponent::SimulateExplosion(const FHitResult& collisionHitResult)
+{
+	AssertIsTrue(collisionHitResult.bBlockingHit > 0, false);
 	
+	_hittedActors.Empty();
+
+	auto const explosionEpicenterLocation = collisionHitResult.ImpactPoint;
+
 	TArray<FHitResult> explosionHitResults;
-	auto const isHitted = GetWorld()->SweepMultiByChannel(
+	auto const isExplosionHittedSomething = GetWorld()->SweepMultiByChannel(
 		explosionHitResults,
 		explosionEpicenterLocation,
 		explosionEpicenterLocation,
@@ -45,14 +57,14 @@ void UProjectileShotComponent::OnProjectileHit(AProjectile* projectile, const FH
 		_collisionShape
 	);
 
-	//DrawDebugSphere(GetWorld(), explosionEpicenterLocation, _explosionRadius, 12, FColor::Red, false, 2);
-	
-	if(!isHitted)
+	//DrawDebugSphere(GetWorld(), explosionEpicenterLocation, _explosionRadius, 24, FColor::Red, false, 2);
+
+	if (!isExplosionHittedSomething)
 	{
-		return;
+		return false;
 	}
 
-	TArray<AActor*> hittedActors;
+	auto isExplosionDamaged = false;
 	
 	for (auto explosionHitResult : explosionHitResults)
 	{
@@ -60,46 +72,115 @@ void UProjectileShotComponent::OnProjectileHit(AProjectile* projectile, const FH
 		{
 			continue;
 		}
-		
-		auto const hitActor = explosionHitResult.Actor.Get();
 
-		if(hittedActors.Contains(hitActor))
+		auto const hittedActor = explosionHitResult.Actor.Get();
+
+		if (_hittedActors.Contains(hittedActor))
 		{
 			continue;
 		}
-		
-		hittedActors.Add(hitActor);
-		
-		auto const healthComponent = hitActor->FindComponentByClass<UHealthComponent>();
+
+		_hittedActors.Add(hittedActor);
+
+		auto const healthComponent = hittedActor->FindComponentByClass<UHealthComponent>();
 
 		if (!healthComponent)
 		{
 			continue;
 		}
 
-		// TODO: Check walls
+		auto const isActorHitted = IsActorHittedByExplosion(
+			collisionHitResult,
+			explosionHitResult,
+			hittedActor
+		);
 
-		auto const distance = FVector::Distance(explosionHitResult.ImpactPoint, explosionEpicenterLocation);
-		
-		auto const damageAmount = GetDamage(distance);
+		if (!isActorHitted)
+		{
+			continue;
+		}
+
+		auto const damageAmount = CalculateDamage(collisionHitResult, explosionHitResult, hittedActor);
 		const Damage damage(InstigatorPlayerId, InstigatorWeaponType, damageAmount);
-		healthComponent->TryInjure(damage);
+		auto const isDamaged = healthComponent->TryInjure(damage);
+		isExplosionDamaged |= isDamaged;
 	}
 
-	ShotPerformed.Broadcast(isAnyBulletDamaged);
+	return isExplosionDamaged;
 }
 
-void UProjectileShotComponent::OnProjectileLifeTimeExpired(AProjectile* projectile) const
+/// <summary>
+/// Checks if actor is hitted.
+/// </summary>
+/// <returns>
+/// "true" if direct hit or no obstacles between explosion epicenter and actor.
+/// "false" otherwise
+/// </returns>
+bool UProjectileShotComponent::IsActorHittedByExplosion(
+	const FHitResult& collisionHitResult,
+	const FHitResult& explosionHitResult,
+	AActor* testActor
+)
 {
-	ShotPerformed.Broadcast(false);
+	AssertIsTrue(explosionHitResult.bBlockingHit > 0, false);
+
+	auto const explosionEpicenterLocation = collisionHitResult.ImpactPoint;
+	auto const collisionActor = collisionHitResult.Actor;
+
+	if(collisionActor.IsValid() && collisionActor.Get() == testActor)
+	{
+		return true;
+	}
+
+	auto const impactNormalOffset = collisionHitResult.Normal * 10;
+	auto const lineStartLocation = explosionEpicenterLocation + impactNormalOffset;
+	auto const lineEndLocation = explosionHitResult.ImpactPoint;
+	
+	//DrawDebugLine(GetWorld(), lineStartLocation, lineEndLocation, FColor::Emerald, false, 10);
+	//DrawDebugSphere(GetWorld(), lineStartLocation, 20, 24, FColor::Emerald, false, 10);
+	//DrawDebugSphere(GetWorld(), lineEndLocation, 20, 24, FColor::Emerald, false, 10);
+	
+	auto const isAnythingHitted = GetWorld()->LineTraceSingleByChannel(
+		_hitResult,
+		lineStartLocation,
+		lineEndLocation,
+		_explosionChannel
+	);
+
+	if(!isAnythingHitted)
+	{
+		return false;
+	}
+	
+	if (_hitResult.Actor.IsValid() && _hitResult.Actor.Get() == testActor)
+	{
+		return true;
+	}
+
+	return false;
 }
 
-float UProjectileShotComponent::GetDamage(const float distance) const
+float UProjectileShotComponent::CalculateDamage(
+	const FHitResult& collisionHitResult,
+	const FHitResult& explosionHitResult,
+	AActor* testActor
+) const
 {
 	if (!_damageOverDistanceCurve)
 	{
 		return _maxDamage;
 	};
+
+	auto const collisionActor = collisionHitResult.Actor;
+	
+	if (collisionActor.IsValid() && collisionActor.Get() == testActor)
+	{
+		return _maxDamage;
+	}
+	
+	auto const explosionEpicenterLocation = collisionHitResult.ImpactPoint;
+	auto const actorHitLocation = explosionHitResult.ImpactPoint;
+	auto const distance = FVector::Distance(explosionEpicenterLocation, actorHitLocation);
 
 	AssertIsLessOrEqual(distance, _explosionRadius, _maxDamage);
 	

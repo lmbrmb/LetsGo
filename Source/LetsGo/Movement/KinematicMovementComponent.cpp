@@ -18,7 +18,6 @@ void UKinematicMovementComponent::BeginPlay()
 	_rootCollider = Cast<UShapeComponent>(rootComponent);
 	AssertIsNotNull(_rootCollider);
 
-	_previousLocation = _rootCollider->GetComponentLocation();
 	_collisionShape = _rootCollider->GetCollisionShape();
 	_collisionQueryParams.AddIgnoredActor(owner);
 }
@@ -32,23 +31,22 @@ void UKinematicMovementComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	auto const translation = forwardDirection * translationAmount;
 	auto const rootColliderLocation = _rootCollider->GetComponentLocation();
 	auto const rootColliderRotation = _rootCollider->GetComponentQuat();
+	auto const nextLocation = rootColliderLocation + translation;
 	
 	auto const isBlocked = GetWorld()->SweepSingleByChannel(
 		_bufferHitResult,
-		_previousLocation,
 		rootColliderLocation,
+		nextLocation,
 		rootColliderRotation,
 		_collisionChannel,
 		_collisionShape,
 		_collisionQueryParams
 	);
 
-	_rootCollider->AddWorldOffset(translation, false);
-
 	if(_bufferHitResult.bBlockingHit)
 	{
 		Collision.Broadcast(_bufferHitResult);
 	}
 
-	_previousLocation = rootColliderLocation;
+	_rootCollider->AddWorldOffset(translation, false);
 }

@@ -26,7 +26,7 @@ private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
 	TSubclassOf<AProjectile> _projectileBlueprint;
 
-	void OnProjectileHit(AProjectile* projectile, const FHitResult& hitResult) const;
+	void OnProjectileHit(AProjectile* projectile, const FHitResult& hitResult);
 
 	void OnProjectileLifeTimeExpired(AProjectile* projectile) const;
 
@@ -42,9 +42,23 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TEnumAsByte<ECollisionChannel> _explosionChannel;
 
-	float _explosionRadiusSquared = _explosionRadius * _explosionRadius;
-
 	FCollisionShape _collisionShape;
 
-	float GetDamage(const float distance) const;
+	TArray<AActor*> _hittedActors;
+	
+	FHitResult _hitResult;
+
+	bool SimulateExplosion(const FHitResult& collisionHitResult);
+
+	bool IsActorHittedByExplosion(
+		const FHitResult& collisionHitResult,
+		const FHitResult& explosionHitResult,
+		AActor* testActor
+	);
+	
+	float CalculateDamage(
+		const FHitResult& collisionHitResult,
+		const FHitResult& explosionHitResult,
+		AActor* testActor
+	) const;
 };

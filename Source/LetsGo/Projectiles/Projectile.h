@@ -41,7 +41,7 @@ private:
 
 	void LifeTimeExpireOnTimer();
 
-	void SubscribeTimeManager();
+	void SubscribeLifeTimeExpire();
 
-	void UnsubscribeTimeManager();
+	void UnsubscribeLifeTimeExpire();
 };

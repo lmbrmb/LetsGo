@@ -18,14 +18,14 @@ void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SubscribeTimeManager();
+	SubscribeLifeTimeExpire();
 }
 
 void AProjectile::BeginDestroy()
 {
 	Super::BeginDestroy();
 
-	UnsubscribeTimeManager();
+	UnsubscribeLifeTimeExpire();
 }
 
 void AProjectile::LifeTimeExpireOnTimer()
@@ -34,7 +34,7 @@ void AProjectile::LifeTimeExpireOnTimer()
 	Destroy();
 }
 
-void AProjectile::SubscribeTimeManager()
+void AProjectile::SubscribeLifeTimeExpire()
 {
 	AssertIsFalse(_lifeTimeTimerHandle.IsValid());
 	auto const world = GetWorld();
@@ -43,7 +43,7 @@ void AProjectile::SubscribeTimeManager()
 	world->GetTimerManager().SetTimer(_lifeTimeTimerHandle, this, &AProjectile::LifeTimeExpireOnTimer, _lifeTimeSeconds);
 }
 
-void AProjectile::UnsubscribeTimeManager()
+void AProjectile::UnsubscribeLifeTimeExpire()
 {
 	if (!_lifeTimeTimerHandle.IsValid())
 	{

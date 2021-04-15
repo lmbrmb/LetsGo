@@ -6,7 +6,7 @@
 DECLARE_EVENT_OneParam(UKinematicMovementComponent, ECollision_KinematicMovement, const FHitResult& hitResult)
 
 /// <summary>
-/// Kinematic movement component. No physics. Constant linear movement. Collision detection via ray cast.
+/// Kinematic movement component. No physics. Constant linear movement. Collision detection via ray cast. Generates hit events
 /// </summary>
 UCLASS( ClassGroup=(Custom), Blueprintable, meta=(BlueprintSpawnableComponent) )
 class LETSGO_API UKinematicMovementComponent : public UActorComponent
@@ -37,6 +37,4 @@ private:
 	FCollisionShape _collisionShape;
 
 	FCollisionQueryParams _collisionQueryParams;
-
-	FVector _previousLocation;
 };
