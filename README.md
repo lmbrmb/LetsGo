@@ -71,3 +71,8 @@ Voice synthesis for audio announcements.
 https://online-audio-converter.com/
 https://audiotrimmer.com/
 https://clideo.com/merge-audio
+
+7. Q3 Assets Converter
+Convert Quake 3 Arena map to FBX
+Source: https://urtjumpers.com/forum/viewtopic.php?id=2836
+Download link: https://goo.gl/h7tDT1
