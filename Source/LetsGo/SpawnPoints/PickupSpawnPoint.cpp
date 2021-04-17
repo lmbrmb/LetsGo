@@ -38,7 +38,21 @@ void APickupSpawnPoint::BeginPlay()
 	matchGameMode->RegisterSpawnPoint(_spawnPointType, GetTransform());
 
 	CreatePickup();
-	SpawnPickup();
+
+	if(!_pickupItem)
+	{
+		return;
+	}
+
+	if(_pickupFirstSpawnDelay > 0)
+	{
+		DeactivatePickup();
+		RequestSpawnPickupAfterDelay(_pickupFirstSpawnDelay);
+	}
+	else
+	{
+		SpawnPickup();
+	}
 }
 
 void APickupSpawnPoint::BeginDestroy()
@@ -58,6 +72,7 @@ void APickupSpawnPoint::BeginDestroy()
 void APickupSpawnPoint::CreatePickup()
 {
 	auto const pickupItemBlueprintGeneratedClass = _pickupItemFactory->GetOrLoad(_id);
+	AssertIsNotNull(pickupItemBlueprintGeneratedClass);
 	_pickupItem = AssetUtils::SpawnBlueprint<APickupItem>(
 		GetWorld(),
 		this,
@@ -71,20 +86,32 @@ void APickupSpawnPoint::CreatePickup()
 
 void APickupSpawnPoint::SpawnPickup()
 {
-	ActorUtils::SetEnabled(_pickupItem, true);
+	ActivatePickup();
 	// Actual spawn time
 	_pickupSpawnTime = GetWorld()->TimeSeconds;
+	BpOnPickupSpawn();
 }
 
 void APickupSpawnPoint::OnPickupTaken(APickupItem* pickupItem)
 {
-	ActorUtils::SetEnabled(_pickupItem, false);
-	GetWorld()->GetTimerManager().SetTimer(_pickupRespawnTimerHandle, this, &APickupSpawnPoint::RespawnPickupOnTimer, _pickupRespawnInterval, false);
+	DeactivatePickup();
+	RequestSpawnPickupAfterDelay(_pickupRespawnInterval);
+}
+
+void APickupSpawnPoint::RequestSpawnPickupAfterDelay(const float delay)
+{
+	AssertIsGreater(delay, 0.0f);
+	GetWorld()->GetTimerManager().SetTimer(_pickupRespawnTimerHandle, this, &APickupSpawnPoint::SpawnPickup, delay, false);
 	// Approximate spawn time
 	_pickupSpawnTime = GetWorld()->TimeSeconds + _pickupRespawnInterval;
 }
 
-void APickupSpawnPoint::RespawnPickupOnTimer()
+void APickupSpawnPoint::ActivatePickup() const
 {
-	SpawnPickup();
+	ActorUtils::SetEnabled(_pickupItem, true);
+}
+
+void APickupSpawnPoint::DeactivatePickup() const
+{
+	ActorUtils::SetEnabled(_pickupItem, false);
 }

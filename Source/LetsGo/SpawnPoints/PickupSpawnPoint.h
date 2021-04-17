@@ -24,6 +24,9 @@ protected:
 
 	virtual void BeginDestroy() override;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpOnPickupSpawn();
+
 private:
 	const float UNDEFINED_TIME = -1;
 
@@ -32,6 +35,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
 	USceneComponent* _spawnPivot = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	float _pickupFirstSpawnDelay = 0;
 
 	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
 	float _pickupRespawnInterval = 10;
@@ -58,5 +64,9 @@ private:
 
 	void OnPickupTaken(APickupItem* pickupItem);
 
-	void RespawnPickupOnTimer();
+	void RequestSpawnPickupAfterDelay(const float delay);
+
+	void ActivatePickup() const;
+
+	void DeactivatePickup() const;
 };
