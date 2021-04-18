@@ -26,12 +26,22 @@ protected:
 	virtual void OnPossess(APawn* InPawn) override;
 
 	virtual void OnUnPossess() override;
-	
+
+	virtual void Tick(float DeltaSeconds) override;
+
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
 	FName _mainMenuLevelName = "MainMenu";
 
 	AAvatar* _avatar = nullptr;
 
+	int _viewPortX = 0;
+
+	int _viewPortY = 0;
+
 	void OnEscape();
+
+	void SetupInput();
+
+	void SetMousePositionToCenter();
 };
