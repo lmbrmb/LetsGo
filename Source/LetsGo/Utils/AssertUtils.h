@@ -76,14 +76,14 @@ if (!BoolUtils::IsLessOrEqual(leftHandValue, rightHandValue)) \
 };
 
 #define AssertIsTrue(value, ...) \
-if (!BoolUtils::IsEqual(value, true)) \
+if (!BoolUtils::IsTrue(value)) \
 { \
 	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Value is not true", LogSeverity::Error); \
 	return __VA_ARGS__; \
 };
 
 #define AssertIsFalse(value, ...) \
-if (!BoolUtils::IsEqual(value, false)) \
+if (!BoolUtils::IsFalse(value)) \
 { \
 	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Value is not false", LogSeverity::Error); \
 	return __VA_ARGS__; \
@@ -92,3 +92,10 @@ if (!BoolUtils::IsEqual(value, false)) \
 #define AssertDefaultImplementationIsOverriden(...) \
 DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Default implementation is not overriden or base class implementation is called in derived class", LogSeverity::Error); \
 return __VA_ARGS__; \
+
+#define AssertIndexIsInArrayBounds(index, arr, ...) \
+if (!BoolUtils::IsGreaterOrEqual(index, 0) || !BoolUtils::IsLessOrEqual(index, _weaponPivots.Num() - 1)) \
+{ \
+	DevLogger::GetLoggingChannel()->LogValue(ASSERTION_FAILED + "Index is out of bounds of array. Index:", index, LogSeverity::Error); \
+	return __VA_ARGS__; \
+};

@@ -195,4 +195,6 @@ private:
 	void StartWeaponFire() const;
 
 	void StopWeaponFire() const;
+
+	void SetWeaponPivot(const int index);
 };

@@ -286,14 +286,21 @@ void UWeaponManagerComponent::ChangeWeaponPivot()
 		nextIndex = 0;
 	}
 
-	if(_weaponPivotIndex == nextIndex)
+	SetWeaponPivot(nextIndex);
+}
+
+void UWeaponManagerComponent::SetWeaponPivot(const int index)
+{
+	if (_weaponPivotIndex == index)
 	{
 		return;
 	}
 	
-	_weaponPivotIndex = nextIndex;
+	AssertIndexIsInArrayBounds(index, _weaponPivots);
+
+	_weaponPivotIndex = index;
 	_weaponPivot = _weaponPivots[_weaponPivotIndex];
-	
+
 	for (auto weaponActor : _weaponActors)
 	{
 		AttachWeapon(weaponActor);
