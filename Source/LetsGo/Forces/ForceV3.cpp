@@ -3,8 +3,8 @@
 #include "LetsGo/Utils/AssertUtils.h"
 
 ForceV3::ForceV3(
-	const FName id,
-	const FVector direction,
+	const FName& id,
+	const FVector& direction,
 	UCurveFloat* magnitudeCurve,
 	const float curveMagnitudeMultiplier,
 	const float curveTimeMultiplier
@@ -18,7 +18,7 @@ ForceV3::ForceV3(
 	AssertIsNotNull(magnitudeCurve);
 }
 
-FName ForceV3::GetId() const
+const FName& ForceV3::GetId() const
 {
 	return _id;
 }

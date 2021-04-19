@@ -5,8 +5,6 @@
 #include "DrawDebugHelpers.h"
 #include "LetsGo/GameModes/MatchGameMode.h"
 
-const FName UMovementComponentBase:: GRAVITY_FORCE_ID = "Gravity";
-
 const FName UMovementComponentBase::JUMP_FORCE_ID = "Jump";
 
 MovementSpeedState UMovementComponentBase::_defaultMovementSpeedState = MovementSpeedState::Run;
@@ -19,7 +17,7 @@ UMovementComponentBase::UMovementComponentBase()
 void UMovementComponentBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	auto const owner = GetOwner();
 	auto const rootComponent = owner->GetRootComponent();
 	RootCollider = Cast<UShapeComponent>(rootComponent);
@@ -27,21 +25,14 @@ void UMovementComponentBase::BeginPlay()
 	CollisionShape = RootCollider->GetCollisionShape();
 	CollisionQueryParams.bIgnoreTouches = true;
 	CollisionQueryParams.AddIgnoredActor(owner);
-	
+
 	auto const authGameMode = GetWorld()->GetAuthGameMode();
 	auto const projectGameModeBase = Cast<AProjectGameModeBase>(authGameMode);
 	AssertIsNotNull(projectGameModeBase);
 	auto const diContainer = projectGameModeBase->GetDiContainer();
 
-	auto const forceFactory = diContainer->GetInstance<ForceFactory>();
-	_forceFactory = &forceFactory.Get();
-	
-	if (!FMath::IsNearlyZero(_gravityForceMagnitude))
-	{
-		auto const gravityForce = _forceFactory->Create(GRAVITY_FORCE_ID, FVector::DownVector, _gravityForceMagnitude);
-		_forces.Add(gravityForce);
-	}
-	
+	_rigidBodyComponent = owner->FindComponentByClass<URigidBodyComponent>();
+
 	Init(owner);
 
 	if(_stepInterval > 0.05f)
@@ -102,7 +93,6 @@ void UMovementComponentBase::TickComponent(
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	ProcessInput();
-	ProcessForces(DeltaTime);
 	CheckGround();
 	ProcessMovement(DeltaTime);
 	CustomTick(DeltaTime);
@@ -127,28 +117,7 @@ void UMovementComponentBase::CheckGround()
 	SetIsInAir(!isOnGround);
 }
 
-void UMovementComponentBase::ProcessForces(const float& deltaTime)
-{
-	auto const forcesCount = _forces.Num();
-
-	if (forcesCount <= 0)
-	{
-		return;
-	}
-
-	auto forceSum = FVector::ZeroVector;
-
-	for (auto i = forcesCount - 1; i >= 0; i--)
-	{
-		auto const force = _forces[i];
-		const auto forceVector = force->GetVector(deltaTime);
-		forceSum += forceVector;
-	}
-	auto const deltaLocation = forceSum * deltaTime;
-	RootCollider->AddRelativeLocation(deltaLocation, true);
-}
-
-inline void UMovementComponentBase::ProcessMovement(const float& deltaTime)
+inline void UMovementComponentBase::ProcessMovement(const float deltaTime)
 {
 	auto const direction = GetMovementDirection();
 	if (direction.IsNearlyZero())
@@ -194,6 +163,9 @@ float UMovementComponentBase::GetSpeedStateMultiplier() const
 
 void UMovementComponentBase::PerformJump()
 {
+	// RigidBodyComponent is must have, jump implementation depends on it
+	AssertIsNotNull(_rigidBodyComponent);
+
 	if (_jumpIndex >= _jumpCount)
 	{
 		return;
@@ -202,20 +174,19 @@ void UMovementComponentBase::PerformJump()
 	_jumpIndex++;
 
 	Jump.Broadcast();
-	
+
 	// Current jump force will be replaced with new one
-	_forces.RemoveAll([](IForce* f) {return f->GetId() == JUMP_FORCE_ID; });
+	_rigidBodyComponent->RemoveForce(JUMP_FORCE_ID);
 
 	// Jump up force
 	auto const jumpUpDirection = FVector::UpVector;
-	auto const jumpForceUp = _forceFactory->Create(
+	_rigidBodyComponent->AddForce(
 		JUMP_FORCE_ID,
 		jumpUpDirection,
 		_jumpForceUpCurve,
 		_jumpForceCurveMagnitudeMultiplier,
 		_jumpForceCurveTimeMultiplier
 	);
-	_forces.Add(jumpForceUp);
 
 	// Jump velocity force
 	auto const velocity = FVector::VectorPlaneProject(_velocity, FVector::UpVector);
@@ -225,14 +196,13 @@ void UMovementComponentBase::PerformJump()
 	}
 	
 	auto const jumpVelocityDirection = velocity.GetSafeNormal();
-	auto const jumpVelocityForce = _forceFactory->Create(
+	_rigidBodyComponent->AddForce(
 		JUMP_FORCE_ID,
 		jumpVelocityDirection,
 		_jumpForceVelocityCurve,
 		_jumpForceCurveMagnitudeMultiplier,
 		_jumpForceCurveTimeMultiplier
 	);
-	_forces.Add(jumpVelocityForce);
 }
 
 FVector UMovementComponentBase::GetRootColliderLocation() const
@@ -336,7 +306,11 @@ void UMovementComponentBase::SetIsInAir(const bool isInAir)
 		if (!isInAir)
 		{
 			_jumpIndex = 0;
-			_forces.RemoveAll([](IForce* f) {return f->GetId() == JUMP_FORCE_ID; });
+			// RigidBodyComponent is optional because you can move without jumping
+			if(_rigidBodyComponent)
+			{
+				_rigidBodyComponent->RemoveForce(JUMP_FORCE_ID);
+			}
 			Land.Broadcast();
 		}
 	}

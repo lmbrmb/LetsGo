@@ -33,8 +33,8 @@ void AMatchPlayerController::SetupInput()
 void AMatchPlayerController::SetMousePositionToCenter()
 {
 	GetViewportSize(_viewPortX, _viewPortY);
-	auto const mouseX = _viewPortX < 2 ? 0 : _viewPortX / 2;
-	auto const mouseY = _viewPortY < 2 ? 0 : _viewPortY / 2;
+	auto const mouseX = _viewPortX / 2;
+	auto const mouseY = _viewPortY / 2;
 	SetMouseLocation(mouseX, mouseY);
 }
 

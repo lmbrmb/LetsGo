@@ -26,10 +26,6 @@ private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
 	TSubclassOf<AProjectile> _projectileBlueprint;
 
-	void OnProjectileHit(AProjectile* projectile, const FHitResult& hitResult);
-
-	void OnProjectileLifeTimeExpired(AProjectile* projectile) const;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float _maxDamage = 50;
 
@@ -45,8 +41,12 @@ private:
 	FCollisionShape _collisionShape;
 
 	TArray<AActor*> _hittedActors;
-	
+
 	FHitResult _hitResult;
+
+	void OnProjectileHit(AProjectile* projectile, const FHitResult& hitResult);
+
+	void OnProjectileLifeTimeExpired(AProjectile* projectile) const;
 
 	bool SimulateExplosion(const FHitResult& collisionHitResult);
 

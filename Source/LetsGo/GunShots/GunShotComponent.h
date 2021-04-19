@@ -19,33 +19,40 @@ class LETSGO_API UGunShotComponent : public UActorComponent
 
 public:	
 	UGunShotComponent();
-	
+
 	void SetWeaponType(const WeaponType& weaponType);
-	
+
 	void SetPlayerId(const PlayerId& instigatorId);
-	
+
 	void SetAimProvider(IAimProvider* aimProvider);
 
 	virtual void OnShotRequested(const USceneComponent* firePivot) {};
 
 	EShotPerformed_GunShot ShotPerformed;
-	
+
 protected:
+	UPROPERTY(EditAnywhere, Category = "ImpactForce", meta = (AllowPrivateAccess = "true"))
+	float ImpactForceCurveMagnitudeMultiplier = 1;
+
+	UPROPERTY(EditAnywhere, Category = "ImpactForce", meta = (AllowPrivateAccess = "true"))
+	float ImpactForceCurveTimeMultiplier = 1;
+
+	UPROPERTY(EditAnywhere, Category = "ImpactForce", meta = (AllowPrivateAccess = "true"))
+	UCurveFloat* ImpactForceCurve;
+	
 	WeaponType InstigatorWeaponType;
 
 	PlayerId InstigatorPlayerId;
 
 	IAimProvider* AimProvider = nullptr;
-	
-	AActor* GunActor;
 
-	AActor* GunOwner;
+	AActor* GunActor = nullptr;
 
-	UFUNCTION(BlueprintCallable)
-	bool GetIsLocalPlayer() const;
+	AActor* GunOwner = nullptr;
 
 	virtual void BeginPlay() override;
-	
-private:
-	bool _isLocalPlayer = false;
+
+	void ApplyForce(AActor* actor, const FVector& direction) const;
+
+	static const FName ForceName;
 };

@@ -9,13 +9,13 @@ class ForceV1 final : public IForce
 {
 public:
 	explicit ForceV1(
-		const FName id,
-		const FVector direction,
+		const FName& id,
+		const FVector& direction,
 		const float magnitude
 	);
-	
-	virtual FName GetId() const override;
-	
+
+	virtual const FName& GetId() const override;
+
 	virtual FVector GetVector(const float deltaTime) override;
 
 private:

@@ -3,8 +3,8 @@
 #include "LetsGo/Logs/DevLogger.h"
 
 ForceV1::ForceV1(
-	const FName id,
-	const FVector direction,
+	const FName& id,
+	const FVector& direction,
 	const float magnitude
 	) :
 	_id(id)
@@ -12,7 +12,7 @@ ForceV1::ForceV1(
 	_vector = direction * magnitude;
 }
 
-FName ForceV1::GetId() const
+const FName& ForceV1::GetId() const
 {
 	return _id;
 }

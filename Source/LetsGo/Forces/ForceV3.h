@@ -9,26 +9,26 @@ class ForceV3 final : public IForce
 {
 public:
 	ForceV3(
-		const FName id,
-		const FVector direction,
+		const FName& id,
+		const FVector& direction,
 		UCurveFloat* magnitudeCurve,
 		const float curveMagnitudeMultiplier,
 		const float curveTimeMultiplier
 	);
 	
-	virtual FName GetId() const override;
-	
+	virtual const FName& GetId() const override;
+
 	virtual FVector GetVector(const float deltaTime) override;
 
 private:
 	FName _id;
-	
+
 	FVector _direction;
-	
+
 	float _curveMagnitudeMultiplier;
 
 	float _curveTimeMultiplier;
-	
+
 	UCurveFloat* _magnitudeCurve;
 
 	float _lifeTime = 0;

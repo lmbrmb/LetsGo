@@ -7,8 +7,8 @@
 
 // ReSharper disable once CppMemberFunctionMayBeStatic
 IForce* ForceFactory::Create(
-	const FName id,
-	const FVector direction,
+	const FName& id,
+	const FVector& direction,
 	const float magnitude
 )
 {
@@ -17,8 +17,8 @@ IForce* ForceFactory::Create(
 
 // ReSharper disable once CppMemberFunctionMayBeStatic
 IForce* ForceFactory::Create(
-	const FName id,
-	const FVector direction,
+	const FName& id,
+	const FVector& direction,
 	UCurveFloat* magnitudeCurve
 )
 {
@@ -27,8 +27,8 @@ IForce* ForceFactory::Create(
 
 // ReSharper disable once CppMemberFunctionMayBeStatic
 IForce* ForceFactory::Create(
-	const FName id,
-	const FVector direction,
+	const FName& id,
+	const FVector& direction,
 	UCurveFloat* magnitudeCurve,
 	const float curveMagnitudeMultiplier,
 	const float curveTimeMultiplier

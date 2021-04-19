@@ -2,8 +2,7 @@
 
 #include "MovementSpeedState.h"
 #include "Components/ShapeComponent.h"
-#include "LetsGo/Forces/IForce.h"
-#include "LetsGo/Forces/ForceFactory.h"
+#include "LetsGo/Physics/RigidbodyComponent.h"
 
 #include "MovementComponentBase.generated.h"
 
@@ -49,10 +48,7 @@ public:
 	ELand Land;
 
 protected:
-	static const FName GRAVITY_FORCE_ID;
-
 	static const FName JUMP_FORCE_ID;
-
 	UMovementComponentBase();
 	virtual void BeginPlay() override final;
 
@@ -127,9 +123,6 @@ private:
 	int _jumpIndex = 0;
 
 	// Speed
-	
-	UPROPERTY(EditAnywhere, Category = "Gravity", meta = (AllowPrivateAccess = "true"))
-	float _gravityForceMagnitude = 981.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float _maxStepHeight = 50;
@@ -164,10 +157,8 @@ private:
 	FHitResult _bufferHitResult;
 	
 	FHitResult hitResult;
-	
-	void ProcessForces(const float& deltaTime);
 
-	void ProcessMovement(const float& deltaTime);
+	void ProcessMovement(const float deltaTime);
 	
 	void CheckGround();
 
@@ -186,10 +177,6 @@ private:
 		const FHitResult& groundHitResult,
 		const float translationAmount
 	);
-
-	TArray<IForce*> _forces;
-
-	ForceFactory* _forceFactory;
 	
 	void UpdateVelocity();
 
@@ -203,4 +190,6 @@ private:
 	float _stepInterval;
 
 	FTimerHandle _stepTimerHandle;
+
+	URigidBodyComponent* _rigidBodyComponent;
 };

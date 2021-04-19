@@ -9,12 +9,12 @@ class ForceV2 final : public IForce
 {
 public:
 	ForceV2(
-		const FName id,
-		const FVector direction,
+		const FName& id,
+		const FVector& direction,
 		UCurveFloat* magnitudeCurve
 	);
 
-	virtual FName GetId() const override;
+	virtual const FName& GetId() const override;
 
 	virtual FVector GetVector(const float deltaTime) override;
 
