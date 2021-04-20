@@ -8,7 +8,7 @@
 /// Avatar SFX to health mapping
 /// </summary>
 UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent))
-class LETSGO_API UAvatarSfxToHealthMapping : public UMappingComponent
+class LETSGO_API UAvatarSfxToHealthMapping final : public UMappingComponent
 {
 	GENERATED_BODY()
 

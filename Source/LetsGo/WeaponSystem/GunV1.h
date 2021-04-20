@@ -1,6 +1,5 @@
 #pragma once
 
-#include "FirePivotMode.h"
 #include "IGun.h"
 #include "GunState.h"
 
@@ -41,6 +40,9 @@ public:
 	virtual void OnBulletTraced(const bool isDamaged, const FHitResult& hitResult) override;
 
 protected:
+	UFUNCTION(BlueprintCallable)
+	void SetFirePivot(USceneComponent* firePivot);
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnFireStarted();
 
@@ -104,16 +106,8 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int _consumeAmmoPerShot = 1;
 	
-	// Fire pivots
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TArray<USceneComponent*> _firePivots;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	FFirePivotMode _firePivotMode;
-
-	USceneComponent* GetFirePivot();
-
-	int _firePivotIndex = INITIAL_FIRE_PIVOT_INDEX;
+	// Fire pivot
+	USceneComponent* _firePivot;
 
 	// Reload
 

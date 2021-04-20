@@ -7,7 +7,7 @@
 /// Projectile to kinematic movement component mapping 
 /// </summary>
 UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent))
-class LETSGO_API UProjectileToKMovementMapping : public UMappingComponent
+class LETSGO_API UProjectileToKMovementMapping final : public UMappingComponent
 {
 	GENERATED_BODY()
 

@@ -1,6 +1,7 @@
 #include "GunV2.h"
 
 #include "LetsGo/Logs/DevLogger.h"
+#include "LetsGo/Utils/AssertUtils.h"
 
 AGunV2::AGunV2()
 {
@@ -25,6 +26,11 @@ void AGunV2::BeginPlay()
 	_stateProcessors.Add(GunState::Shooting, [this]() { ProcessShootingState(); });
 	
 	SetState(GunState::Idle);
+}
+
+void AGunV2::SetFirePivot(USceneComponent* firePivot)
+{
+	_firePivot = firePivot;
 }
 
 void AGunV2::SetState(const GunState state)
@@ -104,46 +110,13 @@ void AGunV2::OnBulletTraced(const bool isDamaged, const FHitResult& hitResult)
 	BpOnBulletTraced(isDamaged, hitResult);
 }
 
-USceneComponent* AGunV2::GetFirePivot()
-{
-	int nextIndex = 0;
-	switch (_firePivotMode)
-	{
-		case FFirePivotMode::Cycle:
-			nextIndex = _firePivotIndex + 1;
-
-			if (nextIndex >= _firePivots.Num())
-			{
-				nextIndex = 0;
-			}
-			break;
-		case FFirePivotMode::AlwaysFirst:
-		default:
-			break;
-	}
-	_firePivotIndex = nextIndex;
-	return _firePivots[_firePivotIndex];
-}
-
 void AGunV2::StartShot()
 {
+	AssertIsNotNull(_firePivot);
+
 	_shotStartTime = GetWorld()->TimeSeconds;
-	
-	if (_firePivotMode == FFirePivotMode::AllSimultaneously)
-	{
-		for (auto firePivot : _firePivots)
-		{
-			ShotRequested.Broadcast(firePivot);
-			BpOnShotRequest(firePivot);
-		}
-	}
-	else
-	{
-		auto const firePivot = GetFirePivot();
-		ShotRequested.Broadcast(firePivot);
-		BpOnShotRequest(firePivot);
-	}
-	
+	ShotRequested.Broadcast(_firePivot);
+	BpOnShotRequest(_firePivot);
 	SetState(GunState::Shooting);
 }
 

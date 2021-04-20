@@ -1,6 +1,7 @@
 #include "GunV1.h"
 
 #include "LetsGo/Logs/DevLogger.h"
+#include "LetsGo/Utils/AssertUtils.h"
 
 AGunV1::AGunV1()
 {
@@ -15,6 +16,11 @@ void AGunV1::OnShotPerformed(const bool isAnyBulletDamaged)
 void AGunV1::OnBulletTraced(const bool isDamaged, const FHitResult& hitResult)
 {
 	BpOnBulletTraced(isDamaged, hitResult);
+}
+
+void AGunV1::SetFirePivot(USceneComponent* firePivot)
+{
+	_firePivot = firePivot;
 }
 
 void AGunV1::BeginPlay()
@@ -138,47 +144,15 @@ void AGunV1::Reload()
 	StartReload();
 }
 
-USceneComponent* AGunV1::GetFirePivot()
-{
-	int nextIndex = 0;
-	switch (_firePivotMode)
-	{
-	case FFirePivotMode::Cycle:
-		nextIndex = _firePivotIndex + 1;
-
-		if (nextIndex >= _firePivots.Num())
-		{
-			nextIndex = 0;
-		}
-		break;
-	case FFirePivotMode::AlwaysFirst:
-	default:
-		break;
-	}
-	_firePivotIndex = nextIndex;
-	return _firePivots[_firePivotIndex];
-}
-
 void AGunV1::StartShot()
 {
+	AssertIsNotNull(_firePivot);
+
 	_shotStartTime = GetWorld()->TimeSeconds;
 	_clipCurrent -= _consumeAmmoPerShot;
-
-	if(_firePivotMode == FFirePivotMode::AllSimultaneously)
-	{
-		for (auto firePivot : _firePivots)
-		{
-			ShotRequested.Broadcast(firePivot);
-			BpOnShotRequest(firePivot);
-		}
-	}
-	else
-	{
-		auto const firePivot = GetFirePivot();
-		ShotRequested.Broadcast(firePivot);
-		BpOnShotRequest(firePivot);
-	}
 	
+	ShotRequested.Broadcast(_firePivot);
+	BpOnShotRequest(_firePivot);
 	SetState(GunState::Shooting);
 }
 

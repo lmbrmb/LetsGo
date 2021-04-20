@@ -20,13 +20,13 @@ void UCurveAnimationComponent::Initialize(USceneComponent* moveableComponent, US
 
 void UCurveAnimationComponent::SetState(const FCurveAnimationState state)
 {
-	if(_state == state)
-	{
-		return;
-	}
-	
 	_state = state;
 	_stateTime = 0;
+}
+
+const FName& UCurveAnimationComponent::GetAnimationId() const
+{
+	return _animationId;
 }
 
 void UCurveAnimationComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -122,8 +122,9 @@ float UCurveAnimationComponent::GetOffsetAmount(const UCurveFloat* curve)
 	curve->GetTimeRange(_bufferMinTime, _bufferMaxTime);
 
 	auto const scaledTime = _stateTime * _curveTimeMultiplier;
-	auto const loopedScaledTime = FMath::Fmod(scaledTime, _bufferMaxTime);
-	auto const curveValue = curve->GetFloatValue(loopedScaledTime);
+	auto const timeValue = scaledTime <= _bufferMaxTime ? scaledTime :
+		_loopTime ? FMath::Fmod(scaledTime, _bufferMaxTime) : _bufferMaxTime;
+	auto const curveValue = curve->GetFloatValue(timeValue);
 	auto const offset = curveValue * _curveMagnitudeMultiplier;
 	
 	return offset;

@@ -7,7 +7,7 @@
 ///Announcement manager to match analytics mapping
 ///</summary>
 UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent))
-class LETSGO_API UAnnouncementToAnalyticsMapping : public UMappingComponent
+class LETSGO_API UAnnouncementToAnalyticsMapping final : public UMappingComponent
 {
 	GENERATED_BODY()
 

@@ -187,6 +187,11 @@ void UWeaponManagerComponent::RequestEquipWeapon(const int weaponIndex)
 	}
 	
 	_nextWeaponIndex = weaponIndex;
+
+	if(_weaponActor)
+	{
+		ActorUtils::SetEnabled(_weaponActor, false);
+	}
 	
 	if (_weapon)
 	{

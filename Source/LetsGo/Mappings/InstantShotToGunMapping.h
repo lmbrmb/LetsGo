@@ -8,7 +8,7 @@
 /// Instant shot to gun mapping
 /// </summary>
 UCLASS()
-class LETSGO_API UInstantShotToGunMapping : public UGunShotToGunMapping
+class LETSGO_API UInstantShotToGunMapping final : public UGunShotToGunMapping
 {
 	GENERATED_BODY()
 

@@ -10,7 +10,7 @@
 /// Announcement to HUD mapping
 /// </summary>
 UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent))
-class LETSGO_API UAnnouncementToHudMapping : public UMappingComponent
+class LETSGO_API UAnnouncementToHudMapping final : public UMappingComponent
 {
 	GENERATED_BODY()
 

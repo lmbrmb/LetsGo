@@ -21,6 +21,13 @@ if (BoolUtils::IsStringEmpty(value)) \
 	return __VA_ARGS__; \
 };
 
+#define AssertNameIsAssigned(value, ...) \
+if (value.IsNone()) \
+{ \
+	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Name is not assigned", LogSeverity::Error); \
+	return __VA_ARGS__; \
+};
+
 #define AssertIsEqual(leftHandValue, rightHandValue, ...) \
 if (!BoolUtils::IsEqual(leftHandValue, rightHandValue)) \
 { \

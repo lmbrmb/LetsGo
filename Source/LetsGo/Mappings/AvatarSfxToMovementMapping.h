@@ -8,7 +8,7 @@
 /// Avatar SFX component to Movement base component mapping
 /// </summary>
 UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent))
-class LETSGO_API UAvatarSfxToMovementMapping : public UMappingComponent
+class LETSGO_API UAvatarSfxToMovementMapping final : public UMappingComponent
 {
 	GENERATED_BODY()
 

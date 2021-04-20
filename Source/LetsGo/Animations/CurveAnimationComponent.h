@@ -17,6 +17,8 @@ public:
 	void Initialize(USceneComponent* moveableComponent, USceneComponent* moveableComponentRoot);
 
 	void SetState(const FCurveAnimationState state);
+
+	const FName& GetAnimationId() const;
 	
 protected:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -39,6 +41,12 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
 	UCurveFloat* _curveUp;
+
+	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	bool _loopTime = false;
+
+	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	FName _animationId;
 
 	FCurveAnimationState _state;
 	

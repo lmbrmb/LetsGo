@@ -11,7 +11,7 @@
 ///Aim provider to weapon manager mapping. Persistent because aim provider can be changed
 ///</summary>
 UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent))
-class LETSGO_API UAimToWeaponManagerMapping : public UMappingComponent
+class LETSGO_API UAimToWeaponManagerMapping final : public UMappingComponent
 {
 	GENERATED_BODY()
 

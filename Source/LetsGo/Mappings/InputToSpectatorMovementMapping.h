@@ -10,7 +10,7 @@
 /// Input to spectator pawn movement mapping
 /// </summary>
 UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent))
-class LETSGO_API UInputToSpectatorMovementMapping : public UMappingComponent
+class LETSGO_API UInputToSpectatorMovementMapping final : public UMappingComponent
 {
 	GENERATED_BODY()
 
@@ -20,5 +20,5 @@ protected:
 private:
 	void OnPossessed();
 
-	AMatchSpectatorPawn* _matchSpectatorPawn;
+	AMatchSpectatorPawn* _matchSpectatorPawn = nullptr;
 };

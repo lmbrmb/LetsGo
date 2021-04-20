@@ -10,7 +10,7 @@
 /// Announcement to game mode mapping
 /// </summary>
 UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent))
-class LETSGO_API UAnnouncementToGameModeMapping : public UMappingComponent
+class LETSGO_API UAnnouncementToGameModeMapping final : public UMappingComponent
 {
 	GENERATED_BODY()
 
