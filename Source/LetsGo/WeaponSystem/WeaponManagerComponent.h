@@ -20,6 +20,8 @@ DECLARE_EVENT_ThreeParams(UWeaponManagerComponent, EShotPerformed_UWeaponManager
 
 DECLARE_EVENT(UWeaponManagerComponent, EWeaponChanged_UWeaponManagerComponent);
 
+DECLARE_EVENT(UWeaponManagerComponent, EShotRequested_UWeaponManagerComponent);
+
 UCLASS(ClassGroup = (Custom), Blueprintable, meta = (BlueprintSpawnableComponent))
 class LETSGO_API UWeaponManagerComponent final : public UActorComponent, public IItemProcessor
 {
@@ -70,6 +72,8 @@ public:
 	EWeaponChanged_UWeaponManagerComponent WeaponEquipped;
 
 	EWeaponChanged_UWeaponManagerComponent WeaponHolstered;
+
+	EShotRequested_UWeaponManagerComponent ShotRequested;
 
 protected:
 	virtual void BeginPlay() override;
@@ -189,6 +193,8 @@ private:
 	void CreateStartWeapon();
 
 	void OnGunShotPerformed(const IGun* gun, const bool isAnyBulletDamaged);
+
+	void OnGunShotRequested(const USceneComponent* firePivot) const;
 
 	void OnOutOfAmmo();
 

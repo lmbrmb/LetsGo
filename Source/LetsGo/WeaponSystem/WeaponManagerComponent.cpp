@@ -568,9 +568,10 @@ AActor* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 	gun->InitializeGun(ammoProvider, _aimProvider);
 
 	AttachWeapon(gunActor);
-	
+
 	gun->ShotPerformed.AddUObject(this, &UWeaponManagerComponent::OnGunShotPerformed);
-	
+	gun->ShotRequested.AddUObject(this, &UWeaponManagerComponent::OnGunShotRequested);
+
 	return gunActor;
 }
 
@@ -623,6 +624,11 @@ void UWeaponManagerComponent::OnGunShotPerformed(const IGun* gun, const bool isA
 {
 	BpOnGunShotPerformed(isAnyBulletDamaged);
 	ShotPerformed.Broadcast(gun->GetPlayerId(), gun->GetWeaponType(), isAnyBulletDamaged);
+}
+
+void UWeaponManagerComponent::OnGunShotRequested(const USceneComponent* firePivot) const
+{
+	ShotRequested.Broadcast();
 }
 
 void UWeaponManagerComponent::OnOutOfAmmo()

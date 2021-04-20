@@ -106,3 +106,17 @@ if (!BoolUtils::IsGreaterOrEqual(index, 0) || !BoolUtils::IsLessOrEqual(index, _
 	DevLogger::GetLoggingChannel()->LogValue(ASSERTION_FAILED + "Index is out of bounds of array. Index:", index, LogSeverity::Error); \
 	return __VA_ARGS__; \
 };
+
+#define AssertContainerContainsElement(container, element, ...) \
+if (!container.Contains(element)) \
+{ \
+	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Container does not contain element.", LogSeverity::Error); \
+	return __VA_ARGS__; \
+};
+
+#define AssertContainerDoesNotContainElement(container, element, ...) \
+if (container.Contains(element)) \
+{ \
+	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Container contains element.", LogSeverity::Error); \
+	return __VA_ARGS__; \
+};

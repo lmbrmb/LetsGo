@@ -2,10 +2,8 @@
 
 #include "MappingComponent.h"
 
-#include "LetsGo/Animations/CurveAnimationComponent.h"
+#include "LetsGo/Animations/CurveAnimationBlenderComponent.h"
 
-#include "LetsGo/Data/PlayerId.h"
-#include "LetsGo/Data/WeaponType.h"
 #include "GunRecoilAnimationMapping.generated.h"
 
 UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent))
@@ -21,19 +19,37 @@ protected:
 	
 private:
 	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	FName _blenderId;
+
+	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
 	FName _animationId;
-	
-	UCurveAnimationComponent* _curveAnimationComponent = nullptr;
-	
+
+	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	bool _isAnimationEnabled = false;
+
+	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	bool _animationLoop = false;
+
+	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	float _curveMagnitudeMultiplier = 1;
+
+	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	float _curveTimeMultiplier = 1;
+
+	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	UCurveFloat* _curveForward;
+
+	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	UCurveFloat* _curveRight;
+
+	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	UCurveFloat* _curveUp;
+
+	UCurveAnimationBlenderComponent* _curveAnimationBlenderComponent = nullptr;
+
 	bool _isInitialized = false;
 
-	FCurveAnimationState _state;
+	void SetupAnimation() const;
 
-	void OnShotPerformed(
-		const PlayerId& playerId,
-		const WeaponType& weaponType,
-		const bool isAnyBulletDamaged
-	) const;
-
-	void OnWeaponEquipped() const;
+	void OnShotRequested() const;
 };

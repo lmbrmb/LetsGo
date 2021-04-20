@@ -11,45 +11,65 @@ UGunRecoilAnimationMapping::UGunRecoilAnimationMapping()
 
 void UGunRecoilAnimationMapping::Map()
 {
+	AssertIsTrue(_curveUp || _curveRight || _curveForward);
 	AssertNameIsAssigned(_animationId);
 
 	auto const owner = GetOwner();
 	
-	TArray<UCurveAnimationComponent*> curveAnimationComponents;
-	owner->GetComponents<UCurveAnimationComponent>(curveAnimationComponents);
+	TArray<UCurveAnimationBlenderComponent*> curveAnimationBlenderComponents;
+	owner->GetComponents<UCurveAnimationBlenderComponent>(curveAnimationBlenderComponents);
 
 	auto matchCount = 0;
-	for (auto curveAnimationComponent : curveAnimationComponents)
+	for (auto curveAnimationBlenderComponent : curveAnimationBlenderComponents)
 	{
-		if(curveAnimationComponent->GetAnimationId() == _animationId)
+		if (curveAnimationBlenderComponent->GetBlenderId() == _blenderId)
 		{
 			matchCount++;
-			_curveAnimationComponent = curveAnimationComponent;
+			_curveAnimationBlenderComponent = curveAnimationBlenderComponent;
 		}
 	}
 
-	AssertIsNotNull(_curveAnimationComponent);
+	AssertIsNotNull(_curveAnimationBlenderComponent);
 	AssertIsEqual(matchCount, 1);
 
 	auto const weaponManager = owner->FindComponentByClass<UWeaponManagerComponent>();
 	AssertIsNotNull(weaponManager);
-	
-	weaponManager->ShotPerformed.AddUObject(this, &UGunRecoilAnimationMapping::OnShotPerformed);
-	weaponManager->WeaponEquipped.AddUObject(this, &UGunRecoilAnimationMapping::OnWeaponEquipped);
+
+	SetupAnimation();
+
+	weaponManager->ShotRequested.AddUObject(this, &UGunRecoilAnimationMapping::OnShotRequested);
 
 	_isInitialized = true;
 }
 
-void UGunRecoilAnimationMapping::OnShotPerformed(
-	const PlayerId& playerId,
-	const WeaponType& weaponType,
-	const bool isAnyBulletDamaged
-) const
+void UGunRecoilAnimationMapping::SetupAnimation() const
 {
-	_curveAnimationComponent->SetState(FCurveAnimationState::ApplyCurve);
+	_curveAnimationBlenderComponent->AddAnimation(
+		_animationId,
+		_animationLoop,
+		_isAnimationEnabled,
+		_curveMagnitudeMultiplier,
+		_curveTimeMultiplier
+	);
+
+	if (_curveUp)
+	{
+		_curveAnimationBlenderComponent->AddCurve(_animationId, _curveUp, FVector::UpVector);
+	}
+
+	if (_curveRight)
+	{
+		_curveAnimationBlenderComponent->AddCurve(_animationId, _curveRight, FVector::RightVector);
+	}
+
+	if (_curveForward)
+	{
+		_curveAnimationBlenderComponent->AddCurve(_animationId, _curveForward, FVector::ForwardVector);
+	}
 }
 
-void UGunRecoilAnimationMapping::OnWeaponEquipped() const
+void UGunRecoilAnimationMapping::OnShotRequested() const
 {
-	_curveAnimationComponent->SetState(FCurveAnimationState::MoveToOrigin);
+	_curveAnimationBlenderComponent->EnableAnimation(_animationId, true);
+	_curveAnimationBlenderComponent->ResetAnimationTime(_animationId);
 }

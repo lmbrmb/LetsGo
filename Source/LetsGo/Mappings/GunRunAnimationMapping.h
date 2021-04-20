@@ -3,7 +3,7 @@
 #include "MappingComponent.h"
 
 #include "LetsGo/Movement/MovementComponentBase.h"
-#include "LetsGo/Animations/CurveAnimationComponent.h"
+#include "LetsGo/Animations/CurveAnimationBlenderComponent.h"
 
 #include "GunRunAnimationMapping.generated.h"
 
@@ -22,13 +22,39 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	FName _blenderId;
+
+	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
 	FName _animationId;
-	
+
+	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	bool _isAnimationEnabled = false;
+
+	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	bool _animationLoop = true;
+
+	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	float _curveMagnitudeMultiplier = 1;
+
+	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	float _curveTimeMultiplier = 1;
+
+	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	UCurveFloat* _curveForward;
+
+	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	UCurveFloat* _curveRight;
+
+	UPROPERTY(EditAnywhere, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	UCurveFloat* _curveUp;
+
 	UMovementComponentBase* _movementComponent = nullptr;
 
-	UCurveAnimationComponent* _curveAnimationComponent = nullptr;
-	
+	UCurveAnimationBlenderComponent* _curveAnimationBlenderComponent = nullptr;
+
 	bool _isInitialized = false;
 
-	FCurveAnimationState _state;
+	bool _isEnabled = false;
+
+	void SetupAnimation() const;
 };
