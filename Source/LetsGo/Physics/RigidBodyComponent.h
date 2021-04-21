@@ -8,7 +8,7 @@
 
 #include "RigidBodyComponent.generated.h"
 
-DECLARE_EVENT(URigidBodyComponent, ELand)
+DECLARE_EVENT_OneParam(URigidBodyComponent, ELand, const float airTime);
 
 UCLASS( ClassGroup=(Custom), Blueprintable, meta=(BlueprintSpawnableComponent) )
 class LETSGO_API URigidBodyComponent final : public UActorComponent
@@ -37,28 +37,30 @@ public:
 		const float curveMagnitudeMultiplier,
 		const float curveTimeMultiplier
 	);
-	
+
 	void RemoveForce(const FName& id);
 
 	bool GetIsInAir() const;
+
+	const FVector& GetVelocity() const;
 
 	ELand Land;
 
 protected:
 	virtual void BeginPlay() override;
-	
+
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
 	static const FName GRAVITY_FORCE_ID;
-	
+
 	UPROPERTY(EditAnywhere, Category = "Gravity", meta = (AllowPrivateAccess = "true"))
 	float _gravityForceMagnitude = 981.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TEnumAsByte<ECollisionChannel> _collisionChannel = ECC_Pawn;
 
-	FHitResult _groundHitResult;
+	FHitResult _hitResult;
 
 	TArray<IForce*> _forces;
 
@@ -72,9 +74,13 @@ private:
 
 	bool _isInAir;
 
-	void CheckGround();
+	FVector _velocity = FVector::ZeroVector;
 
-	void SetIsInAir(const bool isInAir);
+	FVector _previousLocation = FVector::ZeroVector;
+
+	float _lastGroundTime = 0;
 
 	void ProcessForces(const float deltaTime);
+
+	void UpdateVelocity();
 };

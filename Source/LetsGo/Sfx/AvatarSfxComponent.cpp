@@ -4,6 +4,8 @@
 #include "LetsGo/GameModes/ProjectGameModeBase.h"
 #include "LetsGo/Utils/AssertUtils.h"
 
+const float UAvatarSfxComponent::MIN_AIR_TIME = 0.05f;
+
 UAvatarSfxComponent::UAvatarSfxComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
@@ -55,8 +57,13 @@ void UAvatarSfxComponent::OnJump()
 	BpPlaySound(_jumpSound);
 }
 
-void UAvatarSfxComponent::OnLand()
+void UAvatarSfxComponent::OnLand(const float airTime)
 {
+	if(airTime < MIN_AIR_TIME)
+	{
+		return;
+	}
+	
 	BpPlaySound(_landSound);
 }
 

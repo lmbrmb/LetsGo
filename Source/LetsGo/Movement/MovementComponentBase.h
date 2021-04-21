@@ -6,9 +6,9 @@
 
 #include "MovementComponentBase.generated.h"
 
-DECLARE_EVENT_OneParam(UMovementComponentBase, EStep, MovementSpeedState)
+DECLARE_EVENT_OneParam(UMovementComponentBase, EStep, MovementSpeedState);
 
-DECLARE_EVENT(UMovementComponentBase, EJump)
+DECLARE_EVENT(UMovementComponentBase, EJump);
 
 //<summary>
 /// [Abstract] Movement component
@@ -132,10 +132,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
 	float _airMultiplier = 0.25f;
 
-	FVector _previousLocation = FVector::ZeroVector;
-
-	FVector _velocity = FVector::ZeroVector;
-
 	MovementSpeedState _movementSpeedState;
 
 	float GetEnvironmentSpeedMultiplier() const;
@@ -158,7 +154,7 @@ private:
 	
 	void CheckGround();
 
-	void OnLand();
+	void OnLand(const float airTime);
 
 	/// <summary>
 	/// [Recursive] Moves Root in provided direction. Handles collision detection
@@ -175,9 +171,7 @@ private:
 		const FHitResult& groundHitResult,
 		const float translationAmount
 	);
-	
-	void UpdateVelocity();
-	
+
 	void StepOnTimer() const;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))

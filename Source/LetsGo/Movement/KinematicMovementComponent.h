@@ -3,7 +3,7 @@
 #include "Components/ActorComponent.h"
 #include "KinematicMovementComponent.generated.h"
 
-DECLARE_EVENT_OneParam(UKinematicMovementComponent, ECollision_KinematicMovement, const FHitResult& hitResult)
+DECLARE_EVENT_OneParam(UKinematicMovementComponent, ECollision_KinematicMovement, const FHitResult& hitResult);
 
 /// <summary>
 /// Kinematic movement component. No physics. Constant linear movement. Collision detection via ray cast. Generates hit events

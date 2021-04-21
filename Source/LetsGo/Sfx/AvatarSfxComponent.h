@@ -25,7 +25,7 @@ public:
 
 	void OnJump();
 
-	void OnLand();
+	void OnLand(const float airTime);
 
 	void OnHealthChanged(const UHealthComponent* healthComponent, const float delta);
 
@@ -34,6 +34,8 @@ protected:
 	void BpPlaySound(const USoundBase* sound);
 
 private:
+	static const float MIN_AIR_TIME;
+
 	TMap<float, USoundBase*> _painSounds;
 
 	TArray<USoundBase*> _deathSounds;

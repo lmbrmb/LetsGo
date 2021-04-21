@@ -2,7 +2,6 @@
 
 #include "LetsGo/Utils/FVectorUtils.h"
 #include "LetsGo/Utils/AssertUtils.h"
-#include "DrawDebugHelpers.h"
 #include "LetsGo/GameModes/MatchGameMode.h"
 
 const FName UMovementComponentBase::JUMP_FORCE_ID = "Jump";
@@ -97,7 +96,6 @@ void UMovementComponentBase::TickComponent(
 	CheckGround();
 	ProcessMovement(DeltaTime);
 	CustomTick(DeltaTime);
-	UpdateVelocity();
 	ResetInput();
 }
 
@@ -116,7 +114,7 @@ void UMovementComponentBase::CheckGround()
 	);
 }
 
-void UMovementComponentBase::OnLand()
+void UMovementComponentBase::OnLand(const float airTime)
 {
 	_jumpIndex = 0;
 }
@@ -193,7 +191,7 @@ void UMovementComponentBase::PerformJump()
 	);
 
 	// Jump velocity force
-	auto const velocity = FVector::VectorPlaneProject(_velocity, FVector::UpVector);
+	auto const velocity = FVector::VectorPlaneProject(_rigidBodyComponent->GetVelocity(), FVector::UpVector);
 	if(FMath::IsNearlyZero(velocity.SizeSquared(), 0.1f))
 	{
 		return;
@@ -290,13 +288,6 @@ void UMovementComponentBase::Move(
 	projectedDirection = FVector::VectorPlaneProject(inputDirection, planeNormal).GetSafeNormal();
 	translation = projectedDirection * translationAmount;
 	RootCollider->AddWorldOffset(translation, true);
-}
-
-void UMovementComponentBase::UpdateVelocity()
-{
-	auto const location = RootCollider->GetComponentLocation();
-	_velocity = location - _previousLocation;
-	_previousLocation = location;
 }
 
 // Template methods below

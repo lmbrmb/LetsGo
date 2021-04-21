@@ -5,7 +5,7 @@
 
 #include "AimProviderComponent.generated.h"
 
-DECLARE_EVENT(UAimProviderComponent, EChanged_UAimProviderComponent)
+DECLARE_EVENT(UAimProviderComponent, EChanged_UAimProviderComponent);
 
 /// <summary>
 /// Aim provider component. IAimProvider container

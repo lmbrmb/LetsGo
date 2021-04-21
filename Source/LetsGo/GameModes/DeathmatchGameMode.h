@@ -5,9 +5,9 @@
 
 #include "DeathmatchGameMode.generated.h"
 
-DECLARE_EVENT_OneParam(ADeathmatchGameMode, ELeadTied, PlayerId playerId)
+DECLARE_EVENT_OneParam(ADeathmatchGameMode, ELeadTied, PlayerId playerId);
 
-DECLARE_EVENT_OneParam(ADeathmatchGameMode, ELeadTaken, PlayerId playerId)
+DECLARE_EVENT_OneParam(ADeathmatchGameMode, ELeadTaken, PlayerId playerId);
 
 //<summary>
 //Deathmatch. Free For All.

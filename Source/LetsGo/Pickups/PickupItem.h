@@ -6,7 +6,7 @@
 
 class APickupItem;
 
-DECLARE_EVENT_OneParam(APickupItem, Taken, APickupItem*)
+DECLARE_EVENT_OneParam(APickupItem, Taken, APickupItem*);
 
 ///<summary>
 ///Pickup item

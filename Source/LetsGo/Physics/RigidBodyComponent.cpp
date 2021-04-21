@@ -44,40 +44,7 @@ void URigidBodyComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
 	ProcessForces(DeltaTime);
-	CheckGround();
-}
-
-void URigidBodyComponent::CheckGround()
-{
-	auto const location = _rootCollider->GetComponentLocation();
-	auto const targetLocation = location + FVector::DownVector * 10;
-	auto const isOnGround = GetWorld()->SweepSingleByChannel(
-		_groundHitResult,
-		location,
-		targetLocation,
-		_rootCollider->GetComponentQuat(),
-		_collisionChannel,
-		_collisionShape,
-		_collisionQueryParams
-	);
-
-	SetIsInAir(!isOnGround);
-}
-
-void URigidBodyComponent::SetIsInAir(const bool isInAir)
-{
-	auto const wasInAir = _isInAir;
-
-	_isInAir = isInAir;
-
-	if (wasInAir != _isInAir)
-	{
-		if (!isInAir)
-		{
-			_forces.RemoveAll([](IForce* f) {return f->GetId() != GRAVITY_FORCE_ID; });
-			Land.Broadcast();
-		}
-	}
+	UpdateVelocity();
 }
 
 void URigidBodyComponent::ProcessForces(const float deltaTime)
@@ -98,7 +65,39 @@ void URigidBodyComponent::ProcessForces(const float deltaTime)
 		forceSum += forceVector;
 	}
 	auto const deltaLocation = forceSum * deltaTime;
-	_rootCollider->AddRelativeLocation(deltaLocation, true);
+	_rootCollider->AddWorldOffset(deltaLocation, true, &_hitResult);
+
+	auto isInAir = true;
+
+	if(_hitResult.bBlockingHit)
+	{
+		auto const dot = FVector::DotProduct(FVector::UpVector, _hitResult.Normal);
+		isInAir = dot < 0.5f;
+	}
+
+	if (_isInAir != isInAir)
+	{
+		_isInAir = isInAir;
+		
+		if (isInAir)
+		{
+			_lastGroundTime = GetWorld()->TimeSeconds;
+		}
+		else
+		{
+			_forces.RemoveAll([](IForce* f) {return f->GetId() != GRAVITY_FORCE_ID;});
+			
+			auto const airTime = GetWorld()->TimeSeconds - _lastGroundTime;
+			Land.Broadcast(airTime);
+		}
+	}
+}
+
+void URigidBodyComponent::UpdateVelocity()
+{
+	auto const location = _rootCollider->GetComponentLocation();
+	_velocity = location - _previousLocation;
+	_previousLocation = location;
 }
 
 void URigidBodyComponent::AddForce(const FName& id, const FVector& direction, const float magnitude)
@@ -151,4 +150,9 @@ void URigidBodyComponent::RemoveForce(const FName& id)
 bool URigidBodyComponent::GetIsInAir() const
 {
 	return _isInAir;
+}
+
+const FVector& URigidBodyComponent::GetVelocity() const
+{
+	return _velocity;
 }
