@@ -16,11 +16,25 @@
 
 #include "WeaponManagerComponent.generated.h"
 
-DECLARE_EVENT_ThreeParams(UWeaponManagerComponent, EShotPerformed_UWeaponManagerComponent, const PlayerId& playerId, const WeaponType& weaponType, const bool isAnyBulletDamaged);
+DECLARE_EVENT_ThreeParams(
+UWeaponManagerComponent,
+EShotPerformed_UWeaponManagerComponent,
+const PlayerId& playerId,
+const WeaponType& weaponType,
+const bool isAnyBulletDamaged
+);
 
 DECLARE_EVENT(UWeaponManagerComponent, EWeaponChanged_UWeaponManagerComponent);
 
 DECLARE_EVENT(UWeaponManagerComponent, EShotRequested_UWeaponManagerComponent);
+
+DECLARE_EVENT(UWeaponManagerComponent, EInitialized_UWeaponManagerComponent);
+
+DECLARE_EVENT_OneParam(
+UWeaponManagerComponent,
+EWeaponPivotChanged_UWeaponManagerComponent,
+const int pivotIndex
+);
 
 UCLASS(ClassGroup = (Custom), Blueprintable, meta = (BlueprintSpawnableComponent))
 class LETSGO_API UWeaponManagerComponent final : public UActorComponent, public IItemProcessor
@@ -46,12 +60,14 @@ public:
 
 	void ChangeWeaponPivot();
 
+	void SetWeaponPivot(const int weaponPivotIndex);
+
 	IAimProvider* GetAimProvider() const;
 
 	void SetAimProvider(IAimProvider* aimProvider);
 
 	UFUNCTION(BlueprintCallable)
-	void AddWeaponPivot(USceneComponent* weaponPivot);
+	void InitializeWeaponPivots(const TArray<USceneComponent*> weaponPivots);
 
 	UFUNCTION(BlueprintCallable)
 	int GetWeaponsCount() const;
@@ -67,6 +83,10 @@ public:
 
 	IGun* GetCurrentGun() const;
 
+	bool GetIsInitialized() const;
+
+	EInitialized_UWeaponManagerComponent Initialized;
+
 	EShotPerformed_UWeaponManagerComponent ShotPerformed;
 
 	EWeaponChanged_UWeaponManagerComponent WeaponEquipped;
@@ -74,6 +94,8 @@ public:
 	EWeaponChanged_UWeaponManagerComponent WeaponHolstered;
 
 	EShotRequested_UWeaponManagerComponent ShotRequested;
+
+	EWeaponPivotChanged_UWeaponManagerComponent WeaponPivotChanged;
 
 protected:
 	virtual void BeginPlay() override;
@@ -201,6 +223,4 @@ private:
 	void StartWeaponFire() const;
 
 	void StopWeaponFire() const;
-
-	void SetWeaponPivot(const int index);
 };

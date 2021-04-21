@@ -39,7 +39,8 @@ AvatarSfxFactory::AvatarSfxFactory(SfxFactory* sfxFactory)
 USoundBase* AvatarSfxFactory::GetJumpSound(const SkinId& skinId) const
 {
 	auto const skinIdValue = skinId.GetId();
-	AssertIsTrue(_jumpSounds.Contains(skinIdValue), nullptr);
+	AssertContainerContainsElement(_jumpSounds, skinIdValue, nullptr);
+	
 	auto const jumpSoundId = _jumpSounds[skinIdValue];
 	return _sfxFactory->GetOrLoad(jumpSoundId);
 }
@@ -62,9 +63,9 @@ TArray<USoundBase*> AvatarSfxFactory::GetDeathSounds(const SkinId& skinId) const
 TMap<float, USoundBase*> AvatarSfxFactory::GetPainSounds(const SkinId& skinId) const
 {
 	TMap<float, USoundBase*> painSounds;
-
 	auto const skinIdValue = skinId.GetId();
-	AssertIsTrue(_painSounds.Contains(skinIdValue), painSounds);
+	AssertContainerContainsElement(_painSounds, skinIdValue, painSounds);
+
 	auto const soundIdBase = _painSounds[skinIdValue];
 
 	for (auto painId : _painIds)
@@ -87,9 +88,9 @@ TArray<USoundBase*> AvatarSfxFactory::GetSounds(
 ) const
 {
 	TArray<USoundBase*> sounds;
-
 	auto const skinIdValue = skinId.GetId();
-	AssertIsTrue(source.Contains(skinIdValue), sounds);
+	AssertContainerContainsElement(source, skinIdValue, sounds);
+
 	auto const soundIdBase = source[skinIdValue];
 
 	const int firstSoundIndex = 1;

@@ -2,12 +2,12 @@
 
 void AProjectGameModeBase::RegisterUObject(UObject* uObject)
 {
-	AssertIsFalse(_uObjectRegistry.Contains(uObject));
+	AssertContainerDoesNotContainElement(_uObjectRegistry, uObject);
 	_uObjectRegistry.Add(uObject);
 }
 
 void AProjectGameModeBase::UnRegisterUObject(UObject* uObject)
 {
-	AssertIsTrue(_uObjectRegistry.Contains(uObject));
+	AssertContainerContainsElement(_uObjectRegistry, uObject);
 	_uObjectRegistry.Remove(uObject);
 }

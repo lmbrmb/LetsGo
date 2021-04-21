@@ -120,3 +120,17 @@ if (container.Contains(element)) \
 	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Container contains element.", LogSeverity::Error); \
 	return __VA_ARGS__; \
 };
+
+#define AssertContainerIsNotEmpty(container, ...) \
+if (container.Num() <= 0) \
+{ \
+	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Container is empty.", LogSeverity::Error); \
+	return __VA_ARGS__; \
+};
+
+#define AssertContainerIsEmpty(container, ...) \
+if (container.Num() > 0) \
+{ \
+	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Container is not empty.", LogSeverity::Error); \
+	return __VA_ARGS__; \
+};

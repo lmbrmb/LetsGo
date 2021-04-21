@@ -9,6 +9,7 @@
 #include "LetsGo/Data/TeamId.h"
 #include "LetsGo/GameStates/MatchState.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
+#include "LetsGo/Settings/PlayerSettingsManager.h"
 #include "LetsGo/SpawnPoints/SpawnPointType.h"
 
 #include "MatchGameMode.generated.h"
@@ -94,6 +95,8 @@ public:
 	TeamId GetPlayerTeamId(const PlayerId& playerId) const;
 
 	const TArray<AAvatar*>& GetAvatars() const;
+
+	PlayerSettingsManager* GetPlayerSettingsManager() const;
 
 protected:
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
@@ -204,4 +207,6 @@ private:
 	AvatarData* GetAvatarData(const int playerIdValue) const;
 
 	AvatarData* GetAvatarData(const PlayerId& playerIdValue) const;
+
+	PlayerSettingsManager* _playerSettingsManager;
 };

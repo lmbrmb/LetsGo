@@ -18,6 +18,8 @@
 #include "LetsGo/Sfx/SfxFactory.h"
 #include "LetsGo/Sfx/AvatarSfxFactory.h"
 #include "LetsGo/AmmoProviders/AmmoProviderFactory.h"
+#include "LetsGo/Analytics/MatchAnalyticsFactory.h"
+#include "LetsGo/Settings/PlayerSettingsManagerFactory.h"
 
 /// <summary>
 /// Match dependency injection container factory
@@ -79,6 +81,10 @@ TTypeContainer<Mode>* MatchDiContainerFactory<Mode>::CreateContainer(IUObjectReg
 	const TSharedRef<SfxFactory> sfxFactory = MakeShareable(sfxFactoryInstance);
 	const TSharedRef<AvatarSfxFactory> avatarSfxFactory = MakeShareable(new AvatarSfxFactory(sfxFactoryInstance));
 
+	const TSharedRef<PlayerSettingsManagerFactory> playerSettingsManagerFactory = MakeShareable(new PlayerSettingsManagerFactory());
+
+	const TSharedRef<MatchAnalyticsFactory> matchAnalyticsFactory = MakeShareable(new MatchAnalyticsFactory());
+
 	container->template RegisterInstance<PickupItemFactory>(pickupItemFactory);
 	container->template RegisterInstance<GunItemFactory>(gunItemFactory);
 	container->template RegisterInstance<AmmoItemFactory>(ammoItemFactory);
@@ -96,6 +102,8 @@ TTypeContainer<Mode>* MatchDiContainerFactory<Mode>::CreateContainer(IUObjectReg
 	container->template RegisterInstance<GameModeOptionParserFactory>(gameModeOptionParserFactory);
 	container->template RegisterInstance<SfxFactory>(sfxFactory);
 	container->template RegisterInstance<AvatarSfxFactory>(avatarSfxFactory);
+	container->template RegisterInstance<PlayerSettingsManagerFactory>(playerSettingsManagerFactory);
+	container->template RegisterInstance<MatchAnalyticsFactory>(matchAnalyticsFactory);
 
 	return container;
 }

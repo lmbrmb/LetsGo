@@ -33,7 +33,7 @@ void SkinFactory::SetSkin(AActor* actor, const FName& skinId)
 void SkinFactory::SetSkin(USkeletalMeshComponent* skeletalMeshComponent, const FName& skinId)
 {
 	AssertIsNotNull(skeletalMeshComponent);
-	AssertIsTrue(_skins.Contains(skinId));
+	AssertContainerContainsElement(_skins, skinId);
 
 	auto const skinData = _skins[skinId];
 	auto const skeletalMeshId = skinData->SkeletalMeshId;

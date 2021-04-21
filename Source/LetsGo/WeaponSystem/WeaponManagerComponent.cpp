@@ -1,7 +1,7 @@
 #include "WeaponManagerComponent.h"
 
 #include "IWeapon.h"
-#include "LetsGo/GameModes/ProjectGameModeBase.h"
+#include "LetsGo/GameModes/MatchGameMode.h"
 #include "LetsGo/Items/Item.h"
 #include "LetsGo/Items/AmmoItem.h"
 #include "LetsGo/Items/GunItem.h"
@@ -18,6 +18,11 @@ if (_weaponActor == nullptr) \
 UWeaponManagerComponent::UWeaponManagerComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+}
+
+bool UWeaponManagerComponent::GetIsInitialized() const
+{
+	return _isInitialized;
 }
 
 void UWeaponManagerComponent::BeginPlay()
@@ -237,21 +242,16 @@ void UWeaponManagerComponent::EquipWeaponOnTimer()
 	EquipWeaponImmediate(_nextWeaponIndex);
 }
 
-void UWeaponManagerComponent::AddWeaponPivot(USceneComponent* weaponPivot)
+void UWeaponManagerComponent::InitializeWeaponPivots(const TArray<USceneComponent*> weaponPivots)
 {
-	if(weaponPivot == nullptr)
-	{
-		return;
-	}
+	AssertContainerIsNotEmpty(weaponPivots);
 	
-	_weaponPivots.Add(weaponPivot);
-
-	if(_weaponPivot)
+	for (auto weaponPivot : weaponPivots)
 	{
-		return;
+		_weaponPivots.Add(weaponPivot);
 	}
 
-	ChangeWeaponPivot();
+	SetWeaponPivot(0);
 	OnPartialInitialization();
 }
 
@@ -292,18 +292,20 @@ void UWeaponManagerComponent::ChangeWeaponPivot()
 	}
 
 	SetWeaponPivot(nextIndex);
+
+	WeaponPivotChanged.Broadcast(_weaponPivotIndex);
 }
 
-void UWeaponManagerComponent::SetWeaponPivot(const int index)
+void UWeaponManagerComponent::SetWeaponPivot(const int weaponPivotIndex)
 {
-	if (_weaponPivotIndex == index)
+	if (_weaponPivotIndex == weaponPivotIndex)
 	{
 		return;
 	}
 	
-	AssertIndexIsInArrayBounds(index, _weaponPivots);
+	AssertIndexIsInArrayBounds(weaponPivotIndex, _weaponPivots);
 
-	_weaponPivotIndex = index;
+	_weaponPivotIndex = weaponPivotIndex;
 	_weaponPivot = _weaponPivots[_weaponPivotIndex];
 
 	for (auto weaponActor : _weaponActors)
@@ -610,7 +612,9 @@ void UWeaponManagerComponent::OnPartialInitialization()
 	}
 
 	_isInitialized = true;
-	
+
+	Initialized.Broadcast();
+
 	CreateStartWeapon();
 }
 

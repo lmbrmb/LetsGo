@@ -11,6 +11,7 @@ AMatchGameMode::~AMatchGameMode()
 {
 	delete _diContainer;
 	delete _matchAnalytics;
+	delete _playerSettingsManager;
 }
 
 void AMatchGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
@@ -22,8 +23,16 @@ void AMatchGameMode::InitGame(const FString& MapName, const FString& Options, FS
 
 	auto const avatarSpawnFactory = GetDiContainer()->GetInstance<AvatarSpawnFactory>();
 	_avatarSpawnFactory = &avatarSpawnFactory.Get();
-	
-	_matchAnalytics = new MatchAnalytics(this);
+
+	auto const playerSettingsManagerFactoryRef = GetDiContainer()->GetInstance<PlayerSettingsManagerFactory>();
+	auto const playerSettingsManagerFactory = &playerSettingsManagerFactoryRef.Get();
+
+	_playerSettingsManager = playerSettingsManagerFactory->Create();
+
+	auto const matchAnalyticsFactoryRef = GetDiContainer()->GetInstance<MatchAnalyticsFactory>();
+	auto const matchAnalyticsFactory = &matchAnalyticsFactoryRef.Get();
+
+	_matchAnalytics = matchAnalyticsFactory->Create(this);
 
 	ParseMatchOptions(Options);
 }
@@ -433,4 +442,9 @@ TeamId AMatchGameMode::GetPlayerTeamId(const PlayerId& playerId) const
 const TArray<AAvatar*>& AMatchGameMode::GetAvatars() const
 {
 	return _avatars;
+}
+
+PlayerSettingsManager* AMatchGameMode::GetPlayerSettingsManager() const
+{
+	return _playerSettingsManager;
 }
