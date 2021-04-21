@@ -116,7 +116,12 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Jump", meta = (AllowPrivateAccess = "true"))
 	int _jumpCount = 1;
 
+	UPROPERTY(EditAnywhere, Category = "Jump", meta = (AllowPrivateAccess = "true"))
+	bool _canJumpWhenInAir = false;
+
 	int _jumpIndex = 0;
+
+	bool CanJump() const;
 
 	// Speed
 

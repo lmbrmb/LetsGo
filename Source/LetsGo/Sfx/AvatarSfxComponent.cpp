@@ -67,7 +67,7 @@ void UAvatarSfxComponent::OnLand(const float airTime)
 	BpPlaySound(_landSound);
 }
 
-void UAvatarSfxComponent::OnHealthChanged(const UHealthComponent* healthComponent, const float delta)
+void UAvatarSfxComponent::OnHealthChanged(UHealthComponent* healthComponent, const float delta)
 {
 	auto const currentHealth = healthComponent->GetCurrentValue();
 	auto const previousHealth = currentHealth - delta;

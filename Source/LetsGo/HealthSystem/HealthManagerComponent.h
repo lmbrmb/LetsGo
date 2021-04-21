@@ -37,7 +37,7 @@ private:
 
 	UHealthComponent* _healthComponent;
 
-	void OnHealthChanged(const UHealthComponent* healthComponent, const float delta);
+	void OnHealthChanged(UHealthComponent* healthComponent, const float delta);
 
 	void OnDied();
 

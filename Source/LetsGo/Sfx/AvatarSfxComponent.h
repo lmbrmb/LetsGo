@@ -27,7 +27,7 @@ public:
 
 	void OnLand(const float airTime);
 
-	void OnHealthChanged(const UHealthComponent* healthComponent, const float delta);
+	void OnHealthChanged(UHealthComponent* healthComponent, const float delta);
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent)

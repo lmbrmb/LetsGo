@@ -17,6 +17,11 @@ void UMovementComponentBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if(_jumpCount > 1 && !_canJumpWhenInAir)
+	{
+		DevLogger::GetLoggingChannel()->Log("Jump count is more than one but can't jump while in air", LogSeverity::Warning);
+	}
+	
 	auto const owner = GetOwner();
 	auto const rootComponent = owner->GetRootComponent();
 	RootCollider = Cast<UShapeComponent>(rootComponent);
@@ -31,7 +36,10 @@ void UMovementComponentBase::BeginPlay()
 	auto const diContainer = projectGameModeBase->GetDiContainer();
 
 	_rigidBodyComponent = owner->FindComponentByClass<URigidBodyComponent>();
-	_rigidBodyComponent->Land.AddUObject(this, &UMovementComponentBase::OnLand);
+	if(_rigidBodyComponent)
+	{
+		_rigidBodyComponent->Land.AddUObject(this, &UMovementComponentBase::OnLand);
+	}
 
 	Init(owner);
 
@@ -168,7 +176,7 @@ void UMovementComponentBase::PerformJump()
 	// RigidBodyComponent is must have, jump implementation depends on it
 	AssertIsNotNull(_rigidBodyComponent);
 
-	if (_jumpIndex >= _jumpCount)
+	if(!CanJump())
 	{
 		return;
 	}
@@ -207,6 +215,26 @@ void UMovementComponentBase::PerformJump()
 	);
 }
 
+bool UMovementComponentBase::CanJump() const
+{
+	if (!_rigidBodyComponent)
+	{
+		return false;
+	}
+
+	if (!_canJumpWhenInAir && GetIsInAir())
+	{
+		return false;
+	}
+
+	if (_jumpIndex >= _jumpCount)
+	{
+		return false;
+	}
+
+	return true;
+}
+
 FVector UMovementComponentBase::GetRootColliderLocation() const
 {
 	return RootCollider->GetComponentLocation();
@@ -229,6 +257,11 @@ void UMovementComponentBase::DeactivateMovementSpeedState(MovementSpeedState mov
 
 bool UMovementComponentBase::GetIsInAir() const
 {
+	if(!_rigidBodyComponent)
+	{
+		return false;
+	}
+
 	return _rigidBodyComponent->GetIsInAir();
 }
 

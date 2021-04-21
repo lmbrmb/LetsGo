@@ -22,7 +22,7 @@ private:
 
 	UFirstPersonMovementComponent* _firstPersonMovementComponent = nullptr;
 
-	void OnOwnerDied(const UHealthComponent*, float delta) const;
+	void OnOwnerDied(UHealthComponent* healthComponent, float delta) const;
 	
 	void Bind();
 

@@ -7,9 +7,9 @@
 
 class UHealthComponent;
 
-DECLARE_EVENT_TwoParams(UHealthComponent, FDied, const UHealthComponent*, const float delta);
+DECLARE_EVENT_TwoParams(UHealthComponent, FDied, UHealthComponent* healthComponent, const float delta);
 
-DECLARE_EVENT_TwoParams(UHealthComponent, FHealthChanged, const UHealthComponent*, const float delta);
+DECLARE_EVENT_TwoParams(UHealthComponent, FHealthChanged, UHealthComponent* healthComponent, const float delta);
 
 UCLASS( ClassGroup=(Custom), Blueprintable, meta=(BlueprintSpawnableComponent) )
 class LETSGO_API UHealthComponent final : public UFloatParameterComponent

@@ -24,7 +24,7 @@ public:
 private:
 	void OnAvatarSpawned(const AAvatar* avatar);
 
-	void OnAvatarHealthChanged(const UHealthComponent* healthComponent, const float delta);
+	void OnAvatarHealthChanged(UHealthComponent* healthComponent, const float delta);
 
 	void OnShotPerformed(const PlayerId& instigatorId, const WeaponType& instigatorWeaponType, const bool isHittedPlayer);
 
@@ -32,7 +32,7 @@ private:
 	
 	void ProcessDamageEvent(const DamageEvent& damageEvent);
 
-	TArray<TFunction<void(const UHealthComponent*, const float)>> _healthProcessors;
+	TArray<TFunction<void(const UHealthComponent* healthComponent, const float)>> _healthProcessors;
 	
 	TArray<IDamageMedalProcessor*> _damageMedalProcessors;
 

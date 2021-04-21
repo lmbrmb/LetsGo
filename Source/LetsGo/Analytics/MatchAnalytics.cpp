@@ -38,7 +38,7 @@ void MatchAnalytics::OnAvatarSpawned(const AAvatar* avatar)
 }
 
 // ReSharper disable once CppMemberFunctionMayBeStatic
-void MatchAnalytics::OnAvatarHealthChanged(const UHealthComponent* healthComponent, const float delta)
+void MatchAnalytics::OnAvatarHealthChanged(UHealthComponent* healthComponent, const float delta)
 {
 	if(!_matchGameMode->IsMatchInProgress())
 	{
@@ -48,6 +48,11 @@ void MatchAnalytics::OnAvatarHealthChanged(const UHealthComponent* healthCompone
 	for (auto healthProcessor : _healthProcessors)
 	{
 		healthProcessor(healthComponent, delta);
+	}
+
+	if(healthComponent->IsDead())
+	{
+		healthComponent->HealthChanged.RemoveAll(this);
 	}
 }
 

@@ -186,7 +186,7 @@ private:
 
 	MatchAnalytics* _matchAnalytics;
 
-	void OnAvatarDied(const UHealthComponent* healthComponent, const float delta);
+	void OnAvatarDied(UHealthComponent* healthComponent, const float delta);
 	
 	FTransform GetNextSpawnPoint();
 

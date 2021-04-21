@@ -42,7 +42,7 @@ void UHealthWidget::OnAvatarChanged(const AAvatar* avatar)
 	BpOnAvatarChanged();
 }
 
-void UHealthWidget::OnAvatarHealthChanged(const UHealthComponent*, float delta)
+void UHealthWidget::OnAvatarHealthChanged(UHealthComponent* healthComponent, float delta)
 {
 	BpOnAvatarHealthChanged();
 }

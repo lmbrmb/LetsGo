@@ -2,16 +2,6 @@
 
 #include "LetsGo/Utils/AssertUtils.h"
 
-UHealthComponent* UAvatarAnimInstance::GetHealthComponent()
-{
-	return _healthComponent;
-}
-
-UMovementComponentBase* UAvatarAnimInstance::GetMovementComponent() const
-{
-	return _movementComponentBase;
-}
-
 void UAvatarAnimInstance::NativeBeginPlay()
 {
 	Super::NativeBeginPlay();
@@ -21,14 +11,27 @@ void UAvatarAnimInstance::NativeBeginPlay()
 
 	_healthComponent = owner->FindComponentByClass<UHealthComponent>();
 	AssertIsNotNull(_healthComponent);
-	
+
 	_healthComponent->Died.AddUObject(this, &UAvatarAnimInstance::OnDied);
 
 	_movementComponentBase = owner->FindComponentByClass<UMovementComponentBase>();
 	AssertIsNotNull(_movementComponentBase);
 }
 
-void UAvatarAnimInstance::OnDied(const UHealthComponent*, const float delta)
+void UAvatarAnimInstance::OnDied(UHealthComponent* healthComponent, const float delta)
 {
+	AssertIsTrue(healthComponent == _healthComponent);
+
+	_healthComponent->Died.RemoveAll(this);
 	BpOnAvatarDied();
+}
+
+float UAvatarAnimInstance::GetMovementSpeedValue() const
+{
+	return _movementComponentBase ? _movementComponentBase->GetAbsoluteMovementAmount() : 0.0f;
+}
+
+bool UAvatarAnimInstance::GetIsInAirValue() const
+{
+	return _movementComponentBase ? _movementComponentBase->GetIsInAir() : false;
 }

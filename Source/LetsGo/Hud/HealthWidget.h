@@ -29,7 +29,7 @@ protected:
 private:
 	void OnAvatarChanged(const AAvatar* avatar);
 	
-	void OnAvatarHealthChanged(const UHealthComponent*, float delta);
+	void OnAvatarHealthChanged(UHealthComponent* healthComponent, float delta);
 
 	UHealthComponent* _healthComponent = nullptr;
 };

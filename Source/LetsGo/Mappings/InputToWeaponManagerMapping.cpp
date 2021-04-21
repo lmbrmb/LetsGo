@@ -1,6 +1,7 @@
 #include "InputToWeaponManagerMapping.h"
 
 #include "LetsGo/Input/InputConstant.h"
+#include "LetsGo/Utils/AssertUtils.h"
 #include "LetsGo/Utils/InputUtils.h"
 
 void UInputToWeaponManagerMapping::Map()
@@ -35,7 +36,7 @@ void UInputToWeaponManagerMapping::ChangeWeaponDpad(const float rawAxisValue)
 	}
 }
 
-void UInputToWeaponManagerMapping::OnOwnerDied(const UHealthComponent*, float delta) const
+void UInputToWeaponManagerMapping::OnOwnerDied(UHealthComponent* healthComponent, float delta) const
 {
 	Unbind();
 }

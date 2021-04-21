@@ -21,7 +21,7 @@ void UInputToFpMovementMapping::Map()
 	healthComponent->Died.AddUObject(this, &UInputToFpMovementMapping::OnOwnerDied);
 }
 
-void UInputToFpMovementMapping::OnOwnerDied(const UHealthComponent*, float delta) const
+void UInputToFpMovementMapping::OnOwnerDied(UHealthComponent* healthComponent, float delta) const
 {
 	Unbind();
 }

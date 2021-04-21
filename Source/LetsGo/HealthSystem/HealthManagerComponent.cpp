@@ -66,7 +66,7 @@ bool UHealthManagerComponent::CanItemHealAboveNormal(HealthItem* healthItem) con
 	return _itemsCanHealAboveNormal.Contains(itemId);
 }
 
-void UHealthManagerComponent::OnHealthChanged(const UHealthComponent* healthComponent, const float delta)
+void UHealthManagerComponent::OnHealthChanged(UHealthComponent* healthComponent, const float delta)
 {
 	AssertIsTrue(_healthComponent == healthComponent);
 

@@ -241,7 +241,7 @@ void AMatchGameMode::DestroyAvatarOnTimer()
 	_avatars.Remove(actor);
 }
 
-void AMatchGameMode::OnAvatarDied(const UHealthComponent* healthComponent, const float delta)
+void AMatchGameMode::OnAvatarDied(UHealthComponent* healthComponent, const float delta)
 {
 	// Timers are in fire-and-forget mode
 	
