@@ -8,6 +8,8 @@
 
 #include "RigidBodyComponent.generated.h"
 
+DECLARE_EVENT(URigidBodyComponent, ELand)
+
 UCLASS( ClassGroup=(Custom), Blueprintable, meta=(BlueprintSpawnableComponent) )
 class LETSGO_API URigidBodyComponent final : public UActorComponent
 {
@@ -37,7 +39,11 @@ public:
 	);
 	
 	void RemoveForce(const FName& id);
-	
+
+	bool GetIsInAir() const;
+
+	ELand Land;
+
 protected:
 	virtual void BeginPlay() override;
 	
@@ -49,11 +55,26 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Gravity", meta = (AllowPrivateAccess = "true"))
 	float _gravityForceMagnitude = 981.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TEnumAsByte<ECollisionChannel> _collisionChannel = ECC_Pawn;
+
+	FHitResult _groundHitResult;
+
 	TArray<IForce*> _forces;
 
 	ForceFactory* _forceFactory;
 
 	UShapeComponent* _rootCollider = nullptr;
-	
+
+	FCollisionShape _collisionShape;
+
+	FCollisionQueryParams _collisionQueryParams;
+
+	bool _isInAir;
+
+	void CheckGround();
+
+	void SetIsInAir(const bool isInAir);
+
 	void ProcessForces(const float deltaTime);
 };

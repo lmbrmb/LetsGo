@@ -14,9 +14,12 @@ void UAvatarSfxToMovementMapping::Map()
 	auto const movementComponentBase = owner->FindComponentByClass<UMovementComponentBase>();
 	AssertIsNotNull(movementComponentBase);
 
+	auto const rigidBodyComponent = owner->FindComponentByClass<URigidBodyComponent>();
+	AssertIsNotNull(rigidBodyComponent);
+
 	movementComponentBase->Step.AddUObject(avatarSfxComponent, &UAvatarSfxComponent::OnStep);
 	movementComponentBase->Jump.AddUObject(avatarSfxComponent, &UAvatarSfxComponent::OnJump);
-	movementComponentBase->Land.AddUObject(avatarSfxComponent, &UAvatarSfxComponent::OnLand);
+	rigidBodyComponent->Land.AddUObject(avatarSfxComponent, &UAvatarSfxComponent::OnLand);
 
 	StartDestroyTask();
 }

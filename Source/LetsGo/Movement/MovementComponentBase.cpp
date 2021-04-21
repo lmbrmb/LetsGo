@@ -32,6 +32,7 @@ void UMovementComponentBase::BeginPlay()
 	auto const diContainer = projectGameModeBase->GetDiContainer();
 
 	_rigidBodyComponent = owner->FindComponentByClass<URigidBodyComponent>();
+	_rigidBodyComponent->Land.AddUObject(this, &UMovementComponentBase::OnLand);
 
 	Init(owner);
 
@@ -113,8 +114,11 @@ void UMovementComponentBase::CheckGround()
 		CollisionShape,
 		CollisionQueryParams
 	);
+}
 
-	SetIsInAir(!isOnGround);
+void UMovementComponentBase::OnLand()
+{
+	_jumpIndex = 0;
 }
 
 inline void UMovementComponentBase::ProcessMovement(const float deltaTime)
@@ -227,7 +231,7 @@ void UMovementComponentBase::DeactivateMovementSpeedState(MovementSpeedState mov
 
 bool UMovementComponentBase::GetIsInAir() const
 {
-	return _isInAir;
+	return _rigidBodyComponent->GetIsInAir();
 }
 
 void UMovementComponentBase::Move(
@@ -295,27 +299,6 @@ void UMovementComponentBase::UpdateVelocity()
 	_previousLocation = location;
 }
 
-void UMovementComponentBase::SetIsInAir(const bool isInAir)
-{
-	auto const wasInAir = _isInAir;
-
-	_isInAir = isInAir;
-
-	if (wasInAir != _isInAir)
-	{
-		if (!isInAir)
-		{
-			_jumpIndex = 0;
-			// RigidBodyComponent is optional because you can move without jumping
-			if(_rigidBodyComponent)
-			{
-				_rigidBodyComponent->RemoveForce(JUMP_FORCE_ID);
-			}
-			Land.Broadcast();
-		}
-	}
-}
-
 // Template methods below
 
 void UMovementComponentBase::Init(AActor* actor)
@@ -355,7 +338,7 @@ void UMovementComponentBase::ResetInput()
 
 void UMovementComponentBase::StepOnTimer() const
 {
-	if(_isInAir || GetAbsoluteMovementAmount() <= 0)
+	if(GetIsInAir() || GetAbsoluteMovementAmount() <= 0)
 	{
 		return;
 	}

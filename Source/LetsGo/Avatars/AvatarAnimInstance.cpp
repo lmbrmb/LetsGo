@@ -7,7 +7,7 @@ UHealthComponent* UAvatarAnimInstance::GetHealthComponent()
 	return _healthComponent;
 }
 
-UMovementComponentBase* UAvatarAnimInstance::GetMovementComponent()
+UMovementComponentBase* UAvatarAnimInstance::GetMovementComponent() const
 {
 	return _movementComponentBase;
 }

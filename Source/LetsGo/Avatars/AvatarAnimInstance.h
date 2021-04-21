@@ -29,7 +29,7 @@ protected:
 	UHealthComponent* GetHealthComponent();
 
 	UFUNCTION(BlueprintCallable)
-	UMovementComponentBase* GetMovementComponent();
+	UMovementComponentBase* GetMovementComponent() const;
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnAvatarDied();

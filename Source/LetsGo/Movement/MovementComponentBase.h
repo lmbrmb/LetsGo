@@ -10,8 +10,6 @@ DECLARE_EVENT_OneParam(UMovementComponentBase, EStep, MovementSpeedState)
 
 DECLARE_EVENT(UMovementComponentBase, EJump)
 
-DECLARE_EVENT(UMovementComponentBase, ELand)
-
 //<summary>
 /// [Abstract] Movement component
 ///</summary>
@@ -25,7 +23,7 @@ public:
 	virtual float GetAbsoluteMovementAmount() const;
 
 	UFUNCTION(BlueprintCallable)
-	virtual bool GetIsInAir() const;
+	bool GetIsInAir() const;
 
 	/// <summary>
 	/// [Template method] Returns input movement direction
@@ -44,8 +42,6 @@ public:
 	EStep Step;
 
 	EJump Jump;
-
-	ELand Land;
 
 protected:
 	static const FName JUMP_FORCE_ID;
@@ -101,7 +97,7 @@ private:
 	float _rotationSpeedDegrees = 540.0f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TEnumAsByte<ECollisionChannel> _collisionChannel;
+	TEnumAsByte<ECollisionChannel> _collisionChannel = ECC_Pawn;
 	
 	// Jump
 	
@@ -162,6 +158,8 @@ private:
 	
 	void CheckGround();
 
+	void OnLand();
+
 	/// <summary>
 	/// [Recursive] Moves Root in provided direction. Handles collision detection
 	/// </summary>
@@ -179,10 +177,6 @@ private:
 	);
 	
 	void UpdateVelocity();
-
-	bool _isInAir = false;
-
-	void SetIsInAir(const bool isInAir);
 	
 	void StepOnTimer() const;
 
