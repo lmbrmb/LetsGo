@@ -99,7 +99,7 @@ float UHealthComponent::GetMaxNormalHealth() const
 	return _maxNormalHealth;
 }
 
-Damage UHealthComponent::GetLastDamage() const
+const Damage& UHealthComponent::GetLastDamage() const
 {
 	return _lastDamage;
 }

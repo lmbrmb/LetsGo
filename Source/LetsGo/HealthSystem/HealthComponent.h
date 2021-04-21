@@ -18,13 +18,13 @@ class LETSGO_API UHealthComponent final : public UFloatParameterComponent
 
 public:
 	FDied Died;
-	
+
 	FHealthChanged HealthChanged;
-	
+
 	bool TryHeal(const float healAmount);
 
 	bool TryInjure(const Damage& damage);
-	
+
 	void Kill();
 
 	bool IsAlive() const;
@@ -34,16 +34,16 @@ public:
 	bool IsFullHealth() const;
 
 	float GetMaxNormalHealth() const;
-	
-	Damage GetLastDamage() const;
-	
+
+	const Damage& GetLastDamage() const;
+
 protected:
 	virtual void OnChanged(float delta) override;
 
 	virtual void Init() override;
 
 	virtual void BeginDestroy() override;
-	
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	float _maxNormalHealth = 0;
@@ -53,10 +53,10 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"), Category = "Decrease Health Over Time")
 	float _decreaseHealthAmount = 0;
-	
+
 	Damage _lastDamage;
 
 	FTimerHandle _decreaseHealthTimerHandle;
-	
+
 	void DecreaseHealthOnTimer();
 };

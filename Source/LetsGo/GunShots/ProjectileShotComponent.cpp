@@ -101,7 +101,7 @@ bool UProjectileShotComponent::SimulateExplosion(const FHitResult& collisionHitR
 		}
 
 		auto const damageAmount = CalculateDamage(collisionHitResult, explosionHitResult, hittedActor);
-		const Damage damage(InstigatorPlayerId, InstigatorWeaponType, damageAmount);
+		const Damage damage(InstigatorPlayerId, InstigatorWeaponType, collisionHitResult, damageAmount);
 		auto const isDamaged = healthComponent->TryInjure(damage);
 
 		ApplyForce(hittedActor, explosionHitResult.Normal);

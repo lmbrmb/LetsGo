@@ -7,7 +7,7 @@
 
 #include "HealthManagerComponent.generated.h"
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS( ClassGroup=(Custom), Blueprintable, meta=(BlueprintSpawnableComponent) )
 class LETSGO_API UHealthManagerComponent : public UActorComponent, public IItemProcessor
 {
 	GENERATED_BODY()
@@ -15,17 +15,33 @@ class LETSGO_API UHealthManagerComponent : public UActorComponent, public IItemP
 	virtual bool TryProcessItem(Item* item) override;
 
 	bool ProcessHealthItem(HealthItem* healthItem) const;
-	
+
 public:	
 	UHealthManagerComponent();
 
 protected:
 	virtual void BeginPlay() override;
 
-private:
-	UHealthComponent* _healthComponent;
-	
-	void OnDied(const UHealthComponent*, float delta) const;
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpOnOverkill();
 
-	static bool CanItemHealAboveNormal(HealthItem* healthItem);
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpOnHit(const FHitResult& hitResult);
+
+private:
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
+	float _overkillHealth = -30.0f;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
+	TArray<FName> _itemsCanHealAboveNormal;
+
+	UHealthComponent* _healthComponent;
+
+	void OnHealthChanged(const UHealthComponent* healthComponent, const float delta);
+
+	void OnDied();
+
+	void OnInjured();
+
+	bool CanItemHealAboveNormal(HealthItem* healthItem) const;
 };

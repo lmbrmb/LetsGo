@@ -1,6 +1,5 @@
 #include "HealthManagerComponent.h"
 
-
 #include "Components/ShapeComponent.h"
 #include "LetsGo/Utils/AssertUtils.h"
 #include "LetsGo/WeaponSystem/WeaponManagerComponent.h"
@@ -18,7 +17,7 @@ void UHealthManagerComponent::BeginPlay()
 	_healthComponent = owner->FindComponentByClass<UHealthComponent>();
 	AssertIsNotNull(_healthComponent);
 
-	_healthComponent->Died.AddUObject(this, &UHealthManagerComponent::OnDied);
+	_healthComponent->HealthChanged.AddUObject(this, &UHealthManagerComponent::OnHealthChanged);
 }
 
 bool UHealthManagerComponent::TryProcessItem(Item* item)
@@ -61,19 +60,43 @@ bool UHealthManagerComponent::ProcessHealthItem(HealthItem* healthItem) const
 	return _healthComponent->TryHeal(healAmount);
 }
 
-bool UHealthManagerComponent::CanItemHealAboveNormal(HealthItem* healthItem)
+bool UHealthManagerComponent::CanItemHealAboveNormal(HealthItem* healthItem) const
 {
-	return healthItem->GetId() == "MajorHealth";
+	auto const itemId = healthItem->GetId();
+	return _itemsCanHealAboveNormal.Contains(itemId);
 }
 
-void UHealthManagerComponent::OnDied(const UHealthComponent*, float delta) const
+void UHealthManagerComponent::OnHealthChanged(const UHealthComponent* healthComponent, const float delta)
 {
-	_healthComponent->Died.RemoveAll(this);
+	AssertIsTrue(_healthComponent == healthComponent);
 
-	// Disable pawn-pawn collision
+	if (delta >= 0)
+	{
+		return;
+	}
+
+	if (_healthComponent->IsDead())
+	{
+		OnDied();
+		return;
+	}
+
+	OnInjured();
+}
+
+void UHealthManagerComponent::OnDied()
+{
+	_healthComponent->HealthChanged.RemoveAll(this);
+
 	auto const owner = _healthComponent->GetOwner();
 	AssertIsNotNull(owner);
 
+	if(_healthComponent->GetCurrentValue() < _overkillHealth)
+	{
+		BpOnOverkill();
+	}
+
+	// Disable pawn-pawn collision
 	TArray<UShapeComponent*> shapeComponents;
 	owner->GetComponents<UShapeComponent>(shapeComponents);
 	for (auto shapeComponent : shapeComponents)
@@ -90,6 +113,19 @@ void UHealthManagerComponent::OnDied(const UHealthComponent*, float delta) const
 	// UnPossess
 	auto const controller = owner->GetInstigatorController();
 	AssertIsNotNull(controller);
-	
+
 	controller->UnPossess();
+}
+
+void UHealthManagerComponent::OnInjured()
+{
+	auto const lastDamage = _healthComponent->GetLastDamage();
+	auto const isHitted = lastDamage.GetIsHitted();
+
+	if(!isHitted)
+	{
+		return;
+	}
+
+	BpOnHit(lastDamage.GetHitResult());
 }
