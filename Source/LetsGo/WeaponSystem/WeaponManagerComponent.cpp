@@ -20,7 +20,7 @@ UWeaponManagerComponent::UWeaponManagerComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-bool UWeaponManagerComponent::GetIsInitialized() const
+bool UWeaponManagerComponent::IsInitialized() const
 {
 	return _isInitialized;
 }

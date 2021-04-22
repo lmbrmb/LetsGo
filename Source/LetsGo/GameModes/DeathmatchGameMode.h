@@ -28,6 +28,8 @@ protected:
 	virtual void OnFragsCountChanged() override;
 
 	virtual bool IsLocalPlayerWonMatch() override;
+
+	virtual int CalcPlayerPlace(const PlayerId& playerId) const override;
 	
 private:
 	const FName LOCAL_PLAYER_NAME = "%UserName%";

@@ -27,8 +27,6 @@ private:
 	
 	void OnPlayerFragged(
 		const PlayerId& instigatorPlayerId,
-		const PlayerId& fraggedPlayerId,
-		const FName& instigatorPlayerNickname,
-		const FName& fraggedPlayerNickname
+		const PlayerId& fraggedPlayerId
 	);
 };

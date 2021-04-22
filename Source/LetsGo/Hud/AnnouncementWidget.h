@@ -20,7 +20,7 @@ public:
 	
 	void OnMatchStartAnnouncementRequest();
 
-	void OnMatchEndAnnouncementRequest();
+	void OnMatchEndAnnouncementRequest(const int localPlayerPlace);
 	
 	void OnFragAnnouncementRequest(const FragAnnouncement* fragAnnouncement);
 
@@ -38,14 +38,16 @@ protected:
 	void BpAnnounceMatchStart();
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void BpAnnounceMatchEnd(bool isLocalPlayerWonMatch);
+	void BpAnnounceMatchEnd(const int localPlayerPlace);
 	
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpAnnounceFrag(
 		const FName& instigatorPlayerNickname,
 		const FName& fraggedPlayerNickname,
 		const bool isLocalPlayerInstigator,
-		const bool isLocalPlayerFragged
+		const bool isLocalPlayerFragged,
+		const int instigatorPlayerPlace,
+		const int fraggedPlayerPlace
 	);
 
 	UFUNCTION(BlueprintImplementableEvent)

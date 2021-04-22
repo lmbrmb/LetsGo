@@ -57,12 +57,21 @@ void AMatchGameMode::ParseMatchOptions(const FString& options)
 void AMatchGameMode::TriggerMatchWarmUp()
 {
 	SetMatchState(MatchState::WarmUp);
-	GetWorldTimerManager().SetTimer(_matchStateTimerHandle, this, &AMatchGameMode::TriggerMatchStart, _warmUpDuration, false);
+
+	if(_warmUpDuration > 0)
+	{
+		GetWorldTimerManager().SetTimer(_matchStateTimerHandle, this, &AMatchGameMode::TriggerMatchStart, _warmUpDuration, false);
+		return;
+	}
+
+	TriggerMatchStart();
 }
 
 void AMatchGameMode::TriggerMatchStart()
 {
 	SetMatchState(MatchState::Started);
+	AssertIsGreater(_matchDuration, 0.0f);
+
 	GetWorldTimerManager().SetTimer(_matchStateTimerHandle, this, &AMatchGameMode::TriggerMatchEnd, _matchDuration, false);
 }
 
@@ -121,7 +130,13 @@ void AMatchGameMode::BeginPlay()
 		SpawnAvatar(avatarData);
 	}
 
-	GetWorldTimerManager().SetTimer(_matchStateTimerHandle, this, &AMatchGameMode::TriggerMatchWarmUp, _warmUpDelay, false);
+	if (_warmUpDelay > 0)
+	{
+		GetWorldTimerManager().SetTimer(_matchStateTimerHandle, this, &AMatchGameMode::TriggerMatchWarmUp, _warmUpDelay, false);
+		return;
+	}
+
+	TriggerMatchWarmUp();
 }
 
 void AMatchGameMode::RegisterSpawnPoint(const FSpawnPointType type,  const FTransform& transform)
@@ -244,8 +259,6 @@ void AMatchGameMode::DestroyAvatarOnTimer()
 void AMatchGameMode::OnAvatarDied(UHealthComponent* healthComponent, const float delta)
 {
 	// Timers are in fire-and-forget mode
-	
-	auto const fraggedPlayerAvatarActor = healthComponent->GetOwner();
 	FTimerHandle destroyTimerHandle;
 	GetWorldTimerManager().SetTimer(destroyTimerHandle, this, &AMatchGameMode::DestroyAvatarOnTimer, _avatarDestroyTime, false);
 
@@ -272,9 +285,6 @@ void AMatchGameMode::OnAvatarDied(UHealthComponent* healthComponent, const float
 
 		if (instigatorPlayerAvatarData && fraggedPlayerAvatarData)
 		{
-			auto const instigatorPlayerNickname = instigatorPlayerAvatarData->GetNickname();
-			auto const fraggedPlayerNickname = fraggedPlayerAvatarData->GetNickname();
-
 			if (IsMatchInProgress())
 			{
 				auto const isSuicide = instigatorPlayerIdValue == fraggedPlayerIdValue;
@@ -286,7 +296,7 @@ void AMatchGameMode::OnAvatarDied(UHealthComponent* healthComponent, const float
 				OnFragsCountChanged();
 			}
 
-			PlayerFragged.Broadcast(instigatorPlayerId, fraggedPlayerId, instigatorPlayerNickname, fraggedPlayerNickname);
+			PlayerFragged.Broadcast(instigatorPlayerId, fraggedPlayerId);
 		}
 	}
 	
@@ -404,6 +414,11 @@ void AMatchGameMode::SetMatchDuration(const float matchDuration)
 	_matchDuration = matchDuration;
 }
 
+int AMatchGameMode::CalcPlayerPlace(const PlayerId& playerId) const
+{
+	AssertDefaultImplementationIsOverriden(0);
+}
+
 int AMatchGameMode::GetPlayerFragCount(const PlayerId& playerId) const
 {
 	auto const playerIdValue = playerId.GetId();
@@ -437,6 +452,17 @@ TeamId AMatchGameMode::GetPlayerTeamId(const PlayerId& playerId) const
 	}
 
 	return TeamId();
+}
+
+FName AMatchGameMode::GetPlayerNickname(const PlayerId& playerId) const
+{
+	auto const avatarData = GetAvatarData(playerId);
+	if (avatarData)
+	{
+		return avatarData->GetNickname();
+	}
+
+	return FName();
 }
 
 const TArray<AAvatar*>& AMatchGameMode::GetAvatars() const

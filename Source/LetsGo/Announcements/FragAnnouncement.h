@@ -12,23 +12,33 @@ public:
 		const FName& instigatorPlayerNickname,
 		const FName& fraggedPlayerNickname,
 		const bool isLocalPlayerInstigator,
-		const bool isLocalPlayerFragged
+		const bool isLocalPlayerFragged,
+		const int instigatorPlayerPlace,
+		const int fraggedPlayerPlace
 	);
-	
-	FName GetInstigatorPlayerNickname() const;
 
-	FName GetFraggedPlayerNickname() const;
+	const FName& GetInstigatorPlayerNickname() const;
+
+	const FName& GetFraggedPlayerNickname() const;
 
 	bool GetIsLocalPlayerInstigator() const;
 
 	bool GetIsLocalPlayerFragged() const;
 
+	int GetInstigatorPlayerPlace() const;
+
+	int GetFraggedPlayerPlace() const;
+
 private:
 	FName _instigatorPlayerNickname;
-	
+
 	FName _fraggedPlayerNickname;
-	
+
 	bool _isLocalPlayerInstigator;
-	
+
 	bool _isLocalPlayerFragged;
+
+	int _instigatorPlayerPlace;
+
+	int _fraggedPlayerPlace;
 };

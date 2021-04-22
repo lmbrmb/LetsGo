@@ -16,12 +16,12 @@ void ADeathmatchGameMode::OnFragsCountChanged()
 	auto maxFrags = MIN_int32;
 	auto playerWithMaxFrags = -1;
 	
-	for (auto const frag : PlayerFrags)
+	for (auto const playerFragRecord : PlayerFrags)
 	{
-		if(maxFrags < frag.Value)
+		if(maxFrags < playerFragRecord.Value)
 		{
-			maxFrags = frag.Value;
-			playerWithMaxFrags = frag.Key;
+			maxFrags = playerFragRecord.Value;
+			playerWithMaxFrags = playerFragRecord.Key;
 		}
 	}
 
@@ -42,6 +42,31 @@ bool ADeathmatchGameMode::IsLocalPlayerWonMatch()
 	}
 
 	return _winnerPlayerId == _localPlayerId;
+}
+
+int ADeathmatchGameMode::CalcPlayerPlace(const PlayerId& playerId) const
+{
+	auto const playerFragCount = GetPlayerFragCount(playerId);
+	
+	TArray<int> fragCountDistinct;
+	
+	for (auto const playerFragRecord : PlayerFrags)
+	{
+		auto const fragCount = playerFragRecord.Value;
+		
+		if(fragCountDistinct.Contains(fragCount))
+		{
+			continue;
+		}
+		fragCountDistinct.Add(fragCount);
+	}
+
+	fragCountDistinct.Sort();
+	auto const playerIndexByScore = fragCountDistinct.Find(playerFragCount);
+	auto const arrayCount = fragCountDistinct.Num();
+	auto const place = arrayCount - playerIndexByScore;
+	
+	return place;
 }
 
 void ADeathmatchGameMode::PopulateAvatarsData()

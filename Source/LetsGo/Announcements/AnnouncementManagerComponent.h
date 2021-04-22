@@ -6,6 +6,7 @@
 #include "FragAnnouncement.h"
 #include "LetsGo/Analytics/Medal.h"
 #include "LetsGo/Data/PlayerId.h"
+#include "LetsGo/GameModes/MatchGameMode.h"
 
 #include "AnnouncementManagerComponent.generated.h"
 
@@ -13,7 +14,7 @@ DECLARE_EVENT(UAnnouncementManagerComponent, EMatchWarmUpAnnouncementRequest);
 
 DECLARE_EVENT(UAnnouncementManagerComponent, EMatchStartAnnouncementRequest);
 
-DECLARE_EVENT(UAnnouncementManagerComponent, EMatchEndAnnouncementRequest);
+DECLARE_EVENT_OneParam(UAnnouncementManagerComponent, EMatchEndAnnouncementRequest, const int localPlayerPlace);
 
 DECLARE_EVENT_OneParam(UAnnouncementManagerComponent, EFragAnnouncementRequest, const FragAnnouncement* fragAnnouncement);
 
@@ -44,9 +45,7 @@ public:
 
 	void OnPlayerFragged(
 		const PlayerId& instigatorPlayerId,
-		const PlayerId& fraggedPlayerId,
-		const FName& instigatorPlayerNickname,
-		const FName& fraggedPlayerNickname
+		const PlayerId& fraggedPlayerId
 	);
 
 	EMatchWarmUpAnnouncementRequest MatchWarmUpAnnouncementRequest;
@@ -83,6 +82,8 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
 	float _playerAnnouncementDuration = 1.5f;
+
+	AMatchGameMode* _matchGameMode = nullptr;
 
 	TQueue<Announcement*> _playerAnnouncements;
 	

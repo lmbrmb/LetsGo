@@ -22,13 +22,11 @@ DECLARE_EVENT(AMatchGameMode, EMatchEnd);
 
 DECLARE_EVENT_OneParam(AMatchGameMode, EAvatarSpawned, const AAvatar* avatar);
 
-DECLARE_EVENT_FourParams(
+DECLARE_EVENT_TwoParams(
 AMatchGameMode,
 EPlayerFragged,
 const PlayerId& instigatorPlayerId,
-const PlayerId& fraggedPlayerId,
-const FName& instigatorPlayerNickname,
-const FName& fraggedPlayerNickname
+const PlayerId& fraggedPlayerId
 );
 
 ///<summary>
@@ -88,11 +86,15 @@ public:
 
 	void SetMatchDuration(const float matchDuration);
 
+	virtual int CalcPlayerPlace(const PlayerId& playerId) const;
+
 	int GetPlayerFragCount(const PlayerId& playerId) const;
 
 	int GetTeamFragCount(const TeamId& teamId) const;
 
 	TeamId GetPlayerTeamId(const PlayerId& playerId) const;
+
+	FName GetPlayerNickname(const PlayerId& playerId) const;
 
 	const TArray<AAvatar*>& GetAvatars() const;
 

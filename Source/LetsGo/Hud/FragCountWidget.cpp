@@ -30,9 +30,7 @@ void UFragCountWidget::NativeConstruct()
 
 void UFragCountWidget::OnPlayerFragged(
 	const PlayerId& instigatorPlayerId,
-	const PlayerId& fraggedPlayerId,
-	const FName& instigatorPlayerNickname,
-	const FName& fraggedPlayerNickname
+	const PlayerId& fraggedPlayerId
 )
 {
 	if(instigatorPlayerId != _localPlayerId)
@@ -43,6 +41,7 @@ void UFragCountWidget::OnPlayerFragged(
 	
 	AssertIsTrue(instigatorPlayerTeamId.IsValid());
 
+	// Team score == Player score in DeathMatch because each player has own team id
 	auto const teamFragCount = _matchGameMode->GetTeamFragCount(instigatorPlayerTeamId);
 	BpOnFragCountChanged(teamFragCount);
 }

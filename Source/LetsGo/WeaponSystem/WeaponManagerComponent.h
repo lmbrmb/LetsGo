@@ -83,7 +83,7 @@ public:
 
 	IGun* GetCurrentGun() const;
 
-	bool GetIsInitialized() const;
+	bool IsInitialized() const;
 
 	EInitialized_UWeaponManagerComponent Initialized;
 

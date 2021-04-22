@@ -14,6 +14,10 @@ void UAnnouncementManagerComponent::BeginPlay()
 
 	_announcementProcessors.Add([this](auto announcement) { return this->TryProcessMedalAnnouncement(announcement); });
 	_announcementProcessors.Add([this](auto announcement) { return this->TryProcessFragAnnouncement(announcement); });
+
+	auto const authGameMode = GetWorld()->GetAuthGameMode();
+	_matchGameMode = Cast<AMatchGameMode>(authGameMode);
+	AssertIsNotNull(_matchGameMode);
 }
 
 void UAnnouncementManagerComponent::SetPlayerId(const PlayerId& playerId)
@@ -35,7 +39,8 @@ void UAnnouncementManagerComponent::OnMatchStart()
 
 void UAnnouncementManagerComponent::OnMatchEnd()
 {
-	MatchEndAnnouncementRequest.Broadcast();
+	auto const localPlayerPlace = _matchGameMode->CalcPlayerPlace(_playerId);
+	MatchEndAnnouncementRequest.Broadcast(localPlayerPlace);
 	CreateAllMatchAnnouncementsDoneTask(_matchEndAnnouncementDuration);
 }
 
@@ -53,9 +58,7 @@ void UAnnouncementManagerComponent::OnMedalAchieved(const Medal& medal)
 
 void UAnnouncementManagerComponent::OnPlayerFragged(
 	const PlayerId& instigatorPlayerId,
-	const PlayerId& fraggedPlayerId,
-	const FName& instigatorPlayerNickname,
-	const FName& fraggedPlayerNickname
+	const PlayerId& fraggedPlayerId
 )
 {
 	auto const isLocalPlayerInstigator = _playerId == instigatorPlayerId;
@@ -64,7 +67,19 @@ void UAnnouncementManagerComponent::OnPlayerFragged(
 
 	if(isRelevantToLocalPlayer)
 	{
-		auto const fragAnnouncement = new FragAnnouncement(instigatorPlayerNickname, fraggedPlayerNickname, isLocalPlayerInstigator, isLocalPlayerFragged);
+		auto const instigatorPlayerNickname = _matchGameMode->GetPlayerNickname(instigatorPlayerId);
+		auto const fraggedPlayerNickname = _matchGameMode->GetPlayerNickname(fraggedPlayerId);
+		auto const instigatorPlayerPlace = _matchGameMode->CalcPlayerPlace(instigatorPlayerId);
+		auto const fraggedPlayerPlace = _matchGameMode->CalcPlayerPlace(fraggedPlayerId);
+		
+		auto const fragAnnouncement = new FragAnnouncement(
+			instigatorPlayerNickname,
+			fraggedPlayerNickname,
+			isLocalPlayerInstigator,
+			isLocalPlayerFragged,
+			instigatorPlayerPlace,
+			fraggedPlayerPlace
+		);
 		AddPlayerAnnouncement(fragAnnouncement);
 	}
 }

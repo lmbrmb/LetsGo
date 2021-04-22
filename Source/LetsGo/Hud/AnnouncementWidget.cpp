@@ -1,6 +1,5 @@
 #include "AnnouncementWidget.h"
 
-#include "LetsGo/GameModes/MatchGameMode.h"
 #include "LetsGo/Utils/AssertUtils.h"
 
 void UAnnouncementWidget::OnMatchWarmUpAnnouncementRequest()
@@ -13,14 +12,9 @@ void UAnnouncementWidget::OnMatchStartAnnouncementRequest()
 	BpAnnounceMatchStart();
 }
 
-void UAnnouncementWidget::OnMatchEndAnnouncementRequest()
+void UAnnouncementWidget::OnMatchEndAnnouncementRequest(const int localPlayerPlace)
 {
-	auto const authGameMode = GetWorld()->GetAuthGameMode();
-	auto const matchGameMode = Cast<AMatchGameMode>(authGameMode);
-	AssertIsNotNull(matchGameMode);
-
-	auto const isLocalPlayerWonMatch = matchGameMode->IsLocalPlayerWonMatch();
-	BpAnnounceMatchEnd(isLocalPlayerWonMatch);
+	BpAnnounceMatchEnd(localPlayerPlace);
 }
 
 void UAnnouncementWidget::OnFragAnnouncementRequest(const FragAnnouncement* fragAnnouncement)
@@ -31,7 +25,9 @@ void UAnnouncementWidget::OnFragAnnouncementRequest(const FragAnnouncement* frag
 		fragAnnouncement->GetInstigatorPlayerNickname(),
 		fragAnnouncement->GetFraggedPlayerNickname(),
 		fragAnnouncement->GetIsLocalPlayerInstigator(),
-		fragAnnouncement->GetIsLocalPlayerFragged()
+		fragAnnouncement->GetIsLocalPlayerFragged(),
+		fragAnnouncement->GetInstigatorPlayerPlace(),
+		fragAnnouncement->GetFraggedPlayerPlace()
 	);
 }
 

@@ -18,9 +18,16 @@ void UWeaponManagerToSettingsMapping::Map()
 	
 	_playerSettingsManager = matchGameMode->GetPlayerSettingsManager();
 	AssertIsNotNull(_playerSettingsManager);
-	
-	_weaponManagerComponent->Initialized.AddUObject(this, &UWeaponManagerToSettingsMapping::OnWeaponManagerInitialized);
+
 	_weaponManagerComponent->WeaponPivotChanged.AddUObject(this, &UWeaponManagerToSettingsMapping::OnWeaponPivotChanged);
+
+	if(_weaponManagerComponent->IsInitialized())
+	{
+		OnWeaponManagerInitialized();
+		return;
+	}
+
+	_weaponManagerComponent->Initialized.AddUObject(this, &UWeaponManagerToSettingsMapping::OnWeaponManagerInitialized);
 }
 
 void UWeaponManagerToSettingsMapping::OnWeaponManagerInitialized() const
