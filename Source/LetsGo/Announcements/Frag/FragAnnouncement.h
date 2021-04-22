@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Announcement.h"
+#include "LetsGo/Announcements/IAnnouncement.h"
 
 /// <summary>
 /// Frag announcement
 /// </summary>
-class FragAnnouncement final : public Announcement
+class FragAnnouncement final : public IAnnouncement
 {
 public:
 	FragAnnouncement(

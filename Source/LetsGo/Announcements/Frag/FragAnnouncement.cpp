@@ -7,7 +7,7 @@ FragAnnouncement::FragAnnouncement(
 	const bool isLocalPlayerFragged,
 	const int instigatorPlayerPlace,
 	const int fraggedPlayerPlace
-) : Announcement(),
+) :
 _instigatorPlayerNickname(instigatorPlayerNickname),
 _fraggedPlayerNickname(fraggedPlayerNickname),
 _isLocalPlayerInstigator(isLocalPlayerInstigator),

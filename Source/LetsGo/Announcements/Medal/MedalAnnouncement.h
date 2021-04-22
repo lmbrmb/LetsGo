@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Announcement.h"
 #include "LetsGo/Analytics/MedalType.h"
+#include "LetsGo/Announcements/IAnnouncement.h"
 
 /// <summary>
 /// Medal announcement
 /// </summary>
-class MedalAnnouncement final : public Announcement
+class MedalAnnouncement final : public IAnnouncement
 {
 public:
 	explicit MedalAnnouncement(const FMedalType medalType);

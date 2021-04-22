@@ -1,32 +1,24 @@
 #pragma once
 
 #include "Components/ActorComponent.h"
-#include "Announcement.h"
-#include "MedalAnnouncement.h"
-#include "FragAnnouncement.h"
+#include "IAnnouncement.h"
+#include "IAnnouncementManager.h"
+#include "Frag/FragAnnouncementFactory.h"
 #include "LetsGo/Analytics/Medal.h"
 #include "LetsGo/Data/PlayerId.h"
 #include "LetsGo/GameModes/MatchGameMode.h"
+#include "MatchEnd/MatchEndAnnouncementFactory.h"
+#include "MatchStart/MatchStartAnnouncementFactory.h"
+#include "MatchWarmUp/MatchWarmUpAnnouncementFactory.h"
+#include "Medal/MedalAnnouncementFactory.h"
 
 #include "AnnouncementManagerComponent.generated.h"
-
-DECLARE_EVENT(UAnnouncementManagerComponent, EMatchWarmUpAnnouncementRequest);
-
-DECLARE_EVENT(UAnnouncementManagerComponent, EMatchStartAnnouncementRequest);
-
-DECLARE_EVENT_OneParam(UAnnouncementManagerComponent, EMatchEndAnnouncementRequest, const int localPlayerPlace);
-
-DECLARE_EVENT_OneParam(UAnnouncementManagerComponent, EFragAnnouncementRequest, const FragAnnouncement* fragAnnouncement);
-
-DECLARE_EVENT_OneParam(UAnnouncementManagerComponent, EMedalAnnouncementRequest, const MedalAnnouncement* medalAnnouncement);
-
-DECLARE_EVENT(UAnnouncementManagerComponent, EAllAnnouncementsDone);
 
 ///<summary>
 ///Announcement manager component
 ///</summary>
 UCLASS( ClassGroup=(Custom), Blueprintable, meta=(BlueprintSpawnableComponent) )
-class LETSGO_API UAnnouncementManagerComponent : public UActorComponent
+class LETSGO_API UAnnouncementManagerComponent : public UActorComponent, public IAnnouncementManager
 {
 	GENERATED_BODY()
 	
@@ -48,20 +40,6 @@ public:
 		const PlayerId& fraggedPlayerId
 	);
 
-	EMatchWarmUpAnnouncementRequest MatchWarmUpAnnouncementRequest;
-	
-	EMatchStartAnnouncementRequest MatchStartAnnouncementRequest;
-
-	EMatchEndAnnouncementRequest MatchEndAnnouncementRequest;
-	
-	EFragAnnouncementRequest FragAnnouncementRequest;
-
-	EMedalAnnouncementRequest MedalAnnouncementRequest;
-
-	EAllAnnouncementsDone AllPlayerAnnouncementsDone;
-
-	EAllAnnouncementsDone AllMatchAnnouncementsDone;
-	
 protected:
 	virtual void BeginPlay() override;
 	
@@ -85,9 +63,17 @@ private:
 
 	AMatchGameMode* _matchGameMode = nullptr;
 
-	TQueue<Announcement*> _playerAnnouncements;
+	TQueue<IAnnouncement*> _announcements;
 	
-	TArray<TFunction<bool(Announcement*)>> _announcementProcessors;
+	FragAnnouncementFactory* _fragAnnouncementFactory;
+
+	MedalAnnouncementFactory* _medalAnnouncementFactory;
+
+	MatchWarmUpAnnouncementFactory* _matchWarmUpAnnouncementFactory;
+
+	MatchStartAnnouncementFactory* _matchStartAnnouncementFactory;
+
+	MatchEndAnnouncementFactory* _matchEndAnnouncementFactory;
 
 	const float UNDEFINED_TIME = -1;
 	
@@ -95,21 +81,11 @@ private:
 
 	FTimerHandle _announcementDoneTimerHandle;
 	
-	void AddPlayerAnnouncement(Announcement* announcement);
+	void AddAnnouncement(IAnnouncement* announcement);
 	
-	void CreatePlayerAnnouncementTask(const float delay);
-
-	void CreateAllMatchAnnouncementsDoneTask(const float delay);
+	void CreateAnnouncementTask(const float delay);
 	
-	void PlayerAnnouncementOnTimer();
+	void AnnounceOnTimer();
 
-	void AllPlayerAnnouncementsDoneOnTimer() const;
-
-	void AllMatchAnnouncementsDoneOnTimer() const;
-	
-	void ProcessAnnouncement(Announcement* announcement);
-	
-	bool TryProcessMedalAnnouncement(Announcement* announcement) const;
-
-	bool TryProcessFragAnnouncement(Announcement* announcement) const;
+	void AllAnnouncementsDoneOnTimer() const;
 };

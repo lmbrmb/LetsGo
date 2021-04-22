@@ -3,7 +3,6 @@
 #include "LetsGo/Analytics/MedalType.h"
 
 MedalAnnouncement::MedalAnnouncement(const FMedalType medalType) :
-	Announcement(),
 	_medalType(medalType)
 {
 }

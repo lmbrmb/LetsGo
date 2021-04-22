@@ -1,9 +1,10 @@
 #pragma once
 
+#include "AnnouncementProcessors/IAnnouncementProcessor.h"
 #include "Blueprint/UserWidget.h"
 #include "LetsGo/Analytics/MedalType.h"
-#include "LetsGo/Announcements/MedalAnnouncement.h"
-#include "LetsGo/Announcements/FragAnnouncement.h"
+#include "LetsGo/Announcements/IAnnouncement.h"
+#include "LetsGo/Announcements/IAnnouncer.h"
 
 #include "AnnouncementWidget.generated.h"
 
@@ -11,26 +12,42 @@
 /// Announcement widget
 /// </summary>
 UCLASS()
-class LETSGO_API UAnnouncementWidget : public UUserWidget
+class LETSGO_API UAnnouncementWidget : public UUserWidget, public IAnnouncer
 {
 	GENERATED_BODY()
 
 public:
-	void OnMatchWarmUpAnnouncementRequest();
+	// IAnnouncer implementation
+	virtual void OnAnnouncementRequest(const IAnnouncement* announcement) override;
 	
-	void OnMatchStartAnnouncementRequest();
+	// IAnnouncer implementation
+	virtual void OnAllAnnouncementsDone() override;
 
-	void OnMatchEndAnnouncementRequest(const int localPlayerPlace);
+	// IAnnouncer implementation
+	virtual void AnnounceMatchWarmUp() override;
+
+	// IAnnouncer implementation
+	virtual void AnnounceMatchStart() override;
+
+	// IAnnouncer implementation
+	virtual void AnnounceMatchEnd(const int localPlayerPlace) override;
+
+	// IAnnouncer implementation
+	virtual void AnnounceFrag(
+		const FName& instigatorPlayerNickname,
+		const FName& fraggedPlayerNickname,
+		const bool isLocalPlayerInstigator,
+		const bool isLocalPlayerFragged,
+		const int instigatorPlayerPlace,
+		const int fraggedPlayerPlace
+	) override;
+
+	// IAnnouncer implementation
+	virtual void AnnounceMedal(const FMedalType medalType) override;
 	
-	void OnFragAnnouncementRequest(const FragAnnouncement* fragAnnouncement);
-
-	void OnMedalAnnouncementRequest(const MedalAnnouncement* medalAnnouncement);
-
-	void OnAllPlayerAnnouncementsDone();
-
-	void OnAllMatchAnnouncementsDone();
-
 protected:
+	virtual void NativeConstruct() override;
+	
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpAnnounceMatchWarmUp();
 	
@@ -54,8 +71,10 @@ protected:
 	void BpAnnounceMedal(const FMedalType medalType);
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void BpAllPlayerAnnouncementsDone();
+	void BpAllAnnouncementsDone();
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void BpAllMatchAnnouncementsDone();
+private:
+	void ProcessAnnouncement(IAnnouncement* announcement);
+
+	TArray<IAnnouncementProcessor*> _announcementProcessors;
 };

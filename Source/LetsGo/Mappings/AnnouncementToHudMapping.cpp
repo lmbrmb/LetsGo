@@ -59,12 +59,7 @@ void UAnnouncementToHudMapping::OnPlayerHudInitialized()
 	AssertIsNotNull(theAnnouncementWidget);
 	AssertIsLessOrEqual(announcementWidgetCount, 1);
 
-	_announcementManagerComponent->MatchWarmUpAnnouncementRequest.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnMatchWarmUpAnnouncementRequest);
-	_announcementManagerComponent->MatchStartAnnouncementRequest.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnMatchStartAnnouncementRequest);
-	_announcementManagerComponent->MatchEndAnnouncementRequest.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnMatchEndAnnouncementRequest);
-	_announcementManagerComponent->FragAnnouncementRequest.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnFragAnnouncementRequest);
-	_announcementManagerComponent->MedalAnnouncementRequest.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnMedalAnnouncementRequest);
-	_announcementManagerComponent->AllPlayerAnnouncementsDone.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnAllPlayerAnnouncementsDone);
-	_announcementManagerComponent->AllMatchAnnouncementsDone.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnAllMatchAnnouncementsDone);
+	_announcementManagerComponent->AnnouncementRequest.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnAnnouncementRequest);
+	_announcementManagerComponent->AllAnnouncementsDone.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnAllAnnouncementsDone);
 	StartDestroyTask();
 }

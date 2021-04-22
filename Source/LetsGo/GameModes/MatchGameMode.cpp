@@ -56,10 +56,9 @@ void AMatchGameMode::ParseMatchOptions(const FString& options)
 
 void AMatchGameMode::TriggerMatchWarmUp()
 {
-	SetMatchState(MatchState::WarmUp);
-
 	if(_warmUpDuration > 0)
 	{
+		SetMatchState(MatchState::WarmUp);
 		GetWorldTimerManager().SetTimer(_matchStateTimerHandle, this, &AMatchGameMode::TriggerMatchStart, _warmUpDuration, false);
 		return;
 	}
@@ -69,9 +68,8 @@ void AMatchGameMode::TriggerMatchWarmUp()
 
 void AMatchGameMode::TriggerMatchStart()
 {
-	SetMatchState(MatchState::Started);
 	AssertIsGreater(_matchDuration, 0.0f);
-
+	SetMatchState(MatchState::Started);
 	GetWorldTimerManager().SetTimer(_matchStateTimerHandle, this, &AMatchGameMode::TriggerMatchEnd, _matchDuration, false);
 }
 
