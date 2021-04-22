@@ -10,7 +10,7 @@ void UAnnouncementToHudMapping::Map()
 	auto const owner = GetOwner();
 	_announcementManagerComponent = owner->FindComponentByClass<UAnnouncementManagerComponent>();
 	AssertIsNotNull(_announcementManagerComponent);
-
+	
 	auto const playerController = Cast<APlayerController>(owner);
 	AssertIsNotNull(playerController);
 
@@ -59,7 +59,9 @@ void UAnnouncementToHudMapping::OnPlayerHudInitialized()
 	AssertIsNotNull(theAnnouncementWidget);
 	AssertIsLessOrEqual(announcementWidgetCount, 1);
 
-	_announcementManagerComponent->AnnouncementRequest.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnAnnouncementRequest);
-	_announcementManagerComponent->AllAnnouncementsDone.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnAllAnnouncementsDone);
+	auto const announcementManager = _announcementManagerComponent->GetAnnouncementManager();
+	announcementManager->AnnouncementRequest.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnAnnouncementRequest);
+	announcementManager->AllAnnouncementsDone.AddUObject(theAnnouncementWidget, &UAnnouncementWidget::OnAllAnnouncementsDone);
+
 	StartDestroyTask();
 }

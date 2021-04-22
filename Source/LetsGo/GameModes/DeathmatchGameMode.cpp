@@ -27,10 +27,31 @@ void ADeathmatchGameMode::OnFragsCountChanged()
 
 	_winnerPlayerId = PlayerId(playerWithMaxFrags);
 
+	UpdatePlayerPlaces();
+
 	auto const fragLimit = GetFragLimit();
 	if(maxFrags >= fragLimit)
 	{
 		SetMatchState(MatchState::Ended);
+	}
+}
+
+void ADeathmatchGameMode::UpdatePlayerPlaces()
+{
+	auto copy = PlayerFrags;
+	copy.ValueSort([](auto a, auto b) {return a > b; });
+
+	TArray<int> playerIds;
+	copy.GenerateKeyArray(playerIds);
+
+	_playerPlaces.Empty();
+	auto const playerIdsCount = playerIds.Num();
+
+	for (auto i = 0; i < playerIdsCount; i++)
+	{
+		auto const playerId = playerIds[i];
+		auto const place = i + 1;
+		_playerPlaces.Add(playerId, place);
 	}
 }
 
@@ -44,29 +65,12 @@ bool ADeathmatchGameMode::IsLocalPlayerWonMatch()
 	return _winnerPlayerId == _localPlayerId;
 }
 
-int ADeathmatchGameMode::CalcPlayerPlace(const PlayerId& playerId) const
+int ADeathmatchGameMode::GetPlayerPlace(const PlayerId& playerId) const
 {
-	auto const playerFragCount = GetPlayerFragCount(playerId);
+	auto const playerIdValue = playerId.GetId();
+	AssertContainerContainsElement(_playerPlaces, playerIdValue, -1);
 	
-	TArray<int> fragCountDistinct;
-	
-	for (auto const playerFragRecord : PlayerFrags)
-	{
-		auto const fragCount = playerFragRecord.Value;
-		
-		if(fragCountDistinct.Contains(fragCount))
-		{
-			continue;
-		}
-		fragCountDistinct.Add(fragCount);
-	}
-
-	fragCountDistinct.Sort();
-	auto const playerIndexByScore = fragCountDistinct.Find(playerFragCount);
-	auto const arrayCount = fragCountDistinct.Num();
-	auto const place = arrayCount - playerIndexByScore;
-	
-	return place;
+	return _playerPlaces[playerIdValue];
 }
 
 void ADeathmatchGameMode::PopulateAvatarsData()
@@ -100,4 +104,5 @@ void ADeathmatchGameMode::PopulateAvatarsData()
 		teamId
 	);
 	AvatarsData.Add(localPlayerIdValue, avatarData);
+	UpdatePlayerPlaces();
 }

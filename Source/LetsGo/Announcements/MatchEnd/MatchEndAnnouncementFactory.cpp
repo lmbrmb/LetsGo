@@ -8,7 +8,7 @@ IAnnouncement* MatchEndAnnouncementFactory::Create(
 	AMatchGameMode* matchGameMode
 )
 {
-	auto const localPlayerPlace = matchGameMode->CalcPlayerPlace(localPlayerId);
+	auto const localPlayerPlace = matchGameMode->GetPlayerPlace(localPlayerId);
 	auto const matchEndAnnouncement = new MatchEndAnnouncement(localPlayerPlace);
 	return matchEndAnnouncement;
 }

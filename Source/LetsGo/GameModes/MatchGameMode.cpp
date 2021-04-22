@@ -412,7 +412,7 @@ void AMatchGameMode::SetMatchDuration(const float matchDuration)
 	_matchDuration = matchDuration;
 }
 
-int AMatchGameMode::CalcPlayerPlace(const PlayerId& playerId) const
+int AMatchGameMode::GetPlayerPlace(const PlayerId& playerId) const
 {
 	AssertDefaultImplementationIsOverriden(0);
 }
@@ -420,23 +420,15 @@ int AMatchGameMode::CalcPlayerPlace(const PlayerId& playerId) const
 int AMatchGameMode::GetPlayerFragCount(const PlayerId& playerId) const
 {
 	auto const playerIdValue = playerId.GetId();
+	AssertContainerContainsElement(PlayerFrags, playerIdValue, 0);
 	
-	if(!PlayerFrags.Contains(playerIdValue))
-	{
-		return 0;
-	}
-
 	return PlayerFrags[playerIdValue];
 }
 
 int AMatchGameMode::GetTeamFragCount(const TeamId& teamId) const
 {
 	auto const teamIdValue = teamId.GetId();
-
-	if (!TeamFrags.Contains(teamIdValue))
-	{
-		return 0;
-	}
+	AssertContainerContainsElement(TeamFrags, teamIdValue, 0);
 
 	return TeamFrags[teamIdValue];
 }

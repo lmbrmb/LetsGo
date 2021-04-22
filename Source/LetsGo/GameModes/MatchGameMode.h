@@ -86,7 +86,7 @@ public:
 
 	void SetMatchDuration(const float matchDuration);
 
-	virtual int CalcPlayerPlace(const PlayerId& playerId) const;
+	virtual int GetPlayerPlace(const PlayerId& playerId) const;
 
 	int GetPlayerFragCount(const PlayerId& playerId) const;
 
@@ -125,6 +125,10 @@ protected:
 	/// TeamId value, frag count
 	/// </summary>
 	TMap<int, int> TeamFrags;
+
+	AvatarData* GetAvatarData(const int playerIdValue) const;
+
+	AvatarData* GetAvatarData(const PlayerId& playerIdValue) const;
 	
 private:
 	float _stateStartTime = 0;
@@ -205,10 +209,6 @@ private:
 	void TriggerMatchStart();
 
 	void TriggerMatchEnd();
-
-	AvatarData* GetAvatarData(const int playerIdValue) const;
-
-	AvatarData* GetAvatarData(const PlayerId& playerIdValue) const;
 
 	PlayerSettingsManager* _playerSettingsManager;
 };

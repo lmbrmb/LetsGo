@@ -1,6 +1,8 @@
 #pragma once
 
 #include "MappingComponent.h"
+#include "LetsGo/Announcements/AnnouncementManagerComponent.h"
+
 #include "AnnouncementToPlayerMapping.generated.h"
 
 ///<summary>
@@ -13,4 +15,9 @@ class LETSGO_API UAnnouncementToPlayerMapping final : public UMappingComponent
 
 protected:
 	virtual void Map() override;
+
+private:
+	UAnnouncementManagerComponent* _announcementManagerComponent = nullptr;
+
+	void OnAnnouncementManagerComponentInitialized();
 };

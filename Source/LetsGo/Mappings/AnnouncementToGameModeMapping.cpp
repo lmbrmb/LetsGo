@@ -8,47 +8,63 @@ void UAnnouncementToGameModeMapping::Map()
 {
 	auto const owner = GetOwner();
 
-	auto const announcementManagerComponent = owner->FindComponentByClass<UAnnouncementManagerComponent>();
-	AssertIsNotNull(announcementManagerComponent);
+	_announcementManagerComponent = owner->FindComponentByClass<UAnnouncementManagerComponent>();
+	AssertIsNotNull(_announcementManagerComponent);
 
+	if(_announcementManagerComponent->IsInitialized())
+	{
+		OnAnnouncementManagerComponentInitialized();
+		return;
+	}
+
+	_announcementManagerComponent->Initialized.AddUObject(this, &UAnnouncementToGameModeMapping::OnAnnouncementManagerComponentInitialized);
+}
+
+void UAnnouncementToGameModeMapping::OnAnnouncementManagerComponentInitialized()
+{
+	_announcementManagerComponent->Initialized.RemoveAll(this);
+
+	auto const announcementManager = _announcementManagerComponent->GetAnnouncementManager();
+	AssertIsNotNull(announcementManager);
+	
 	auto const world = GetWorld();
 	auto const authGameMode = world->GetAuthGameMode();
 	auto const matchGameMode = Cast<AMatchGameMode>(authGameMode);
 	AssertIsNotNull(matchGameMode);
 
-	matchGameMode->PlayerFragged.AddUObject(announcementManagerComponent, &UAnnouncementManagerComponent::OnPlayerFragged);
-	
-	SubscribeMatchStateEvents(matchGameMode, announcementManagerComponent);
+	matchGameMode->PlayerFragged.AddRaw(announcementManager, &IAnnouncementManager::OnPlayerFragged);
+
+	SubscribeMatchStateEvents(matchGameMode, announcementManager);
 
 	StartDestroyTask();
 }
 
 void UAnnouncementToGameModeMapping::SubscribeMatchStateEvents(
 	AMatchGameMode* matchGameMode,
-	UAnnouncementManagerComponent* announcementManagerComponent
+	IAnnouncementManager* announcementManager
 )
 {
 	if (matchGameMode->IsMatchEnded())
 	{
-		announcementManagerComponent->OnMatchEnd();
+		announcementManager->OnMatchEnd();
 		return;
 	}
 
-	matchGameMode->MatchEnd.AddUObject(announcementManagerComponent, &UAnnouncementManagerComponent::OnMatchEnd);
+	matchGameMode->MatchEnd.AddRaw(announcementManager, &IAnnouncementManager::OnMatchEnd);
 
 	if (matchGameMode->IsMatchStarted())
 	{
-		announcementManagerComponent->OnMatchStart();
+		announcementManager->OnMatchStart();
 		return;
 	}
 
-	matchGameMode->MatchStart.AddUObject(announcementManagerComponent, &UAnnouncementManagerComponent::OnMatchStart);
+	matchGameMode->MatchStart.AddRaw(announcementManager, &IAnnouncementManager::OnMatchStart);
 
 	if (matchGameMode->IsMatchWarmUp())
 	{
-		announcementManagerComponent->OnMatchWarmUp();
+		announcementManager->OnMatchWarmUp();
 		return;
 	}
 
-	matchGameMode->MatchWarmUp.AddUObject(announcementManagerComponent, &UAnnouncementManagerComponent::OnMatchWarmUp);
+	matchGameMode->MatchWarmUp.AddRaw(announcementManager, &IAnnouncementManager::OnMatchWarmUp);
 }

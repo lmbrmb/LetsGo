@@ -21,8 +21,8 @@ IAnnouncement* FragAnnouncementFactory::Create(
 	
 	auto const instigatorPlayerNickname = matchGameMode->GetPlayerNickname(instigatorPlayerId);
 	auto const fraggedPlayerNickname = matchGameMode->GetPlayerNickname(fraggedPlayerId);
-	auto const instigatorPlayerPlace = matchGameMode->CalcPlayerPlace(instigatorPlayerId);
-	auto const fraggedPlayerPlace = matchGameMode->CalcPlayerPlace(fraggedPlayerId);
+	auto const instigatorPlayerPlace = matchGameMode->GetPlayerPlace(instigatorPlayerId);
+	auto const fraggedPlayerPlace = matchGameMode->GetPlayerPlace(fraggedPlayerId);
 
 	auto const fragAnnouncement = new FragAnnouncement(
 		instigatorPlayerNickname,

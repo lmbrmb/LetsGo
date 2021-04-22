@@ -29,8 +29,8 @@ protected:
 
 	virtual bool IsLocalPlayerWonMatch() override;
 
-	virtual int CalcPlayerPlace(const PlayerId& playerId) const override;
-	
+	virtual int GetPlayerPlace(const PlayerId& playerId) const override;
+
 private:
 	const FName LOCAL_PLAYER_NAME = "%UserName%";
 
@@ -39,4 +39,8 @@ private:
 	PlayerId _winnerPlayerId;
 
 	AvatarDataFactory* _avatarDataFactory;
+
+	TMap<int, int> _playerPlaces;
+
+	void UpdatePlayerPlaces();
 };
