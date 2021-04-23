@@ -11,7 +11,6 @@ public:
 		IAnnouncer* announcer
 	) = 0;
 
-protected:
 	virtual ~IAnnouncementProcessor() = default;
 };
 

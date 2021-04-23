@@ -128,12 +128,6 @@ void AMatchGameMode::BeginPlay()
 		SpawnAvatar(avatarData);
 	}
 
-	if (_warmUpDelay > 0)
-	{
-		GetWorldTimerManager().SetTimer(_matchStateTimerHandle, this, &AMatchGameMode::TriggerMatchWarmUp, _warmUpDelay, false);
-		return;
-	}
-
 	TriggerMatchWarmUp();
 }
 

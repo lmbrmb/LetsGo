@@ -1,10 +1,7 @@
 #include "AnnouncementManagerFactory.h"
 #include "AnnouncementManager.h"
 
-AnnouncementManagerFactory::AnnouncementManagerFactory(
-	AMatchGameMode* matchGameMode
-	) :
-	_matchGameMode(matchGameMode)
+AnnouncementManagerFactory::AnnouncementManagerFactory()
 {
 	_fragAnnouncementFactory = new FragAnnouncementFactory();
 	_medalAnnouncementFactory = new MedalAnnouncementFactory();
@@ -29,9 +26,12 @@ void AnnouncementManagerFactory::SetTimings(
 }
 
 // ReSharper disable once CppMemberFunctionMayBeStatic
-IAnnouncementManager* AnnouncementManagerFactory::Create() const
+IAnnouncementManager* AnnouncementManagerFactory::Create(
+	AMatchGameMode* matchGameMode,
+	const PlayerId& playerId
+) const
 {
-	auto const announcementManager = new AnnouncementManager(_matchGameMode);
+	auto const announcementManager = new AnnouncementManager(matchGameMode, playerId);
 	announcementManager->SetFactories(
 		_fragAnnouncementFactory,
 		_medalAnnouncementFactory,

@@ -18,9 +18,19 @@ protected:
 	virtual void Map() override;
 
 private:
+	APlayerHud* _playerHud = nullptr;
+
+	UAnnouncementManagerComponent* _announcementManagerComponent = nullptr;
+
+	bool _isPlayerHudInitialized = false;
+
+	bool _isAnnouncementManagerComponentInitialized = false;
+
 	void OnPlayerHudInitialized();
 
-	APlayerHud* _playerHud = nullptr;
-	
-	UAnnouncementManagerComponent* _announcementManagerComponent = nullptr;
+	void OnAnnouncementManagerComponentInitialized();
+
+	void OnPartialInitialization();
+
+	void Bind();
 };

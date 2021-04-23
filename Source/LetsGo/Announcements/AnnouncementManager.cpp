@@ -5,14 +5,12 @@
 const float AnnouncementManager::UNDEFINED_TIME = -1;
 
 AnnouncementManager::AnnouncementManager(
-	AMatchGameMode* matchGameMode
-) : _matchGameMode(matchGameMode)
+	AMatchGameMode* matchGameMode,
+	const PlayerId& playerId
+) :
+	_matchGameMode(matchGameMode),
+	_playerId(playerId)
 {
-}
-
-void AnnouncementManager::SetPlayerId(const PlayerId& playerId)
-{
-	_playerId = playerId;
 }
 
 void AnnouncementManager::SetFactories(

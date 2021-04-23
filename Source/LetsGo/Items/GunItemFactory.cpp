@@ -3,7 +3,6 @@
 GunItemFactory::GunItemFactory()
 {
 	const WeaponType shotgunWeaponType("Shotgun");
-	_gunData.Add("SawedOffShotgun", GunData(shotgunWeaponType, "ShotgunShells", 10));
 	_gunData.Add("ShotgunQ3", GunData(shotgunWeaponType, "ShotgunShells", 10));
 
 	const WeaponType machinegunWeaponType("Machinegun");
@@ -11,7 +10,6 @@ GunItemFactory::GunItemFactory()
 	_gunData.Add("MachinegunQ3", GunData(machinegunWeaponType, "MachinegunBullets", 999));
 	
 	const WeaponType railgunWeaponType("Railgun");
-	_gunData.Add("Railgun", GunData(railgunWeaponType, "RailgunBullets", 10));
 	_gunData.Add("RailgunQ3", GunData(railgunWeaponType, "RailgunBullets", 10));
 
 	const WeaponType rocketLauncherWeaponType("RocketLauncher");

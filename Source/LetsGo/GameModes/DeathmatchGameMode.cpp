@@ -77,6 +77,7 @@ void ADeathmatchGameMode::PopulateAvatarsData()
 {
 	auto teamIndex = 0;
 	auto const botCount = GetBotCount();
+	auto place = 1;
 	for (auto i = 0; i < botCount; i++)
 	{
 		auto const botIdValue = INT_MAX - i;
@@ -84,6 +85,7 @@ void ADeathmatchGameMode::PopulateAvatarsData()
 		const TeamId teamId(teamIndex++);
 		auto const avatarData = _avatarDataFactory->GenerateRandom(botId, AvatarType::Bot, teamId);
 		AvatarsData.Add(botIdValue, avatarData);
+		_playerPlaces.Add(botIdValue, place++);
 	}
 
 	auto const localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
@@ -104,5 +106,5 @@ void ADeathmatchGameMode::PopulateAvatarsData()
 		teamId
 	);
 	AvatarsData.Add(localPlayerIdValue, avatarData);
-	UpdatePlayerPlaces();
+	_playerPlaces.Add(localPlayerIdValue, place++);
 }

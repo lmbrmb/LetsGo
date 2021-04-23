@@ -13,8 +13,6 @@ class IAnnouncementManager
 public:
 	virtual ~IAnnouncementManager() = default;
 
-	virtual void SetPlayerId(const PlayerId& playerId) = 0;
-
 	virtual void OnMatchWarmUp() = 0;
 
 	virtual void OnMatchStart() = 0;

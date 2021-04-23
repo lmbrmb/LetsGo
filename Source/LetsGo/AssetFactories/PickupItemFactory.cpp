@@ -10,11 +10,9 @@ PickupItemFactory::PickupItemFactory(
 ) : CachedAssetFactory<UBlueprintGeneratedClass>(uObjectRegistry)
 {
 	//Weapons
-	Paths.Add("SawedOffShotgun", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_SawedOffShotgunPickupItem"));
 	Paths.Add("ShotgunQ3", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_ShotgunQ3PickupItem"));
 	Paths.Add("Minigun", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_MinigunPickupItem"));
 	Paths.Add("MachinegunQ3", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_MachinegunQ3PickupItem"));
-	Paths.Add("Railgun", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_RailgunPickupItem"));
 	Paths.Add("RailgunQ3", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_RailgunQ3PickupItem"));
 	Paths.Add("RocketLauncherQ3", AssetUtils::GenerateBlueprintAssetPath(AssetPath, "BP_RocketLauncherQ3PickupItem"));
 

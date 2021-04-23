@@ -13,10 +13,9 @@ class AnnouncementManager final : public IAnnouncementManager
 public:
 	// ReSharper disable once CppNonExplicitConvertingConstructor
 	AnnouncementManager(
-		AMatchGameMode* matchGameMode
+		AMatchGameMode* matchGameMode,
+		const PlayerId& playerId
 	);
-
-	virtual void SetPlayerId(const PlayerId& playerId) override;
 
 	void SetFactories(
 		FragAnnouncementFactory* fragAnnouncementFactory,

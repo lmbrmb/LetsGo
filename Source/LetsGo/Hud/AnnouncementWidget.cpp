@@ -10,6 +10,7 @@
 void UAnnouncementWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
 	_announcementProcessors.Add(new FragAnnouncementProcessor());
 	_announcementProcessors.Add(new MedalAnnouncementProcessor());
 	_announcementProcessors.Add(new MatchWarmUpAnnouncementProcessor());
@@ -21,7 +22,6 @@ void UAnnouncementWidget::OnAnnouncementRequest(const IAnnouncement* announcemen
 {
 	AssertIsNotNull(announcement);
 
-	AssertIsNotNull(announcement);
 	for (auto announcementProcessor : _announcementProcessors)
 	{
 		auto const isProcessed = announcementProcessor->TryProcessAnnouncement(announcement, this);

@@ -11,8 +11,7 @@
 class AnnouncementManagerFactory final
 {
 public:
-	// ReSharper disable once CppNonExplicitConvertingConstructor
-	AnnouncementManagerFactory(AMatchGameMode* matchGameMode);
+	AnnouncementManagerFactory();
 
 	void SetTimings(
 		const float matchWarmUpAnnouncementDuration,
@@ -22,11 +21,12 @@ public:
 		const float playerAnnouncementDuration
 	);
 	
-	IAnnouncementManager* Create() const;
+	IAnnouncementManager* Create(
+		AMatchGameMode* matchGameMode,
+		const PlayerId& playerId
+	) const;
 
 private:
-	AMatchGameMode* _matchGameMode;
-
 	FragAnnouncementFactory* _fragAnnouncementFactory = nullptr;
 
 	MedalAnnouncementFactory* _medalAnnouncementFactory = nullptr;

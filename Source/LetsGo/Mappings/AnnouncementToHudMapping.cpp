@@ -10,7 +10,16 @@ void UAnnouncementToHudMapping::Map()
 	auto const owner = GetOwner();
 	_announcementManagerComponent = owner->FindComponentByClass<UAnnouncementManagerComponent>();
 	AssertIsNotNull(_announcementManagerComponent);
-	
+
+	if(_announcementManagerComponent->IsInitialized())
+	{
+		OnAnnouncementManagerComponentInitialized();
+	}
+	else
+	{
+		_announcementManagerComponent->Initialized.AddUObject(this, &UAnnouncementToHudMapping::OnAnnouncementManagerComponentInitialized);
+	}
+
 	auto const playerController = Cast<APlayerController>(owner);
 	AssertIsNotNull(playerController);
 
@@ -23,16 +32,39 @@ void UAnnouncementToHudMapping::Map()
 	if (_playerHud->IsInitialized())
 	{
 		OnPlayerHudInitialized();
-		return;
 	}
-
-	_playerHud->Initialized.AddUObject(this, &UAnnouncementToHudMapping::OnPlayerHudInitialized);
+	else
+	{
+		_playerHud->Initialized.AddUObject(this, &UAnnouncementToHudMapping::OnPlayerHudInitialized);
+	}
 }
 
 void UAnnouncementToHudMapping::OnPlayerHudInitialized()
 {
 	_playerHud->Initialized.RemoveAll(this);
+	_isPlayerHudInitialized = true;
+	OnPartialInitialization();
+}
+
+void UAnnouncementToHudMapping::OnAnnouncementManagerComponentInitialized()
+{
+	_announcementManagerComponent->Initialized.RemoveAll(this);
+	_isAnnouncementManagerComponentInitialized = true;
+	OnPartialInitialization();
+}
+
+void UAnnouncementToHudMapping::OnPartialInitialization()
+{
+	if(!_isPlayerHudInitialized || !_isAnnouncementManagerComponentInitialized)
+	{
+		return;
+	}
 	
+	Bind();
+}
+
+void UAnnouncementToHudMapping::Bind()
+{
 	auto const hudWidget = _playerHud->GetHudWidget();
 	AssertIsNotNull(hudWidget);
 
@@ -45,7 +77,7 @@ void UAnnouncementToHudMapping::OnPlayerHudInitialized()
 	auto announcementWidgetCount = 0;
 	auto const childWidgets = panelWidget->GetAllChildren();
 	UAnnouncementWidget* theAnnouncementWidget = nullptr;
-	
+
 	for (auto widget : childWidgets)
 	{
 		auto const announcementWidget = Cast<UAnnouncementWidget>(widget);

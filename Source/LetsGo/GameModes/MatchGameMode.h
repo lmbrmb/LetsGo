@@ -163,13 +163,10 @@ private:
 	float _avatarDestroyTime = 2.5f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
-	float _warmUpDelay = 1.0f;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
 	float _warmUpDuration = 5.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
-	float _matchDuration = 5.0f;
+	float _matchDuration = 300.0f;
 
 	TTypeContainer<ESPMode::Fast>* _diContainer = nullptr;
 

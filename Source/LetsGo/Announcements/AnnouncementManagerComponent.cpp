@@ -1,6 +1,8 @@
 #include "AnnouncementManagerComponent.h"
 
 #include "AnnouncementManagerFactory.h"
+#include "GameFramework/PlayerState.h"
+#include "LetsGo/PlayerControllers/MatchPlayerController.h"
 #include "LetsGo/Logs/DevLogger.h"
 #include "LetsGo/Utils/AssertUtils.h"
 
@@ -35,7 +37,7 @@ void UAnnouncementManagerComponent::BeginPlay()
 	auto const matchGameMode = Cast<AMatchGameMode>(authGameMode);
 	AssertIsNotNull(matchGameMode);
 
-	AnnouncementManagerFactory announcementManagerFactory(matchGameMode);
+	AnnouncementManagerFactory announcementManagerFactory;
 	announcementManagerFactory.SetTimings(
 		_matchWarmUpAnnouncementDuration,
 		_matchStartAnnouncementDuration,
@@ -43,7 +45,18 @@ void UAnnouncementManagerComponent::BeginPlay()
 		_firstPlayerAnnouncementDelay,
 		_playerAnnouncementDuration
 	);
-	_announcementManager = announcementManagerFactory.Create();
+
+	auto const owner = GetOwner();
+	auto const matchPlayerController = Cast<AMatchPlayerController>(owner);
+	AssertIsNotNull(matchPlayerController);
+
+	auto const playerState = matchPlayerController->GetPlayerState<APlayerState>();
+	AssertIsNotNull(playerState);
+
+	auto const playerIdValue = playerState->GetPlayerId();
+	auto const playerId = PlayerId(playerIdValue);
+	
+	_announcementManager = announcementManagerFactory.Create(matchGameMode, playerId);
 	
 	Initialized.Broadcast();
 }
