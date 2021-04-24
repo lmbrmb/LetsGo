@@ -68,9 +68,12 @@ void AMatchGameMode::TriggerMatchWarmUp()
 
 void AMatchGameMode::TriggerMatchStart()
 {
-	AssertIsGreater(_matchDuration, 0.0f);
 	SetMatchState(MatchState::Started);
-	GetWorldTimerManager().SetTimer(_matchStateTimerHandle, this, &AMatchGameMode::TriggerMatchEnd, _matchDuration, false);
+
+	if(_matchDuration > 0)
+	{
+		GetWorldTimerManager().SetTimer(_matchStateTimerHandle, this, &AMatchGameMode::TriggerMatchEnd, _matchDuration, false);
+	}
 }
 
 void AMatchGameMode::TriggerMatchEnd()
