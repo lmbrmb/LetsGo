@@ -211,10 +211,7 @@ void AnnouncementManager::CreateAnnouncementTask(const float delay)
 
 void AnnouncementManager::CreateAllAnnouncementsDoneTask(const float delay)
 {
-	if (_announcementDoneTimerHandle.IsValid())
-	{
-		_matchGameMode->GetWorld()->GetTimerManager().ClearTimer(_announcementDoneTimerHandle);
-	}
+	_matchGameMode->GetWorld()->GetTimerManager().ClearTimer(_announcementDoneTimerHandle);
 
 	auto const clearAnnouncementsDelay = delay + _playerAnnouncementDuration;
 	_matchGameMode->GetWorld()->GetTimerManager().SetTimer(
@@ -227,6 +224,11 @@ void AnnouncementManager::CreateAllAnnouncementsDoneTask(const float delay)
 
 void AnnouncementManager::AnnounceOnTimer()
 {
+	if(!IsContextValid())
+	{
+		return;
+	}
+
 	IAnnouncement* announcement;
 	_announcements.Dequeue(announcement);
 
@@ -239,5 +241,15 @@ void AnnouncementManager::AnnounceOnTimer()
 
 void AnnouncementManager::AllAnnouncementsDoneOnTimer() const
 {
+	if(!IsContextValid())
+	{
+		return;
+	}
+
 	AllAnnouncementsDone.Broadcast();
+}
+
+bool AnnouncementManager::IsContextValid() const
+{
+	return _matchGameMode && _matchGameMode->IsValidLowLevel();
 }

@@ -2,6 +2,7 @@
 
 #include "GameFramework/GameStateBase.h"
 #include "GameModeOptionParsers/GameModeOptionParserFactory.h"
+#include "Kismet/GameplayStatics.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
 #include "LetsGo/DiContainers/MatchDiContainerFactory.h"
 #include "LetsGo/Utils/ActorUtils.h"
@@ -79,6 +80,24 @@ void AMatchGameMode::TriggerMatchStart()
 void AMatchGameMode::TriggerMatchEnd()
 {
 	SetMatchState(MatchState::Ended);
+
+	GetWorldTimerManager().ClearTimer(_matchStateTimerHandle);
+
+	if(_exitToMainMenuDelay > 0)
+	{
+		FTimerHandle exitToMainMenuTimerHandle;
+		GetWorldTimerManager().SetTimer(exitToMainMenuTimerHandle, this, &AMatchGameMode::TriggerExitToMainMenu, _exitToMainMenuDelay, false);
+		return;
+	}
+
+	TriggerExitToMainMenu();
+}
+
+void AMatchGameMode::TriggerExitToMainMenu()
+{
+	GetWorldTimerManager().ClearTimer(_matchStateTimerHandle);
+
+	UGameplayStatics::OpenLevel(this, _mainMenuLevelName, true);
 }
 
 AvatarData* AMatchGameMode::GetAvatarData(const int playerIdValue) const

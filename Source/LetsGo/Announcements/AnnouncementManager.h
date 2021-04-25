@@ -102,4 +102,6 @@ private:
 	void AnnounceOnTimer();
 
 	void AllAnnouncementsDoneOnTimer() const;
+
+	bool IsContextValid() const;
 };

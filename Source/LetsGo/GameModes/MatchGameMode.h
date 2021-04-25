@@ -113,7 +113,7 @@ protected:
 
 	virtual void OnFragsCountChanged();
 
-	void SetMatchState(MatchState matchState);
+	void TriggerMatchEnd();
 	
 	/// <summary>
 	/// PlayerId value, Avatar data
@@ -133,7 +133,7 @@ protected:
 	AvatarData* GetAvatarData(const int playerIdValue) const;
 
 	AvatarData* GetAvatarData(const PlayerId& playerIdValue) const;
-	
+
 private:
 	float _stateStartTime = 0;
 
@@ -172,6 +172,12 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
 	float _matchDuration = 300.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	float _exitToMainMenuDelay = 3.0f;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
+	FName _mainMenuLevelName = "MainMenu";
+
 	TTypeContainer<ESPMode::Fast>* _diContainer = nullptr;
 
 	int _playerSpawnPointIndex = UNDEFINED_INDEX;
@@ -194,22 +200,24 @@ private:
 	MatchAnalytics* _matchAnalytics;
 
 	void OnAvatarDied(UHealthComponent* healthComponent, const float delta);
-	
+
 	FTransform GetNextSpawnPoint();
 
 	void ParseMatchOptions(const FString& options);
 
 	void SpawnAvatar(AvatarData* avatarData);
-	
+
 	void RespawnAvatarOnTimer();
 
 	void DestroyAvatarOnTimer();
 
+	void SetMatchState(MatchState matchState);
+
 	void TriggerMatchWarmUp();
-	
+
 	void TriggerMatchStart();
 
-	void TriggerMatchEnd();
+	void TriggerExitToMainMenu();
 
 	PlayerSettingsManager* _playerSettingsManager;
 };

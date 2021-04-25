@@ -32,7 +32,7 @@ void ADeathmatchGameMode::OnFragsCountChanged()
 	auto const fragLimit = GetFragLimit();
 	if(maxFrags >= fragLimit)
 	{
-		SetMatchState(MatchState::Ended);
+		TriggerMatchEnd();
 	}
 }
 
