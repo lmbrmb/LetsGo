@@ -8,6 +8,7 @@ AnnouncementManagerFactory::AnnouncementManagerFactory()
 	_matchWarmUpAnnouncementFactory = new MatchWarmUpAnnouncementFactory();
 	_matchStartAnnouncementFactory = new MatchStartAnnouncementFactory();
 	_matchEndAnnouncementFactory = new MatchEndAnnouncementFactory();
+	_leadAnnouncementFactory = new LeadAnnouncementFactory();
 }
 
 void AnnouncementManagerFactory::SetTimings(
@@ -37,7 +38,8 @@ IAnnouncementManager* AnnouncementManagerFactory::Create(
 		_medalAnnouncementFactory,
 		_matchWarmUpAnnouncementFactory,
 		_matchStartAnnouncementFactory,
-		_matchEndAnnouncementFactory
+		_matchEndAnnouncementFactory,
+		_leadAnnouncementFactory
 	);
 	announcementManager->SetTimings(
 		_matchWarmUpAnnouncementDuration,

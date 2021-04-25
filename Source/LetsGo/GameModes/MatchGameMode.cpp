@@ -461,3 +461,13 @@ PlayerSettingsManager* AMatchGameMode::GetPlayerSettingsManager() const
 {
 	return _playerSettingsManager;
 }
+
+const TMap<int, int>& AMatchGameMode::GetPlayerFrags() const
+{
+	return PlayerFrags;
+}
+
+const TMap<int, int>& AMatchGameMode::GetTeamFrags() const
+{
+	return TeamFrags;
+}

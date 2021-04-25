@@ -1,6 +1,7 @@
 #include "AnnouncementWidget.h"
 
 #include "AnnouncementProcessors/FragAnnouncementProcessor.h"
+#include "AnnouncementProcessors/LeadAnnouncementProcessor.h"
 #include "AnnouncementProcessors/MatchEndAnnouncementProcessor.h"
 #include "AnnouncementProcessors/MatchStartAnnouncementProcessor.h"
 #include "AnnouncementProcessors/MatchWarmUpAnnouncementProcessor.h"
@@ -13,6 +14,7 @@ void UAnnouncementWidget::NativeConstruct()
 
 	_announcementProcessors.Add(new FragAnnouncementProcessor());
 	_announcementProcessors.Add(new MedalAnnouncementProcessor());
+	_announcementProcessors.Add(new LeadAnnouncementProcessor());
 	_announcementProcessors.Add(new MatchWarmUpAnnouncementProcessor());
 	_announcementProcessors.Add(new MatchStartAnnouncementProcessor());
 	_announcementProcessors.Add(new MatchEndAnnouncementProcessor());
@@ -76,6 +78,11 @@ void UAnnouncementWidget::AnnounceFrag(
 void UAnnouncementWidget::AnnounceMedal(const FMedalType medalType)
 {
 	BpAnnounceMedal(medalType);
+}
+
+void UAnnouncementWidget::AnnounceLead(const FLeadState leadState)
+{
+	BpAnnounceLead(leadState);
 }
 
 void UAnnouncementWidget::ProcessAnnouncement(IAnnouncement* announcement)

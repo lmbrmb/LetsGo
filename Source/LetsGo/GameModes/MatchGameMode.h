@@ -100,6 +100,10 @@ public:
 
 	PlayerSettingsManager* GetPlayerSettingsManager() const;
 
+	const TMap<int, int>& GetPlayerFrags() const;
+
+	const TMap<int, int>& GetTeamFrags() const;
+
 protected:
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 

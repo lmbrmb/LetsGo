@@ -2,6 +2,8 @@
 
 #include "IAnnouncementManager.h"
 #include "Frag/FragAnnouncementFactory.h"
+#include "Lead/LeadAnnouncementFactory.h"
+#include "Lead/LeadState.h"
 #include "LetsGo/GameModes/MatchGameMode.h"
 #include "MatchEnd/MatchEndAnnouncementFactory.h"
 #include "MatchStart/MatchStartAnnouncementFactory.h"
@@ -22,7 +24,8 @@ public:
 		MedalAnnouncementFactory* medalAnnouncementFactory,
 		MatchWarmUpAnnouncementFactory* matchWarmUpAnnouncementFactory,
 		MatchStartAnnouncementFactory* matchStartAnnouncementFactory,
-		MatchEndAnnouncementFactory* matchEndAnnouncementFactory
+		MatchEndAnnouncementFactory* matchEndAnnouncementFactory,
+		LeadAnnouncementFactory* leadAnnouncementFactory
 	);
 
 	void SetTimings(
@@ -71,6 +74,8 @@ private:
 
 	MatchEndAnnouncementFactory* _matchEndAnnouncementFactory = nullptr;
 
+	LeadAnnouncementFactory* _leadAnnouncementFactory = nullptr;
+
 	TQueue<IAnnouncement*> _announcements;
 
 	static const float UNDEFINED_TIME;
@@ -78,6 +83,15 @@ private:
 	float _nextAnnouncementTime = UNDEFINED_TIME;
 
 	FTimerHandle _announcementDoneTimerHandle;
+
+	FLeadState _leadState = FLeadState::None;
+
+	void CheckLead();
+
+	void CreateFragAnnouncement(
+		const PlayerId& instigatorPlayerId,
+		const PlayerId& fraggedPlayerId
+	);
 
 	void AddAnnouncement(IAnnouncement* announcement);
 

@@ -33,15 +33,32 @@ void UFragCountWidget::OnPlayerFragged(
 	const PlayerId& fraggedPlayerId
 )
 {
-	if(instigatorPlayerId != _localPlayerId)
-	{
-		return;
-	}
-	auto const instigatorPlayerTeamId = _matchGameMode->GetPlayerTeamId(instigatorPlayerId);
+	auto const playerTeamId = _matchGameMode->GetPlayerTeamId(_localPlayerId);
+	AssertIsTrue(playerTeamId.IsValid());
+	auto const playerTeamIdValue = playerTeamId.GetId();
 	
-	AssertIsTrue(instigatorPlayerTeamId.IsValid());
-
 	// Team score == Player score in DeathMatch because each player has own team id
-	auto const teamFragCount = _matchGameMode->GetTeamFragCount(instigatorPlayerTeamId);
-	BpOnFragCountChanged(teamFragCount);
+
+	auto playerTeamFragCount = 0;
+	auto enemyTeamMaxFragCount = 0;
+	
+	for (auto const teamFragsRecord : _matchGameMode->GetTeamFrags())
+	{
+		auto const teamIdValue = teamFragsRecord.Key;
+		auto const teamFrags = teamFragsRecord.Value;
+
+		if(teamIdValue == playerTeamIdValue)
+		{
+			playerTeamFragCount = teamFrags;
+		}
+		else
+		{
+			if(enemyTeamMaxFragCount < teamFrags)
+			{
+				enemyTeamMaxFragCount = teamFrags;
+			}
+		}
+	}
+	
+	BpOnFragCountChanged(playerTeamFragCount, enemyTeamMaxFragCount);
 }

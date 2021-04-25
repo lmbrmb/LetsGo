@@ -1,7 +1,7 @@
 #include "MatchAnalytics.h"
 
 #include "ExcellentMedalProcessor.h"
-#include "FirstBloodMedalProcessor.h"
+//#include "FirstBloodMedalProcessor.h"
 #include "ImpressiveMedalProcessor.h"
 #include "LetsGo/GameModes/MatchGameMode.h"
 #include "LetsGo/Utils/AssertUtils.h"
@@ -13,11 +13,11 @@ MatchAnalytics::MatchAnalytics(AMatchGameMode* matchGameMode) :
 	_matchGameMode->AvatarSpawned.AddRaw(this, &MatchAnalytics::OnAvatarSpawned);
 	_world = matchGameMode->GetWorld();
 
-	auto const firstBloodMedalProcessor = new FirstBloodMedalProcessor();
+	//auto const firstBloodMedalProcessor = new FirstBloodMedalProcessor();
 	auto const impressiveMedalProcessor = new ImpressiveMedalProcessor(2, WeaponType("Railgun"));
 	auto const excellentMedalProcessor = new ExcellentMedalProcessor(4);
 	
-	_damageMedalProcessors.Add(firstBloodMedalProcessor);
+	//_damageMedalProcessors.Add(firstBloodMedalProcessor);
 	_damageMedalProcessors.Add(excellentMedalProcessor);
 	_damageMedalProcessors.Add(impressiveMedalProcessor);
 

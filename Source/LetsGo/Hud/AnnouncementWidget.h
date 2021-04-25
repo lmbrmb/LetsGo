@@ -44,7 +44,10 @@ public:
 
 	// IAnnouncer implementation
 	virtual void AnnounceMedal(const FMedalType medalType) override;
-	
+
+	// IAnnouncer implementation
+	virtual void AnnounceLead(const FLeadState leadState) override;
+
 protected:
 	virtual void NativeConstruct() override;
 	
@@ -69,6 +72,9 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpAnnounceMedal(const FMedalType medalType);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BpAnnounceLead(const FLeadState leadState);
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpAllAnnouncementsDone();

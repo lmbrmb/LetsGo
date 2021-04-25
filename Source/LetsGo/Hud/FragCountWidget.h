@@ -18,8 +18,11 @@ protected:
 	virtual void NativeConstruct() override;
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void BpOnFragCountChanged(const int fragCount);
-	
+	void BpOnFragCountChanged(
+		const int playerTeamFragCount,
+		const int enemyTeamMaxFragCount
+	);
+
 private:
 	AMatchGameMode* _matchGameMode;
 

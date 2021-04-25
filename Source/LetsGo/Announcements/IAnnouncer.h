@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Lead/LeadState.h"
 #include "LetsGo/Analytics/MedalType.h"
 
 /// <summary>
@@ -28,7 +29,9 @@ public:
 	) = 0;
 
 	virtual void AnnounceMedal(const FMedalType medalType) = 0;
-	
+
+	virtual void AnnounceLead(const FLeadState leadState) = 0;
+
 protected:
 	virtual ~IAnnouncer() = default;
 };

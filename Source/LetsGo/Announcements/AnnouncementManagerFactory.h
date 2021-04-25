@@ -2,6 +2,7 @@
 
 #include "IAnnouncementManager.h"
 #include "Frag/FragAnnouncementFactory.h"
+#include "Lead/LeadAnnouncementFactory.h"
 #include "LetsGo/GameModes/MatchGameMode.h"
 #include "MatchEnd/MatchEndAnnouncementFactory.h"
 #include "MatchStart/MatchStartAnnouncementFactory.h"
@@ -36,6 +37,8 @@ private:
 	MatchStartAnnouncementFactory* _matchStartAnnouncementFactory = nullptr;
 
 	MatchEndAnnouncementFactory* _matchEndAnnouncementFactory = nullptr;
+
+	LeadAnnouncementFactory* _leadAnnouncementFactory = nullptr;
 
 	float _matchWarmUpAnnouncementDuration = 0.0f;
 
