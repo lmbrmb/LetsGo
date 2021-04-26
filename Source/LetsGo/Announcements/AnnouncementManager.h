@@ -32,8 +32,8 @@ public:
 		const float matchWarmUpAnnouncementDuration,
 		const float matchStartAnnouncementDuration,
 		const float matchEndAnnouncementDuration,
-		const float firstPlayerAnnouncementDelay,
-		const float playerAnnouncementDuration
+		const float firstAnnouncementDelay,
+		const float announcementDuration
 	);
 
 	virtual void OnMatchWarmUp() override;
@@ -62,9 +62,9 @@ private:
 
 	float _matchEndAnnouncementDuration = 0.0f;
 
-	float _firstPlayerAnnouncementDelay = 0.0f;
+	float _firstAnnouncementDelay = 0.0f;
 
-	float _playerAnnouncementDuration = 0.0f;
+	float _announcementDuration = 0.0f;
 
 	FragAnnouncementFactory* _fragAnnouncementFactory = nullptr;
 
@@ -80,11 +80,7 @@ private:
 
 	TQueue<IAnnouncement*> _announcements;
 
-	static const float UNDEFINED_TIME;
-
-	float _nextAnnouncementTime = UNDEFINED_TIME;
-
-	FTimerHandle _allAnnouncementsDoneTimerHandle;
+	FTimerHandle _announcementTimerHandle;
 
 	FLeadState _leadState = FLeadState::None;
 

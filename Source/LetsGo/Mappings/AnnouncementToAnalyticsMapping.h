@@ -2,6 +2,7 @@
 
 #include "MappingComponent.h"
 #include "LetsGo/Announcements/AnnouncementManagerComponent.h"
+#include "LetsGo/GameModes/MatchGameMode.h"
 
 #include "AnnouncementToAnalyticsMapping.generated.h"
 
@@ -19,5 +20,13 @@ protected:
 private:
 	UAnnouncementManagerComponent* _announcementManagerComponent = nullptr;
 
-	void OnAnnouncementManagerComponentInitialized();
+	AMatchGameMode* _matchGameMode = nullptr;
+
+	void OnAnnouncementManagerComponentInitialized() const;
+
+	void BindAnnouncementManager() const;
+
+	void UnBindAnnouncementManager() const;
+
+	void OnMatchEnd() const;
 };

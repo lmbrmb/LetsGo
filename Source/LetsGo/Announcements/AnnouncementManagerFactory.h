@@ -18,8 +18,8 @@ public:
 		const float matchWarmUpAnnouncementDuration,
 		const float matchStartAnnouncementDuration,
 		const float matchEndAnnouncementDuration,
-		const float firstPlayerAnnouncementDelay,
-		const float playerAnnouncementDuration
+		const float firstAnnouncementDelay,
+		const float announcementDuration
 	);
 	
 	IAnnouncementManager* Create(
@@ -46,7 +46,7 @@ private:
 
 	float _matchEndAnnouncementDuration = 0.0f;
 
-	float _firstPlayerAnnouncementDelay = 0.0f;
+	float _firstAnnouncementDelay = 0.0f;
 
-	float _playerAnnouncementDuration = 0.0f;
+	float _announcementDuration = 0.0f;
 };

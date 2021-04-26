@@ -84,18 +84,3 @@ void UAnnouncementWidget::AnnounceLead(const FLeadState leadState)
 {
 	BpAnnounceLead(leadState);
 }
-
-void UAnnouncementWidget::ProcessAnnouncement(IAnnouncement* announcement)
-{
-	AssertIsNotNull(announcement);
-	for (auto announcementProcessor : _announcementProcessors)
-	{
-		auto const isProcessed = announcementProcessor->TryProcessAnnouncement(announcement, this);
-		if (isProcessed)
-		{
-			return;
-		}
-	}
-
-	DevLogger::GetLoggingChannel()->Log("Announcement is not processed", LogSeverity::Error);
-}

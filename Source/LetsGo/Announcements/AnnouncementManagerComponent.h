@@ -41,10 +41,10 @@ private:
 	float _matchEndAnnouncementDuration = 10.0f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
-	float _firstPlayerAnnouncementDelay = 0.25f;
+	float _firstAnnouncementDelay = 0.25f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
-	float _playerAnnouncementDuration = 1.5f;
+	float _announcementDuration = 1.5f;
 
 	IAnnouncementManager* _announcementManager = nullptr;
 };

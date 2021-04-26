@@ -42,8 +42,8 @@ void UAnnouncementManagerComponent::BeginPlay()
 		_matchWarmUpAnnouncementDuration,
 		_matchStartAnnouncementDuration,
 		_matchEndAnnouncementDuration,
-		_firstPlayerAnnouncementDelay,
-		_playerAnnouncementDuration
+		_firstAnnouncementDelay,
+		_announcementDuration
 	);
 
 	auto const owner = GetOwner();

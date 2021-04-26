@@ -15,15 +15,15 @@ void AnnouncementManagerFactory::SetTimings(
 	const float matchWarmUpAnnouncementDuration,
 	const float matchStartAnnouncementDuration,
 	const float matchEndAnnouncementDuration,
-	const float firstPlayerAnnouncementDelay,
-	const float playerAnnouncementDuration
+	const float firstAnnouncementDelay,
+	const float announcementDuration
 )
 {
 	_matchWarmUpAnnouncementDuration = matchWarmUpAnnouncementDuration;
 	_matchStartAnnouncementDuration = matchStartAnnouncementDuration;
 	_matchEndAnnouncementDuration = matchEndAnnouncementDuration;
-	_firstPlayerAnnouncementDelay = firstPlayerAnnouncementDelay;
-	_playerAnnouncementDuration = playerAnnouncementDuration;
+	_firstAnnouncementDelay = firstAnnouncementDelay;
+	_announcementDuration = announcementDuration;
 }
 
 // ReSharper disable once CppMemberFunctionMayBeStatic
@@ -45,8 +45,8 @@ IAnnouncementManager* AnnouncementManagerFactory::Create(
 		_matchWarmUpAnnouncementDuration,
 		_matchStartAnnouncementDuration,
 		_matchEndAnnouncementDuration,
-		_firstPlayerAnnouncementDelay,
-		_playerAnnouncementDuration
+		_firstAnnouncementDelay,
+		_announcementDuration
 	);
 	return announcementManager;
 }

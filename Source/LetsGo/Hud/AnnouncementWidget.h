@@ -80,7 +80,5 @@ protected:
 	void BpAllAnnouncementsDone();
 
 private:
-	void ProcessAnnouncement(IAnnouncement* announcement);
-
 	TArray<IAnnouncementProcessor*> _announcementProcessors;
 };

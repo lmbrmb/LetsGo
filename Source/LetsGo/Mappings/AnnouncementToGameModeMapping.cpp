@@ -6,6 +6,10 @@
 
 void UAnnouncementToGameModeMapping::Map()
 {
+	auto const owner = GetOwner();
+	_announcementManagerComponent = owner->FindComponentByClass<UAnnouncementManagerComponent>();
+	AssertIsNotNull(_announcementManagerComponent);
+
 	auto const world = GetWorld();
 	auto const authGameMode = world->GetAuthGameMode();
 	_matchGameMode = Cast<AMatchGameMode>(authGameMode);
@@ -20,10 +24,6 @@ void UAnnouncementToGameModeMapping::Map()
 	}
 
 	_matchGameMode->MatchEnd.AddUObject(this, &UAnnouncementToGameModeMapping::OnMatchEnd);
-
-	auto const owner = GetOwner();
-	_announcementManagerComponent = owner->FindComponentByClass<UAnnouncementManagerComponent>();
-	AssertIsNotNull(_announcementManagerComponent);
 
 	if(_announcementManagerComponent->IsInitialized())
 	{

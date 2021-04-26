@@ -2,8 +2,6 @@
 
 #include "LetsGo/Utils/AssertUtils.h"
 
-const float AnnouncementManager::UNDEFINED_TIME = -1;
-
 AnnouncementManager::AnnouncementManager(
 	AMatchGameMode* matchGameMode,
 	const PlayerId& playerId
@@ -34,15 +32,15 @@ void AnnouncementManager::SetTimings(
 	const float matchWarmUpAnnouncementDuration,
 	const float matchStartAnnouncementDuration,
 	const float matchEndAnnouncementDuration,
-	const float firstPlayerAnnouncementDelay,
-	const float playerAnnouncementDuration
+	const float firstAnnouncementDelay,
+	const float announcementDuration
 )
 {
 	_matchWarmUpAnnouncementDuration = matchWarmUpAnnouncementDuration;
 	_matchStartAnnouncementDuration = matchStartAnnouncementDuration;
 	_matchEndAnnouncementDuration = matchEndAnnouncementDuration;
-	_firstPlayerAnnouncementDelay = firstPlayerAnnouncementDelay;
-	_playerAnnouncementDuration = playerAnnouncementDuration;
+	_firstAnnouncementDelay = firstAnnouncementDelay;
+	_announcementDuration = announcementDuration;
 }
 
 void AnnouncementManager::OnMatchWarmUp()
@@ -94,8 +92,8 @@ void AnnouncementManager::OnPlayerFragged(
 void AnnouncementManager::ClearAllAnnouncements()
 {
 	_announcements.Empty();
-	_matchGameMode->GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
-	AllAnnouncementsDoneOnTimer();
+	_matchGameMode->GetWorld()->GetTimerManager().ClearTimer(_announcementTimerHandle);
+	AllAnnouncementsDone.Broadcast();
 }
 
 void AnnouncementManager::CheckLead()
@@ -177,24 +175,10 @@ void AnnouncementManager::CreateFragAnnouncement(
 
 void AnnouncementManager::AddAnnouncement(IAnnouncement* announcement)
 {
+	auto const wasEmpty = _announcements.IsEmpty();
 	_announcements.Enqueue(announcement);
-
-	float delay;
-	auto const now = _matchGameMode->GetWorld()->TimeSeconds;
-
-	if (now > _nextAnnouncementTime)
-	{
-		delay = _firstPlayerAnnouncementDelay;
-	}
-	else
-	{
-		delay = _nextAnnouncementTime - now + _playerAnnouncementDuration;
-	}
-
-	_nextAnnouncementTime = now + delay;
-	
+	auto const delay = wasEmpty ? _firstAnnouncementDelay : _announcementDuration;
 	CreateAnnouncementTask(delay);
-	CreateAllAnnouncementsDoneTask(delay);
 }
 
 void AnnouncementManager::CreateAnnouncementTask(const float delay)
@@ -203,28 +187,24 @@ void AnnouncementManager::CreateAnnouncementTask(const float delay)
 
 	if(delay > 0)
 	{
-		FTimerHandle announceTimerHandle;
 		_matchGameMode->GetWorld()->GetTimerManager().SetTimer(
-			announceTimerHandle,
+			_announcementTimerHandle,
 			[this]() { AnnounceOnTimer(); },
 			delay,
 			false
 		);
 		return;
 	}
-	
+
 	AnnounceOnTimer();
 }
 
 void AnnouncementManager::CreateAllAnnouncementsDoneTask(const float delay)
 {
-	_matchGameMode->GetWorld()->GetTimerManager().ClearTimer(_allAnnouncementsDoneTimerHandle);
-
-	auto const clearAnnouncementsDelay = delay + _playerAnnouncementDuration;
 	_matchGameMode->GetWorld()->GetTimerManager().SetTimer(
-		_allAnnouncementsDoneTimerHandle,
+		_announcementTimerHandle,
 		[this]() { AllAnnouncementsDoneOnTimer(); },
-		clearAnnouncementsDelay,
+		delay,
 		false
 	);
 }
@@ -233,12 +213,19 @@ void AnnouncementManager::AnnounceOnTimer()
 {
 	IAnnouncement* announcement;
 	_announcements.Dequeue(announcement);
-
 	AssertIsNotNull(announcement);
 
 	AnnouncementRequest.Broadcast(announcement);
-
 	delete announcement;
+
+	if(_announcements.IsEmpty())
+	{
+		CreateAllAnnouncementsDoneTask(_announcementDuration);
+	}
+	else
+	{
+		CreateAnnouncementTask(_announcementDuration);
+	}
 }
 
 void AnnouncementManager::AllAnnouncementsDoneOnTimer() const
