@@ -96,7 +96,7 @@ void AMatchGameMode::TriggerMatchEnd()
 void AMatchGameMode::TriggerExitToMainMenu()
 {
 	GetWorldTimerManager().ClearTimer(_matchStateTimerHandle);
-
+	Exit.Broadcast();
 	UGameplayStatics::OpenLevel(this, _mainMenuLevelName, true);
 }
 

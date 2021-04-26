@@ -20,6 +20,8 @@ DECLARE_EVENT(AMatchGameMode, EMatchStart);
 
 DECLARE_EVENT(AMatchGameMode, EMatchEnd);
 
+DECLARE_EVENT(AMatchGameMode, EExit);
+
 DECLARE_EVENT_OneParam(AMatchGameMode, EAvatarSpawned, const AAvatar* avatar);
 
 DECLARE_EVENT_TwoParams(
@@ -42,7 +44,9 @@ public:
 	EMatchStart MatchStart;
 
 	EMatchEnd MatchEnd;
-	
+
+	EExit Exit;
+
 	EAvatarSpawned AvatarSpawned;
 
 	EPlayerFragged PlayerFragged;

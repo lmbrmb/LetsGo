@@ -26,6 +26,8 @@ public:
 		const PlayerId& fraggedPlayerId
 	) = 0;
 
+	virtual void ClearAllAnnouncements() = 0;
+
 	EAnnouncementRequest AnnouncementRequest;
 
 	EAllAnnouncementsDone AllAnnouncementsDone;

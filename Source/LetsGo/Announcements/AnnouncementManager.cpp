@@ -91,6 +91,13 @@ void AnnouncementManager::OnPlayerFragged(
 	CreateFragAnnouncement(instigatorPlayerId, fraggedPlayerId);
 }
 
+void AnnouncementManager::ClearAllAnnouncements()
+{
+	_announcements.Empty();
+	_matchGameMode->GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
+	AllAnnouncementsDoneOnTimer();
+}
+
 void AnnouncementManager::CheckLead()
 {
 	auto maxFrags = 0;
@@ -211,11 +218,11 @@ void AnnouncementManager::CreateAnnouncementTask(const float delay)
 
 void AnnouncementManager::CreateAllAnnouncementsDoneTask(const float delay)
 {
-	_matchGameMode->GetWorld()->GetTimerManager().ClearTimer(_announcementDoneTimerHandle);
+	_matchGameMode->GetWorld()->GetTimerManager().ClearTimer(_allAnnouncementsDoneTimerHandle);
 
 	auto const clearAnnouncementsDelay = delay + _playerAnnouncementDuration;
 	_matchGameMode->GetWorld()->GetTimerManager().SetTimer(
-		_announcementDoneTimerHandle,
+		_allAnnouncementsDoneTimerHandle,
 		[this]() { AllAnnouncementsDoneOnTimer(); },
 		clearAnnouncementsDelay,
 		false
@@ -224,11 +231,6 @@ void AnnouncementManager::CreateAllAnnouncementsDoneTask(const float delay)
 
 void AnnouncementManager::AnnounceOnTimer()
 {
-	if(!IsContextValid())
-	{
-		return;
-	}
-
 	IAnnouncement* announcement;
 	_announcements.Dequeue(announcement);
 
@@ -241,15 +243,5 @@ void AnnouncementManager::AnnounceOnTimer()
 
 void AnnouncementManager::AllAnnouncementsDoneOnTimer() const
 {
-	if(!IsContextValid())
-	{
-		return;
-	}
-
 	AllAnnouncementsDone.Broadcast();
-}
-
-bool AnnouncementManager::IsContextValid() const
-{
-	return _matchGameMode && _matchGameMode->IsValidLowLevel();
 }

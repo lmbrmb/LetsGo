@@ -49,6 +49,8 @@ public:
 		const PlayerId& fraggedPlayerId
 	) override;
 
+	virtual void ClearAllAnnouncements() override;
+
 private:
 	AMatchGameMode* _matchGameMode = nullptr;
 
@@ -82,7 +84,7 @@ private:
 
 	float _nextAnnouncementTime = UNDEFINED_TIME;
 
-	FTimerHandle _announcementDoneTimerHandle;
+	FTimerHandle _allAnnouncementsDoneTimerHandle;
 
 	FLeadState _leadState = FLeadState::None;
 
@@ -102,6 +104,4 @@ private:
 	void AnnounceOnTimer();
 
 	void AllAnnouncementsDoneOnTimer() const;
-
-	bool IsContextValid() const;
 };

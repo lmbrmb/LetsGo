@@ -18,12 +18,17 @@ protected:
 	virtual void Map() override;
 
 private:
-	UAnnouncementManagerComponent* _announcementManagerComponent;
-	
-	void OnAnnouncementManagerComponentInitialized();
+	UAnnouncementManagerComponent* _announcementManagerComponent = nullptr;
 
-	static void SubscribeMatchStateEvents(
-		AMatchGameMode* matchGameMode,
-		IAnnouncementManager* announcementManager
-	);
+	AMatchGameMode* _matchGameMode = nullptr;
+
+	void OnAnnouncementManagerComponentInitialized() const;
+
+	void BindAnnouncementManager() const;
+
+	void UnBindAnnouncementManager() const;
+
+	void OnMatchEnd() const;
+
+	void OnExit() const;
 };
