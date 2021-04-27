@@ -75,7 +75,6 @@ void URigidBodyComponent::ProcessForces(const float deltaTime)
 	locationOffsetZ.X = 0;
 	locationOffsetZ.Y = 0;
 
-	auto const previousPosition = _rootCollider->GetComponentLocation();
 	_rootCollider->AddWorldOffset(locationOffsetZ, true, &_hitResult);
 
 	auto isInAir = true;

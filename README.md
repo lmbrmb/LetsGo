@@ -14,8 +14,11 @@ S - Move backward
 A - Strafe left
 D - Strafe right
 Space - Jump
+Shift (hold) - Walk
 Left mouse button - fire
-Middle mouse button - change weapon pivot (right <-> center)
+Mouse wheel up - next weapon
+Mouse wheel down - previous weapon
+Middle mouse button / Right mouse button - change weapon pivot (right <-> center)
 Mouse Vertical Axis - look up/down
 Mouse Horizontal Axis - turn left / right
 Escape - Quit to main menu
@@ -62,17 +65,12 @@ http://quark.sourceforge.net/
 Blender
 https://www.blender.org
 
-5. Voice generation
-https://play.ht/
-"AI Voice Generator & Realistic Text to Speech Software"
-Voice synthesis for audio announcements.
-
-6. Audio converters
+5. Audio converters
 https://online-audio-converter.com/
 https://audiotrimmer.com/
 https://clideo.com/merge-audio
 
-7. Q3 Assets Converter
+6. Q3 Assets Converter
 Convert Quake 3 Arena map to FBX
 Source: https://urtjumpers.com/forum/viewtopic.php?id=2836
 Download link: https://goo.gl/h7tDT1
