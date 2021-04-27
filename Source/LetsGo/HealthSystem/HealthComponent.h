@@ -27,8 +27,10 @@ public:
 
 	void Kill();
 
+	UFUNCTION(BlueprintCallable)
 	bool IsAlive() const;
 
+	UFUNCTION(BlueprintCallable)
 	bool IsDead() const;
 
 	bool IsFullHealth() const;
