@@ -135,7 +135,7 @@ void AMatchGameMode::BeginPlay()
 	
 	PopulateAvatarsData();
 	
-	for (const auto avatarDataEntry : AvatarsData)
+	for (auto const avatarDataEntry : AvatarsData)
 	{
 		auto const avatarData = avatarDataEntry.Value;
 		auto const playerIdValue = avatarData->GetPlayerId().GetId();
@@ -251,7 +251,7 @@ void AMatchGameMode::RespawnAvatarOnTimer()
 	int playerIdValue;
 	_respawnQueue.Dequeue(playerIdValue);
 
-	for (const auto avatarDataEntry : AvatarsData)
+	for (auto const avatarDataEntry : AvatarsData)
 	{
 		auto const avatarData = avatarDataEntry.Value;
 		if (avatarData->GetPlayerId().GetId() == playerIdValue)

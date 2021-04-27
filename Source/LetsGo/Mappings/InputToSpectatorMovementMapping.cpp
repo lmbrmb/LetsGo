@@ -10,7 +10,7 @@ void UInputToSpectatorMovementMapping::Map()
 	_matchSpectatorPawn = Cast<AMatchSpectatorPawn>(owner);
 	AssertIsNotNull(_matchSpectatorPawn);
 	
-	const auto spectatorPawnMovement = owner->FindComponentByClass<USpectatorPawnMovement>();
+	auto const spectatorPawnMovement = owner->FindComponentByClass<USpectatorPawnMovement>();
 	AssertIsNotNull(spectatorPawnMovement);
 	
 	_matchSpectatorPawn->Possessed.AddUObject(this, &UInputToSpectatorMovementMapping::OnPossessed);

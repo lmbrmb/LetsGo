@@ -61,7 +61,7 @@ void URigidBodyComponent::ProcessForces(const float deltaTime)
 	for (auto i = forcesCount - 1; i >= 0; i--)
 	{
 		auto const force = _forces[i];
-		const auto forceVector = force->GetVector(deltaTime);
+		auto const forceVector = force->GetVector(deltaTime);
 		forceSum += forceVector;
 	}
 

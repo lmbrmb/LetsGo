@@ -125,9 +125,6 @@ private:
 
 	// Speed
 
-	UPROPERTY(EditAnywhere, Category = "Movement", meta = (AllowPrivateAccess = "true"))
-	float _maxStepHeight = 50;
-
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
 	float _walkMultiplier = 0.5f;
 

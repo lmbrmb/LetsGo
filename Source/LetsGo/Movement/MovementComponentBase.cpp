@@ -65,8 +65,8 @@ void UMovementComponentBase::BeginDestroy()
 
 void UMovementComponentBase::ProcessActorRotation(const float deltaTime, const FVector& direction) const
 {
-	const auto actorForwardDirection = RootCollider->GetForwardVector();
-	const auto targetDirectionDot = FVector::DotProduct(actorForwardDirection, direction);
+	auto const actorForwardDirection = RootCollider->GetForwardVector();
+	auto const targetDirectionDot = FVector::DotProduct(actorForwardDirection, direction);
 
 	if (targetDirectionDot >= SKIP_ROTATION_DOT)
 	{
@@ -283,15 +283,15 @@ void UMovementComponentBase::Move(
 	}
 
 	//Sweep in direction
-	auto planeNormal = groundHitResult.Normal;
-	auto projectedDirection = FVector::VectorPlaneProject(inputDirection, planeNormal).GetSafeNormal();
+	auto const groundHitNormal = groundHitResult.Normal;
+	auto projectedDirection = FVector::VectorPlaneProject(inputDirection, groundHitNormal).GetSafeNormal();
 	translation = projectedDirection * translationAmount;
-	auto const castEndLocation = rootColliderLocation + translation;
+	auto const targetEndLocation = rootColliderLocation + translation;
 	
 	auto const isBlocked = GetWorld()->SweepSingleByChannel(
 		_bufferHitResult,
 		rootColliderLocation,
-		castEndLocation,
+		targetEndLocation,
 		rootColliderRotation,
 		_collisionChannel,
 		CollisionShape,
@@ -300,27 +300,29 @@ void UMovementComponentBase::Move(
 	
 	if (!isBlocked)
 	{
-		// No block - can move along plane
-		// No need to sweep because movement end position is already checked
-		RootCollider->AddWorldOffset(translation, false);
-		return;
-	}
-
-	planeNormal = _bufferHitResult.Normal;
-
-	const auto inputDirectionDot = FVector::DotProduct(planeNormal, inputDirection);
-	const auto upDot = FVector::DotProduct(FVector::UpVector, planeNormal);
-	auto const isWall = FMath::Abs(upDot) < 0.1f;
-
-	auto const obstacleDeltaZ = rootColliderLocation.Z - _bufferHitResult.ImpactPoint.Z;
-	auto const canStepOn = obstacleDeltaZ < _maxStepHeight;
-	if (!canStepOn)
-	{
-		// The obstacle is too high - can't step on it
+		auto const groundDirectionDot = FVector::DotProduct(inputDirection, groundHitNormal);
+		if(groundDirectionDot < 0.1f)
+		{
+			// Ground (possibly slight slope)
+			// No need to sweep because movement end position is already checked
+			RootCollider->SetWorldLocation(targetEndLocation, false);
+		}
+		else
+		{
+			// Touched wall with back side of root collider while falling down (ground->fall transition)
+			translation = inputDirection * translationAmount;
+			RootCollider->AddWorldOffset(translation, true);
+		}
+		
 		return;
 	}
 
 	// Moving along plane normal
+	// Ladders, movement along wall
+	auto const planeNormal = _bufferHitResult.Normal;
+	auto const inputDirectionDot = FVector::DotProduct(planeNormal, inputDirection);
+	auto const upDot = FVector::DotProduct(FVector::UpVector, planeNormal);
+	auto const isWall = FMath::Abs(upDot) < 0.1f;
 	projectedDirection = FVector::VectorPlaneProject(inputDirection, planeNormal).GetSafeNormal();
 	auto const directionCoefficient = isWall ? 1 - FMath::Abs(inputDirectionDot) : 1;
 	translation = projectedDirection * directionCoefficient * translationAmount;

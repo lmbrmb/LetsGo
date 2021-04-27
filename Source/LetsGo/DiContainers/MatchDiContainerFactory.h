@@ -59,7 +59,7 @@ TTypeContainer<Mode>* MatchDiContainerFactory<Mode>::CreateContainer(IUObjectReg
 	auto const nicknameGeneratorFactoryInstance = new NicknameGeneratorFactory();
 	const TSharedRef<NicknameGeneratorFactory> nicknameGeneratorFactory = MakeShareable(nicknameGeneratorFactoryInstance);;
 
-	const auto nicknameGenerator = nicknameGeneratorFactoryInstance->Create();
+	auto const nicknameGenerator = nicknameGeneratorFactoryInstance->Create();
 	const TSharedRef<AvatarDataFactory> avatarDataFactory = MakeShareable(new AvatarDataFactory(nicknameGenerator));
 
 	auto const avatarFactoryInstance = new AvatarFactory(uObjectRegistry, LAZY_INITIALIZATION);

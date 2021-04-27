@@ -101,7 +101,7 @@ void UCurveAnimationBlenderComponent::ProcessAnimations(const float deltaTime)
 	auto rightRaw = 0.0f;
 	auto upRaw = 0.0f;
 	
-	for (const auto animationRecord : _animations)
+	for (auto const animationRecord : _animations)
 	{
 		auto const animation = animationRecord.Value;
 		

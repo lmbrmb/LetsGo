@@ -16,7 +16,7 @@ void UInputToWeaponManagerMapping::Map()
 
 	Bind();
 
-	const auto healthComponent = owner->FindComponentByClass<UHealthComponent>();
+	auto const healthComponent = owner->FindComponentByClass<UHealthComponent>();
 	AssertIsNotNull(healthComponent);
 
 	healthComponent->Died.AddUObject(this, &UInputToWeaponManagerMapping::OnOwnerDied);

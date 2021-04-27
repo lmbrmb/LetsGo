@@ -8,7 +8,7 @@ void UAvatarToWeaponManagerMapping::Map()
 	auto const avatar = Cast<AAvatar>(owner);
 	AssertIsNotNull(avatar);
 	
-	const auto weaponManagerComponent = owner->FindComponentByClass<UWeaponManagerComponent>();
+	auto const weaponManagerComponent = owner->FindComponentByClass<UWeaponManagerComponent>();
 	AssertIsNotNull(weaponManagerComponent);
 
 	_weaponManagerComponent = weaponManagerComponent;

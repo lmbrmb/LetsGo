@@ -20,7 +20,7 @@ public:
 	
 	static float GetSignOfAngle(const FVector& v1, const FVector& v2, const FVector& planeNormal = FVector::UpVector)
 	{
-		const auto cross = FVector::CrossProduct(v1, v2);
+		auto const cross = FVector::CrossProduct(v1, v2);
 		auto const dot = FVector::DotProduct(planeNormal, cross);
 		auto const sign = FMath::Sign(dot);
 		return sign;
