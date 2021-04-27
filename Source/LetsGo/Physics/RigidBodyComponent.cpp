@@ -64,8 +64,19 @@ void URigidBodyComponent::ProcessForces(const float deltaTime)
 		const auto forceVector = force->GetVector(deltaTime);
 		forceSum += forceVector;
 	}
-	auto const deltaLocation = forceSum * deltaTime;
-	_rootCollider->AddWorldOffset(deltaLocation, true, &_hitResult);
+
+	auto const locationOffset = forceSum * deltaTime;
+
+	auto locationOffsetXy = locationOffset;
+	locationOffsetXy.Z = 0;
+	_rootCollider->AddWorldOffset(locationOffsetXy, true);
+
+	auto locationOffsetZ = locationOffset;
+	locationOffsetZ.X = 0;
+	locationOffsetZ.Y = 0;
+
+	auto const previousPosition = _rootCollider->GetComponentLocation();
+	_rootCollider->AddWorldOffset(locationOffsetZ, true, &_hitResult);
 
 	auto isInAir = true;
 
