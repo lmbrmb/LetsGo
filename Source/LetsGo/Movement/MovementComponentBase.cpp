@@ -297,8 +297,6 @@ void UMovementComponentBase::Move(
 		CollisionShape,
 		CollisionQueryParams
 	);
-
-	AssertIsEqual(isBlocked, (bool)_bufferHitResult.bBlockingHit);
 	
 	if (!isBlocked)
 	{
@@ -309,6 +307,11 @@ void UMovementComponentBase::Move(
 	}
 
 	planeNormal = _bufferHitResult.Normal;
+
+	const auto inputDirectionDot = FVector::DotProduct(planeNormal, inputDirection);
+	const auto upDot = FVector::DotProduct(FVector::UpVector, planeNormal);
+	auto const isWall = FMath::Abs(upDot) < 0.1f;
+
 	auto const obstacleDeltaZ = rootColliderLocation.Z - _bufferHitResult.ImpactPoint.Z;
 	auto const canStepOn = obstacleDeltaZ < _maxStepHeight;
 	if (!canStepOn)
@@ -319,7 +322,8 @@ void UMovementComponentBase::Move(
 
 	// Moving along plane normal
 	projectedDirection = FVector::VectorPlaneProject(inputDirection, planeNormal).GetSafeNormal();
-	translation = projectedDirection * translationAmount;
+	auto const directionCoefficient = isWall ? 1 - FMath::Abs(inputDirectionDot) : 1;
+	translation = projectedDirection * directionCoefficient * translationAmount;
 	RootCollider->AddWorldOffset(translation, true);
 }
 
