@@ -13,8 +13,8 @@ void UProjectileShotComponent::OnShotRequested(const USceneComponent* firePivot)
 		GetWorld(),
 		nullptr,
 		_projectileBlueprint,
-		firePivot->GetComponentTransform(),
-		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn,
+		firePivot->GetComponentTransform()
 		);
 
 	projectile->Hit.AddUObject(this, &UProjectileShotComponent::OnProjectileHit);

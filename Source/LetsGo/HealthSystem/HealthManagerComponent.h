@@ -26,6 +26,9 @@ protected:
 	void BpOnOverkill();
 
 	UFUNCTION(BlueprintImplementableEvent)
+	void BpOnDied();
+
+	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnHit(const FHitResult& hitResult);
 
 private:

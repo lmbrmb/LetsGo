@@ -71,12 +71,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	int GetWeaponsCount() const;
-	
+
 	UFUNCTION(BlueprintCallable)
 	void SetOwnerSkeletalMeshComponent(USkeletalMeshComponent* ownerSkeletalMeshComponent);
-	
+
+	UFUNCTION(BlueprintCallable)
+	FName GetCurrentWeaponId() const;
+
 	void SetPlayerId(const PlayerId& playerId);
-	
+
 	virtual bool TryProcessItem(Item* item) override;
 
 	IWeapon* GetCurrentWeapon() const;

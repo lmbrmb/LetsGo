@@ -91,6 +91,8 @@ void UHealthManagerComponent::OnDied()
 	auto const owner = _healthComponent->GetOwner();
 	AssertIsNotNull(owner);
 
+	BpOnDied();
+
 	if(_healthComponent->GetCurrentValue() < _overkillHealth)
 	{
 		BpOnOverkill();

@@ -23,8 +23,8 @@ AAvatar* AvatarSpawnFactory::SpawnAvatar(const AvatarData* avatarData, UWorld* w
 		world,
 		nullptr,
 		avatarGeneratedClass,
-		transform,
-		ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn
+		ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn,
+		transform
 		);
 
 	if(!avatar)

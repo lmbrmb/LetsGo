@@ -271,6 +271,16 @@ void UWeaponManagerComponent::SetOwnerSkeletalMeshComponent(USkeletalMeshCompone
 	_ownerSkeletalMeshComponent = ownerSkeletalMeshComponent;
 }
 
+FName UWeaponManagerComponent::GetCurrentWeaponId() const
+{
+	if(_weapon)
+	{
+		return _weapon->GetWeaponId().GetId();
+	}
+
+	return FName();
+}
+
 void UWeaponManagerComponent::SetPlayerId(const PlayerId& playerId)
 {
 	_playerId = playerId;

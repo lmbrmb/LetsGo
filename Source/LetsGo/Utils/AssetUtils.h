@@ -10,8 +10,8 @@ public:
 		UWorld* world,
 		AActor* owner,
 		UClass* theClass,
-		FTransform transform,
-		ESpawnActorCollisionHandlingMethod spawnActorCollisionHandlingMethod
+		const ESpawnActorCollisionHandlingMethod spawnActorCollisionHandlingMethod,
+		FTransform transform
 	)
 	{
 		auto const spawnParams = GetSpawnParameters(owner, spawnActorCollisionHandlingMethod);
@@ -40,7 +40,7 @@ public:
 		UWorld* world,
 		AActor* owner,
 		UClass* theClass,
-		ESpawnActorCollisionHandlingMethod spawnActorCollisionHandlingMethod,
+		const ESpawnActorCollisionHandlingMethod spawnActorCollisionHandlingMethod,
 		FVector location = FVector::ZeroVector,
 		FRotator rotation = FRotator::ZeroRotator,
 		FVector scale = FVector::OneVector
@@ -50,8 +50,8 @@ public:
 			world,
 			owner,
 			theClass,
-			FTransform(rotation, location, scale),
-			spawnActorCollisionHandlingMethod
+			spawnActorCollisionHandlingMethod,
+			FTransform(rotation, location, scale)
 			);
 	}
 
