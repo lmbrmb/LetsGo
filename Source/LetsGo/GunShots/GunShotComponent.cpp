@@ -1,10 +1,7 @@
 #include "GunShotComponent.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "LetsGo/Physics/RigidbodyComponent.h"
 #include "LetsGo/Utils/AssertUtils.h"
-
-const FName UGunShotComponent::ForceName = FName("Shot");
 
 UGunShotComponent::UGunShotComponent()
 {
@@ -36,20 +33,4 @@ void UGunShotComponent::BeginPlay()
 
 	GunOwner = GunActor->GetOwner();
 	AssertIsNotNull(GunOwner);
-}
-
-void UGunShotComponent::ApplyForce(AActor* actor, const FVector& direction) const
-{
-	if(!ImpactForceCurve)
-	{
-		return;
-	}
-
-	auto const rigidBodyComponent = actor->FindComponentByClass<URigidBodyComponent>();
-	if(!rigidBodyComponent)
-	{
-		return;
-	}
-
-	rigidBodyComponent->AddForce(ForceName, direction, ImpactForceCurve, ImpactForceCurveMagnitudeMultiplier, ImpactForceCurveTimeMultiplier);
 }

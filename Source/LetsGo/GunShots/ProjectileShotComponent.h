@@ -35,8 +35,14 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	UCurveFloat* _damageOverDistanceCurve;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TEnumAsByte<ECollisionChannel> _explosionChannel;
+	UPROPERTY(EditAnywhere, Category = "ImpactForce", meta = (AllowPrivateAccess = "true"))
+	float _impactForceCurveMagnitudeMultiplier = 1;
+
+	UPROPERTY(EditAnywhere, Category = "ImpactForce", meta = (AllowPrivateAccess = "true"))
+	float _impactForceCurveTimeMultiplier = 1;
+
+	UPROPERTY(EditAnywhere, Category = "ImpactForce", meta = (AllowPrivateAccess = "true"))
+	UCurveFloat* _impactForceCurve;
 
 	FCollisionShape _collisionShape;
 
@@ -61,4 +67,11 @@ private:
 		const FHitResult& explosionHitResult,
 		AActor* testActor
 	) const;
+
+	void ApplyForce(
+		const AActor* actor,
+		const FVector& explosionEpicenterLocation
+	) const;
+
+	static const FName ForceName;
 };

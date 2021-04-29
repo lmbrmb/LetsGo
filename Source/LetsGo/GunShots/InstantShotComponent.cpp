@@ -48,7 +48,7 @@ void UInstantShotComponent::ProcessAimLocation(
 		_hitResult,
 		startAimLocation,
 		targetAimLocation,
-		_collisionChannel,
+		CollisionChannel,
 		_collisionQueryParams
 	);
 
@@ -109,7 +109,7 @@ void UInstantShotComponent::TraceBullet(
 		_hitResult,
 		rayStartLocation,
 		rayEndLocation,
-		_collisionChannel,
+		CollisionChannel,
 		_collisionQueryParams
 	);
 

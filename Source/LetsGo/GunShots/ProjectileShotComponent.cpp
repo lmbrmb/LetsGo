@@ -1,8 +1,11 @@
 #include "ProjectileShotComponent.h"
 
 #include "LetsGo/HealthSystem/HealthComponent.h"
+#include "LetsGo/Physics/RigidBodyComponent.h"
 #include "LetsGo/Utils/AssertUtils.h"
 #include "LetsGo/Utils/AssetUtils.h"
+
+const FName UProjectileShotComponent::ForceName = FName("Explosion");
 
 void UProjectileShotComponent::OnShotRequested(const USceneComponent* firePivot)
 {
@@ -53,7 +56,7 @@ bool UProjectileShotComponent::SimulateExplosion(const FHitResult& collisionHitR
 		explosionEpicenterLocation,
 		explosionEpicenterLocation,
 		FQuat::Identity,
-		_explosionChannel,
+		CollisionChannel,
 		_collisionShape
 	);
 
@@ -104,7 +107,7 @@ bool UProjectileShotComponent::SimulateExplosion(const FHitResult& collisionHitR
 		const Damage damage(InstigatorPlayerId, InstigatorWeaponType, collisionHitResult, damageAmount);
 		auto const isDamaged = healthComponent->TryInjure(damage);
 
-		ApplyForce(hittedActor, explosionHitResult.Normal);
+		ApplyForce(hittedActor, explosionEpicenterLocation);
 
 		isExplosionDamaged |= isDamaged;
 	}
@@ -147,7 +150,7 @@ bool UProjectileShotComponent::IsActorHittedByExplosion(
 		_hitResult,
 		lineStartLocation,
 		lineEndLocation,
-		_explosionChannel
+		CollisionChannel
 	);
 
 	if(!isAnythingHitted)
@@ -192,4 +195,33 @@ float UProjectileShotComponent::CalculateDamage(
 	auto const resultingDamage = FMath::RoundToInt(_maxDamage * distanceModifier);
 	
 	return resultingDamage;
+}
+
+void UProjectileShotComponent::ApplyForce(
+	const AActor* actor,
+	const FVector& explosionEpicenterLocation
+) const
+{
+	if (!_impactForceCurve)
+	{
+		return;
+	}
+
+	auto const rigidBodyComponent = actor->FindComponentByClass<URigidBodyComponent>();
+	if (!rigidBodyComponent)
+	{
+		return;
+	}
+
+	//DrawDebugSphere(GetWorld(), explosionEpicenterLocation, 20, 10, FColor::Red, false, 5);
+	auto const actorDirection = (actor->GetActorLocation() - explosionEpicenterLocation).GetSafeNormal();
+	auto const projectedActorDirection = FVector::VectorPlaneProject(actorDirection, FVector::UpVector);
+	auto const forceDirection = (projectedActorDirection + FVector::UpVector).GetSafeNormal();
+	rigidBodyComponent->AddForce(
+		ForceName,
+		forceDirection,
+		_impactForceCurve,
+		_impactForceCurveMagnitudeMultiplier,
+		_impactForceCurveTimeMultiplier
+	);
 }

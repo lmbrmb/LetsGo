@@ -28,9 +28,6 @@ private:
 	FCollisionQueryParams _collisionQueryParams;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	TEnumAsByte<ECollisionChannel> _collisionChannel;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	int _bulletCount = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))

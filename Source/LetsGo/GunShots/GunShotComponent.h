@@ -31,14 +31,8 @@ public:
 	EShotPerformed_GunShot ShotPerformed;
 
 protected:
-	UPROPERTY(EditAnywhere, Category = "ImpactForce", meta = (AllowPrivateAccess = "true"))
-	float ImpactForceCurveMagnitudeMultiplier = 1;
-
-	UPROPERTY(EditAnywhere, Category = "ImpactForce", meta = (AllowPrivateAccess = "true"))
-	float ImpactForceCurveTimeMultiplier = 1;
-
-	UPROPERTY(EditAnywhere, Category = "ImpactForce", meta = (AllowPrivateAccess = "true"))
-	UCurveFloat* ImpactForceCurve;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TEnumAsByte<ECollisionChannel> CollisionChannel = ECC_Pawn;
 	
 	WeaponType InstigatorWeaponType;
 
@@ -51,8 +45,4 @@ protected:
 	AActor* GunOwner = nullptr;
 
 	virtual void BeginPlay() override;
-
-	void ApplyForce(AActor* actor, const FVector& direction) const;
-
-	static const FName ForceName;
 };
