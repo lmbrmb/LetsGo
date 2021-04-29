@@ -3,6 +3,7 @@
 #include "Components/ActorComponent.h"
 #include "LetsGo/Data/SkinId.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
+#include "LetsGo/Movement/Environment.h"
 #include "Sound/SoundBase.h"
 #include "LetsGo/Movement/MovementSpeedState.h"
 
@@ -27,6 +28,8 @@ public:
 
 	void OnLand(const float airTime);
 
+	void OnEnvironmentChanged(const FEnvironment environment);
+
 	void OnHealthChanged(UHealthComponent* healthComponent, const float delta);
 
 protected:
@@ -44,7 +47,13 @@ private:
 
 	USoundBase* _landSound = nullptr;
 
-	TArray<USoundBase*> _stepSounds;
+	TArray<USoundBase*> _groundStepSounds;
+
+	TArray<USoundBase*> _waterStepSounds;
 
 	int _stepSoundIndex = -1;
+
+	FEnvironment _environment = FEnvironment::Ground;
+
+	USoundBase* GetStepSound();
 };

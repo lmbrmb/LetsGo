@@ -23,8 +23,9 @@ void UAvatarSfxComponent::SetSkinId(const SkinId& skinId)
 
 	_jumpSound = avatarSfxFactory->GetJumpSound(skinId);
 	_landSound = avatarSfxFactory->GetLandSound(skinId);
-	_stepSounds = avatarSfxFactory->GetStepSounds(skinId);
-	_deathSounds = avatarSfxFactory->GetDeathSounds(skinId);
+	_groundStepSounds = avatarSfxFactory->GetGroundStepSoundsBySkin(skinId);
+	_waterStepSounds = avatarSfxFactory->GetWaterStepSounds();
+	_deathSounds = avatarSfxFactory->GetDeathSoundsBySkin(skinId);
 	_painSounds = avatarSfxFactory->GetPainSounds(skinId);
 }
 
@@ -35,19 +36,13 @@ void UAvatarSfxComponent::OnStep(const MovementSpeedState movementSpeedState)
 	{
 		return;
 	}
-	
-	auto const stepSoundsCount = _stepSounds.Num();
-	AssertIsGreaterOrEqual(stepSoundsCount, 1);
-	
-	auto nextStepSoundIndex = _stepSoundIndex + 1;
-	
-	if (nextStepSoundIndex >= stepSoundsCount)
-	{
-		nextStepSoundIndex = 0;
-	}
 
-	_stepSoundIndex = nextStepSoundIndex;
-	auto const stepSound = _stepSounds[_stepSoundIndex];
+	auto const stepSound = GetStepSound();
+
+	if(!stepSound)
+	{
+		return;
+	}
 
 	BpPlaySound(stepSound);
 }
@@ -65,6 +60,11 @@ void UAvatarSfxComponent::OnLand(const float airTime)
 	}
 	
 	BpPlaySound(_landSound);
+}
+
+void UAvatarSfxComponent::OnEnvironmentChanged(const FEnvironment environment)
+{
+	_environment = environment;
 }
 
 void UAvatarSfxComponent::OnHealthChanged(UHealthComponent* healthComponent, const float delta)
@@ -93,4 +93,22 @@ void UAvatarSfxComponent::OnHealthChanged(UHealthComponent* healthComponent, con
 			return;
 		}
 	}
+}
+
+USoundBase* UAvatarSfxComponent::GetStepSound()
+{
+	auto const& soundArray = _environment == FEnvironment::Water ? _waterStepSounds : _groundStepSounds;
+	auto const stepSoundsCount = soundArray.Num();
+	AssertIsGreaterOrEqual(stepSoundsCount, 1, nullptr);
+
+	auto nextStepSoundIndex = _stepSoundIndex + 1;
+
+	if (nextStepSoundIndex >= stepSoundsCount)
+	{
+		nextStepSoundIndex = 0;
+	}
+
+	_stepSoundIndex = nextStepSoundIndex;
+
+	return soundArray[_stepSoundIndex];
 }

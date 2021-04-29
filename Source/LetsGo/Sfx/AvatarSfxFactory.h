@@ -12,9 +12,11 @@ public:
 
 	USoundBase* GetLandSound(const SkinId& skinId) const;
 
-	TArray<USoundBase*> GetStepSounds(const SkinId& skinId) const;
+	TArray<USoundBase*> GetGroundStepSoundsBySkin(const SkinId& skinId) const;
 
-	TArray<USoundBase*> GetDeathSounds(const SkinId& skinId) const;
+	TArray<USoundBase*> GetWaterStepSounds() const;
+
+	TArray<USoundBase*> GetDeathSoundsBySkin(const SkinId& skinId) const;
 
 	// Health, Sound
 	TMap<float, USoundBase*> GetPainSounds(const SkinId& skinId) const;
@@ -34,7 +36,7 @@ private:
 	TMap<FName, FName> _jumpSounds;
 
 	// Skin Id, Base part of sound Id
-	TMap<FName, FString> _stepSounds;
+	TMap<FName, FString> _groundStepSounds;
 
 	// Skin Id, Base part of sound Id
 	TMap<FName, FString> _deathSounds;
@@ -43,12 +45,20 @@ private:
 	TMap<FName, FString> _painSounds;
 
 	TArray<int> _painIds;
+
+	TArray<FName> _waterStepSounds;
 	
-	TArray<USoundBase*> GetSounds(
+	TArray<USoundBase*> GetSoundsBySkin(
 		const SkinId& skinId,
 		const TMap<FName, FString>& source,
 		const int count
 	) const;
+
+	void PopulateSounds(
+		TArray<USoundBase*>& sounds,
+		const FString& soundIdBase,
+		const int count
+	) const;
 };
 
-Expose_TNameOf(AvatarSfxFactory)
+Expose_TNameOf(AvatarSfxFactory);

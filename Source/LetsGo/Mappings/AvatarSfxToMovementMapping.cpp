@@ -20,6 +20,7 @@ void UAvatarSfxToMovementMapping::Map()
 	movementComponentBase->Step.AddUObject(avatarSfxComponent, &UAvatarSfxComponent::OnStep);
 	movementComponentBase->Jump.AddUObject(avatarSfxComponent, &UAvatarSfxComponent::OnJump);
 	rigidBodyComponent->Land.AddUObject(avatarSfxComponent, &UAvatarSfxComponent::OnLand);
+	movementComponentBase->EnvironmentChanged.AddUObject(avatarSfxComponent, &UAvatarSfxComponent::OnEnvironmentChanged);
 
 	StartDestroyTask();
 }

@@ -1,12 +1,15 @@
 #pragma once
 
 #include "MovementSpeedState.h"
+#include "Environment.h"
 #include "Components/ShapeComponent.h"
 #include "LetsGo/Physics/RigidbodyComponent.h"
 
 #include "MovementComponentBase.generated.h"
 
-DECLARE_EVENT_OneParam(UMovementComponentBase, EStep, MovementSpeedState);
+DECLARE_EVENT_OneParam(UMovementComponentBase, EStep, const MovementSpeedState movementSpeedState);
+
+DECLARE_EVENT_OneParam(UMovementComponentBase, EEnvironmentChanged, const FEnvironment environment);
 
 DECLARE_EVENT(UMovementComponentBase, EJump);
 
@@ -25,6 +28,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool GetIsInAir() const;
 
+	UFUNCTION(BlueprintCallable)
+	FEnvironment GetEnvironment() const;
+
+	UFUNCTION(BlueprintCallable)
+	void EnterEnvironment(const FEnvironment environment);
+
+	UFUNCTION(BlueprintCallable)
+	void ExitEnvironment(const FEnvironment environment);
+
 	/// <summary>
 	/// [Template method] Returns input movement direction
 	/// </summary>
@@ -42,6 +54,8 @@ public:
 	EStep Step;
 
 	EJump Jump;
+
+	EEnvironmentChanged EnvironmentChanged;
 
 protected:
 	static const FName JUMP_FORCE_ID;
@@ -182,4 +196,10 @@ private:
 	FTimerHandle _stepTimerHandle;
 
 	URigidBodyComponent* _rigidBodyComponent;
+
+	static const FEnvironment DefaultEnvironment;
+	
+	FEnvironment _environment = DefaultEnvironment;
+
+	void SetEnvironment(const FEnvironment environment);
 };

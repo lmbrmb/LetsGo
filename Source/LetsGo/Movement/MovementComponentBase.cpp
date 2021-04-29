@@ -6,6 +6,8 @@
 
 const FName UMovementComponentBase::JUMP_FORCE_ID = "Jump";
 
+const FEnvironment UMovementComponentBase::DefaultEnvironment = FEnvironment::Ground;
+
 MovementSpeedState UMovementComponentBase::_defaultMovementSpeedState = MovementSpeedState::Run;
 
 UMovementComponentBase::UMovementComponentBase()
@@ -263,6 +265,37 @@ bool UMovementComponentBase::GetIsInAir() const
 	}
 
 	return _rigidBodyComponent->GetIsInAir();
+}
+
+FEnvironment UMovementComponentBase::GetEnvironment() const
+{
+	return _environment;
+}
+
+void UMovementComponentBase::EnterEnvironment(const FEnvironment environment)
+{
+	SetEnvironment(environment);
+}
+
+void UMovementComponentBase::ExitEnvironment(const FEnvironment environment)
+{
+	if(_environment != environment)
+	{
+		return;
+	}
+
+	SetEnvironment(DefaultEnvironment);
+}
+
+void UMovementComponentBase::SetEnvironment(const FEnvironment environment)
+{
+	if (_environment == environment)
+	{
+		return;
+	}
+
+	_environment = environment;
+	EnvironmentChanged.Broadcast(environment);
 }
 
 void UMovementComponentBase::Move(
