@@ -329,6 +329,26 @@ IAimProvider* UWeaponManagerComponent::GetAimProvider() const
 	return _aimProvider;
 }
 
+void UWeaponManagerComponent::DisableWeapon()
+{
+	StopFire();
+
+	if(_equipWeaponTimerHandle.IsValid())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(_equipWeaponTimerHandle);
+		_equipWeaponTimerHandle.Invalidate();
+	}
+
+	if(_equipWeaponRequestReadyHandle.IsValid())
+	{
+		AssertIsNotNull(_weapon);
+		_weapon->RequestReady.Remove(_equipWeaponRequestReadyHandle);
+		_equipWeaponRequestReadyHandle.Reset();
+	}
+
+	HolsterWeapon();
+}
+
 void UWeaponManagerComponent::EquipWeaponImmediate(const int weaponIndex)
 {
 	if(_weaponIndex == weaponIndex)

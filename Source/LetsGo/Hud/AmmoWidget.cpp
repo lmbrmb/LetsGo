@@ -52,8 +52,11 @@ void UAmmoWidget::OnWeaponEquipped()
 		AssertIsNotNull(ammoProvider);
 		ammoProvider->AmmoCountChanged.RemoveAll(this);
 	}
-	
-	_gun = _weaponManagerComponent->GetCurrentGun();
+
+	if(_weaponManagerComponent)
+	{
+		_gun = _weaponManagerComponent->GetCurrentGun();
+	}
 
 	if(!_gun)
 	{

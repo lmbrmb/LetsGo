@@ -64,6 +64,8 @@ public:
 
 	IAimProvider* GetAimProvider() const;
 
+	void DisableWeapon();
+
 	void SetAimProvider(IAimProvider* aimProvider);
 
 	UFUNCTION(BlueprintCallable)

@@ -85,8 +85,8 @@ void AnnouncementManager::OnPlayerFragged(
 	const PlayerId& fraggedPlayerId
 )
 {
-	CheckLead();
 	CreateFragAnnouncement(instigatorPlayerId, fraggedPlayerId);
+	CheckLead();
 }
 
 void AnnouncementManager::ClearAllAnnouncements()
