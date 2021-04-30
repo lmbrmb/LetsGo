@@ -33,7 +33,7 @@ void UPickupSpawnComponent::SpawnPickup(const FName& id, const FVector& location
 		GetWorld(),
 		nullptr,
 		pickupItemBlueprintGeneratedClass,
-		ESpawnActorCollisionHandlingMethod::AlwaysSpawn,
+		ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn,
 		location
 		);
 }

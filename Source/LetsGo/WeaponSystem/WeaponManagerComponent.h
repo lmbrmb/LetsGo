@@ -69,7 +69,7 @@ public:
 	void SetAimProvider(IAimProvider* aimProvider);
 
 	UFUNCTION(BlueprintCallable)
-	void InitializeWeaponPivots(const TArray<USceneComponent*> weaponPivots);
+	void InitializeWeaponPivots(const TArray<USceneComponent*>& weaponPivots);
 
 	UFUNCTION(BlueprintCallable)
 	int GetWeaponsCount() const;
@@ -80,6 +80,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FName GetCurrentWeaponId() const;
 
+	TArray<IWeapon*>& GetWeapons();
+
+	TArray<IGun*>& GetGuns();
+
 	void SetPlayerId(const PlayerId& playerId);
 
 	virtual bool TryProcessItem(Item* item) override;
@@ -89,6 +93,8 @@ public:
 	IGun* GetCurrentGun() const;
 
 	bool IsInitialized() const;
+
+	bool IsChangingWeapon() const;
 
 	EInitialized_UWeaponManagerComponent Initialized;
 
@@ -198,8 +204,6 @@ private:
 	AmmoProviderFactory* _ammoProviderFactory;
 
 	bool TryEquipNextUsableWeapon(const int indexModifier);
-
-	bool IsChangingWeapon() const;
 
 	int GetNextUsableWeaponIndex(const int indexModifier) const;
 

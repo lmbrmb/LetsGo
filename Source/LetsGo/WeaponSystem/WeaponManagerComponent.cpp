@@ -242,7 +242,7 @@ void UWeaponManagerComponent::EquipWeaponOnTimer()
 	EquipWeaponImmediate(_nextWeaponIndex);
 }
 
-void UWeaponManagerComponent::InitializeWeaponPivots(const TArray<USceneComponent*> weaponPivots)
+void UWeaponManagerComponent::InitializeWeaponPivots(const TArray<USceneComponent*>& weaponPivots)
 {
 	AssertContainerIsNotEmpty(weaponPivots);
 	
@@ -279,6 +279,16 @@ FName UWeaponManagerComponent::GetCurrentWeaponId() const
 	}
 
 	return FName();
+}
+
+TArray<IWeapon*>& UWeaponManagerComponent::GetWeapons()
+{
+	return _weapons;
+}
+
+TArray<IGun*>& UWeaponManagerComponent::GetGuns()
+{
+	return _guns;
 }
 
 void UWeaponManagerComponent::SetPlayerId(const PlayerId& playerId)
@@ -650,8 +660,8 @@ void UWeaponManagerComponent::OnPartialInitialization()
 
 void UWeaponManagerComponent::CreateStartWeapon()
 {
-	auto const startingWeaponItem = _gunItemFactory->Get(_startWeaponId);
-	TryProcessItemAsGun(startingWeaponItem);
+	auto const startWeaponItem = _gunItemFactory->Get(_startWeaponId);
+	TryProcessItemAsGun(startWeaponItem);
 }
 
 void UWeaponManagerComponent::OnGunShotPerformed(const IGun* gun, const bool isAnyBulletDamaged)

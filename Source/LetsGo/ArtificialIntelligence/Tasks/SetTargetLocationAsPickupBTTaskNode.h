@@ -1,15 +1,11 @@
 #pragma once
 
 #include "BehaviorTree/BTTaskNode.h"
-#include "LetsGo/Movement/BotMovementComponent.h"
 
-#include "MoveToEnemyBTTaskNode.generated.h"
+#include "SetTargetLocationAsPickupBTTaskNode.generated.h"
 
-/// <summary>
-/// Move to enemy task node
-/// </summary>
 UCLASS()
-class LETSGO_API UMoveToEnemyBTTaskNode : public UBTTaskNode
+class LETSGO_API USetTargetLocationAsPickupBTTaskNode : public UBTTaskNode
 {
 	GENERATED_BODY()
 
@@ -21,20 +17,19 @@ private:
 	FName _selfActorKeyName = "SelfActor";
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
-	FName _enemyAvatarKeyName = "EnemyAvatar";
+	FName _pickupActorKeyName = "PickupActor";
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
-	FName _isEnemyInLineOfSightKeyName = "IsEnemyInLineOfSight";
-	
+	FName _targetLocationKeyName = "TargetLocation";
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
+	FName _isTargetLocationValidKeyName = "IsTargetLocationValid";
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
+	FName _locationToleranceSquaredKeyName = "LocationToleranceSquared";
+
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
 	float _locationTolerance = 10;
 
 	float _locationToleranceSquared = _locationTolerance * _locationTolerance;
-	
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
-	float _enemyDistance = 1000;
-	
-	float _enemyDistanceSquared = _enemyDistance * _enemyDistance;
-	
-	EBTNodeResult::Type TaskFailed(UBotMovementComponent* botMovementComponent);
 };
