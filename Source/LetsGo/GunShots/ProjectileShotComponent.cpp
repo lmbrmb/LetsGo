@@ -1,6 +1,7 @@
 #include "ProjectileShotComponent.h"
 
 #include "LetsGo/HealthSystem/HealthComponent.h"
+#include "LetsGo/Movement/KinematicMovementComponent.h"
 #include "LetsGo/Physics/RigidBodyComponent.h"
 #include "LetsGo/Utils/AssertUtils.h"
 #include "LetsGo/Utils/AssetUtils.h"
@@ -22,6 +23,13 @@ void UProjectileShotComponent::OnShotRequested(const USceneComponent* firePivot)
 
 	projectile->Hit.AddUObject(this, &UProjectileShotComponent::OnProjectileHit);
 	projectile->LifeTimeExpired.AddUObject(this, &UProjectileShotComponent::OnProjectileLifeTimeExpired);
+
+	auto const kinematicMovementComponent = projectile->FindComponentByClass<UKinematicMovementComponent>();
+	if(kinematicMovementComponent)
+	{
+		kinematicMovementComponent->AddIgnoredActor(GunActor);
+		kinematicMovementComponent->AddIgnoredActor(GunOwner);
+	}
 }
 
 void UProjectileShotComponent::BeginPlay()
@@ -50,9 +58,9 @@ bool UProjectileShotComponent::SimulateExplosion(const FHitResult& collisionHitR
 
 	auto const explosionEpicenterLocation = collisionHitResult.ImpactPoint;
 
-	TArray<FHitResult> explosionHitResults;
+	_explosionHitResults.Empty();
 	auto const isExplosionHittedSomething = GetWorld()->SweepMultiByChannel(
-		explosionHitResults,
+		_explosionHitResults,
 		explosionEpicenterLocation,
 		explosionEpicenterLocation,
 		FQuat::Identity,
@@ -69,7 +77,7 @@ bool UProjectileShotComponent::SimulateExplosion(const FHitResult& collisionHitR
 
 	auto isExplosionDamaged = false;
 	
-	for (auto explosionHitResult : explosionHitResults)
+	for (auto explosionHitResult : _explosionHitResults)
 	{
 		if (!explosionHitResult.Actor.IsValid())
 		{
@@ -103,13 +111,25 @@ bool UProjectileShotComponent::SimulateExplosion(const FHitResult& collisionHitR
 			continue;
 		}
 
-		auto const damageAmount = CalculateDamage(collisionHitResult, explosionHitResult, hittedActor);
+		auto const collisionActor = collisionHitResult.Actor;
+		auto const isDirectHit = collisionActor.IsValid() && collisionActor.Get() == hittedActor;
+
+		auto const actorHitLocation = explosionHitResult.ImpactPoint;
+		auto const distance = FVector::Distance(explosionEpicenterLocation, actorHitLocation);
+		auto const explosionDistancePercent = distance / _explosionRadius;
+
+		auto const damageAmount = CalculateDamage(isDirectHit, explosionDistancePercent);
+
 		const Damage damage(InstigatorPlayerId, InstigatorWeaponType, collisionHitResult, damageAmount);
 		auto const isDamaged = healthComponent->TryInjure(damage);
-
-		ApplyForce(hittedActor, explosionEpicenterLocation);
-
 		isExplosionDamaged |= isDamaged;
+
+		ApplyForce(
+			isDirectHit,
+			hittedActor,
+			explosionEpicenterLocation,
+			explosionDistancePercent
+		);
 	}
 
 	return isExplosionDamaged;
@@ -167,39 +187,31 @@ bool UProjectileShotComponent::IsActorHittedByExplosion(
 }
 
 float UProjectileShotComponent::CalculateDamage(
-	const FHitResult& collisionHitResult,
-	const FHitResult& explosionHitResult,
-	AActor* testActor
+	const bool isDirectHit,
+	const float explosionDistancePercent
 ) const
 {
-	if (!_damageOverDistanceCurve)
+	if (isDirectHit)
 	{
-		return _maxDamage;
-	};
-
-	auto const collisionActor = collisionHitResult.Actor;
-	
-	if (collisionActor.IsValid() && collisionActor.Get() == testActor)
-	{
-		return _maxDamage;
+		return _directHitDamage;
 	}
-	
-	auto const explosionEpicenterLocation = collisionHitResult.ImpactPoint;
-	auto const actorHitLocation = explosionHitResult.ImpactPoint;
-	auto const distance = FVector::Distance(explosionEpicenterLocation, actorHitLocation);
 
-	AssertIsLessOrEqual(distance, _explosionRadius, _maxDamage);
+	if (!_areaDamageOverDistanceCurve)
+	{
+		return _maxAreaDamage;
+	};
 	
-	auto const distancePercent = distance / _explosionRadius;
-	auto const distanceModifier = _damageOverDistanceCurve->GetFloatValue(distancePercent);
-	auto const resultingDamage = FMath::RoundToInt(_maxDamage * distanceModifier);
+	auto const distanceModifier = _areaDamageOverDistanceCurve->GetFloatValue(explosionDistancePercent);
+	auto const resultingDamage = FMath::RoundToInt(_maxAreaDamage * distanceModifier);
 	
 	return resultingDamage;
 }
 
 void UProjectileShotComponent::ApplyForce(
+	const bool isDirectHit,
 	const AActor* actor,
-	const FVector& explosionEpicenterLocation
+	const FVector& explosionEpicenterLocation,
+	const float explosionDistancePercent
 ) const
 {
 	if (!_impactForceCurve)
@@ -213,15 +225,19 @@ void UProjectileShotComponent::ApplyForce(
 		return;
 	}
 
+	auto const distanceMultiplier = isDirectHit ? 1.0f : 1 - explosionDistancePercent;
+
 	//DrawDebugSphere(GetWorld(), explosionEpicenterLocation, 20, 10, FColor::Red, false, 5);
 	auto const actorDirection = (actor->GetActorLocation() - explosionEpicenterLocation).GetSafeNormal();
 	auto const projectedActorDirection = FVector::VectorPlaneProject(actorDirection, FVector::UpVector);
 	auto const forceDirection = (projectedActorDirection + FVector::UpVector).GetSafeNormal();
+
+	auto const impactForceCurveMagnitudeMultiplier = _impactForceCurveMagnitudeMultiplier * distanceMultiplier;
 	rigidBodyComponent->AddForce(
 		ForceName,
 		forceDirection,
 		_impactForceCurve,
-		_impactForceCurveMagnitudeMultiplier,
+		impactForceCurveMagnitudeMultiplier,
 		_impactForceCurveTimeMultiplier
 	);
 }

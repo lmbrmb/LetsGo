@@ -18,6 +18,8 @@ public:
 
 	ECollision_KinematicMovement Collision;
 
+	void AddIgnoredActor(AActor* actor);
+
 protected:
 	virtual void BeginPlay() override;
 

@@ -27,13 +27,16 @@ private:
 	TSubclassOf<AProjectile> _projectileBlueprint;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	float _maxDamage = 50;
+	float _directHitDamage = 50;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float _maxAreaDamage = 50;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UCurveFloat* _areaDamageOverDistanceCurve;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float _explosionRadius = 300;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	UCurveFloat* _damageOverDistanceCurve;
 
 	UPROPERTY(EditAnywhere, Category = "ImpactForce", meta = (AllowPrivateAccess = "true"))
 	float _impactForceCurveMagnitudeMultiplier = 1;
@@ -47,6 +50,8 @@ private:
 	FCollisionShape _collisionShape;
 
 	TArray<AActor*> _hittedActors;
+
+	TArray<FHitResult> _explosionHitResults;
 
 	FHitResult _hitResult;
 
@@ -63,14 +68,15 @@ private:
 	);
 	
 	float CalculateDamage(
-		const FHitResult& collisionHitResult,
-		const FHitResult& explosionHitResult,
-		AActor* testActor
+		const bool isDirectHit,
+		const float explosionDistancePercent
 	) const;
 
 	void ApplyForce(
+		const bool isDirectHit,
 		const AActor* actor,
-		const FVector& explosionEpicenterLocation
+		const FVector& explosionEpicenterLocation,
+		const float explosionDistancePercent
 	) const;
 
 	static const FName ForceName;

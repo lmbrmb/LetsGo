@@ -50,3 +50,8 @@ void UKinematicMovementComponent::TickComponent(float DeltaTime, ELevelTick Tick
 
 	_rootCollider->AddWorldOffset(translation, false);
 }
+
+void UKinematicMovementComponent::AddIgnoredActor(AActor* actor)
+{
+	_collisionQueryParams.AddIgnoredActor(actor);
+}
