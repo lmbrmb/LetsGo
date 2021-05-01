@@ -23,27 +23,31 @@ EBTNodeResult::Type UMoveToTargetLocationBTTaskNode::ExecuteTask(UBehaviorTreeCo
 		botMovementComponent->ClearTargetLocation();
 		return EBTNodeResult::Failed;
 	}
-	
+
+	auto const selfLocation = botMovementComponent->GetRootColliderLocation();
 	auto const navigationSystemV1 = UNavigationSystemV1::GetCurrent(GetWorld());
-	auto const rootColliderLocation = botMovementComponent->GetRootColliderLocation();
 	
 	auto const targetLocation = blackboardComponent->GetValueAsVector(_targetLocationKeyName);
-	auto const navigationPath = navigationSystemV1->FindPathToLocationSynchronously(GetWorld(), rootColliderLocation, targetLocation);
+	auto const navigationPath = navigationSystemV1->FindPathToLocationSynchronously(GetWorld(), selfLocation, targetLocation);
 	
 	if(!navigationPath)
 	{
 		DevLogger::GetLoggingChannel()->Log("Navigation path is null", LogSeverity::Error);
-		botMovementComponent->ClearTargetLocation();
-		return EBTNodeResult::Failed;
+		botMovementComponent->SetTargetLocation(targetLocation);
+		return EBTNodeResult::Succeeded;
 	}
 
 	auto const navigationPathPointsCount = navigationPath->PathPoints.Num();
 	
 	if (navigationPathPointsCount <= 1)
 	{
-		DevLogger::GetLoggingChannel()->Log("Navigation path points count is invalid", LogSeverity::Error);
-		botMovementComponent->ClearTargetLocation();
-		return EBTNodeResult::Failed;
+		DevLogger::GetLoggingChannel()->LogValue(
+			"Navigation path points count is invalid. Points count:",
+			navigationPathPointsCount,
+			LogSeverity::Error
+		);
+		botMovementComponent->SetTargetLocation(targetLocation);
+		return EBTNodeResult::Succeeded;
 	}
 	
 	int nearestPointIndex = -1;
@@ -55,7 +59,7 @@ EBTNodeResult::Type UMoveToTargetLocationBTTaskNode::ExecuteTask(UBehaviorTreeCo
 		auto pathPoint = navigationPath->PathPoints[i];
 		//DrawDebugSphere(GetWorld(), pathPoint, 10.0f, 12, FColor::Green, false, 1, 0, 5);
 		
-		auto const distanceSquared = (pathPoint - rootColliderLocation).SizeSquared2D();
+		auto const distanceSquared = (pathPoint - selfLocation).SizeSquared2D();
 		if(distanceSquared > locationToleranceSquared)
 		{
 			nearestPointIndex = i;

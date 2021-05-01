@@ -133,7 +133,7 @@ void UAvatarBTService::Detect(
 	TArray<APickupItem*>& pickupItems
 )
 {
-	auto const currentHealth = blackboardComponent->GetValueAsFloat(_selfHealthKeyName);
+	auto const currentHealth = healthComponent->GetCurrentValue();
 	auto const maxNormalHealth = healthComponent->GetMaxNormalHealth();
 	auto const isHealthBelowNormal = currentHealth < maxNormalHealth;
 	

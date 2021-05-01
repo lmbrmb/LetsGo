@@ -37,9 +37,6 @@ private:
 	FName _isEnemyInLineOfSightKeyName = "IsEnemyInLineOfSight";
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
-	FName _selfHealthKeyName = "SelfHealth";
-
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
 	FName _shouldChangeWeaponKeyName = "ShouldChangeWeapon";
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
