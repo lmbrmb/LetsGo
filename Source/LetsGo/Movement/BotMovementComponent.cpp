@@ -1,6 +1,5 @@
 #include "BotMovementComponent.h"
 
-#include "DrawDebugHelpers.h"
 #include "NavigationSystem.h"
 #include "NavigationPath.h"
 #include "LetsGo/Logs/DevLogger.h"
@@ -112,11 +111,12 @@ void UBotMovementComponent::CalculateNextLocation()
 	
 	if (navigationPathPointsCount < 2)
 	{
-		DevLogger::GetLoggingChannel()->LogValue(
+		/*DevLogger::GetLoggingChannel()->LogValue(
 			"Navigation path points count is invalid. Points count:",
 			navigationPathPointsCount,
 			LogSeverity::Error
-		);
+		);*/
+
 		_isNextLocationValid = false;
 		return;
 	}

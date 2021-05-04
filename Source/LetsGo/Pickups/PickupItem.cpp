@@ -12,11 +12,11 @@ FName APickupItem::GetId() const
 	return _id;
 }
 
-void APickupItem::Take()
+void APickupItem::Take(AActor* actorWhoTakes)
 {
 	Taken.Broadcast(this);
 	_isTaken = true;
-	BpOnTaken();
+	BpOnTaken(actorWhoTakes);
 }
 
 bool APickupItem::IsTaken() const

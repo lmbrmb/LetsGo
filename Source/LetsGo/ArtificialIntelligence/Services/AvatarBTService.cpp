@@ -1,5 +1,7 @@
 #include "AvatarBTService.h"
 
+#include "NavigationPath.h"
+#include "NavigationSystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "LetsGo/Utils/AssertUtils.h"
 #include "LetsGo/Utils/MathUtils.h"
@@ -376,11 +378,28 @@ void UAvatarBTService::UpdatePickup(
 			continue;
 		}
 
-		auto const squaredDistance = (pickupItem->GetActorLocation() - selfLocation).SizeSquared();
+		auto const world = GetWorld();
+		auto const navigationSystemV1 = UNavigationSystemV1::GetCurrent(world);
+		auto const pickupItemLocation = pickupItem->GetActorLocation();
+		auto const navigationPath = navigationSystemV1->FindPathToLocationSynchronously(world, selfLocation, pickupItemLocation);
 
-		if (closestDistance > squaredDistance)
+		if (!navigationPath)
 		{
-			closestDistance = squaredDistance;
+			continue;
+		}
+
+		auto const navigationPathPointsCount = navigationPath->PathPoints.Num();
+
+		if (navigationPathPointsCount < 2)
+		{
+			continue;
+		}
+
+		auto const pathLength = navigationPath->GetPathLength();
+
+		if (closestDistance > pathLength)
+		{
+			closestDistance = pathLength;
 			targetPickupItem = pickupItem;
 		}
 	}

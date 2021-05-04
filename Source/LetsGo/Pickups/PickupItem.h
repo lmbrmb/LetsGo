@@ -23,7 +23,7 @@ public:
 	FName GetId() const;
 
 	UFUNCTION(BlueprintCallable)
-	void Take();
+	void Take(AActor* actorWhoTakes);
 
 	Taken Taken;
 
@@ -33,7 +33,7 @@ public:
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
-	void BpOnTaken();
+	void BpOnTaken(AActor* actorWhoTakes);
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Custom, Meta = (AllowPrivateAccess = "true"))
