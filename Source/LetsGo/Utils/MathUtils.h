@@ -30,6 +30,15 @@ public:
 		return random >= probability;
 	}
 
+	static float GetNormalizedValue(const float currentValue, const float minValue, const float maxValue)
+	{
+		auto const current = currentValue - minValue;
+		auto const max = maxValue - minValue;
+		if (FMath::IsNearlyZero(max))
+			return 0;
+		return current / max;
+	}
+
 private:
 	MathUtils() = delete;
 };

@@ -72,15 +72,6 @@ float UFloatParameterComponent::GetCurrentValue() const
 	return CurrentValue;
 }
 
-float UFloatParameterComponent::GetNormalizedValue() const
-{
-	auto const current = CurrentValue - MinValue;
-	auto const max = MaxValue - MinValue;
-	if (FMath::IsNearlyZero(max))
-		return 0;
-	return current / max;
-}
-
 void UFloatParameterComponent::ChangeValue(const float amount)
 {
 	SetCurrentValue(CurrentValue + amount);

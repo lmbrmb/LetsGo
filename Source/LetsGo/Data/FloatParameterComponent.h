@@ -28,8 +28,6 @@ public:
 
 	float GetCurrentValue() const;
 
-	float GetNormalizedValue() const;
-
 protected:
 	virtual void BeginPlay() override;
 	

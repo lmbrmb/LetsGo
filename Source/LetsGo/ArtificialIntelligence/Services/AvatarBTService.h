@@ -40,8 +40,11 @@ private:
 	float _detectionRadius = 2000;
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Trace)
+	float _distanceSquaredBaseFactor = 50000;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Trace)
 	FVector _avatarRayCastLocationOffset = FVector::UpVector * 75;
-	
+
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Weapon)
 	TArray<FName> _lowTierWeapons;
 
@@ -53,14 +56,17 @@ private:
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = PickUpItems)
 	TArray<FName> _superHealthPickups;
-	
+
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = PickUpItems)
 	TArray<FName> _weaponPickups;
-	
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = PickUpItems)
+	float _lowHealthValue = 60;
+
 	FCollisionShape _collisionShape;
 
 	bool _isCollisionShapeInitialized = false;
-	
+
 	FHitResult _hitResult;
 
 	TArray<FHitResult> _hitResults;
@@ -71,48 +77,67 @@ private:
 
 	void Update(UBlackboardComponent* blackboardComponent);
 
-	static bool IsNeedHealth(UHealthComponent* healthComponent);
+	bool IsNeedHealth(UHealthComponent* healthComponent) const;
 
-	bool IsNeedWeapon(UWeaponManagerComponent* weaponManagerComponent);
+	bool IsNeedWeapon(UWeaponManagerComponent* weaponManagerComponent) const;
 
 	bool IsLowTierWeapon(IWeapon* weapon) const;
 
-	bool IsEnoughAmmo(IGun* gun);
+	bool IsEnoughAmmo(IGun* gun) const;
 
 	void Detect(
 		AAvatar* selfAvatar,
-		const FVector& selfLocation,
-		const bool needHealth,
-		const bool needWeapon
+		const FVector& selfLocation
 	);
 	
 	bool TryProcessEnemy(
+		AActor* selfActor,
 		AActor* otherActor,
 		const TeamId& selfTeamId
 	);
 
-	bool TryProcessPickup(
-		const bool needHealth,
-		const bool needWeapon,
-		AActor* otherActor
+	void TryAddEnemy(
+		AActor* selfActor,
+		AAvatar* enemyAvatar,
+		const TeamId& selfTeamId
 	);
-
-	bool CanTakePickup(
-		const bool needHealth,
-		const bool needWeapon,
-		const APickupItem* pickupItem
-	) const;
 	
-	void UpdateEnemy(
-		UBlackboardComponent* blackboardComponent,
-		AAvatar* selfAvatar,
+	bool TryProcessPickup(
+		AActor* otherActor,
 		const FVector& selfLocation
 	);
 
-	void UpdatePickup(
+	bool CanTakePickup(
+		APickupItem* pickupItem,
+		const bool isNeedHealth,
+		const bool isNeedWeapon
+	) const;
+
+	void TryAddPickup(
+		APickupItem* pickupItem
+	);
+
+	bool IsKnownPickup(APickupItem* pickupItem) const;
+
+	static bool IsPickupValid(
+		APickupItem* pickupItem
+	);
+	
+	void UpdateEnemy(
 		UBlackboardComponent* blackboardComponent,
-		const bool needHealth,
-		const bool needWeapon,
+		AActor* selfActor,
+		const FVector& selfLocation
+	);
+
+	float GetEnemyFactor(
+		AActor* enemyActor,
+		const FVector& selfLocation,
+		const FVector& selfForward
+	) const;
+
+	void UpdatePickup(
+		AActor* selfActor,
+		UBlackboardComponent* blackboardComponent,
 		const FVector& selfLocation
 	) const;
 	
@@ -122,7 +147,7 @@ private:
 
 	FVector GetActorTraceLocation(AActor* thisActor) const;
 
-	bool IsInLineOfSight(AActor* leftActor, AActor* rightActor);
+	bool IsInLineOfSight(AActor* selfActor, AActor* otherActor);
 	
 	static bool IsAlive(AActor* actor);
 };

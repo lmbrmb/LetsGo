@@ -37,8 +37,7 @@ public:
 
 private:
 	/// <summary>
-	/// Disable lazy initialization. No lag on weapon / health pickup.
-	/// TODO: pickups / guns pool
+	/// Disable lazy initialization
 	/// </summary>
 	const bool LAZY_INITIALIZATION = false;
 };

@@ -2,6 +2,7 @@
 
 #include "BehaviorTree/BlackboardComponent.h"
 #include "LetsGo/Utils/AssertUtils.h"
+#include "LetsGo/Utils/MathUtils.h"
 
 void UAvatarBTService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
@@ -26,33 +27,24 @@ void UAvatarBTService::Update(UBlackboardComponent* blackboardComponent)
 	auto const selfAvatar = Cast<AAvatar>(selfActorObject);
 	AssertIsNotNull(selfAvatar);
 
-	auto const healthComponent = selfAvatar->FindComponentByClass<UHealthComponent>();
-	AssertIsNotNull(healthComponent);
-
-	auto const weaponManagerComponent = selfAvatar->FindComponentByClass<UWeaponManagerComponent>();
-	AssertIsNotNull(weaponManagerComponent);
-	
 	_enemies.Empty();
 	_pickupItems.Empty();
 
 	auto const selfLocation = selfAvatar->GetActorLocation();
-	auto const needHealth = IsNeedHealth(healthComponent);
-	auto const needWeapon = IsNeedWeapon(weaponManagerComponent);
-	
-	Detect(selfAvatar, selfLocation, needHealth, needWeapon);
-	UpdatePickup(blackboardComponent, needHealth, needWeapon, selfLocation);
+
+	Detect(selfAvatar, selfLocation);
+	UpdatePickup(selfAvatar, blackboardComponent, selfLocation);
 	UpdateEnemy(blackboardComponent, selfAvatar, selfLocation);
 }
 
-bool UAvatarBTService::IsNeedHealth(UHealthComponent* healthComponent)
+bool UAvatarBTService::IsNeedHealth(UHealthComponent* healthComponent) const
 {
 	auto const currentHealth = healthComponent->GetCurrentValue();
-	auto const maxNormalHealth = healthComponent->GetMaxNormalHealth();
-	auto const needHealth = currentHealth < maxNormalHealth;
-	return needHealth;
+	auto const isLowHealth = currentHealth < _lowHealthValue;
+	return isLowHealth;
 }
 
-bool UAvatarBTService::IsNeedWeapon(UWeaponManagerComponent* weaponManagerComponent)
+bool UAvatarBTService::IsNeedWeapon(UWeaponManagerComponent* weaponManagerComponent) const
 {
 	if (weaponManagerComponent->IsChangingWeapon())
 	{
@@ -87,7 +79,7 @@ bool UAvatarBTService::IsLowTierWeapon(IWeapon* weapon) const
 	return _lowTierWeapons.Contains(weapon->GetWeaponId().GetId());
 }
 
-bool UAvatarBTService::IsEnoughAmmo(IGun* gun)
+bool UAvatarBTService::IsEnoughAmmo(IGun* gun) const
 {
 	auto const ammoProvider = gun->GetAmmoProvider();
 
@@ -100,9 +92,7 @@ bool UAvatarBTService::IsEnoughAmmo(IGun* gun)
 
 void UAvatarBTService::Detect(
 	AAvatar* selfAvatar,
-	const FVector& selfLocation,
-	const bool needHealth,
-	const bool needWeapon
+	const FVector& selfLocation
 )
 {
 	_hitResults.Empty();
@@ -119,8 +109,9 @@ void UAvatarBTService::Detect(
 	{
 		return;
 	}
+
 	auto const selfTeamId = selfAvatar->GetTeamId();
-	
+
 	for (auto const& hitResult : _hitResults)
 	{
 		if (!hitResult.Actor.IsValid())
@@ -134,47 +125,62 @@ void UAvatarBTService::Detect(
 			continue;
 		}
 
-		if(TryProcessPickup(needHealth, needWeapon, hitActor))
+		if(TryProcessPickup(hitActor, selfLocation))
 		{
 			continue;
 		}
-		
-		TryProcessEnemy(hitActor, selfTeamId);
+
+		TryProcessEnemy(selfAvatar, hitActor, selfTeamId);
 	}
 }
 
 bool UAvatarBTService::TryProcessEnemy(
+	AActor* selfActor,
 	AActor* otherActor,
 	const TeamId& selfTeamId
 )
 {
-	auto const avatar = Cast<AAvatar>(otherActor);
-	
-	if (!avatar)
+	auto const otherAvatar = Cast<AAvatar>(otherActor);
+
+	if (!otherAvatar)
 	{
 		return false;
 	}
 
-	if (avatar->GetTeamId() == selfTeamId)
-	{
-		return false;
-	}
+	TryAddEnemy(selfActor, otherAvatar, selfTeamId);
 
-	auto const isAlive = IsAlive(avatar);
-
-	if(!isAlive)
-	{
-		return false;
-	}
-	
-	_enemies.Add(avatar);
 	return true;
 }
 
+void UAvatarBTService::TryAddEnemy(
+	AActor* selfActor,
+	AAvatar* enemyAvatar,
+	const TeamId& selfTeamId
+)
+{
+	if (enemyAvatar->GetTeamId() == selfTeamId)
+	{
+		return;
+	}
+
+	auto const isAlive = IsAlive(enemyAvatar);
+	if (!isAlive)
+	{
+		return;
+	}
+
+	auto const isEnemyInLineOfSight = IsInLineOfSight(selfActor, enemyAvatar);
+	if(!isEnemyInLineOfSight)
+	{
+		return;
+	}
+
+	_enemies.Add(enemyAvatar);
+}
+
 bool UAvatarBTService::TryProcessPickup(
-	const bool needHealth,
-	const bool needWeapon,
-	AActor* otherActor
+	AActor* otherActor,
+	const FVector& selfLocation
 )
 {
 	auto const pickupItem = Cast<APickupItem>(otherActor);
@@ -184,120 +190,202 @@ bool UAvatarBTService::TryProcessPickup(
 		return false;
 	}
 
-	auto const canTakePickup = CanTakePickup(needHealth, needWeapon, pickupItem);
+	TryAddPickup(pickupItem);
 
-	if(!canTakePickup)
-	{
-		
-		return false;
-	}
-
-	_pickupItems.Add(pickupItem);
 	return true;
 }
 
-bool UAvatarBTService::CanTakePickup(
-	const bool needHealth,
-	const bool needWeapon,
-	const APickupItem* pickupItem
-) const
+void UAvatarBTService::TryAddPickup(
+	APickupItem* pickupItem
+)
+{
+	auto const isPickupValid = IsPickupValid(pickupItem);
+	if(!isPickupValid)
+	{
+		return;
+	}
+
+	auto const isKnownPickup = IsKnownPickup(pickupItem);
+	if (!isKnownPickup)
+	{
+		return;
+	}
+
+	_pickupItems.Add(pickupItem);
+}
+
+bool UAvatarBTService::IsKnownPickup(APickupItem* pickupItem) const
 {
 	auto const pickupId = pickupItem->GetId();
 
-	if (pickupItem->IsTaken())
-	{
-		return false;
-	}
-
 	if (_weaponPickups.Contains(pickupId))
-	{
-		return true;
-	}
-	
-	if(_superHealthPickups.Contains(pickupId))
 	{
 		return true;
 	}
 
 	if (_normalHealthPickups.Contains(pickupId))
 	{
-		return needHealth;
+		return true;
 	}
 	
+	if (_superHealthPickups.Contains(pickupId))
+	{
+		return true;
+	}
+
 	return false;
+}
+
+bool UAvatarBTService::IsPickupValid(
+	APickupItem* pickupItem
+)
+{
+	return pickupItem && !pickupItem->IsTaken();
+}
+
+bool UAvatarBTService::CanTakePickup(
+	APickupItem* pickupItem,
+	const bool isNeedHealth,
+	const bool isNeedWeapon
+) const
+{
+	auto const pickupId = pickupItem->GetId();
+	if (_weaponPickups.Contains(pickupId))
+	{
+		return isNeedWeapon;
+	}
+
+	if (_normalHealthPickups.Contains(pickupId))
+	{
+		return isNeedHealth;
+	}
+
+	if (_superHealthPickups.Contains(pickupId))
+	{
+		return true;
+	}
+
+	return true;
 }
 
 void UAvatarBTService::UpdateEnemy(
 	UBlackboardComponent* blackboardComponent,
-	AAvatar* selfAvatar,
+	AActor* selfActor,
 	const FVector& selfLocation
 )
 {
-	if (_enemies.Num() <= 0)
+	//Assumption: enemies array contains only enemies in line of sight
+	auto const enemiesCount = _enemies.Num();
+	if (enemiesCount <= 0)
 	{
 		blackboardComponent->SetValueAsObject(_enemyActorKeyName, nullptr);
+		blackboardComponent->SetValueAsBool(_isEnemyInLineOfSightKeyName, false);
 		return;
 	}
 
-	AActor* closestEnemy = nullptr;
-	float closestDistance = INT_MAX;
+	if(enemiesCount == 1)
+	{
+		blackboardComponent->SetValueAsObject(_enemyActorKeyName, _enemies[0]);
+		blackboardComponent->SetValueAsBool(_isEnemyInLineOfSightKeyName, true);
+		return;
+	}
+	
+	auto const selfForward = selfActor->GetActorForwardVector();
+	AActor* targetEnemy = nullptr;
+	float maxEnemyFactor = INT_MIN;
 	
 	for (auto const enemy : _enemies)
 	{
-		auto const squaredDistance = (enemy->GetActorLocation() - selfLocation).SizeSquared();
+		auto const enemyFactor = GetEnemyFactor(enemy, selfLocation, selfForward);
 
-		if (closestDistance > squaredDistance)
+		if (maxEnemyFactor < enemyFactor)
 		{
-			closestDistance = squaredDistance;
-			closestEnemy = enemy;
+			maxEnemyFactor = enemyFactor;
+			targetEnemy = enemy;
 		}
 	}
 
-	AssertIsNotNull(closestEnemy);
-	blackboardComponent->SetValueAsObject(_enemyActorKeyName, closestEnemy);
-	auto const isEnemyInLineOfSight = IsInLineOfSight(selfAvatar, closestEnemy);
-	blackboardComponent->SetValueAsBool(_isEnemyInLineOfSightKeyName, isEnemyInLineOfSight);
+	blackboardComponent->SetValueAsObject(_enemyActorKeyName, targetEnemy);
+	blackboardComponent->SetValueAsBool(_isEnemyInLineOfSightKeyName, true);
+}
+
+float UAvatarBTService::GetEnemyFactor(
+	AActor* enemyActor,
+	const FVector& selfLocation,
+	const FVector& selfForward
+) const
+{
+	auto const enemyDirection = (enemyActor->GetActorLocation() - selfLocation).GetSafeNormal();
+	auto const enemyDot = FVector::DotProduct(selfForward, enemyDirection);
+	auto const dotFactor = MathUtils::GetNormalizedValue(enemyDot, -1, 1);
+	auto const squaredDistance = (enemyActor->GetActorLocation() - selfLocation).SizeSquared();
+	auto const distanceFactor =
+		FMath::IsNearlyZero(squaredDistance)
+		? 0
+		: FMath::Clamp(_distanceSquaredBaseFactor / squaredDistance, 0.0f, 1.0f);
+	auto const factor = dotFactor + distanceFactor;
+	return factor;
 }
 
 void UAvatarBTService::UpdatePickup(
+	AActor* selfActor,
 	UBlackboardComponent* blackboardComponent,
-	const bool needHealth,
-	const bool needWeapon,
 	const FVector& selfLocation
 ) const
 {
+	auto const healthComponent = selfActor->FindComponentByClass<UHealthComponent>();
+	AssertIsNotNull(healthComponent);
+
+	auto const weaponManagerComponent = selfActor->FindComponentByClass<UWeaponManagerComponent>();
+	AssertIsNotNull(weaponManagerComponent);
+
+	auto const isNeedHealth = IsNeedHealth(healthComponent);
+	auto const isNeedWeapon = IsNeedWeapon(weaponManagerComponent);
+
 	auto const currentPickupActor = blackboardComponent->GetValueAsObject(_pickupActorKeyName);
-	if(currentPickupActor)
+	if (currentPickupActor)
 	{
 		auto const pickupItem = Cast<APickupItem>(currentPickupActor);
 		AssertIsNotNull(pickupItem);
-		auto const canTakePickup = CanTakePickup(needHealth, needWeapon, pickupItem);
-		if(canTakePickup)
+		auto const isPickupValid = IsPickupValid(pickupItem);
+		if (isPickupValid)
 		{
-			return;
+			auto const canTakePickup = CanTakePickup(pickupItem, isNeedHealth, isNeedWeapon);
+			if(canTakePickup)
+			{
+				return;
+			}
 		}
 	}
 
-	if (_pickupItems.Num() <= 0)
+	auto const pickupsCount = _pickupItems.Num();
+	if (pickupsCount <= 0)
 	{
 		blackboardComponent->SetValueAsObject(_pickupActorKeyName, nullptr);
 		return;
 	}
 
 	float closestDistance = INT_MAX;
-	APickupItem* closestPickupItem = nullptr;
+	APickupItem* targetPickupItem = nullptr;
 
 	for (auto const pickupItem : _pickupItems)
 	{
+		auto const canTakePickup = CanTakePickup(pickupItem, isNeedHealth, isNeedWeapon);
+		if (!canTakePickup)
+		{
+			continue;
+		}
+
 		auto const squaredDistance = (pickupItem->GetActorLocation() - selfLocation).SizeSquared();
 
 		if (closestDistance > squaredDistance)
 		{
 			closestDistance = squaredDistance;
-			closestPickupItem = pickupItem;
+			targetPickupItem = pickupItem;
 		}
 	}
-	blackboardComponent->SetValueAsObject(_pickupActorKeyName, closestPickupItem);
+
+	blackboardComponent->SetValueAsObject(_pickupActorKeyName, targetPickupItem);
 }
 
 AAvatar* UAvatarBTService::GetCurrentEnemy(
@@ -324,13 +412,13 @@ FVector UAvatarBTService::GetActorTraceLocation(AActor* thisActor) const
 	return traceLocation;
 }
 
-bool UAvatarBTService::IsInLineOfSight(AActor* leftActor, AActor* rightActor)
+bool UAvatarBTService::IsInLineOfSight(AActor* selfActor, AActor* otherActor)
 {
-	auto const thisActorLocation = GetActorTraceLocation(leftActor);
-	auto const otherActorLocation = GetActorTraceLocation(rightActor);
+	auto const thisActorLocation = GetActorTraceLocation(selfActor);
+	auto const otherActorLocation = GetActorTraceLocation(otherActor);
 
 	FCollisionQueryParams collisionQueryParams;
-	collisionQueryParams.AddIgnoredActor(leftActor);
+	collisionQueryParams.AddIgnoredActor(selfActor);
 	auto const isHitted = GetWorld()->LineTraceSingleByChannel(
 		_hitResult,
 		thisActorLocation,
@@ -340,7 +428,7 @@ bool UAvatarBTService::IsInLineOfSight(AActor* leftActor, AActor* rightActor)
 	);
 
 	//DrawDebugLine(GetWorld(), thisActorLocation, otherActorLocation, FColor::Blue, false, 1);
-	auto const inLineOfSight = isHitted && rightActor == _hitResult.GetActor();
+	auto const inLineOfSight = isHitted && otherActor == _hitResult.GetActor();
 
 	return inLineOfSight;
 }
