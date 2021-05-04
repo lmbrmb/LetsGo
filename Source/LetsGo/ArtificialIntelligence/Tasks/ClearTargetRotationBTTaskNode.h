@@ -14,5 +14,5 @@ protected:
 	
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
-	FName _isTargetRotationValidKeyName = "IsTargetRotationValid";
+	FName _selfActorKeyName = "SelfActor";
 };

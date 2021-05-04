@@ -33,6 +33,12 @@ void AGunV2::SetFirePivot(USceneComponent* firePivot)
 	_firePivot = firePivot;
 }
 
+FVector AGunV2::GetTargetAimLocation() const
+{
+	auto const aimProvider = GetAimProvider();
+	return aimProvider ? aimProvider->GetTargetAimLocation() : FVector::ZeroVector;
+}
+
 void AGunV2::SetState(const GunState state)
 {
 	if (_state == state)

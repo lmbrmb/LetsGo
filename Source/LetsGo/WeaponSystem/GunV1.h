@@ -63,7 +63,10 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnAmmoLoaded();
-	
+
+	UFUNCTION(BlueprintCallable)
+	FVector GetTargetAimLocation() const;
+
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaSeconds) override;

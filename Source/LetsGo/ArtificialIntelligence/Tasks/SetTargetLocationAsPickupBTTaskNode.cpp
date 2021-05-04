@@ -1,6 +1,7 @@
 #include "SetTargetLocationAsPickupBTTaskNode.h"
 
 #include "BehaviorTree/BlackboardComponent.h"
+#include "LetsGo/Movement/BotMovementComponent.h"
 #include "LetsGo/Utils/AssertUtils.h"
 
 EBTNodeResult::Type USetTargetLocationAsPickupBTTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -18,10 +19,17 @@ EBTNodeResult::Type USetTargetLocationAsPickupBTTaskNode::ExecuteTask(UBehaviorT
 	auto const pickupActor = Cast<AActor>(pickupActorObject);
 	AssertIsNotNull(pickupActor, EBTNodeResult::Failed);
 
-	auto const enemyLocation = pickupActor->GetActorLocation();
-	blackboardComponent->SetValueAsVector(_targetLocationKeyName, enemyLocation);
-	blackboardComponent->SetValueAsBool(_isTargetLocationValidKeyName, true);
-	blackboardComponent->SetValueAsFloat(_locationToleranceSquaredKeyName, _locationToleranceSquared);
-	
+	auto const selfActorObject = blackboardComponent->GetValueAsObject(_selfActorKeyName);
+	AssertIsNotNull(selfActorObject, EBTNodeResult::Failed);
+
+	auto const selfActor = Cast<AActor>(selfActorObject);
+	AssertIsNotNull(selfActor, EBTNodeResult::Failed);
+
+	auto const selfBotMovementComponent = selfActor->FindComponentByClass<UBotMovementComponent>();
+	AssertIsNotNull(selfBotMovementComponent, EBTNodeResult::Failed);
+
+	auto const pickupLocation = pickupActor->GetActorLocation();
+	selfBotMovementComponent->SetTargetLocation(pickupLocation);
+
 	return EBTNodeResult::Succeeded;
 }

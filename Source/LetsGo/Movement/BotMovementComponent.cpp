@@ -1,5 +1,10 @@
 #include "BotMovementComponent.h"
 
+#include "DrawDebugHelpers.h"
+#include "NavigationSystem.h"
+#include "NavigationPath.h"
+#include "LetsGo/Logs/DevLogger.h"
+
 const FVector& UBotMovementComponent::GetTargetLocation() const
 {
 	return _targetLocation;
@@ -26,20 +31,20 @@ const FVector& UBotMovementComponent::GetTargetRotation() const
 	return _targetRotationLocation;
 }
 
-bool UBotMovementComponent::IsTargetRotationValid() const
-{
-	return _isTargetRotationLocationValid;
-}
-
-void UBotMovementComponent::SetTargetRotation(const FVector& targetRotationLocation)
+void UBotMovementComponent::SetTargetRotationAsLocation(const FVector& targetRotationLocation)
 {
 	_targetRotationLocation = targetRotationLocation;
-	_isTargetRotationLocationValid = true;
+	_rotationTarget = RotationTarget::Location;
+}
+
+void UBotMovementComponent::SetTargetRotationAsMovementDirection()
+{
+	_rotationTarget = RotationTarget::MovementDirection;
 }
 
 void UBotMovementComponent::ClearTargetRotation()
 {
-	_isTargetRotationLocationValid = false;
+	_rotationTarget = RotationTarget::None;
 }
 
 const FVector& UBotMovementComponent::GetMovementDirection() const
@@ -68,12 +73,56 @@ void UBotMovementComponent::ProcessInput()
 		_inputMovementDirection = FVector::ZeroVector;
 		return;
 	}
+
+	CalculateNextLocation();
+
+	if(!_isNextLocationValid)
+	{
+		_inputMovementDirection = FVector::ZeroVector;
+		return;
+	}
 	
-	auto const delta = _targetLocation - RootCollider->GetComponentLocation();
+	auto const delta = _nextLocation - RootCollider->GetComponentLocation();
 	auto direction = delta.GetSafeNormal();
 	direction = FVector::VectorPlaneProject(direction, FVector::UpVector);
 
 	_inputMovementDirection = direction.GetSafeNormal();
+}
+
+void UBotMovementComponent::CalculateNextLocation()
+{
+	if(!_isTargetLocationValid)
+	{
+		_isNextLocationValid = false;
+		return;
+	}
+	
+	auto const selfLocation = GetRootColliderLocation();
+	auto const world = GetWorld();
+	auto const navigationSystemV1 = UNavigationSystemV1::GetCurrent(world);
+	auto const navigationPath = navigationSystemV1->FindPathToLocationSynchronously(world, selfLocation, _targetLocation);
+
+	if (!navigationPath)
+	{
+		_isNextLocationValid = false;
+		return;
+	}
+
+	auto const navigationPathPointsCount = navigationPath->PathPoints.Num();
+	
+	if (navigationPathPointsCount < 2)
+	{
+		DevLogger::GetLoggingChannel()->LogValue(
+			"Navigation path points count is invalid. Points count:",
+			navigationPathPointsCount,
+			LogSeverity::Error
+		);
+		_isNextLocationValid = false;
+		return;
+	}
+	
+	_nextLocation = navigationPath->PathPoints[1];
+	_isNextLocationValid = true;
 }
 
 void UBotMovementComponent::CustomTick(const float deltaTime)
@@ -83,13 +132,22 @@ void UBotMovementComponent::CustomTick(const float deltaTime)
 
 void UBotMovementComponent::ProcessTargetRotation(const float deltaTime) const
 {
-	if (!_isTargetRotationLocationValid)
+	FVector rotationDirection;
+	switch (_rotationTarget)
 	{
-		return;
+		case RotationTarget::Location:
+			rotationDirection = (_targetRotationLocation - GetRootColliderLocation()).GetSafeNormal();
+			rotationDirection = FVector::VectorPlaneProject(rotationDirection, FVector::UpVector).GetSafeNormal();;
+			break;
+		case RotationTarget::MovementDirection:
+			rotationDirection = _inputMovementDirection;
+			break;
+		case RotationTarget::None:
+			return;
+		default:
+			DevLogger::GetLoggingChannel()->LogValue("Unknown RotationTarget state", static_cast<int>(_rotationTarget));
+			return;
 	}
-
-	auto rotationDirection = (_targetRotationLocation - GetRootColliderLocation()).GetSafeNormal();
-	rotationDirection = FVector::VectorPlaneProject(rotationDirection, FVector::UpVector).GetSafeNormal();;
 	ProcessActorRotation(deltaTime, rotationDirection);
 }
 

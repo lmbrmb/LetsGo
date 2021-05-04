@@ -1,6 +1,7 @@
 #include "ClearTargetRotationBTTaskNode.h"
 
 #include "BehaviorTree/BlackboardComponent.h"
+#include "LetsGo/Movement/BotMovementComponent.h"
 #include "LetsGo/Utils/AssertUtils.h"
 
 EBTNodeResult::Type UClearTargetRotationBTTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -8,7 +9,16 @@ EBTNodeResult::Type UClearTargetRotationBTTaskNode::ExecuteTask(UBehaviorTreeCom
 	auto const blackboardComponent = OwnerComp.GetBlackboardComponent();
 	AssertIsNotNull(blackboardComponent, EBTNodeResult::Failed);
 
-	blackboardComponent->SetValueAsBool(_isTargetRotationValidKeyName, false);
+	auto const selfActorObject = blackboardComponent->GetValueAsObject(_selfActorKeyName);
+	AssertIsNotNull(selfActorObject, EBTNodeResult::Failed);
+
+	auto const selfActor = Cast<AActor>(selfActorObject);
+	AssertIsNotNull(selfActor, EBTNodeResult::Failed);
+
+	auto const selfBotMovementComponent = selfActor->FindComponentByClass<UBotMovementComponent>();
+	AssertIsNotNull(selfBotMovementComponent, EBTNodeResult::Failed);
+
+	selfBotMovementComponent->ClearTargetRotation();
 
 	return EBTNodeResult::Succeeded;
 }

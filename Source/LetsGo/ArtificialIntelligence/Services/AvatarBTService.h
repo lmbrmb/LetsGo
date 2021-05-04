@@ -36,12 +36,6 @@ private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
 	FName _isEnemyInLineOfSightKeyName = "IsEnemyInLineOfSight";
 
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
-	FName _shouldChangeWeaponKeyName = "ShouldChangeWeapon";
-
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
-	FName _canChangeWeaponKeyName = "CanChangeWeapon";
-
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Trace)
 	float _detectionRadius = 2000;
 
@@ -71,55 +65,55 @@ private:
 
 	TArray<FHitResult> _hitResults;
 
+	TArray<AAvatar*> _enemies;
+
+	TArray<APickupItem*> _pickupItems;
+
 	void Update(UBlackboardComponent* blackboardComponent);
 
-	void UpdateWeapon(UBlackboardComponent* blackboardComponent, AActor* selfActor);
+	static bool IsNeedHealth(UHealthComponent* healthComponent);
 
-	bool ShouldChangeWeapon(UWeaponManagerComponent* weaponManagerComponent);
+	bool IsNeedWeapon(UWeaponManagerComponent* weaponManagerComponent);
 
 	bool IsLowTierWeapon(IWeapon* weapon) const;
-	
+
 	bool IsEnoughAmmo(IGun* gun);
-	
-	bool CanChangeWeapon(UWeaponManagerComponent* weaponManagerComponent);
-	
+
 	void Detect(
-		UBlackboardComponent* blackboardComponent,
 		AAvatar* selfAvatar,
-		UHealthComponent* healthComponent,
 		const FVector& selfLocation,
-		TArray<AAvatar*>& enemies,
-		TArray<APickupItem*>& pickupItems
+		const bool needHealth,
+		const bool needWeapon
 	);
 	
 	bool TryProcessEnemy(
 		AActor* otherActor,
-		const TeamId& selfTeamId,
-		TArray<AAvatar*>& enemies
-	) const;
+		const TeamId& selfTeamId
+	);
 
 	bool TryProcessPickup(
-		const bool isHealthBelowNormal,
-		AActor* otherActor,
-		TArray<APickupItem*>& pickupItems
-	) const;
+		const bool needHealth,
+		const bool needWeapon,
+		AActor* otherActor
+	);
 
 	bool CanTakePickup(
-		const bool isHealthBelowNormal,
+		const bool needHealth,
+		const bool needWeapon,
 		const APickupItem* pickupItem
 	) const;
 	
 	void UpdateEnemy(
 		UBlackboardComponent* blackboardComponent,
 		AAvatar* selfAvatar,
-		const FVector& selfLocation,
-		TArray<AAvatar*>& enemies
+		const FVector& selfLocation
 	);
 
 	void UpdatePickup(
 		UBlackboardComponent* blackboardComponent,
-		const FVector& selfLocation,
-		TArray<APickupItem*>& pickupItems
+		const bool needHealth,
+		const bool needWeapon,
+		const FVector& selfLocation
 	) const;
 	
 	AAvatar* GetCurrentEnemy(

@@ -23,7 +23,7 @@ private:
 	FName _isEnemyInLineOfSightKeyName = "IsEnemyInLineOfSight";
 	
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Aim)
-	FVector _avatarCenterOffset = FVector::UpVector * 100;
+	FVector _avatarCenterOffset = FVector::UpVector * 50;
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Aim)
 	float _minAimDotStartFire = 0.98f;

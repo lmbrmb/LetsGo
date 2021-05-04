@@ -11,8 +11,8 @@ class LETSGO_API UClearTargetLocationBTTaskNode : public UBTTaskNode
 
 protected:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
-	
+
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
-	FName _isTargetLocationValidKeyName = "IsTargetLocationValid";
+	FName _selfActorKeyName = "SelfActor";
 };

@@ -58,7 +58,10 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnBulletTraced(const bool isDamaged, const FHitResult& hitResult);
-	
+
+	UFUNCTION(BlueprintCallable)
+	FVector GetTargetAimLocation() const;
+
 private:
 	const int UNDEFINED_TIME = -1.0f;
 	

@@ -15,5 +15,16 @@ FName APickupItem::GetId() const
 void APickupItem::Take()
 {
 	Taken.Broadcast(this);
+	_isTaken = true;
 	BpOnTaken();
+}
+
+bool APickupItem::IsTaken() const
+{
+	return _isTaken;
+}
+
+void APickupItem::ResetTaken()
+{
+	_isTaken = false;
 }

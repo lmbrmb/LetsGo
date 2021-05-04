@@ -11,17 +11,8 @@ class LETSGO_API USetTargetRotationAsMovementDirectionBTTaskNode : public UBTTas
 
 protected:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
-	
+
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
-	FName _targetLocationKeyName = "TargetLocation";
-
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
-	FName _isTargetLocationValidKeyName = "IsTargetLocationValid";
-	
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
-	FName _targetRotationKeyName = "TargetRotation";
-
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
-	FName _isTargetRotationValidKeyName = "IsTargetRotationValid";
+	FName _selfActorKeyName = "SelfActor";
 };

@@ -54,10 +54,10 @@ private:
 	float _actorMoveBackwardSpeed = 350.0f;
 	
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
-	float _actorYawSpeed = 180.0f;
+	float _actorYawSpeed = 90.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
-	float _cameraPitchSpeed = 180.0f;
+	float _cameraPitchSpeed = 90.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
 	float _cameraPitchMin = -70.0f;

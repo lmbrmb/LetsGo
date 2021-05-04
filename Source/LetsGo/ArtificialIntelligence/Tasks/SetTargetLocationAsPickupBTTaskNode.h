@@ -18,18 +18,4 @@ private:
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
 	FName _pickupActorKeyName = "PickupActor";
-
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
-	FName _targetLocationKeyName = "TargetLocation";
-
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
-	FName _isTargetLocationValidKeyName = "IsTargetLocationValid";
-
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
-	FName _locationToleranceSquaredKeyName = "LocationToleranceSquared";
-
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
-	float _locationTolerance = 10;
-
-	float _locationToleranceSquared = _locationTolerance * _locationTolerance;
 };

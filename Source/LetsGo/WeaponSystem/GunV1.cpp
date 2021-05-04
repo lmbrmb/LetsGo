@@ -23,6 +23,12 @@ void AGunV1::SetFirePivot(USceneComponent* firePivot)
 	_firePivot = firePivot;
 }
 
+FVector AGunV1::GetTargetAimLocation() const
+{
+	auto const aimProvider = GetAimProvider();
+	return aimProvider ? aimProvider->GetTargetAimLocation() : FVector::ZeroVector;
+}
+
 void AGunV1::BeginPlay()
 {
 	Super::BeginPlay();

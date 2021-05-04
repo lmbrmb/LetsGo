@@ -108,6 +108,7 @@ void APickupSpawnPoint::RequestSpawnPickupAfterDelay(const float delay)
 
 void APickupSpawnPoint::ActivatePickup() const
 {
+	_pickupItem->ResetTaken();
 	ActorUtils::SetEnabled(_pickupItem, true);
 }
 
