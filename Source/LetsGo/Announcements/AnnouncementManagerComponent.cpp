@@ -39,9 +39,6 @@ void UAnnouncementManagerComponent::BeginPlay()
 
 	AnnouncementManagerFactory announcementManagerFactory;
 	announcementManagerFactory.SetTimings(
-		_matchWarmUpAnnouncementDuration,
-		_matchStartAnnouncementDuration,
-		_matchEndAnnouncementDuration,
 		_firstAnnouncementDelay,
 		_announcementDuration
 	);

@@ -12,16 +12,10 @@ AnnouncementManagerFactory::AnnouncementManagerFactory()
 }
 
 void AnnouncementManagerFactory::SetTimings(
-	const float matchWarmUpAnnouncementDuration,
-	const float matchStartAnnouncementDuration,
-	const float matchEndAnnouncementDuration,
 	const float firstAnnouncementDelay,
 	const float announcementDuration
 )
 {
-	_matchWarmUpAnnouncementDuration = matchWarmUpAnnouncementDuration;
-	_matchStartAnnouncementDuration = matchStartAnnouncementDuration;
-	_matchEndAnnouncementDuration = matchEndAnnouncementDuration;
 	_firstAnnouncementDelay = firstAnnouncementDelay;
 	_announcementDuration = announcementDuration;
 }
@@ -42,9 +36,6 @@ IAnnouncementManager* AnnouncementManagerFactory::Create(
 		_leadAnnouncementFactory
 	);
 	announcementManager->SetTimings(
-		_matchWarmUpAnnouncementDuration,
-		_matchStartAnnouncementDuration,
-		_matchEndAnnouncementDuration,
 		_firstAnnouncementDelay,
 		_announcementDuration
 	);

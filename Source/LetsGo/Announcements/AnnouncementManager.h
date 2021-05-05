@@ -29,9 +29,6 @@ public:
 	);
 
 	void SetTimings(
-		const float matchWarmUpAnnouncementDuration,
-		const float matchStartAnnouncementDuration,
-		const float matchEndAnnouncementDuration,
 		const float firstAnnouncementDelay,
 		const float announcementDuration
 	);
@@ -56,15 +53,14 @@ private:
 
 	PlayerId _playerId;
 
-	float _matchWarmUpAnnouncementDuration = 0.0f;
-
-	float _matchStartAnnouncementDuration = 0.0f;
-
-	float _matchEndAnnouncementDuration = 0.0f;
-
+	/// <summary>
+	/// Delay if there's no announcements in queue.
+	/// </summary>
 	float _firstAnnouncementDelay = 0.0f;
 
 	float _announcementDuration = 0.0f;
+
+	float _nextAnnouncementTime = -1.0f;
 
 	FragAnnouncementFactory* _fragAnnouncementFactory = nullptr;
 

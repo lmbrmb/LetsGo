@@ -29,16 +29,10 @@ void AnnouncementManager::SetFactories(
 }
 
 void AnnouncementManager::SetTimings(
-	const float matchWarmUpAnnouncementDuration,
-	const float matchStartAnnouncementDuration,
-	const float matchEndAnnouncementDuration,
 	const float firstAnnouncementDelay,
 	const float announcementDuration
 )
 {
-	_matchWarmUpAnnouncementDuration = matchWarmUpAnnouncementDuration;
-	_matchStartAnnouncementDuration = matchStartAnnouncementDuration;
-	_matchEndAnnouncementDuration = matchEndAnnouncementDuration;
 	_firstAnnouncementDelay = firstAnnouncementDelay;
 	_announcementDuration = announcementDuration;
 }
@@ -175,9 +169,23 @@ void AnnouncementManager::CreateFragAnnouncement(
 
 void AnnouncementManager::AddAnnouncement(IAnnouncement* announcement)
 {
-	auto const wasEmpty = _announcements.IsEmpty();
 	_announcements.Enqueue(announcement);
-	auto const delay = wasEmpty ? _firstAnnouncementDelay : _announcementDuration;
+
+	auto const now = _matchGameMode->GetWorld()->GetTimeSeconds();
+
+	float delay;
+
+	if(_nextAnnouncementTime < now)
+	{
+		delay = _firstAnnouncementDelay;
+		_nextAnnouncementTime = now + delay + _announcementDuration;
+	}
+	else
+	{
+		delay = _nextAnnouncementTime - now;
+		_nextAnnouncementTime += _announcementDuration;
+	}
+
 	CreateAnnouncementTask(delay);
 }
 

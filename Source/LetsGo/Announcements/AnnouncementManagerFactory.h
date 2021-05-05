@@ -15,9 +15,6 @@ public:
 	AnnouncementManagerFactory();
 
 	void SetTimings(
-		const float matchWarmUpAnnouncementDuration,
-		const float matchStartAnnouncementDuration,
-		const float matchEndAnnouncementDuration,
 		const float firstAnnouncementDelay,
 		const float announcementDuration
 	);
@@ -39,12 +36,6 @@ private:
 	MatchEndAnnouncementFactory* _matchEndAnnouncementFactory = nullptr;
 
 	LeadAnnouncementFactory* _leadAnnouncementFactory = nullptr;
-
-	float _matchWarmUpAnnouncementDuration = 0.0f;
-
-	float _matchStartAnnouncementDuration = 0.0f;
-
-	float _matchEndAnnouncementDuration = 0.0f;
 
 	float _firstAnnouncementDelay = 0.0f;
 
