@@ -212,6 +212,9 @@ void UWeaponManagerComponent::RequestEquipWeapon(const int weaponIndex)
 
 void UWeaponManagerComponent::EquipWeaponOnRequestReady()
 {
+	auto const weaponsCount = _weapons.Num();
+	AssertIsGreater(weaponsCount, 0);
+
 	if (_equipWeaponRequestReadyHandle.IsValid())
 	{
 		AssertIsNotNull(_weapon);
@@ -221,7 +224,8 @@ void UWeaponManagerComponent::EquipWeaponOnRequestReady()
 
 	HolsterWeapon();
 
-	if(_weaponEquipDuration > 0)
+	auto const shouldWait = _weaponEquipDuration > 0 && weaponsCount > 1;
+	if(shouldWait)
 	{
 		GetWorld()->GetTimerManager().SetTimer(
 			_equipWeaponTimerHandle,
@@ -412,6 +416,12 @@ bool UWeaponManagerComponent::TryProcessItem(Item* item)
 	return false;
 }
 
+/// <summary>
+/// Creates gun if not exist in weapons collection.
+/// Adds ammo if already have this gun.
+/// Can carry only one weapon of type.
+///	Equip gun if should.
+/// </summary>
 bool UWeaponManagerComponent::TryProcessItemAsGun(Item* item)
 {
 	auto const gunItem = dynamic_cast<GunItem*>(item);
@@ -420,23 +430,22 @@ bool UWeaponManagerComponent::TryProcessItemAsGun(Item* item)
 		return false;
 	}
 
-	// Can carry only one gun of type
-	// Add ammo if already have this gun
 	auto const gunId = gunItem->GetId();
 	auto const ammoId = gunItem->GetAmmoId();
-	auto haveThisWeapon = false;
 	auto haveGunWithSameAmmo = false;
+	int weaponIndex = UNDEFINED_INDEX;
+	auto const weaponsCount = _weapons.Num();
+	auto const noWeapons = weaponsCount <= 0;
 
-	auto const gunsCount = _guns.Num();
-	for (auto i = 0; i < gunsCount; i++)
+	for (auto i = 0; i < weaponsCount; i++)
 	{
 		auto const weapon = _weapons[i];
 		
 		if (weapon->GetWeaponId().GetId() == gunId)
 		{
-			haveThisWeapon = true;
+			weaponIndex = i;
 		}
-		
+
 		auto const gun = _guns[i];
 		if(!gun)
 		{
@@ -449,41 +458,40 @@ bool UWeaponManagerComponent::TryProcessItemAsGun(Item* item)
 		}
 	}
 
-	if (haveThisWeapon || haveGunWithSameAmmo)
+	if (haveGunWithSameAmmo)
 	{
 		auto const ammoItem = _ammoItemFactory->Get(ammoId);
 		TryProcessItemAsAmmo(ammoItem);
 	}
 
-	if(haveThisWeapon)
+	auto const gunIsNotFound = weaponIndex == UNDEFINED_INDEX;
+	if (gunIsNotFound)
 	{
-		return true;
+		auto const gunActor = CreateGun(gunItem);
+
+		if (!gunActor)
+		{
+			return false;
+		}
+
+		ActorUtils::SetEnabled(gunActor, false);
+
+		// No null check, CreateGun already checked that created gun is IGun
+		auto const gun = dynamic_cast<IGun*>(gunActor);
+		weaponIndex = _weapons.Add(gun);
+		_guns.Add(gun);
+		_weaponActors.Add(gunActor);
 	}
-	
-	auto const gunActor = CreateGun(gunItem);
 
-	if(!gunActor)
+	auto const currentWeaponIsDifferent = GetCurrentWeaponId() != gunId;
+	auto const shouldEquipWeapon = noWeapons || (_shouldEquipWeaponOnPickup && currentWeaponIsDifferent);
+
+	if (shouldEquipWeapon)
 	{
-		return false;
-	}
-
-	// No null check, CreateGun already checked that created gun is IGun
-	auto const noWeapons = _weapons.Num() <= 0;
-	auto const gun = dynamic_cast<IGun*>(gunActor);
-	_weapons.Add(gun);
-	_guns.Add(gun);
-	
-	auto const weaponIndex = _weaponActors.Add(gunActor);
-
-	if (noWeapons || _shouldEquipWeaponOnPickup)
-	{
+		AssertIsNotEqual(weaponIndex, UNDEFINED_INDEX, true);
 		RequestEquipWeapon(weaponIndex);
 	}
-	else
-	{
-		ActorUtils::SetEnabled(gunActor, false);
-	}
-	
+
 	return true;
 }
 
