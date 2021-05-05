@@ -16,12 +16,6 @@ private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
 	FName _selfActorKeyName = "SelfActor";
 
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
-	FName _randomLocationKeyName = "RandomLocation";
-
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
-	FName _isRandomLocationValidKeyName = "IsRandomLocationValid";
-
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Navigation)
 	float _locationTolerance = 100;
 

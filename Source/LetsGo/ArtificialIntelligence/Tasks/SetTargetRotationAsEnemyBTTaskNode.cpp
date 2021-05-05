@@ -12,14 +12,6 @@ EBTNodeResult::Type USetTargetRotationAsEnemyBTTaskNode::ExecuteTask(UBehaviorTr
 
 	auto const enemyActorObject = blackboardComponent->GetValueAsObject(_enemyActorKeyName);
 
-	if(!enemyActorObject)
-	{
-		return EBTNodeResult::Failed;
-	}
-
-	auto const enemyActor = Cast<AActor>(enemyActorObject);
-	AssertIsNotNull(enemyActor, EBTNodeResult::Failed);
-
 	auto const selfActorObject = blackboardComponent->GetValueAsObject(_selfActorKeyName);
 	AssertIsNotNull(selfActorObject, EBTNodeResult::Failed);
 
@@ -28,6 +20,15 @@ EBTNodeResult::Type USetTargetRotationAsEnemyBTTaskNode::ExecuteTask(UBehaviorTr
 
 	auto const selfBotMovementComponent = selfActor->FindComponentByClass<UBotMovementComponent>();
 	AssertIsNotNull(selfBotMovementComponent, EBTNodeResult::Failed);
+
+	if(!enemyActorObject)
+	{
+		selfBotMovementComponent->ClearTargetRotation();
+		return EBTNodeResult::Failed;
+	}
+
+	auto const enemyActor = Cast<AActor>(enemyActorObject);
+	AssertIsNotNull(enemyActor, EBTNodeResult::Failed);
 
 	auto const enemyLocation = enemyActor->GetActorLocation();
 	selfBotMovementComponent->SetTargetRotationAsLocation(enemyLocation);

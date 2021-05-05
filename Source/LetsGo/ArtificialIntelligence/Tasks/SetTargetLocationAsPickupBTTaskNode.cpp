@@ -9,16 +9,6 @@ EBTNodeResult::Type USetTargetLocationAsPickupBTTaskNode::ExecuteTask(UBehaviorT
 	auto const blackboardComponent = OwnerComp.GetBlackboardComponent();
 	AssertIsNotNull(blackboardComponent, EBTNodeResult::Failed);
 
-	auto const pickupActorObject = blackboardComponent->GetValueAsObject(_pickupActorKeyName);
-
-	if (!pickupActorObject)
-	{
-		return EBTNodeResult::Failed;
-	}
-
-	auto const pickupActor = Cast<AActor>(pickupActorObject);
-	AssertIsNotNull(pickupActor, EBTNodeResult::Failed);
-
 	auto const selfActorObject = blackboardComponent->GetValueAsObject(_selfActorKeyName);
 	AssertIsNotNull(selfActorObject, EBTNodeResult::Failed);
 
@@ -27,6 +17,16 @@ EBTNodeResult::Type USetTargetLocationAsPickupBTTaskNode::ExecuteTask(UBehaviorT
 
 	auto const selfBotMovementComponent = selfActor->FindComponentByClass<UBotMovementComponent>();
 	AssertIsNotNull(selfBotMovementComponent, EBTNodeResult::Failed);
+
+	auto const pickupActorObject = blackboardComponent->GetValueAsObject(_pickupActorKeyName);
+	if (!pickupActorObject)
+	{
+		selfBotMovementComponent->ClearTargetLocation();
+		return EBTNodeResult::Failed;
+	}
+
+	auto const pickupActor = Cast<AActor>(pickupActorObject);
+	AssertIsNotNull(pickupActor, EBTNodeResult::Failed);
 
 	auto const pickupLocation = pickupActor->GetActorLocation();
 	selfBotMovementComponent->SetTargetLocation(pickupLocation);

@@ -3,7 +3,6 @@
 #include "PickupItem.h"
 #include "LetsGo/GameModes/MatchGameMode.h"
 #include "LetsGo/Utils/AssertUtils.h"
-#include "LetsGo/Utils/AssetUtils.h"
 
 UPickupSpawnComponent::UPickupSpawnComponent()
 {
@@ -29,11 +28,14 @@ void UPickupSpawnComponent::SpawnPickup(const FName& id, const FVector& location
 	auto const pickupItemBlueprintGeneratedClass = _pickupItemFactory->GetOrLoad(id);
 	AssertIsNotNull(pickupItemBlueprintGeneratedClass);
 
-	AssetUtils::SpawnBlueprint<APickupItem>(
-		GetWorld(),
-		nullptr,
+	FActorSpawnParameters spawnParams;
+	spawnParams.Owner = nullptr;
+	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	GetWorld()->SpawnActor<AActor>(
 		pickupItemBlueprintGeneratedClass,
-		ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn,
-		location
+		location,
+		FRotator::ZeroRotator,
+		spawnParams
 		);
 }

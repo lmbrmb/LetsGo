@@ -17,15 +17,18 @@ EBTNodeResult::Type USetTargetLocationAsRandomBTTaskNode::ExecuteTask(UBehaviorT
 	auto const selfActor = Cast<AActor>(selfActorObject);
 	AssertIsNotNull(selfActor, EBTNodeResult::Failed);
 
+	auto const selfBotMovementComponent = selfActor->FindComponentByClass<UBotMovementComponent>();
+	AssertIsNotNull(selfBotMovementComponent, EBTNodeResult::Failed);
+
 	auto const selfLocation = selfActor->GetActorLocation();
 
-	auto const isRandomLocationValid = blackboardComponent->GetValueAsBool(_isRandomLocationValidKeyName);
-	if(isRandomLocationValid)
+	auto const isTargetLocationValid = selfBotMovementComponent->IsTargetLocationValid();
+	if(isTargetLocationValid)
 	{
-		auto const blackboardRandomLocation = blackboardComponent->GetValueAsVector(_randomLocationKeyName);
-		auto const distanceSquared = FVector::DistSquared(selfLocation, blackboardRandomLocation);
+		auto const targetLocation = selfBotMovementComponent->GetTargetLocation();
+		auto const distanceSquared = FVector::DistSquared(selfLocation, targetLocation);
 
-		//DrawDebugSphere(GetWorld(), blackboardRandomLocation, 50, 10, FColor::Red, false, 0.25f);
+		//DrawDebugSphere(GetWorld(), targetLocation, 50, 10, FColor::Red, false, 0.25f);
 		
 		if(distanceSquared > _locationToleranceSquared)
 		{
@@ -38,18 +41,11 @@ EBTNodeResult::Type USetTargetLocationAsRandomBTTaskNode::ExecuteTask(UBehaviorT
 
 	if(!navigationSystemV1->GetRandomReachablePointInRadius(selfLocation, _randomRadius, _navLocation))
 	{
-		blackboardComponent->SetValueAsBool(_isRandomLocationValidKeyName, false);
+		selfBotMovementComponent->ClearTargetLocation();
 		return EBTNodeResult::Failed;
 	}
 
 	auto const randomLocation = _navLocation.Location;
-	
-	blackboardComponent->SetValueAsVector(_randomLocationKeyName, randomLocation);
-	blackboardComponent->SetValueAsBool(_isRandomLocationValidKeyName, true);
-
-	auto const selfBotMovementComponent = selfActor->FindComponentByClass<UBotMovementComponent>();
-	AssertIsNotNull(selfBotMovementComponent, EBTNodeResult::Failed);
-	
 	selfBotMovementComponent->SetTargetLocation(randomLocation);
 
 	return EBTNodeResult::Succeeded;
