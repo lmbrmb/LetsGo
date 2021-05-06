@@ -1,6 +1,7 @@
 #include "HealthManagerComponent.h"
 
 #include "Components/ShapeComponent.h"
+#include "LetsGo/Movement/BotMovementComponent.h"
 #include "LetsGo/Utils/AssertUtils.h"
 #include "LetsGo/WeaponSystem/WeaponManagerComponent.h"
 
@@ -117,6 +118,14 @@ void UHealthManagerComponent::OnDied()
 	AssertIsNotNull(controller);
 
 	controller->UnPossess();
+
+	// Disable movement
+	auto const botMovementComponent = owner->FindComponentByClass<UBotMovementComponent>();
+	if(botMovementComponent)
+	{
+		botMovementComponent->ClearTargetLocation();
+		botMovementComponent->ClearTargetRotation();
+	}
 }
 
 void UHealthManagerComponent::OnInjured()
