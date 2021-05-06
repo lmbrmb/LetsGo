@@ -23,6 +23,12 @@ Mouse Vertical Axis - look up/down
 Mouse Horizontal Axis - turn left / right
 Escape - Quit to main menu
 
+#### Weapon shortcuts
+2 - Machinegun
+3 - Shotgun
+4, Q - RocketLauncher
+5, R - Railgun
+
 ### PlayStation 4 controller
 Left stick Vertical Axis - move forward / backward
 Left stick Horizontal Axis - strafe left / right

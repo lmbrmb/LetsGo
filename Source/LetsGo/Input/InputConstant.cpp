@@ -14,9 +14,17 @@ const FName InputConstant::ActionPrimaryFire = FName("PrimaryFire");
 
 const FName InputConstant::ActionReload = FName("Reload");
 
-const FName InputConstant::ActionNextWeapon = FName("NextWeapon");
+const FName InputConstant::ActionEquipNextWeapon = FName("EquipNextWeapon");
 
-const FName InputConstant::ActionPreviousWeapon = FName("PreviousWeapon");
+const FName InputConstant::ActionEquipPreviousWeapon = FName("EquipPreviousWeapon");
+
+const FName InputConstant::ActionEquipMachinegun = FName("EquipMachinegun");
+
+const FName InputConstant::ActionEquipShotgun = FName("EquipShotgun");
+
+const FName InputConstant::ActionEquipRocketLauncher = FName("EquipRocketLauncher");
+
+const FName InputConstant::ActionEquipRailgun = FName("EquipRailgun");
 
 const FName InputConstant::ActionChangeWeaponPivot = FName("ChangeWeaponPivot");
 

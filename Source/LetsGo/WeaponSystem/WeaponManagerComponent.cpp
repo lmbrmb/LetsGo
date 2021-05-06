@@ -104,30 +104,29 @@ void UWeaponManagerComponent::HolsterWeapon()
 
 void UWeaponManagerComponent::NextWeapon()
 {
-	TryEquipNextUsableWeapon(1);
+	EquipNextUsableWeapon(1);
 }
 
 void UWeaponManagerComponent::PreviousWeapon()
 {
-	TryEquipNextUsableWeapon(-1);
+	EquipNextUsableWeapon(-1);
 }
 
-bool UWeaponManagerComponent::ChangeWeapon(const int indexModifier)
+void UWeaponManagerComponent::ChangeWeapon(const int indexModifier)
 {
-	return TryEquipNextUsableWeapon(indexModifier);
+	EquipNextUsableWeapon(indexModifier);
 }
 
-bool UWeaponManagerComponent::TryEquipNextUsableWeapon(const int indexModifier)
+void UWeaponManagerComponent::ChangeWeapon(const FName& weaponId)
+{
+	auto const weaponIndex = GetWeaponIndex(weaponId);
+	RequestEquipWeapon(weaponIndex);
+}
+
+void UWeaponManagerComponent::EquipNextUsableWeapon(const int indexModifier)
 {
 	auto const nextUsableWeaponIndex = GetNextUsableWeaponIndex(indexModifier);
-
-	if(nextUsableWeaponIndex == UNDEFINED_INDEX)
-	{
-		return false;
-	}
-	
 	RequestEquipWeapon(nextUsableWeaponIndex);
-	return true;
 }
 
 bool UWeaponManagerComponent::IsChangingWeapon() const
@@ -176,16 +175,16 @@ int UWeaponManagerComponent::GetNextUsableWeaponIndex(const int indexModifier) c
 		nextWeaponIndex += indexModifier;
 	}
 
-	if (nextWeaponIndex == _weaponIndex)
-	{
-		return UNDEFINED_INDEX;
-	}
-
 	return canChangeWeapon ? nextWeaponIndex : UNDEFINED_INDEX;
 }
 
 void UWeaponManagerComponent::RequestEquipWeapon(const int weaponIndex)
 {
+	if (weaponIndex == UNDEFINED_INDEX || _weaponIndex == weaponIndex)
+	{
+		return;
+	}
+
 	if(IsChangingWeapon())
 	{
 		return;
@@ -687,10 +686,27 @@ void UWeaponManagerComponent::OnOutOfAmmo()
 {
 	BpOnOutOfAmmo();
 
-	auto const isWeaponChanged = TryEquipNextUsableWeapon(1);
+	auto const weaponIndex = _weaponIndex;
+	EquipNextUsableWeapon(1);
 
-	if(!isWeaponChanged)
+	if(weaponIndex == _weaponIndex && !IsChangingWeapon())
 	{
 		_isFireStarted = false;
 	}
+}
+
+int UWeaponManagerComponent::GetWeaponIndex(const FName& weaponId)
+{
+	auto const weaponsCount = _weapons.Num();
+	for (auto i = 0; i < weaponsCount; i++)
+	{
+		auto const weapon = _weapons[i];
+
+		if (weapon->GetWeaponId().GetId() == weaponId)
+		{
+			return i;
+		}
+	}
+
+	return UNDEFINED_INDEX;
 }

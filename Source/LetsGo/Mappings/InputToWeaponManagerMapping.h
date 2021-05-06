@@ -19,13 +19,33 @@ protected:
 	virtual void Map() override;
 
 private:
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
+	FName _machinegunId = "MachinegunQ3";
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
+	FName _shotgunId = "ShotgunQ3";
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
+	FName _rocketLauncherId = "RocketLauncherQ3";
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
+	FName _railgunId = "RailgunQ3";
+
 	int _lastDpadHorizontalAxisValue = 0;
 
 	UWeaponManagerComponent* _weaponManagerComponent = nullptr;
 
 	UInputComponent* _inputComponent = nullptr;
 
-	void ChangeWeaponDpad(const float rawAxisValue);
+	void OnChangeWeaponDpad(const float rawAxisValue);
+
+	void OnEquipMachinegun();
+
+	void OnEquipShotgun();
+
+	void OnEquipRocketLauncher();
+
+	void OnEquipRailgun();
 
 	void OnOwnerDied(UHealthComponent* healthComponent, float delta) const;
 

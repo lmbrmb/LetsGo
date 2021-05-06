@@ -22,7 +22,7 @@ void UInputToWeaponManagerMapping::Map()
 	healthComponent->Died.AddUObject(this, &UInputToWeaponManagerMapping::OnOwnerDied);
 }
 
-void UInputToWeaponManagerMapping::ChangeWeaponDpad(const float rawAxisValue)
+void UInputToWeaponManagerMapping::OnChangeWeaponDpad(const float rawAxisValue)
 {
 	auto const axisValue = InputUtils::GetDpadHorizontalAxis(rawAxisValue);
 	if(_lastDpadHorizontalAxisValue != axisValue)
@@ -36,6 +36,30 @@ void UInputToWeaponManagerMapping::ChangeWeaponDpad(const float rawAxisValue)
 	}
 }
 
+// ReSharper disable once CppMemberFunctionMayBeConst
+void UInputToWeaponManagerMapping::OnEquipMachinegun()
+{
+	_weaponManagerComponent->ChangeWeapon(_machinegunId);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+void UInputToWeaponManagerMapping::OnEquipShotgun()
+{
+	_weaponManagerComponent->ChangeWeapon(_shotgunId);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+void UInputToWeaponManagerMapping::OnEquipRocketLauncher()
+{
+	_weaponManagerComponent->ChangeWeapon(_rocketLauncherId);
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+void UInputToWeaponManagerMapping::OnEquipRailgun()
+{
+	_weaponManagerComponent->ChangeWeapon(_railgunId);
+}
+
 void UInputToWeaponManagerMapping::OnOwnerDied(UHealthComponent* healthComponent, float delta) const
 {
 	Unbind();
@@ -44,7 +68,7 @@ void UInputToWeaponManagerMapping::OnOwnerDied(UHealthComponent* healthComponent
 void UInputToWeaponManagerMapping::Bind()
 {
 	_inputComponent->BindAxis(InputConstant::AxisChangeWeaponDpad,
-		this, &UInputToWeaponManagerMapping::ChangeWeaponDpad);
+		this, &UInputToWeaponManagerMapping::OnChangeWeaponDpad);
 	
 	_inputComponent->BindAction(InputConstant::ActionPrimaryFire, EInputEvent::IE_Pressed,
 		_weaponManagerComponent, &UWeaponManagerComponent::StartFire);
@@ -52,10 +76,18 @@ void UInputToWeaponManagerMapping::Bind()
 		_weaponManagerComponent, &UWeaponManagerComponent::StopFire);
 	_inputComponent->BindAction(InputConstant::ActionReload, EInputEvent::IE_Pressed,
 		_weaponManagerComponent, &UWeaponManagerComponent::Reload);
-	_inputComponent->BindAction(InputConstant::ActionPreviousWeapon, EInputEvent::IE_Pressed,
+	_inputComponent->BindAction(InputConstant::ActionEquipPreviousWeapon, EInputEvent::IE_Pressed,
 		_weaponManagerComponent, &UWeaponManagerComponent::PreviousWeapon);
-	_inputComponent->BindAction(InputConstant::ActionNextWeapon, EInputEvent::IE_Pressed,
+	_inputComponent->BindAction(InputConstant::ActionEquipNextWeapon, EInputEvent::IE_Pressed,
 		_weaponManagerComponent, &UWeaponManagerComponent::NextWeapon);
+	_inputComponent->BindAction(InputConstant::ActionEquipMachinegun, EInputEvent::IE_Pressed,
+		this, &UInputToWeaponManagerMapping::OnEquipMachinegun);
+	_inputComponent->BindAction(InputConstant::ActionEquipShotgun, EInputEvent::IE_Pressed,
+		this, &UInputToWeaponManagerMapping::OnEquipShotgun);
+	_inputComponent->BindAction(InputConstant::ActionEquipRocketLauncher, EInputEvent::IE_Pressed,
+		this, &UInputToWeaponManagerMapping::OnEquipRocketLauncher);
+	_inputComponent->BindAction(InputConstant::ActionEquipRailgun, EInputEvent::IE_Pressed,
+		this, &UInputToWeaponManagerMapping::OnEquipRailgun);
 	_inputComponent->BindAction(InputConstant::ActionChangeWeaponPivot, EInputEvent::IE_Pressed,
 		_weaponManagerComponent, &UWeaponManagerComponent::ChangeWeaponPivot);
 }
@@ -73,11 +105,14 @@ void UInputToWeaponManagerMapping::Unbind() const
 			_inputComponent->AxisBindings.RemoveAt(i);
 		}
 	}
-
 	_inputComponent->RemoveActionBinding(InputConstant::ActionPrimaryFire, EInputEvent::IE_Pressed);
 	_inputComponent->RemoveActionBinding(InputConstant::ActionPrimaryFire, EInputEvent::IE_Released);
 	_inputComponent->RemoveActionBinding(InputConstant::ActionReload, EInputEvent::IE_Pressed);
-	_inputComponent->RemoveActionBinding(InputConstant::ActionPreviousWeapon, EInputEvent::IE_Pressed);
-	_inputComponent->RemoveActionBinding(InputConstant::ActionNextWeapon, EInputEvent::IE_Pressed);
+	_inputComponent->RemoveActionBinding(InputConstant::ActionEquipPreviousWeapon, EInputEvent::IE_Pressed);
+	_inputComponent->RemoveActionBinding(InputConstant::ActionEquipNextWeapon, EInputEvent::IE_Pressed);
+	_inputComponent->RemoveActionBinding(InputConstant::ActionEquipMachinegun, EInputEvent::IE_Pressed);
+	_inputComponent->RemoveActionBinding(InputConstant::ActionEquipShotgun, EInputEvent::IE_Pressed);
+	_inputComponent->RemoveActionBinding(InputConstant::ActionEquipRocketLauncher, EInputEvent::IE_Pressed);
+	_inputComponent->RemoveActionBinding(InputConstant::ActionEquipRailgun, EInputEvent::IE_Pressed);
 	_inputComponent->RemoveActionBinding(InputConstant::ActionChangeWeaponPivot, EInputEvent::IE_Pressed);
 }

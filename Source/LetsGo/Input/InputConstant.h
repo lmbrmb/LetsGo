@@ -18,9 +18,17 @@ public:
 
 	static const FName ActionReload;
 
-	static const FName ActionNextWeapon;
+	static const FName ActionEquipNextWeapon;
 
-	static const FName ActionPreviousWeapon;
+	static const FName ActionEquipPreviousWeapon;
+
+	static const FName ActionEquipMachinegun;
+
+	static const FName ActionEquipShotgun;
+
+	static const FName ActionEquipRocketLauncher;
+
+	static const FName ActionEquipRailgun;
 
 	static const FName ActionChangeWeaponPivot;
 

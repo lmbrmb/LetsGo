@@ -56,7 +56,9 @@ public:
 
 	void PreviousWeapon();
 
-	bool ChangeWeapon(const int indexModifier);
+	void ChangeWeapon(const int indexModifier);
+
+	void ChangeWeapon(const FName& weaponId);
 
 	void ChangeWeaponPivot();
 
@@ -203,7 +205,7 @@ private:
 
 	AmmoProviderFactory* _ammoProviderFactory;
 
-	bool TryEquipNextUsableWeapon(const int indexModifier);
+	void EquipNextUsableWeapon(const int indexModifier);
 
 	int GetNextUsableWeaponIndex(const int indexModifier) const;
 
@@ -228,6 +230,8 @@ private:
 	void OnGunShotRequested(const USceneComponent* firePivot) const;
 
 	void OnOutOfAmmo();
+
+	int GetWeaponIndex(const FName& weaponId);
 
 	void StartWeaponFire() const;
 
