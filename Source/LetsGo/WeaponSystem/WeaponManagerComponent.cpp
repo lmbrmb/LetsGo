@@ -201,7 +201,7 @@ void UWeaponManagerComponent::RequestEquipWeapon(const int weaponIndex)
 	{
 		if (!_weapon->IsRequestReady())
 		{
-			_equipWeaponRequestReadyHandle = _weapon->RequestReady.AddUObject(this, &UWeaponManagerComponent::EquipWeaponOnRequestReady);
+			SubscribeWeaponRequestReady(_weapon);
 			return;
 		}
 	}
@@ -214,12 +214,7 @@ void UWeaponManagerComponent::EquipWeaponOnRequestReady()
 	auto const weaponsCount = _weapons.Num();
 	AssertIsGreater(weaponsCount, 0);
 
-	if (_equipWeaponRequestReadyHandle.IsValid())
-	{
-		AssertIsNotNull(_weapon);
-		_weapon->RequestReady.Remove(_equipWeaponRequestReadyHandle);
-		_equipWeaponRequestReadyHandle.Reset();
-	}
+	UnsubscribeWeaponRequestReady();
 
 	HolsterWeapon();
 
@@ -237,6 +232,26 @@ void UWeaponManagerComponent::EquipWeaponOnRequestReady()
 	}
 
 	EquipWeaponOnTimer();
+}
+
+void UWeaponManagerComponent::SubscribeWeaponRequestReady(IWeapon* weapon)
+{
+	AssertIsNotNull(weapon);
+	_equipWeaponRequestReadyHandle = weapon->RequestReady.AddUObject(this, &UWeaponManagerComponent::EquipWeaponOnRequestReady);
+	_requestReadyWeapon = weapon;
+}
+
+void UWeaponManagerComponent::UnsubscribeWeaponRequestReady()
+{
+	if (!_equipWeaponRequestReadyHandle.IsValid())
+	{
+		return;
+	}
+
+	_equipWeaponRequestReadyHandle.Reset();
+	AssertIsNotNull(_requestReadyWeapon);
+	_requestReadyWeapon->RequestReady.Remove(_equipWeaponRequestReadyHandle);
+	_requestReadyWeapon = nullptr;
 }
 
 void UWeaponManagerComponent::EquipWeaponOnTimer()
@@ -352,12 +367,7 @@ void UWeaponManagerComponent::DisableWeapon()
 		_equipWeaponTimerHandle.Invalidate();
 	}
 
-	if(_equipWeaponRequestReadyHandle.IsValid())
-	{
-		AssertIsNotNull(_weapon);
-		_weapon->RequestReady.Remove(_equipWeaponRequestReadyHandle);
-		_equipWeaponRequestReadyHandle.Reset();
-	}
+	UnsubscribeWeaponRequestReady();
 
 	HolsterWeapon();
 }

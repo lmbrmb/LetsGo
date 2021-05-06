@@ -185,6 +185,8 @@ private:
 
 	int _nextWeaponIndex = UNDEFINED_INDEX;
 
+	IWeapon* _requestReadyWeapon = nullptr;
+
 	TArray<TFunction<bool(Item*)>> _itemProcessors;
 
 	bool TryProcessItemAsGun(Item* item);
@@ -212,6 +214,10 @@ private:
 	void RequestEquipWeapon(const int weaponIndex);
 
 	void EquipWeaponOnRequestReady();
+
+	void SubscribeWeaponRequestReady(IWeapon* weapon);
+
+	void UnsubscribeWeaponRequestReady();
 
 	void EquipWeaponOnTimer();
 
