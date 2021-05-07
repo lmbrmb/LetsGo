@@ -121,7 +121,7 @@ void AGunV2::StartShot()
 	AssertIsNotNull(_firePivot);
 
 	_shotStartTime = GetWorld()->TimeSeconds;
-	ShotRequested.Broadcast(_firePivot);
+	ShotRequested.Broadcast();
 	BpOnShotRequest(_firePivot);
 	SetState(GunState::Shooting);
 }

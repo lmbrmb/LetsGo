@@ -3,22 +3,29 @@
 #include "LetsGo/HealthSystem/HealthComponent.h"
 #include "LetsGo/Movement/KinematicMovementComponent.h"
 #include "LetsGo/Physics/RigidBodyComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "LetsGo/Utils/AssertUtils.h"
 #include "LetsGo/Utils/AssetUtils.h"
 
 const FName UProjectileShotComponent::ForceName = FName("Explosion");
 
-void UProjectileShotComponent::OnShotRequested(const USceneComponent* firePivot)
+void UProjectileShotComponent::OnShotRequested()
 {
-	AssertIsNotNull(firePivot);
+	AssertIsNotNull(ShotTraceOrigin);
 	AssertIsNotNull(_projectileBlueprint);
+
+	auto const spawnLocation = ShotTraceOrigin->GetComponentLocation();
+	auto const targetAimLocation = AimProvider->GetTargetAimLocation();
+	auto const aimDirection = (targetAimLocation - spawnLocation).GetSafeNormal();
+	auto const rotation = UKismetMathLibrary::MakeRotFromX(aimDirection);
 
 	auto const projectile = AssetUtils::SpawnBlueprint<AProjectile>(
 		GetWorld(),
 		nullptr,
 		_projectileBlueprint,
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn,
-		firePivot->GetComponentTransform()
+		spawnLocation,
+		rotation
 		);
 
 	projectile->Hit.AddUObject(this, &UProjectileShotComponent::OnProjectileHit);

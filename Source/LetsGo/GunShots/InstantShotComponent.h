@@ -15,7 +15,7 @@ class LETSGO_API UInstantShotComponent : public UGunShotComponent
 	GENERATED_BODY()
 
 public:
-	virtual void OnShotRequested(const USceneComponent* firePivot) override;
+	virtual void OnShotRequested() override;
 
 	EBulletTraced_InstantShot BulletTraced;
 	
@@ -49,14 +49,12 @@ private:
 	);
 	
 	void ProcessBullet(
-		const USceneComponent* firePivot,
 		const FVector& targetAimLocation,
 		const float dispersionByDistance,
 		bool& isAnyBulletDamaged
 	);
 
 	FVector GetBulletDirection(
-		const USceneComponent* firePivot,
 		const FVector& bulletStartLocation,
 		const FVector& targetAimLocation,
 		const float dispersionByDistance

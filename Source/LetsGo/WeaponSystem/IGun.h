@@ -4,7 +4,7 @@
 #include "LetsGo/AmmoProviders/IAmmoProvider.h"
 #include "LetsGo/AimProviders/IAimProvider.h"
 
-DECLARE_EVENT_OneParam(IGun, EShotRequested, const USceneComponent* firePivot);
+DECLARE_EVENT(IGun, EShotRequested);
 
 DECLARE_EVENT_TwoParams(IGun, EShotPerformed, const IGun* gun, const bool isAnyBulletDamaged);
 
@@ -30,9 +30,15 @@ public:
 
 	IAimProvider* GetAimProvider() const;
 
+	USceneComponent* GetShotTraceOrigin() const;
+
 	bool IsGunInitialized() const;
 
-	void InitializeGun(IAmmoProvider* ammoProvider, IAimProvider* aimProvider);
+	void InitializeGun(
+		IAmmoProvider* ammoProvider,
+		IAimProvider* aimProvider,
+		USceneComponent* shotTraceOrigin
+		);
 
 	virtual void OnShotPerformed(const bool isAnyBulletDamaged) = 0;
 
@@ -55,6 +61,8 @@ private:
 	IAmmoProvider* _ammoProvider = nullptr;
 
 	IAimProvider* _aimProvider = nullptr;
+
+	USceneComponent* _shotTraceOrigin;
 
 	bool _isInitialized = false;
 };

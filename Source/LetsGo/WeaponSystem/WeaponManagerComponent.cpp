@@ -249,16 +249,25 @@ void UWeaponManagerComponent::EquipWeaponOnTimer()
 	EquipWeaponImmediate(_nextWeaponIndex);
 }
 
-void UWeaponManagerComponent::InitializeWeaponPivots(const TArray<USceneComponent*>& weaponPivots)
+void UWeaponManagerComponent::SetWeaponPivots(const TArray<USceneComponent*>& weaponPivots)
 {
 	AssertContainerIsNotEmpty(weaponPivots);
-	
+
 	for (auto weaponPivot : weaponPivots)
 	{
 		_weaponPivots.Add(weaponPivot);
 	}
 
 	SetWeaponPivot(0);
+	OnPartialInitialization();
+}
+
+void UWeaponManagerComponent::SetShotTraceOrigin(USceneComponent* shotTraceOrigin)
+{
+	AssertIsNotNull(shotTraceOrigin);
+
+	_shotTraceOrigin = shotTraceOrigin;
+
 	OnPartialInitialization();
 }
 
@@ -613,7 +622,7 @@ AActor* UWeaponManagerComponent::CreateGun(const GunItem* gunItem)
 		DevLogger::GetLoggingChannel()->Log("No aim provider", LogSeverity::Error);
 	}
 
-	gun->InitializeGun(ammoProvider, _aimProvider);
+	gun->InitializeGun(ammoProvider, _aimProvider, _shotTraceOrigin);
 
 	AttachWeapon(gunActor);
 
@@ -652,7 +661,7 @@ void UWeaponManagerComponent::OnPartialInitialization()
 		return;
 	}
 	
-	if(!CanAttachWeapon() || !_aimProvider || !_playerId.IsValid())
+	if(!CanAttachWeapon() || !_aimProvider || !_shotTraceOrigin || !_playerId.IsValid())
 	{
 		return;
 	}
@@ -676,7 +685,7 @@ void UWeaponManagerComponent::OnGunShotPerformed(const IGun* gun, const bool isA
 	ShotPerformed.Broadcast(gun->GetPlayerId(), gun->GetWeaponType(), isAnyBulletDamaged);
 }
 
-void UWeaponManagerComponent::OnGunShotRequested(const USceneComponent* firePivot) const
+void UWeaponManagerComponent::OnGunShotRequested() const
 {
 	ShotRequested.Broadcast();
 }

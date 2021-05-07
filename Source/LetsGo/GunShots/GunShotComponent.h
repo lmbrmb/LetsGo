@@ -26,7 +26,9 @@ public:
 
 	void SetAimProvider(IAimProvider* aimProvider);
 
-	virtual void OnShotRequested(const USceneComponent* firePivot) {};
+	void SetShotTraceOrigin(USceneComponent* shotTraceOrigin);
+
+	virtual void OnShotRequested() {};
 
 	EShotPerformed_GunShot ShotPerformed;
 
@@ -39,6 +41,8 @@ protected:
 	PlayerId InstigatorPlayerId;
 
 	IAimProvider* AimProvider = nullptr;
+
+	USceneComponent* ShotTraceOrigin = nullptr;
 
 	AActor* GunActor = nullptr;
 

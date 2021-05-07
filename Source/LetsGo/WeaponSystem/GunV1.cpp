@@ -157,7 +157,7 @@ void AGunV1::StartShot()
 	_shotStartTime = GetWorld()->TimeSeconds;
 	_clipCurrent -= _consumeAmmoPerShot;
 	
-	ShotRequested.Broadcast(_firePivot);
+	ShotRequested.Broadcast();
 	BpOnShotRequest(_firePivot);
 	SetState(GunState::Shooting);
 }

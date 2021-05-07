@@ -23,6 +23,11 @@ void UGunShotComponent::SetAimProvider(IAimProvider* aimProvider)
 	AimProvider = aimProvider;
 }
 
+void UGunShotComponent::SetShotTraceOrigin(USceneComponent* shotTraceOrigin)
+{
+	ShotTraceOrigin = shotTraceOrigin;
+}
+
 void UGunShotComponent::BeginPlay()
 {
 	Super::BeginPlay();

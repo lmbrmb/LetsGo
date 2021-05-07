@@ -48,9 +48,14 @@ void UGunShotToGunMapping::OnWeaponInitialized()
 
 void UGunShotToGunMapping::OnGunInitialized()
 {
+	Gun->GunInitialized.RemoveAll(this);
+
 	auto const aimProvider = Gun->GetAimProvider();
 	GunShotComponent->SetAimProvider(aimProvider);
-	Gun->GunInitialized.RemoveAll(this);
+
+	auto const shotTraceOrigin = Gun->GetShotTraceOrigin();
+	GunShotComponent->SetShotTraceOrigin(shotTraceOrigin);
+
 	_isGunDataSet = true;
 	OnPartialInitialization();
 }

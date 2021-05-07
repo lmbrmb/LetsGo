@@ -71,7 +71,10 @@ public:
 	void SetAimProvider(IAimProvider* aimProvider);
 
 	UFUNCTION(BlueprintCallable)
-	void InitializeWeaponPivots(const TArray<USceneComponent*>& weaponPivots);
+	void SetWeaponPivots(const TArray<USceneComponent*>& weaponPivots);
+
+	UFUNCTION(BlueprintCallable)
+	void SetShotTraceOrigin(USceneComponent* shotTraceOrigin);
 
 	UFUNCTION(BlueprintCallable)
 	int GetWeaponsCount() const;
@@ -151,6 +154,8 @@ private:
 	IAimProvider* _aimProvider;
 
 	TArray<USceneComponent*> _weaponPivots;
+
+	USceneComponent* _shotTraceOrigin;
 
 	USceneComponent* _weaponPivot = nullptr;
 
@@ -233,7 +238,7 @@ private:
 
 	void OnGunShotPerformed(const IGun* gun, const bool isAnyBulletDamaged);
 
-	void OnGunShotRequested(const USceneComponent* firePivot) const;
+	void OnGunShotRequested() const;
 
 	void OnOutOfAmmo();
 
