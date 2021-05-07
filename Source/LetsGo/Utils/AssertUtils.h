@@ -7,6 +7,13 @@
 
 #define ASSERTION_FAILED __FUNCTION__ + FString(" | Line: ") + FStringUtils::ToString(__LINE__) + FString(" | Assertion failed | ")
 
+#define AssertIsNull(value, ...) \
+if (!BoolUtils::IsNull(value)) \
+{\
+	DevLogger::GetLoggingChannel()->Log(ASSERTION_FAILED + "Value is not null.", LogSeverity::Error); \
+	return __VA_ARGS__; \
+};
+
 #define AssertIsNotNull(value, ...) \
 if (BoolUtils::IsNull(value)) \
 {\

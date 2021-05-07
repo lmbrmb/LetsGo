@@ -52,7 +52,6 @@ void UWeaponManagerComponent::BeginPlay()
 	AssertIsGreaterOrEqual(_weaponEquipDuration, 0.0f);
 }
 
-// ReSharper disable once CppMemberFunctionMayBeConst
 void UWeaponManagerComponent::StartFire()
 {
 	_isFireStarted = true;
@@ -69,7 +68,6 @@ void UWeaponManagerComponent::StartWeaponFire() const
 	}
 }
 
-// ReSharper disable once CppMemberFunctionMayBeConst
 void UWeaponManagerComponent::StopFire()
 {
 	_isFireStarted = false;
@@ -180,23 +178,13 @@ int UWeaponManagerComponent::GetNextUsableWeaponIndex(const int indexModifier) c
 
 void UWeaponManagerComponent::RequestEquipWeapon(const int weaponIndex)
 {
-	if (weaponIndex == UNDEFINED_INDEX || _weaponIndex == weaponIndex)
+	if (weaponIndex == UNDEFINED_INDEX || _weaponIndex == weaponIndex || IsChangingWeapon())
 	{
 		return;
 	}
 
-	if(IsChangingWeapon())
-	{
-		return;
-	}
-	
 	_nextWeaponIndex = weaponIndex;
 
-	if(_weaponActor)
-	{
-		ActorUtils::SetEnabled(_weaponActor, false);
-	}
-	
 	if (_weapon)
 	{
 		if (!_weapon->IsRequestReady())
@@ -245,12 +233,13 @@ void UWeaponManagerComponent::UnsubscribeWeaponRequestReady()
 {
 	if (!_equipWeaponRequestReadyHandle.IsValid())
 	{
+		AssertIsNull(_requestReadyWeapon);
 		return;
 	}
 
-	_equipWeaponRequestReadyHandle.Reset();
 	AssertIsNotNull(_requestReadyWeapon);
 	_requestReadyWeapon->RequestReady.Remove(_equipWeaponRequestReadyHandle);
+	_equipWeaponRequestReadyHandle.Reset();
 	_requestReadyWeapon = nullptr;
 }
 
