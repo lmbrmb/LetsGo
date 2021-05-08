@@ -107,17 +107,17 @@ void UHealthManagerComponent::OnDied()
 		shapeComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	}
 
-	// Disable weapon
-	auto const weaponManagerComponent = owner->FindComponentByClass<UWeaponManagerComponent>();
-	AssertIsNotNull(weaponManagerComponent);
-
-	weaponManagerComponent->HolsterWeapon();
-
 	// UnPossess
 	auto const controller = owner->GetInstigatorController();
 	AssertIsNotNull(controller);
 
 	controller->UnPossess();
+
+	// Disable weapon
+	auto const weaponManagerComponent = owner->FindComponentByClass<UWeaponManagerComponent>();
+	AssertIsNotNull(weaponManagerComponent);
+
+	weaponManagerComponent->DisableWeapon();
 
 	// Disable movement
 	auto const botMovementComponent = owner->FindComponentByClass<UBotMovementComponent>();
