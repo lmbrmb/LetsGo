@@ -38,7 +38,7 @@ private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
 	TArray<FName> _itemsCanHealAboveNormal;
 
-	UHealthComponent* _healthComponent;
+	UHealthComponent* _healthComponent = nullptr;
 
 	void OnHealthChanged(UHealthComponent* healthComponent, const float delta);
 
