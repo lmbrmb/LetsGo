@@ -32,7 +32,7 @@ void UWeaponManagerToSettingsMapping::OnWeaponManagerInitialized() const
 	auto const playerSettings = _matchGameMode->GetPlayerSettings();
 	AssertIsNotNull(playerSettings);
 
-	auto const weaponPivotIndex = playerSettings->WeaponPivotIndex;
+	auto const weaponPivotIndex = playerSettings->CenterWeapon ? 1 : 0;
 	_weaponManagerComponent->SetWeaponPivot(weaponPivotIndex);
 
 	auto const shouldEquipWeaponOnPickup = playerSettings->ShouldEquipWeaponOnPickup;
@@ -41,5 +41,5 @@ void UWeaponManagerToSettingsMapping::OnWeaponManagerInitialized() const
 
 void UWeaponManagerToSettingsMapping::OnWeaponPivotChanged(const int weaponPivotIndex) const
 {
-	_matchGameMode->GetPlayerSettings()->WeaponPivotIndex = weaponPivotIndex;
+	_matchGameMode->GetPlayerSettings()->CenterWeapon = weaponPivotIndex == 1;
 }

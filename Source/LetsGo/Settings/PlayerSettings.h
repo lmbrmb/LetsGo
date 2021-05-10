@@ -11,10 +11,10 @@ class LETSGO_API UPlayerSettings : public USaveGame
 
 public:
 	/// <summary>
-	/// Weapon pivot index. 0 - right, 1 - center
+	/// Center weapon
 	/// </summary>
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Basic)
-	int WeaponPivotIndex;
+	bool CenterWeapon;
 
 	/// <summary>
 	/// Player skin id.
