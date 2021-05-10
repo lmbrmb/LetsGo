@@ -471,5 +471,9 @@ const TMap<int, int>& AMatchGameMode::GetTeamFrags() const
 void AMatchGameMode::ExitToMainMenu() const
 {
 	Exit.Broadcast();
+	
+	// Settings could be changed during play
+	_playerSettingsManager->Save();
+	_matchSettingsManager->Save();
 	UGameplayStatics::OpenLevel(this, _mainMenuLevelName, true);
 }

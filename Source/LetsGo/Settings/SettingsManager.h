@@ -43,7 +43,11 @@ private:
 	int _userIndex;
 
 	IUObjectRegistry* _uObjectRegistry = nullptr;
-	
+
+	int _cacheCrc;
+
+	int GetSettingsCachedCrc();
+
 	TSettings* _settingsCached = nullptr;
 
 	TSettings* Load() const;
@@ -83,6 +87,16 @@ template <class TSettings>
 void SettingsManager<TSettings>::Save()
 {
 	AssertIsNotNull(_settingsCached);
+	AssertIsNotEqual(_cacheCrc, 0);
+
+	auto const cacheCrc = GetSettingsCachedCrc();
+
+	if(_cacheCrc == cacheCrc)
+	{
+		return;
+	}
+
+	_cacheCrc = cacheCrc;
 	UGameplayStatics::SaveGameToSlot(_settingsCached, _slotName, _userIndex);
 }
 
@@ -92,6 +106,7 @@ TSettings* SettingsManager<TSettings>::LoadOrCreate()
 	if (_settingsCached)
 	{
 		_uObjectRegistry->UnRegisterUObject(_settingsCached);
+		_cacheCrc = 0;
 	}
 	
 	_settingsCached = Load();
@@ -102,9 +117,17 @@ TSettings* SettingsManager<TSettings>::LoadOrCreate()
 	}
 
 	AssertIsNotNull(_settingsCached, nullptr);
+	_cacheCrc = GetSettingsCachedCrc();
 	_uObjectRegistry->RegisterUObject(_settingsCached);
 	
 	return _settingsCached;
+}
+
+template <class TSettings>
+int SettingsManager<TSettings>::GetSettingsCachedCrc()
+{
+	AssertIsNotNull(_settingsCached, 0);
+	return FCrc::MemCrc32(_settingsCached, sizeof(TSettings));
 }
 
 template <class TSettings>

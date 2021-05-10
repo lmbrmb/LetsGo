@@ -102,6 +102,15 @@ float UFirstPersonMovementComponent::GetAbsoluteMovementAmount() const
 	return _absoluteMovementAmount;
 }
 
+void UFirstPersonMovementComponent::SetLookSpeed(
+	const float cameraPitchSpeed,
+	const float actorYawSpeed
+)
+{
+	_cameraPitchSpeed = cameraPitchSpeed;
+	_actorYawSpeed = actorYawSpeed;
+}
+
 void UFirstPersonMovementComponent::AddActorForwardMovementInput(const float amount)
 {
 	_actorForwardMovementInputAmount += amount;

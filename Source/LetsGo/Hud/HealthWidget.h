@@ -24,11 +24,11 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnAvatarHealthChanged();
 
-	virtual void NativeConstruct() override;
+	virtual void NativeOnInitialized() override;
 
 private:
 	void OnAvatarChanged(const AAvatar* avatar);
-	
+
 	void OnAvatarHealthChanged(UHealthComponent* healthComponent, float delta);
 
 	UHealthComponent* _healthComponent = nullptr;

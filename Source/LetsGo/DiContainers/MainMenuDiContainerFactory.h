@@ -35,12 +35,18 @@ TTypeContainer<Mode>* MainMenuDiContainerFactory<Mode>::CreateContainer(IUObject
 	auto const container = new TTypeContainer<ESPMode::Fast>();
 
 	auto const materialFactoryInstance = new MaterialFactory(uObjectRegistry, LAZY_INITIALIZATION);
-	auto const skeletalMeshFactoryInstance = new SkeletalMeshFactory(uObjectRegistry, LAZY_INITIALIZATION);
-	auto const skinFactoryInstance = new SkinFactory(materialFactoryInstance, skeletalMeshFactoryInstance);
+	const TSharedRef<MaterialFactory> materialFactory = MakeShareable(materialFactoryInstance);
 
+	auto const skeletalMeshFactoryInstance = new SkeletalMeshFactory(uObjectRegistry, LAZY_INITIALIZATION);
+	const TSharedRef<SkeletalMeshFactory> skeletalMeshFactory = MakeShareable(skeletalMeshFactoryInstance);
+
+	auto const skinFactoryInstance = new SkinFactory(materialFactoryInstance, skeletalMeshFactoryInstance);
 	const TSharedRef<SkinFactory> skinFactory = MakeShareable(skinFactoryInstance);
+
 	const TSharedRef<SettingsManagerFactory> settingsManagerFactory = MakeShareable(new SettingsManagerFactory(uObjectRegistry));
 
+	container->RegisterInstance<MaterialFactory>(materialFactory);
+	container->RegisterInstance<SkeletalMeshFactory>(skeletalMeshFactory);
 	container->RegisterInstance<SkinFactory>(skinFactory);
 	container->RegisterInstance<SettingsManagerFactory>(settingsManagerFactory);
 

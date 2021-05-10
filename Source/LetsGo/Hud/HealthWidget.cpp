@@ -5,10 +5,10 @@
 #include "LetsGo/PlayerControllers/MatchPlayerController.h"
 #include "LetsGo/Utils/AssertUtils.h"
 
-void UHealthWidget::NativeConstruct()
+void UHealthWidget::NativeOnInitialized()
 {
-	Super::NativeConstruct();
-	
+	Super::NativeOnInitialized();
+
 	auto const localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 
 	AssertIsNotNull(localPlayerController);

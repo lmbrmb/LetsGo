@@ -5,10 +5,10 @@
 #include "LetsGo/GameModes/MatchGameMode.h"
 #include "LetsGo/Utils/AssertUtils.h"
 
-void UFragCountWidget::NativeConstruct()
+void UFragCountWidget::NativeOnInitialized()
 {
-	Super::NativeConstruct();
-	
+	Super::NativeOnInitialized();
+
 	auto const world = GetWorld();
 	auto const authGameMode = world->GetAuthGameMode();
 	_matchGameMode = Cast<AMatchGameMode>(authGameMode);

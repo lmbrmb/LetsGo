@@ -15,7 +15,7 @@ class LETSGO_API UMainMenuWidget : public UUserWidget
 	GENERATED_BODY()
 
 protected:
-	virtual void NativeConstruct() override;
+	virtual void NativeOnInitialized() override;
 
 	UFUNCTION(BlueprintCallable)
 	UPlayerSettings* GetPlayerSettings() const;

@@ -15,7 +15,7 @@ class LETSGO_API UFragCountWidget : public UUserWidget
 	GENERATED_BODY()
 
 protected:
-	virtual void NativeConstruct() override;
+	virtual void NativeOnInitialized() override;
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnFragCountChanged(

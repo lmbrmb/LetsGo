@@ -3,9 +3,9 @@
 #include "LetsGo/Logs/DevLogger.h"
 #include "LetsGo/Utils/AssertUtils.h"
 
-void UMainMenuWidget::NativeConstruct()
+void UMainMenuWidget::NativeOnInitialized()
 {
-	Super::NativeConstruct();
+	Super::NativeOnInitialized();
 
 	auto const authGameMode = GetWorld()->GetAuthGameMode();
 	_mainMenuGameMode = Cast<AMainMenuGameMode>(authGameMode);
@@ -14,20 +14,24 @@ void UMainMenuWidget::NativeConstruct()
 
 UPlayerSettings* UMainMenuWidget::GetPlayerSettings() const
 {
+	AssertIsNotNull(_mainMenuGameMode, nullptr);
 	return _mainMenuGameMode->GetPlayerSettings();
 }
 
 UMatchSettings* UMainMenuWidget::GetMatchSettings() const
 {
+	AssertIsNotNull(_mainMenuGameMode, nullptr);
 	return _mainMenuGameMode->GetMatchSettings();
 }
 
 void UMainMenuWidget::SavePlayerSettings() const
 {
+	AssertIsNotNull(_mainMenuGameMode);
 	_mainMenuGameMode->SavePlayerSettings();
 }
 
 void UMainMenuWidget::SaveMatchSettings() const
 {
+	AssertIsNotNull(_mainMenuGameMode);
 	_mainMenuGameMode->SaveMatchSettings();
 }

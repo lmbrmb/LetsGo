@@ -1,9 +1,9 @@
 #include "MatchStateWidget.h"
 #include "LetsGo/Utils/AssertUtils.h"
 
-void UMatchStateWidget::NativeConstruct()
+void UMatchStateWidget::NativeOnInitialized()
 {
-	Super::NativeConstruct();
+	Super::NativeOnInitialized();
 
 	auto const world = GetWorld();
 	auto const authGameMode = world->GetAuthGameMode();

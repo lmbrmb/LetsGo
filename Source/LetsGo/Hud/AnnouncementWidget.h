@@ -49,17 +49,17 @@ public:
 	virtual void AnnounceLead(const FLeadState leadState) override;
 
 protected:
-	virtual void NativeConstruct() override;
-	
+	virtual void NativeOnInitialized() override;
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpAnnounceMatchWarmUp();
-	
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpAnnounceMatchStart();
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpAnnounceMatchEnd(const int localPlayerPlace);
-	
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpAnnounceFrag(
 		const FName& instigatorPlayerNickname,

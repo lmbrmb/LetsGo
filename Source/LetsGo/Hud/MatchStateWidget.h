@@ -14,7 +14,7 @@ class LETSGO_API UMatchStateWidget : public UUserWidget
 	GENERATED_BODY()
 
 protected:
-	virtual void NativeConstruct() override;
+	virtual void NativeOnInitialized() override;
 
 	void OnMatchWarmUp();
 

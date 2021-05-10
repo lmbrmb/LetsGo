@@ -8,9 +8,9 @@
 #include "AnnouncementProcessors/MedalAnnouncementProcessor.h"
 #include "LetsGo/Utils/AssertUtils.h"
 
-void UAnnouncementWidget::NativeConstruct()
+void UAnnouncementWidget::NativeOnInitialized()
 {
-	Super::NativeConstruct();
+	Super::NativeOnInitialized();
 
 	_announcementProcessors.Add(new FragAnnouncementProcessor());
 	_announcementProcessors.Add(new MedalAnnouncementProcessor());

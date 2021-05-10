@@ -17,12 +17,6 @@ _skeletalMeshFactory(skeletalMeshFactory)
 	);
 }
 
-SkinFactory::~SkinFactory()
-{
-	delete _materialFactory;
-	delete _skeletalMeshFactory;
-}
-
 void SkinFactory::SetSkin(AActor* actor, const FName& skinId)
 {
 	AssertIsNotNull(actor);

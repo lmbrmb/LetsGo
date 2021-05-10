@@ -83,6 +83,7 @@ void URigidBodyComponent::ProcessForces(const float deltaTime)
 	{
 		auto const dot = FVector::DotProduct(FVector::UpVector, _hitResult.Normal);
 		isInAir = dot < 0.5f;
+		_forces.RemoveAll([](IForce* f) {return f->GetId() != GRAVITY_FORCE_ID; });
 	}
 
 	if (_isInAir != isInAir)
@@ -95,8 +96,6 @@ void URigidBodyComponent::ProcessForces(const float deltaTime)
 		}
 		else
 		{
-			_forces.RemoveAll([](IForce* f) {return f->GetId() != GRAVITY_FORCE_ID;});
-			
 			auto const airTime = GetWorld()->TimeSeconds - _lastGroundTime;
 			Land.Broadcast(airTime);
 		}

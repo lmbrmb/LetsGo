@@ -27,7 +27,7 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void BpOnAmmoCountChanged(const int ammoCount);
 
-	virtual void NativeConstruct() override;
+	virtual void NativeOnInitialized() override;
 
 private:
 	void OnAvatarChanged(const AAvatar* avatar);

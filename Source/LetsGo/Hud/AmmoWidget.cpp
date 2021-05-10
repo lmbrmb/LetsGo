@@ -4,9 +4,9 @@
 #include "LetsGo/PlayerControllers/MatchPlayerController.h"
 #include "LetsGo/Utils/AssertUtils.h"
 
-void UAmmoWidget::NativeConstruct()
+void UAmmoWidget::NativeOnInitialized()
 {
-	Super::NativeConstruct();
+	Super::NativeOnInitialized();
 
 	auto const localPlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	AssertIsNotNull(localPlayerController);
