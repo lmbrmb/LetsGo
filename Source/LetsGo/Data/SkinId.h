@@ -14,4 +14,8 @@ struct SkinId final : public NameEntityId
 	explicit SkinId(const FName& id) : NameEntityId(id)
 	{
 	};
+
+	explicit SkinId(const FString& id) : NameEntityId(FName(id))
+	{
+	};
 };

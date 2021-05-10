@@ -1,38 +1,21 @@
 #pragma once
-#include "PlayerSetting.h"
-#include "LetsGo/Utils/AssertUtils.h"
 
-class PlayerSettingsManager
+#include "PlayerSettings.h"
+#include "SettingsManager.h"
+
+class PlayerSettingsManager final : public SettingsManager<UPlayerSettings>
 {
 public:
-	PlayerSettingsManager() = default;
+	PlayerSettingsManager(
+		const FString& slotName,
+		const int userIndex,
+		IUObjectRegistry* uObjectRegistry,
+		const bool isLazyInitialization
+	)
+		: SettingsManager<UPlayerSettings>(slotName, userIndex, uObjectRegistry, isLazyInitialization)
+	{
+	}
 
-	void AddSetting(const FName& id, IPlayerSetting* playerSetting);
-
-	template<class T>
-	T GetSetting(const FName& id);
-
-	template<class T>
-	void SetSetting(const FName& id, T value);
-
-private:
-	TMap<FName, IPlayerSetting*> _playerSettings;
+protected:
+	virtual void SetDefaultValues(UPlayerSettings* settings) const override;
 };
-
-template <class T>
-T PlayerSettingsManager::GetSetting(const FName& id)
-{
-	AssertContainerContainsElement(_playerSettings, id, T());
-	auto setting = _playerSettings[id];
-	auto const specificSetting = dynamic_cast<PlayerSetting<T>*>(setting);
-	return specificSetting->GetValue();
-}
-
-template <class T>
-void PlayerSettingsManager::SetSetting(const FName& id, T value)
-{
-	AssertContainerContainsElement(_playerSettings, id);
-	auto setting = _playerSettings[id];
-	auto const specificSetting = dynamic_cast<PlayerSetting<T>*>(setting);
-	specificSetting->SetValue(value);
-}

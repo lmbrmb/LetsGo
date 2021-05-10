@@ -2,12 +2,6 @@
 
 #include "LetsGo/Utils/AssertUtils.h"
 
-#define RETURN_IF_NULL(value) \
-	if(value == nullptr) \
-	{ \
-		return;\
-	} \
-
 SkinFactory::SkinFactory(MaterialFactory* materialFactory, SkeletalMeshFactory* skeletalMeshFactory) :
 _materialFactory(materialFactory),
 _skeletalMeshFactory(skeletalMeshFactory)
@@ -21,6 +15,12 @@ _skeletalMeshFactory(skeletalMeshFactory)
 	_skins.Add("Vampire",
 		new SkinData("Vampire", "Vampire")
 	);
+}
+
+SkinFactory::~SkinFactory()
+{
+	delete _materialFactory;
+	delete _skeletalMeshFactory;
 }
 
 void SkinFactory::SetSkin(AActor* actor, const FName& skinId)
@@ -38,11 +38,11 @@ void SkinFactory::SetSkin(USkeletalMeshComponent* skeletalMeshComponent, const F
 	auto const skinData = _skins[skinId];
 	auto const skeletalMeshId = skinData->SkeletalMeshId;
 	auto const skeletalMesh = _skeletalMeshFactory->GetOrLoad(skeletalMeshId);
-	RETURN_IF_NULL(skeletalMesh);
+	AssertIsNotNull(skeletalMesh);
 
 	auto const materialId = skinData->MaterialId;
 	auto const material = _materialFactory->GetOrLoad(materialId);
-	RETURN_IF_NULL(material);
+	AssertIsNotNull(material);
 
 	skeletalMeshComponent->SetSkeletalMesh(skeletalMesh);
 	skeletalMeshComponent->SetMaterial(0, material);

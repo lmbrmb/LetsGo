@@ -28,5 +28,6 @@ private:
 	UPROPERTY(EditAnywhere, meta = (BindWidget, AllowPrivateAccess = "true"))
 	TSubclassOf<UUserWidget> _hudWidgetBlueprint;
 
+	UPROPERTY()
 	UUserWidget* _hudWidget = nullptr;
 };

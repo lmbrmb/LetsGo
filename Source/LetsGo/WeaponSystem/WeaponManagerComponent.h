@@ -64,6 +64,8 @@ public:
 
 	void SetWeaponPivot(const int weaponPivotIndex);
 
+	void SetShouldEquipWeaponOnPickup(bool shouldEquipWeaponOnPickup);
+
 	IAimProvider* GetAimProvider() const;
 
 	void DisableWeapon();

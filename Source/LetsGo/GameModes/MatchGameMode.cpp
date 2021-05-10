@@ -1,7 +1,6 @@
 #include "MatchGameMode.h"
 
 #include "GameFramework/GameStateBase.h"
-#include "GameModeOptionParsers/GameModeOptionParserFactory.h"
 #include "Kismet/GameplayStatics.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
 #include "LetsGo/DiContainers/MatchDiContainerFactory.h"
@@ -13,46 +12,40 @@ AMatchGameMode::~AMatchGameMode()
 	delete _diContainer;
 	delete _matchAnalytics;
 	delete _playerSettingsManager;
+	delete _matchSettingsManager;
 }
 
 void AMatchGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
-	
+
 	MatchDiContainerFactory<ESPMode::Fast> containerFactory;
 	_diContainer = containerFactory.CreateContainer(this);
 
 	auto const avatarSpawnFactory = GetDiContainer()->GetInstance<AvatarSpawnFactory>();
 	_avatarSpawnFactory = &avatarSpawnFactory.Get();
 
-	auto const playerSettingsManagerFactoryRef = GetDiContainer()->GetInstance<PlayerSettingsManagerFactory>();
-	auto const playerSettingsManagerFactory = &playerSettingsManagerFactoryRef.Get();
+	auto const settingsManagerFactoryRef = GetDiContainer()->GetInstance<SettingsManagerFactory>();
+	auto const settingsManagerFactory = &settingsManagerFactoryRef.Get();
 
-	_playerSettingsManager = playerSettingsManagerFactory->Create();
+	_playerSettingsManager = settingsManagerFactory->Create<PlayerSettingsManager>(_playerSettingsSlotName, true);
+	_matchSettingsManager = settingsManagerFactory->Create<MatchSettingsManager>(_matchSettingsSlotName, true);
+
+	if (_applySavedSettings)
+	{
+		auto const playerSettings = _playerSettingsManager->GetSettings();
+		auto const localPlayerSkinId = playerSettings->PlayerSkinId;
+		_localPlayerSkinId = SkinId(localPlayerSkinId);
+
+		auto const matchSettings = _matchSettingsManager->GetSettings();
+		_botCount = matchSettings->BotCount;
+		_fragLimit = matchSettings->FragLimit;
+	}
 
 	auto const matchAnalyticsFactoryRef = GetDiContainer()->GetInstance<MatchAnalyticsFactory>();
 	auto const matchAnalyticsFactory = &matchAnalyticsFactoryRef.Get();
 
 	_matchAnalytics = matchAnalyticsFactory->Create(this);
-
-	ParseMatchOptions(Options);
-}
-
-void AMatchGameMode::ParseMatchOptions(const FString& options)
-{
-	auto stringToSplit = options;
-	FString option, remainder;
-
-	auto const gameModeOptionParserFactoryRef = GetDiContainer()->GetInstance<GameModeOptionParserFactory>();
-	auto const gameModeOptionParserFactory = &gameModeOptionParserFactoryRef.Get();
-	AssertIsNotNull(gameModeOptionParserFactory);
-
-	while (stringToSplit.Split(TEXT(";"), &option, &remainder))
-	{
-		stringToSplit = remainder;
-
-		gameModeOptionParserFactory->TryParseOption(option, this);
-	}
 }
 
 void AMatchGameMode::TriggerMatchWarmUp()
@@ -96,8 +89,7 @@ void AMatchGameMode::TriggerMatchEnd()
 void AMatchGameMode::TriggerExitToMainMenu()
 {
 	GetWorldTimerManager().ClearTimer(_matchStateTimerHandle);
-	Exit.Broadcast();
-	UGameplayStatics::OpenLevel(this, _mainMenuLevelName, true);
+	ExitToMainMenu();
 }
 
 AvatarData* AMatchGameMode::GetAvatarData(const int playerIdValue) const
@@ -393,19 +385,9 @@ int AMatchGameMode::GetFragLimit() const
 	return _fragLimit;
 }
 
-void AMatchGameMode::SetFragLimit(const int fragLimit)
-{
-	_fragLimit = fragLimit;
-}
-
 int AMatchGameMode::GetBotCount() const
 {
 	return _botCount;
-}
-
-void AMatchGameMode::SetBotCount(const int botCount)
-{
-	_botCount = botCount;
 }
 
 const SkinId& AMatchGameMode::GetLocalPlayerSkinId() const
@@ -413,19 +395,9 @@ const SkinId& AMatchGameMode::GetLocalPlayerSkinId() const
 	return _localPlayerSkinId;
 }
 
-void AMatchGameMode::SetLocalPlayerSkinId(const SkinId& localPlayerSkinId)
-{
-	_localPlayerSkinId = localPlayerSkinId;
-}
-
 float AMatchGameMode::GetMatchDuration() const
 {
 	return _matchDuration;
-}
-
-void AMatchGameMode::SetMatchDuration(const float matchDuration)
-{
-	_matchDuration = matchDuration;
 }
 
 int AMatchGameMode::GetPlayerPlace(const PlayerId& playerId) const
@@ -476,9 +448,14 @@ const TArray<AAvatar*>& AMatchGameMode::GetAvatars() const
 	return _avatars;
 }
 
-PlayerSettingsManager* AMatchGameMode::GetPlayerSettingsManager() const
+ UPlayerSettings* AMatchGameMode::GetPlayerSettings() const
 {
-	return _playerSettingsManager;
+	 return _playerSettingsManager->GetSettings();
+}
+
+UMatchSettings* AMatchGameMode::GetMatchSettings() const
+{
+	return _matchSettingsManager->GetSettings();
 }
 
 const TMap<int, int>& AMatchGameMode::GetPlayerFrags() const
@@ -489,4 +466,10 @@ const TMap<int, int>& AMatchGameMode::GetPlayerFrags() const
 const TMap<int, int>& AMatchGameMode::GetTeamFrags() const
 {
 	return TeamFrags;
+}
+
+void AMatchGameMode::ExitToMainMenu() const
+{
+	Exit.Broadcast();
+	UGameplayStatics::OpenLevel(this, _mainMenuLevelName, true);
 }

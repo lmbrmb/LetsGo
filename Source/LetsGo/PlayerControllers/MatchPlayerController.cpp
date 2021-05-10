@@ -1,12 +1,16 @@
 #include "MatchPlayerController.h"
 
-#include "Kismet/GameplayStatics.h"
 #include "LetsGo/Input/InputConstant.h"
 #include "LetsGo/Utils/AssertUtils.h"
 
 void AMatchPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	auto const world = GetWorld();
+	auto const authGameMode = world->GetAuthGameMode();
+	_matchGameMode = Cast<AMatchGameMode>(authGameMode);
+	AssertIsNotNull(_matchGameMode);
 
 	SetupInput();
 }
@@ -58,7 +62,7 @@ void AMatchPlayerController::OnUnPossess()
 // ReSharper disable once CppMemberFunctionMayBeConst
 void AMatchPlayerController::OnEscape()
 {
-	UGameplayStatics::OpenLevel(this, _mainMenuLevelName, true);
+	_matchGameMode->ExitToMainMenu();
 }
 
 AAvatar* AMatchPlayerController::GetAvatar() const

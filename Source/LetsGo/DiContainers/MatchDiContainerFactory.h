@@ -14,12 +14,11 @@
 #include "LetsGo/Avatars/AvatarSpawnFactory.h"
 #include "LetsGo/NicknameGenerators/NicknameGeneratorFactory.h"
 #include "LetsGo/Forces/ForceFactory.h"
-#include "LetsGo/GameModes/GameModeOptionParsers/GameModeOptionParserFactory.h"
 #include "LetsGo/Sfx/SfxFactory.h"
 #include "LetsGo/Sfx/AvatarSfxFactory.h"
 #include "LetsGo/AmmoProviders/AmmoProviderFactory.h"
 #include "LetsGo/Analytics/MatchAnalyticsFactory.h"
-#include "LetsGo/Settings/PlayerSettingsManagerFactory.h"
+#include "LetsGo/Settings/SettingsManagerFactory.h"
 
 /// <summary>
 /// Match dependency injection container factory
@@ -74,13 +73,12 @@ TTypeContainer<Mode>* MatchDiContainerFactory<Mode>::CreateContainer(IUObjectReg
 	const TSharedRef<SkinFactory> skinFactory = MakeShareable(skinFactoryInstance);
 
 	const TSharedRef<AvatarSpawnFactory> avatarSpawnFactory = MakeShareable(new AvatarSpawnFactory(avatarFactoryInstance, skinFactoryInstance));
-	const TSharedRef<GameModeOptionParserFactory> gameModeOptionParserFactory = MakeShareable(new GameModeOptionParserFactory());
 
 	auto const sfxFactoryInstance = new SfxFactory(uObjectRegistry, LAZY_INITIALIZATION);
 	const TSharedRef<SfxFactory> sfxFactory = MakeShareable(sfxFactoryInstance);
 	const TSharedRef<AvatarSfxFactory> avatarSfxFactory = MakeShareable(new AvatarSfxFactory(sfxFactoryInstance));
 
-	const TSharedRef<PlayerSettingsManagerFactory> playerSettingsManagerFactory = MakeShareable(new PlayerSettingsManagerFactory());
+	const TSharedRef<SettingsManagerFactory> settingsManagerFactory = MakeShareable(new SettingsManagerFactory(uObjectRegistry));
 
 	const TSharedRef<MatchAnalyticsFactory> matchAnalyticsFactory = MakeShareable(new MatchAnalyticsFactory());
 
@@ -98,10 +96,9 @@ TTypeContainer<Mode>* MatchDiContainerFactory<Mode>::CreateContainer(IUObjectReg
 	container->template RegisterInstance<SkinFactory>(skinFactory);
 	container->template RegisterInstance<AvatarFactory>(avatarFactory);
 	container->template RegisterInstance<AvatarSpawnFactory>(avatarSpawnFactory);
-	container->template RegisterInstance<GameModeOptionParserFactory>(gameModeOptionParserFactory);
 	container->template RegisterInstance<SfxFactory>(sfxFactory);
 	container->template RegisterInstance<AvatarSfxFactory>(avatarSfxFactory);
-	container->template RegisterInstance<PlayerSettingsManagerFactory>(playerSettingsManagerFactory);
+	container->template RegisterInstance<SettingsManagerFactory>(settingsManagerFactory);
 	container->template RegisterInstance<MatchAnalyticsFactory>(matchAnalyticsFactory);
 
 	return container;

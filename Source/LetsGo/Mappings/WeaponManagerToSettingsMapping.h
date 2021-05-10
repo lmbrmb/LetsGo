@@ -1,7 +1,7 @@
 #pragma once
 
 #include "MappingComponent.h"
-#include "LetsGo/Settings/PlayerSettingsManager.h"
+#include "LetsGo/GameModes/MatchGameMode.h"
 #include "LetsGo/WeaponSystem/WeaponManagerComponent.h"
 
 #include "WeaponManagerToSettingsMapping.generated.h"
@@ -15,13 +15,10 @@ protected:
 	virtual void Map() override;
 
 private:
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
-	FName _weaponPivotIndexSettingName = "WeaponPivotIndex";
-
 	UWeaponManagerComponent* _weaponManagerComponent = nullptr;
 
-	PlayerSettingsManager* _playerSettingsManager = nullptr;
-	
+	AMatchGameMode* _matchGameMode;
+
 	void OnWeaponManagerInitialized() const;
 
 	void OnWeaponPivotChanged(const int weaponPivotIndex) const;

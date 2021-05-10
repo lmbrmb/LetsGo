@@ -6,6 +6,7 @@
 #include "LetsGo/AssetFactories/MaterialFactory.h"
 #include "LetsGo/AssetFactories/SkeletalMeshFactory.h"
 #include "LetsGo/AssetFactories/SkinFactory.h"
+#include "LetsGo/Settings/SettingsManagerFactory.h"
 
 /// <summary>
 /// Match dependency injection container factory
@@ -36,9 +37,12 @@ TTypeContainer<Mode>* MainMenuDiContainerFactory<Mode>::CreateContainer(IUObject
 	auto const materialFactoryInstance = new MaterialFactory(uObjectRegistry, LAZY_INITIALIZATION);
 	auto const skeletalMeshFactoryInstance = new SkeletalMeshFactory(uObjectRegistry, LAZY_INITIALIZATION);
 	auto const skinFactoryInstance = new SkinFactory(materialFactoryInstance, skeletalMeshFactoryInstance);
-	const TSharedRef<SkinFactory> skinFactory = MakeShareable(skinFactoryInstance);
 
-	container->template RegisterInstance<SkinFactory>(skinFactory);
+	const TSharedRef<SkinFactory> skinFactory = MakeShareable(skinFactoryInstance);
+	const TSharedRef<SettingsManagerFactory> settingsManagerFactory = MakeShareable(new SettingsManagerFactory(uObjectRegistry));
+
+	container->RegisterInstance<SkinFactory>(skinFactory);
+	container->RegisterInstance<SettingsManagerFactory>(settingsManagerFactory);
 
 	return container;
 }

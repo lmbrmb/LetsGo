@@ -13,11 +13,8 @@ void UWeaponManagerToSettingsMapping::Map()
 	AssertIsNotNull(_weaponManagerComponent);
 
 	auto const authGameMode = GetWorld()->GetAuthGameMode();
-	auto const matchGameMode = Cast<AMatchGameMode>(authGameMode);
-	AssertIsNotNull(matchGameMode);
-	
-	_playerSettingsManager = matchGameMode->GetPlayerSettingsManager();
-	AssertIsNotNull(_playerSettingsManager);
+	_matchGameMode = Cast<AMatchGameMode>(authGameMode);
+	AssertIsNotNull(_matchGameMode);
 
 	_weaponManagerComponent->WeaponPivotChanged.AddUObject(this, &UWeaponManagerToSettingsMapping::OnWeaponPivotChanged);
 
@@ -32,11 +29,17 @@ void UWeaponManagerToSettingsMapping::Map()
 
 void UWeaponManagerToSettingsMapping::OnWeaponManagerInitialized() const
 {
-	auto const weaponPivotIndex = _playerSettingsManager->GetSetting<int>(_weaponPivotIndexSettingName);
+	auto const playerSettings = _matchGameMode->GetPlayerSettings();
+	AssertIsNotNull(playerSettings);
+
+	auto const weaponPivotIndex = playerSettings->WeaponPivotIndex;
 	_weaponManagerComponent->SetWeaponPivot(weaponPivotIndex);
+
+	auto const shouldEquipWeaponOnPickup = playerSettings->ShouldEquipWeaponOnPickup;
+	_weaponManagerComponent->SetShouldEquipWeaponOnPickup(shouldEquipWeaponOnPickup);
 }
 
 void UWeaponManagerToSettingsMapping::OnWeaponPivotChanged(const int weaponPivotIndex) const
 {
-	_playerSettingsManager->SetSetting(_weaponPivotIndexSettingName, weaponPivotIndex);
+	_matchGameMode->GetPlayerSettings()->WeaponPivotIndex = weaponPivotIndex;
 }

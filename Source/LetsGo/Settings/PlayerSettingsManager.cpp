@@ -1,6 +1,9 @@
 #include "PlayerSettingsManager.h"
 
-void PlayerSettingsManager::AddSetting(const FName& id, IPlayerSetting* playerSetting)
+void PlayerSettingsManager::SetDefaultValues(UPlayerSettings* settings) const
 {
-	_playerSettings.Add(id, playerSetting);
+	settings->ShouldEquipWeaponOnPickup = true;
+	settings->WeaponPivotIndex = 0;
+	settings->PlayerSkinId = "Vampire";
+	settings->MouseSensitivity = 5;
 }

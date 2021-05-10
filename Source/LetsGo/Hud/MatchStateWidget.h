@@ -35,5 +35,5 @@ protected:
 	float GetMatchTime() const;
 
 private:
-	AMatchGameMode* _matchGameMode;
+	AMatchGameMode* _matchGameMode = nullptr;
 };

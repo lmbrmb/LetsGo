@@ -24,6 +24,8 @@ class SkinFactory final
 public:
 	SkinFactory(MaterialFactory* materialFactory, SkeletalMeshFactory* skeletalMeshFactory);
 
+	~SkinFactory();
+
 	void SetSkin(AActor* actor, const FName& skinId);
 
 	void SetSkin(USkeletalMeshComponent* skeletalMeshComponent, const FName& skinId);

@@ -2,6 +2,7 @@
 
 #include "GameFramework/PlayerController.h"
 #include "LetsGo/Avatars/Avatar.h"
+#include "LetsGo/GameModes/MatchGameMode.h"
 
 #include "MatchPlayerController.generated.h"
 
@@ -32,6 +33,8 @@ protected:
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
 	FName _mainMenuLevelName = "MainMenu";
+
+	AMatchGameMode* _matchGameMode = nullptr;
 
 	AAvatar* _avatar = nullptr;
 

@@ -350,6 +350,11 @@ void UWeaponManagerComponent::SetWeaponPivot(const int weaponPivotIndex)
 	}
 }
 
+void UWeaponManagerComponent::SetShouldEquipWeaponOnPickup(const bool shouldEquipWeaponOnPickup)
+{
+	_shouldEquipWeaponOnPickup = shouldEquipWeaponOnPickup;
+}
+
 IAimProvider* UWeaponManagerComponent::GetAimProvider() const
 {
 	return _aimProvider;

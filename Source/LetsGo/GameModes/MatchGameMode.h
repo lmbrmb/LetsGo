@@ -9,6 +9,7 @@
 #include "LetsGo/Data/TeamId.h"
 #include "LetsGo/GameStates/MatchState.h"
 #include "LetsGo/HealthSystem/HealthComponent.h"
+#include "LetsGo/Settings/MatchSettingsManager.h"
 #include "LetsGo/Settings/PlayerSettingsManager.h"
 #include "LetsGo/SpawnPoints/SpawnPointType.h"
 
@@ -76,19 +77,11 @@ public:
 
 	int GetFragLimit() const;
 
-	void SetFragLimit(const int fragLimit);
-
 	int GetBotCount() const;
-
-	void SetBotCount(const int botCount);
 
 	const SkinId& GetLocalPlayerSkinId() const;
 
-	void SetLocalPlayerSkinId(const SkinId& localPlayerSkinId);
-
 	float GetMatchDuration() const;
-
-	void SetMatchDuration(const float matchDuration);
 
 	virtual int GetPlayerPlace(const PlayerId& playerId) const;
 
@@ -102,11 +95,15 @@ public:
 
 	const TArray<AAvatar*>& GetAvatars() const;
 
-	PlayerSettingsManager* GetPlayerSettingsManager() const;
+	UPlayerSettings* GetPlayerSettings() const;
+
+	UMatchSettings* GetMatchSettings() const;
 
 	const TMap<int, int>& GetPlayerFrags() const;
 
 	const TMap<int, int>& GetTeamFrags() const;
+
+	void ExitToMainMenu() const;
 
 protected:
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
@@ -154,6 +151,9 @@ private:
 	const int UNDEFINED_INDEX = -1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
+	bool _applySavedSettings;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
 	int _fragLimit = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Custom, meta = (AllowPrivateAccess = "true"))
@@ -182,6 +182,12 @@ private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
 	FName _mainMenuLevelName = "MainMenu";
 
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
+	FString _playerSettingsSlotName = "PlayerSettings";
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
+	FString _matchSettingsSlotName = "MatchSettings";
+
 	TTypeContainer<ESPMode::Fast>* _diContainer = nullptr;
 
 	int _playerSpawnPointIndex = UNDEFINED_INDEX;
@@ -207,8 +213,6 @@ private:
 
 	FTransform GetNextSpawnPoint();
 
-	void ParseMatchOptions(const FString& options);
-
 	void SpawnAvatar(AvatarData* avatarData);
 
 	void RespawnAvatarOnTimer();
@@ -223,5 +227,7 @@ private:
 
 	void TriggerExitToMainMenu();
 
-	PlayerSettingsManager* _playerSettingsManager;
+	MatchSettingsManager* _matchSettingsManager = nullptr;
+
+	PlayerSettingsManager* _playerSettingsManager = nullptr;
 };
