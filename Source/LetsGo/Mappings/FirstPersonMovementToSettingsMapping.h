@@ -17,7 +17,7 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
-	float _mouseSensitivityMax = 10.0f;
+	float _mouseSensitivityMax = 20.0f;
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
 	float _cameraPitchSpeedMax = 135.0f;

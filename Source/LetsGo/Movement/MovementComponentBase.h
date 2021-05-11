@@ -109,7 +109,10 @@ private:
 	/// </summary>
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
 	float _rotationSpeedDegrees = 540.0f;
-	
+
+	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess = "true"))
+	float _inputDirectionWallMultiplier = 2.0f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TEnumAsByte<ECollisionChannel> _collisionChannel = ECC_Pawn;
 	

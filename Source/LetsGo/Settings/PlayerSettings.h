@@ -23,7 +23,7 @@ public:
 	FName PlayerSkinId;
 
 	/// <summary>
-	/// Mouse sensitivity modifier. Range: 1-10
+	/// Mouse sensitivity modifier. Range: 1-20
 	/// </summary>
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Basic)
 	int MouseSensitivity;

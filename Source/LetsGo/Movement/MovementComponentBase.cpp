@@ -357,7 +357,9 @@ void UMovementComponentBase::Move(
 	auto const upDot = FVector::DotProduct(FVector::UpVector, planeNormal);
 	auto const isWall = FMath::Abs(upDot) < 0.1f;
 	projectedDirection = FVector::VectorPlaneProject(inputDirection, planeNormal).GetSafeNormal();
-	auto const directionCoefficient = isWall ? 1 - FMath::Abs(inputDirectionDot) : 1;
+	auto const directionCoefficient = isWall
+		? FMath::Clamp(_inputDirectionWallMultiplier * 1.0f - FMath::Abs(inputDirectionDot), 0.0f, 1.0f)
+		: 1;
 	translation = projectedDirection * directionCoefficient * translationAmount;
 	RootCollider->AddWorldOffset(translation, true);
 }
