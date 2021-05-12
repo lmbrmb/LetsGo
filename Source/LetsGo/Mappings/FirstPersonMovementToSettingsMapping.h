@@ -20,8 +20,8 @@ private:
 	float _mouseSensitivityMax = 20.0f;
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
-	float _cameraPitchSpeedMax = 135.0f;
+	float _cameraPitchSpeedMax = 270;
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = Custom)
-	float _actorYawSpeedMax = 135.0f;
+	float _actorYawSpeedMax = 270;
 };

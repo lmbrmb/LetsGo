@@ -31,6 +31,9 @@ private:
 	FName _enemyActorKeyName = "EnemyActor";
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
+	FName _enemyDetectionTimeKeyName = "EnemyDetectionTime";
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)
 	FName _pickupActorKeyName = "PickupActor";
 	
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = BlackboardKeys)

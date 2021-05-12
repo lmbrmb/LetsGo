@@ -35,7 +35,14 @@ EBTNodeResult::Type UAimAndFireBTTaskNode::ExecuteTask(UBehaviorTreeComponent& O
 	{
 		return EBTNodeResult::Failed;
 	}
-	
+
+	auto const enemyDetectionTime = blackboardComponent->GetValueAsFloat(_enemyDetectionTimeKeyName);
+	auto const timeSinceEnemyDetected = GetWorld()->GetTimeSeconds() - enemyDetectionTime;
+	if(timeSinceEnemyDetected < _reactionTime)
+	{
+		return EBTNodeResult::Failed;
+	}
+
 	auto const aimProvider = weaponManager->GetAimProvider();
 	AssertIsNotNull(aimProvider, EBTNodeResult::Failed);
 

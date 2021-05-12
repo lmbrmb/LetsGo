@@ -277,6 +277,7 @@ void UAvatarBTService::UpdateEnemy(
 )
 {
 	//Assumption: enemies array contains only enemies in line of sight
+
 	auto const enemiesCount = _enemies.Num();
 	if (enemiesCount <= 0)
 	{
@@ -285,29 +286,38 @@ void UAvatarBTService::UpdateEnemy(
 		return;
 	}
 
+	auto const previousEnemy = blackboardComponent->GetValueAsObject(_enemyActorKeyName);
+	AActor* targetEnemy = nullptr;
+
 	if(enemiesCount == 1)
 	{
-		blackboardComponent->SetValueAsObject(_enemyActorKeyName, _enemies[0]);
-		blackboardComponent->SetValueAsBool(_isEnemyInLineOfSightKeyName, true);
-		return;
+		targetEnemy = _enemies[0];
 	}
-	
-	auto const selfForward = selfActor->GetActorForwardVector();
-	AActor* targetEnemy = nullptr;
-	float maxEnemyFactor = INT_MIN;
-	
-	for (auto const enemy : _enemies)
+	else
 	{
-		auto const enemyFactor = GetEnemyFactor(enemy, selfLocation, selfForward);
+		auto const selfForward = selfActor->GetActorForwardVector();
 
-		if (maxEnemyFactor < enemyFactor)
+		float maxEnemyFactor = INT_MIN;
+
+		for (auto const enemy : _enemies)
 		{
-			maxEnemyFactor = enemyFactor;
-			targetEnemy = enemy;
+			auto const enemyFactor = GetEnemyFactor(enemy, selfLocation, selfForward);
+
+			if (maxEnemyFactor < enemyFactor)
+			{
+				maxEnemyFactor = enemyFactor;
+				targetEnemy = enemy;
+			}
 		}
 	}
 
+	if (previousEnemy && previousEnemy == targetEnemy)
+	{
+		return;
+	}
+
 	blackboardComponent->SetValueAsObject(_enemyActorKeyName, targetEnemy);
+	blackboardComponent->SetValueAsFloat(_enemyDetectionTimeKeyName, GetWorld()->GetTimeSeconds());
 	blackboardComponent->SetValueAsBool(_isEnemyInLineOfSightKeyName, true);
 }
 
