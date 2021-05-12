@@ -88,8 +88,6 @@ void UInputToWeaponManagerMapping::Bind()
 		this, &UInputToWeaponManagerMapping::OnEquipRocketLauncher);
 	_inputComponent->BindAction(InputConstant::ActionEquipRailgun, EInputEvent::IE_Pressed,
 		this, &UInputToWeaponManagerMapping::OnEquipRailgun);
-	_inputComponent->BindAction(InputConstant::ActionChangeWeaponPivot, EInputEvent::IE_Pressed,
-		_weaponManagerComponent, &UWeaponManagerComponent::ChangeWeaponPivot);
 }
 
 void UInputToWeaponManagerMapping::Unbind() const
@@ -114,5 +112,4 @@ void UInputToWeaponManagerMapping::Unbind() const
 	_inputComponent->RemoveActionBinding(InputConstant::ActionEquipShotgun, EInputEvent::IE_Pressed);
 	_inputComponent->RemoveActionBinding(InputConstant::ActionEquipRocketLauncher, EInputEvent::IE_Pressed);
 	_inputComponent->RemoveActionBinding(InputConstant::ActionEquipRailgun, EInputEvent::IE_Pressed);
-	_inputComponent->RemoveActionBinding(InputConstant::ActionChangeWeaponPivot, EInputEvent::IE_Pressed);
 }

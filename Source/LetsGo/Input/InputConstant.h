@@ -30,8 +30,6 @@ public:
 
 	static const FName ActionEquipRailgun;
 
-	static const FName ActionChangeWeaponPivot;
-
 	static const FName ActionEscape;
 
 	// Axis

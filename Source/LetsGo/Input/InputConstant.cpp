@@ -26,8 +26,6 @@ const FName InputConstant::ActionEquipRocketLauncher = FName("EquipRocketLaunche
 
 const FName InputConstant::ActionEquipRailgun = FName("EquipRailgun");
 
-const FName InputConstant::ActionChangeWeaponPivot = FName("ChangeWeaponPivot");
-
 const FName InputConstant::ActionEscape = FName("Escape");
 
 // Axis

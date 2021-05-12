@@ -18,7 +18,6 @@ Shift (hold) - Walk
 Left mouse button - fire
 Mouse wheel up - next weapon
 Mouse wheel down - previous weapon
-Middle mouse button / Right mouse button - change weapon pivot (right <-> center)
 Mouse Vertical Axis - look up/down
 Mouse Horizontal Axis - turn left / right
 Escape - Quit to main menu
@@ -36,7 +35,6 @@ Right stick Vertical Axis - look up/down
 Right stick Horizontal Axis - turn left / right
 X - Jump
 Right trigger - fire
-Right stick button - change weapon pivot (right <-> center)
 D-Pad left - previous weapon
 D-Pad right - next weapon
 Options - Quit to main menu
