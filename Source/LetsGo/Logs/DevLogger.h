@@ -13,5 +13,5 @@ public:
 private:
 	DevLogger() = delete;
 	
-	static LoggingChannel* _loggingChannel;
+	static TUniquePtr<LoggingChannel> _loggingChannel;
 };

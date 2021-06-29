@@ -54,7 +54,7 @@ public:
 	
 	AMatchGameMode() = default;
 	
-	virtual ~AMatchGameMode();
+	virtual ~AMatchGameMode() override;
 
 	// IDiContainerProvider implementation
 	virtual TTypeContainer<ESPMode::Fast>* GetDiContainer() const override;

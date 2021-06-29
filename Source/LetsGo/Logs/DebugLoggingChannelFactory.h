@@ -10,7 +10,7 @@ class DebugLoggingChannelFactory final : public LoggingChannelFactory
 public:
 	DebugLoggingChannelFactory() = default;
 	
-	virtual ~DebugLoggingChannelFactory() = default;
+	virtual ~DebugLoggingChannelFactory() override = default;
 
-	virtual LoggingChannel* CreateLoggingChannel() override;
+	virtual TUniquePtr<LoggingChannel> CreateLoggingChannel() override;
 };

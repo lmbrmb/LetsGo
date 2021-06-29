@@ -1,7 +1,7 @@
 #include "DevLogger.h"
 #include "DebugLoggingChannelFactory.h"
 
-LoggingChannel* DevLogger::_loggingChannel = nullptr;
+TUniquePtr<LoggingChannel> DevLogger::_loggingChannel = nullptr;
 
 LoggingChannel* DevLogger::GetLoggingChannel()
 {
@@ -10,5 +10,5 @@ LoggingChannel* DevLogger::GetLoggingChannel()
 		DebugLoggingChannelFactory factory;
 		_loggingChannel = factory.CreateLoggingChannel();
 	}
-	return _loggingChannel;
+	return _loggingChannel.Get();
 }

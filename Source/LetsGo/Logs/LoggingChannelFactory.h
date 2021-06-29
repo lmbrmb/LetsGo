@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LoggingChannel.h"
+class LoggingChannel;
 
 /// <summary>
 /// [Abstract] Logging channel factory contract
@@ -12,5 +12,5 @@ public:
 
 	virtual ~LoggingChannelFactory() = default;
 
-	virtual LoggingChannel* CreateLoggingChannel() = 0;
+	virtual TUniquePtr<LoggingChannel> CreateLoggingChannel() = 0;
 };
